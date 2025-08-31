@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Training Plan Generator & Image Validator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="exercise_images_database.js"></script>
+    <script src="script.js"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+        .exercise-card { transition: all 0.3s ease; }
+        .exercise-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-blue-400 mb-4">🤖 AI Training Plan Generator</h1>
+            <p class="text-gray-300 text-lg">Generate personalized training plans and validate image uniqueness</p>
+        </div>
+
+        <!-- Main Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Training Plan Generator -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h2 class="text-2xl font-bold text-blue-400 mb-4">🎯 Generate Training Plan</h2>
+                
+                <form id="ai-plan-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Fitness Level</label>
+                        <select id="ai-fitness-level" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Duration (minutes)</label>
+                        <input type="range" id="ai-duration" min="10" max="60" value="30" class="w-full">
+                        <div class="flex justify-between text-sm text-gray-400">
+                            <span>10 min</span>
+                            <span id="ai-duration-value">30 min</span>
+                            <span>60 min</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Equipment</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Bodyweight" checked class="mr-2">
+                                Bodyweight
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Dumbbells" class="mr-2">
+                                Dumbbells
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Jump Rope" class="mr-2">
+                                Jump Rope
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Rower" class="mr-2">
+                                Rower
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Focus Areas</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" value="strength" class="mr-2">
+                                Strength
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="cardio" class="mr-2">
+                                Cardio
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="flexibility" class="mr-2">
+                                Flexibility
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="balance" class="mr-2">
+                                Balance
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        🚀 Generate AI Training Plan
+                    </button>
+                </form>
+            </div>
+
+            <!-- Image Validator -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h2 class="text-2xl font-bold text-green-400 mb-4">🖼️ Image Uniqueness Validator</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Validation Type</label>
+                        <select id="validation-type" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                            <option value="all">All Exercises</option>
+                            <option value="warmup">Warm-up Only</option>
+                            <option value="main">Main Exercises Only</option>
+                            <option value="cooldown">Cool-down Only</option>
+                            <option value="bodyweight">Bodyweight Only</option>
+                            <option value="dumbbells">Dumbbells Only</option>
+                        </select>
+                    </div>
+                    
+                    <button id="validate-images" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        🔍 Validate Image Uniqueness
+                    </button>
+                    
+                    <div id="validation-results" class="hidden">
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <h3 class="font-bold text-green-400 mb-2">Validation Results</h3>
+                            <div id="validation-stats" class="text-sm space-y-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden">
+            <!-- AI Training Plan Results -->
+            <div id="ai-plan-results" class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-8">
+                <h2 class="text-2xl font-bold text-blue-400 mb-4">🤖 AI Generated Training Plan</h2>
+                <div id="ai-plan-content"></div>
+            </div>
+
+            <!-- Image Validation Results -->
+            <div id="image-validation-results" class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-8">
+                <h2 class="text-2xl font-bold text-green-400 mb-4">🖼️ Image Validation Results</h2>
+                <div id="image-grid" class="image-grid"></div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg p-8 text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+                <p class="text-lg">Generating AI training plan...</p>
+            </div>
+        </div>
+
+        <!-- Notification System -->
+        <div id="notifications" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    </div>
+
+    <script>
+        // AI Training Plan Generator & Image Validator
+        class AITrainingPlanGenerator {
+            constructor() {
+                this.initializeEventListeners();
+                this.validationResults = new Map();
+                this.duplicateImages = new Map();
+            }
+
+            initializeEventListeners() {
+                // Duration slider
+                const durationSlider = document.getElementById('ai-duration');
+                const durationValue = document.getElementById('ai-duration-value');
+                durationSlider.addEventListener('input', (e) => {
+                    durationValue.textContent = `${e.target.value} min`;
+                });
+
+                // AI Plan Form
+                document.getElementById('ai-plan-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.generateAITrainingPlan();
+                });
+
+                // Image Validation
+                document.getElementById('validate-images').addEventListener('click', () => {
+                    this.validateImageUniqueness();
+                });
+            }
+
+            showNotification(message, type = 'info') {
+                const notifications = document.getElementById('notifications');
+                const notification = document.createElement('div');
+                notification.className = `px-6 py-3 rounded-lg shadow-lg fade-in ${
+                    type === 'success' ? 'bg-green-600' :
+                    type === 'error' ? 'bg-red-600' :
+                    type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
+                } text-white`;
+                notification.textContent = message;
+                
+                notifications.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+
+            setLoading(isLoading) {
+                const loading = document.getElementById('loading');
+                loading.classList.toggle('hidden', !isLoading);
+            }
+
+            async generateAITrainingPlan() {
+                this.setLoading(true);
+                
+                try {
+                    const formData = this.getFormData();
+                    const plan = await this.createAITrainingPlan(formData);
+                    this.displayAITrainingPlan(plan);
+                    this.showNotification('AI training plan generated successfully!', 'success');
+                } catch (error) {
+                    console.error('Error generating AI plan:', error);
+                    this.showNotification('Failed to generate AI training plan', 'error');
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            getFormData() {
+                const form = document.getElementById('ai-plan-form');
+                const formData = new FormData(form);
+                
+                return {
+                    fitnessLevel: document.getElementById('ai-fitness-level').value,
+                    duration: parseInt(document.getElementById('ai-duration').value),
+                    equipment: Array.from(form.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value),
+                    focusAreas: Array.from(form.querySelectorAll('input[value^="strength"], input[value^="cardio"], input[value^="flexibility"], input[value^="balance"]:checked')).map(cb => cb.value)
+                };
+            }
+
+            async createAITrainingPlan(formData) {
+                // Simulate AI processing time
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const { fitnessLevel, duration, equipment, focusAreas } = formData;
+                
+                // Filter exercises based on criteria
+                const availableExercises = exercises.filter(ex => 
+                    ex.level.includes(fitnessLevel) &&
+                    equipment.includes(ex.equipment)
+                );
+
+                // Create personalized plan based on focus areas
+                let warmupExercises = availableExercises.filter(ex => ex.type === 'warmup');
+                let mainExercises = availableExercises.filter(ex => ex.type === 'main');
+                let cooldownExercises = availableExercises.filter(ex => ex.type === 'cooldown');
+
+                // Adjust based on focus areas
+                if (focusAreas.includes('cardio')) {
+                    mainExercises = mainExercises.filter(ex => 
+                        ex.muscle === 'Full Body' || ex.name.includes('Jump') || ex.name.includes('Burpee')
+                    );
+                }
+
+                if (focusAreas.includes('strength')) {
+                    mainExercises = mainExercises.filter(ex => 
+                        ex.muscle !== 'Full Body' && !ex.name.includes('Jump')
+                    );
+                }
+
+                // Generate plan
+                const warmupCount = Math.min(5, warmupExercises.length);
+                const mainCount = Math.min(duration, mainExercises.length);
+                const cooldownCount = Math.min(5, cooldownExercises.length);
+
+                return {
+                    warmup: this.shuffleArray(warmupExercises).slice(0, warmupCount),
+                    main: this.shuffleArray(mainExercises).slice(0, mainCount),
+                    cooldown: this.shuffleArray(cooldownExercises).slice(0, cooldownCount),
+                    metadata: {
+                        fitnessLevel,
+                        duration,
+                        equipment,
+                        focusAreas,
+                        generatedAt: new Date().toISOString()
+                    }
+                };
+            }
+
+            displayAITrainingPlan(plan) {
+                const resultsSection = document.getElementById('results-section');
+                const aiPlanContent = document.getElementById('ai-plan-content');
+                
+                let html = `
+                    <div class="mb-6 bg-gray-700 rounded-lg p-4">
+                        <h3 class="text-lg font-bold text-blue-300 mb-2">Plan Details</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div><span class="text-gray-400">Level:</span> ${plan.metadata.fitnessLevel}</div>
+                            <div><span class="text-gray-400">Duration:</span> ${plan.metadata.duration} min</div>
+                            <div><span class="text-gray-400">Equipment:</span> ${plan.metadata.equipment.join(', ')}</div>
+                            <div><span class="text-gray-400">Focus:</span> ${plan.metadata.focusAreas.join(', ') || 'General'}</div>
+                        </div>
+                    </div>
+                `;
+
+                // Warm-up section
+                if (plan.warmup.length > 0) {
+                    html += `<h3 class="text-xl font-bold text-green-400 mb-4">🔥 Warm-up (${plan.warmup.length} exercises)</h3>`;
+                    html += this.createExerciseGrid(plan.warmup);
+                }
+
+                // Main workout section
+                if (plan.main.length > 0) {
+                    html += `<h3 class="text-xl font-bold text-blue-400 mb-4 mt-8">💪 Main Workout (${plan.main.length} exercises)</h3>`;
+                    html += this.createExerciseGrid(plan.main);
+                }
+
+                // Cool-down section
+                if (plan.cooldown.length > 0) {
+                    html += `<h3 class="text-xl font-bold text-purple-400 mb-4 mt-8">🧘 Cool-down (${plan.cooldown.length} exercises)</h3>`;
+                    html += this.createExerciseGrid(plan.cooldown);
+                }
+
+                aiPlanContent.innerHTML = html;
+                resultsSection.classList.remove('hidden');
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            createExerciseGrid(exercises) {
+                return `
+                    <div class="image-grid">
+                        ${exercises.map(exercise => `
+                            <div class="exercise-card bg-gray-700 rounded-lg overflow-hidden border border-gray-600">
+                                <div class="h-32 bg-white p-2">
+                                    <img src="${getExerciseImage(exercise.name)}" 
+                                         alt="${exercise.name}" 
+                                         class="w-full h-full object-contain"
+                                         onerror="this.src='https://placehold.co/400x300/1f2937/ffffff?text=Exercise'">
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="font-bold text-sm mb-1">${exercise.name}</h4>
+                                    <p class="text-xs text-gray-400 mb-2">${exercise.description.substring(0, 80)}...</p>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="bg-blue-600 px-2 py-1 rounded">${exercise.muscle}</span>
+                                        <span class="bg-gray-600 px-2 py-1 rounded">${exercise.equipment}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            validateImageUniqueness() {
+                const validationType = document.getElementById('validation-type').value;
+                const results = this.performImageValidation(validationType);
+                this.displayValidationResults(results);
+                this.showNotification(`Image validation completed! Found ${results.duplicates.length} duplicates.`, 'info');
+            }
+
+            performImageValidation(type) {
+                const validationResults = {
+                    total: 0,
+                    unique: 0,
+                    duplicates: [],
+                    duplicateGroups: new Map(),
+                    imageUrlMap: new Map()
+                };
+
+                let exercisesToCheck = [];
+
+                switch (type) {
+                    case 'all':
+                        exercisesToCheck = exercises;
+                        break;
+                    case 'warmup':
+                        exercisesToCheck = exercises.filter(ex => ex.type === 'warmup');
+                        break;
+                    case 'main':
+                        exercisesToCheck = exercises.filter(ex => ex.type === 'main');
+                        break;
+                    case 'cooldown':
+                        exercisesToCheck = exercises.filter(ex => ex.type === 'cooldown');
+                        break;
+                    case 'bodyweight':
+                        exercisesToCheck = exercises.filter(ex => ex.equipment === 'Bodyweight');
+                        break;
+                    case 'dumbbells':
+                        exercisesToCheck = exercises.filter(ex => ex.equipment === 'Dumbbells');
+                        break;
+                }
+
+                validationResults.total = exercisesToCheck.length;
+
+                // Check for duplicate images
+                exercisesToCheck.forEach(exercise => {
+                    const imageUrl = getExerciseImage(exercise.name);
+                    
+                    if (validationResults.imageUrlMap.has(imageUrl)) {
+                        // Found a duplicate
+                        const existingExercise = validationResults.imageUrlMap.get(imageUrl);
+                        validationResults.duplicates.push({
+                            exercise1: existingExercise,
+                            exercise2: exercise,
+                            imageUrl: imageUrl
+                        });
+
+                        // Group duplicates
+                        if (!validationResults.duplicateGroups.has(imageUrl)) {
+                            validationResults.duplicateGroups.set(imageUrl, [existingExercise]);
+                        }
+                        validationResults.duplicateGroups.get(imageUrl).push(exercise);
+                    } else {
+                        validationResults.imageUrlMap.set(imageUrl, exercise);
+                        validationResults.unique++;
+                    }
+                });
+
+                return validationResults;
+            }
+
+            displayValidationResults(results) {
+                const validationResults = document.getElementById('validation-results');
+                const validationStats = document.getElementById('validation-stats');
+                const imageValidationResults = document.getElementById('image-validation-results');
+                const imageGrid = document.getElementById('image-grid');
+                const resultsSection = document.getElementById('results-section');
+
+                // Update stats
+                validationStats.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-400">${results.unique}</div>
+                            <div class="text-xs text-gray-400">Unique Images</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-red-400">${results.duplicates.length}</div>
+                            <div class="text-xs text-gray-400">Duplicates</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <div class="text-lg font-bold ${results.duplicates.length === 0 ? 'text-green-400' : 'text-yellow-400'}">
+                            ${results.duplicates.length === 0 ? '✅ All Images Unique!' : '⚠️ Duplicates Found'}
+                        </div>
+                    </div>
+                `;
+
+                validationResults.classList.remove('hidden');
+
+                // Display duplicate images
+                if (results.duplicates.length > 0) {
+                    let duplicateHtml = '<h3 class="text-lg font-bold text-red-400 mb-4">🔄 Duplicate Images Found</h3>';
+                    
+                    results.duplicateGroups.forEach((exercises, imageUrl) => {
+                        duplicateHtml += `
+                            <div class="bg-red-900 bg-opacity-20 border border-red-600 rounded-lg p-4 mb-4">
+                                <div class="flex items-center mb-3">
+                                    <img src="${imageUrl}" alt="Duplicate image" class="w-16 h-12 object-cover rounded mr-3">
+                                    <div>
+                                        <div class="font-bold text-red-400">${exercises.length} exercises share this image:</div>
+                                        <div class="text-sm text-gray-300">${exercises.map(ex => ex.name).join(', ')}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    imageGrid.innerHTML = duplicateHtml;
+                } else {
+                    imageGrid.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="text-6xl mb-4">✅</div>
+                            <h3 class="text-xl font-bold text-green-400 mb-2">All Images Are Unique!</h3>
+                            <p class="text-gray-400">No duplicate images found in the selected category.</p>
+                        </div>
+                    `;
+                }
+
+                resultsSection.classList.remove('hidden');
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            shuffleArray(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+        }
+
+        // Initialize the AI Training Plan Generator
+        document.addEventListener('DOMContentLoaded', () => {
+            new AITrainingPlanGenerator();
+        });
+    </script>
+</body>
+</html>
