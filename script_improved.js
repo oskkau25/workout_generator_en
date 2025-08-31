@@ -167,75 +167,6 @@ const noResultsDiv = document.getElementById('no-results');
 const loadingDiv = document.getElementById('loading');
 const generateBtn = document.getElementById('generate-btn');
 
-// --- INPUT VALIDATION ---
-function validateForm() {
-    const level = document.getElementById('fitness-level').value;
-    const mainDuration = parseInt(durationSlider.value);
-    const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    
-    // Validate fitness level
-    if (!['Beginner', 'Intermediate', 'Advanced'].includes(level)) {
-        throw new Error('Invalid fitness level selected');
-    }
-    
-    // Validate duration
-    if (isNaN(mainDuration) || mainDuration < 10 || mainDuration > 60) {
-        throw new Error('Invalid duration selected');
-    }
-    
-    // Validate equipment selection
-    if (equipmentCheckboxes.length === 0) {
-        throw new Error('No equipment selected');
-    }
-    
-    return true;
-}
-
-// --- ERROR HANDLING ---
-function showError(message) {
-    // Create error notification
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-    errorDiv.innerHTML = `
-        <div class="flex items-center">
-            <span class="mr-2">❌</span>
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">×</button>
-        </div>
-    `;
-    
-    document.body.appendChild(errorDiv);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        if (errorDiv.parentElement) {
-            errorDiv.remove();
-        }
-    }, 5000);
-}
-
-function showSuccess(message) {
-    // Create success notification
-    const successDiv = document.createElement('div');
-    successDiv.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-    successDiv.innerHTML = `
-        <div class="flex items-center">
-            <span class="mr-2">✅</span>
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">×</button>
-        </div>
-    `;
-    
-    document.body.appendChild(successDiv);
-    
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-        if (successDiv.parentElement) {
-            successDiv.remove();
-        }
-    }, 3000);
-}
-
 // --- EVENT LISTENERS ---
 durationSlider.addEventListener('input', (e) => {
     durationValue.textContent = e.target.value;
@@ -244,62 +175,55 @@ durationSlider.addEventListener('input', (e) => {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    // Hide previous results
+    workoutPlanDiv.classList.add('hidden');
+    noResultsDiv.classList.add('hidden');
+    
+    setLoading(true);
+
+    const level = document.getElementById('fitness-level').value;
+    const mainDuration = parseInt(durationSlider.value);
+    const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
+    
+    // Ensure Bodyweight is always available as fallback
+    if (selectedEquipment.length === 0) {
+        selectedEquipment.push("Bodyweight");
+    }
+
+    // Improved filtering logic
+    const filterByType = (type) => exercises.filter(ex => 
+        ex.type === type &&
+        ex.level.includes(level) &&
+        selectedEquipment.includes(ex.equipment)
+    );
+
+    const availableWarmup = filterByType('warmup');
+    const availableMain = filterByType('main');
+    const availableCooldown = filterByType('cooldown');
+    
+    console.log(`Available exercises - Warmup: ${availableWarmup.length}, Main: ${availableMain.length}, Cooldown: ${availableCooldown.length}`);
+    console.log('Selected equipment:', selectedEquipment);
+    console.log('Fitness level:', level);
+    
+    const warmupPlan = generateRandomSet(availableWarmup, 5);
+    const cooldownPlan = generateRandomSet(availableCooldown, 5);
+
+    // FIXED: Improved logic - only check if we have enough exercises for the requested duration
+    if (availableMain.length === 0) {
+        displayPlan(null, null, null, "");
+        setLoading(false);
+        return;
+    }
+
     try {
-        // Validate form input
-        validateForm();
-        
-        // Hide previous results
-        workoutPlanDiv.classList.add('hidden');
-        noResultsDiv.classList.add('hidden');
-        
-        setLoading(true);
-
-        const level = document.getElementById('fitness-level').value;
-        const mainDuration = parseInt(durationSlider.value);
-        const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-        let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
-        
-        // Ensure Bodyweight is always available as fallback
-        if (selectedEquipment.length === 0) {
-            selectedEquipment.push("Bodyweight");
-        }
-
-        // Improved filtering logic
-        const filterByType = (type) => exercises.filter(ex => 
-            ex.type === type &&
-            ex.level.includes(level) &&
-            selectedEquipment.includes(ex.equipment)
-        );
-
-        const availableWarmup = filterByType('warmup');
-        const availableMain = filterByType('main');
-        const availableCooldown = filterByType('cooldown');
-        
-        console.log(`Available exercises - Warmup: ${availableWarmup.length}, Main: ${availableMain.length}, Cooldown: ${availableCooldown.length}`);
-        console.log('Selected equipment:', selectedEquipment);
-        console.log('Fitness level:', level);
-        
-        const warmupPlan = generateRandomSet(availableWarmup, 5);
-        const cooldownPlan = generateRandomSet(availableCooldown, 5);
-
-        // FIXED: Improved logic - only check if we have enough exercises for the requested duration
-        if (availableMain.length === 0) {
-            throw new Error('No exercises available for the selected criteria. Please try different equipment or fitness level.');
-        }
-
         // Use fallback plan if AI is not available
         const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
         displayPlan(warmupPlan, fallbackMainPlan, cooldownPlan, `Generated ${mainDuration}-minute workout plan with ${selectedEquipment.join(', ')} equipment.`);
-        
-        showSuccess('Workout plan generated successfully!');
-        
     } catch (error) {
         console.error("Error generating plan:", error);
-        showError(error.message || 'Failed to generate workout plan. Please try again.');
-        
-        // Show no results message
-        workoutPlanDiv.classList.add('hidden');
-        noResultsDiv.classList.remove('hidden');
+        const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
+        displayPlan(warmupPlan, fallbackMainPlan, cooldownPlan, "A randomly generated plan. The AI could not be reached.");
     } finally {
         setLoading(false);
     }
@@ -364,32 +288,3 @@ function displayPlan(warmup, main, cooldown, summary) {
 
     workoutPlanDiv.scrollIntoView({ behavior: 'smooth' });
 }
-
-// --- ACCESSIBILITY IMPROVEMENTS ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Add ARIA labels and roles
-    const generateButton = document.getElementById('generate-btn');
-    generateButton.setAttribute('aria-label', 'Generate workout plan');
-    generateButton.setAttribute('role', 'button');
-    
-    // Add keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && e.target.tagName === 'SELECT') {
-            e.target.blur();
-        }
-    });
-    
-    // Add focus indicators
-    const focusableElements = document.querySelectorAll('button, input, select, a');
-    focusableElements.forEach(element => {
-        element.addEventListener('focus', () => {
-            element.style.outline = '2px solid #3b82f6';
-            element.style.outlineOffset = '2px';
-        });
-        
-        element.addEventListener('blur', () => {
-            element.style.outline = '';
-            element.style.outlineOffset = '';
-        });
-    });
-});
