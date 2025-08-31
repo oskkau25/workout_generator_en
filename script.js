@@ -1,9 +1,139 @@
 // --- DATABASE OF EXERCISES ---
+// Import exercise images
+const exerciseImages = {
+    // Warm-up exercises - Real demonstration images
+    "Arm Circles": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Leg Swings": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Jumping Jacks": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Jumping Rope (slow)": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Torso Twists": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "High Knees": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Butt Kicks": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Cat-Cow Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Hip Circles": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Ankle Rotations": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Inchworm": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "World's Greatest Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Light Rowing": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Dynamic Chest Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Side Lunges": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Frankenstein Kicks": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Glute Bridges (Warm-up)": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Shoulder Taps": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Wrist Circles": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Neck Rolls": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Main exercises - Bodyweight with specific demonstration images
+    "Squats": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Push-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Lunges": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Plank": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Glute Bridge": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Wall Sit": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Step-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Calf Raises": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Bird Dog": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Dead Bug": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Burpees": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Diamond Push-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Pike Push-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Superman": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Russian Twists": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Bicycle Crunches": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Mountain Climbers": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Jump Squats": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Split Squats": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Single-leg Glute Bridge": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Main exercises - Dumbbells with equipment-specific images
+    "Dumbbell Bicep Curls": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Dumbbell Shoulder Press": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Bent-over Dumbbell Rows": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Goblet Squat": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Dumbbell Flys": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Tricep Kickbacks": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Overhead Tricep Extension": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Dumbbell Lunges": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Romanian Deadlifts (RDLs)": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Lateral Raises": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Front Raises": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Dumbbell Deadlift": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Dumbbell Chest Press": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Main exercises - Kettlebell with specific kettlebell demonstration images
+    "Kettlebell Swings": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Kettlebell Goblet Squat": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Kettlebell Deadlift": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Kettlebell Halos": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Kettlebell Turkish Get-up": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Kettlebell Clean": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Main exercises - Pull-up Bar with specific pull-up demonstration images
+    "Pull-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Chin-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Hanging Leg Raises": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Toes-to-Bar": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Negative Pull-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Assisted Pull-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Main exercises - Resistance Band with band-specific demonstration images
+    "Resistance Band Rows": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Banded Glute Kickbacks": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Banded Squats": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Banded Bicep Curls": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Face Pulls": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Banded Chest Press": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Main exercises - Jump Rope with rope-specific demonstration images
+    "Jumping Rope (intense)": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Double Unders": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "High Knee Jump Rope": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Main exercises - TRX Bands with TRX-specific demonstration images
+    "TRX Rows": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "TRX Push-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "TRX Bicep Curls": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "TRX Tricep Press": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "TRX Hamstring Curls": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "TRX Atomic Push-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Main exercises - Rower with rowing-specific demonstration images
+    "Rowing Machine": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Rowing Sprints": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+
+    // Cool-down exercises with stretching-specific demonstration images
+    "Quad Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Chest Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Child's Pose": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Hamstring Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Pigeon Pose": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Triceps Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Shoulder Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Calf Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Hip Flexor Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Knees to Chest": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Cobra Pose": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Butterfly Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Spinal Twist": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Foam Roller Back": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Foam Roller Quads": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Foam Roller Hamstrings": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Foam Roller Calves": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Foam Roller IT Band": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Foam Roller Glutes": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+    "Foam Roller Lats": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center"
+};
+
+// Function to get exercise-specific image
+function getExerciseImage(exerciseName) {
+    return exerciseImages[exerciseName] || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center";
+}
+
 const exercises = [
     // Warm-up (20 exercises)
-    { name: "Arm Circles", description: "Circle your arms loosely forwards and backwards to mobilize the shoulder joints.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "warmup" },
+    { name: "Arm Circles", description: "Circle your arms loosely forwards and backwards to mobilize the shoulder joints.", image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "warmup" },
     { name: "Leg Swings", description: "Hold onto a wall and swing one leg loosely forward and back, as well as side to side.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "warmup" },
-    { name: "Jumping Jacks", description: "A classic exercise to get your circulation going. Jump into a straddle while bringing your arms together above your head.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
+    { name: "Jumping Jacks", description: "A classic exercise to get your circulation going. Jump into a straddle while bringing your arms together above your head.", image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
     { name: "Jumping Rope (slow)", description: "Jump rope at a relaxed pace to slowly raise your heart rate and train coordination.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Jump Rope", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
     { name: "Torso Twists", description: "Stand with feet shoulder-width apart and twist your upper body from side to side.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Core", type: "warmup" },
     { name: "High Knees", description: "Run in place, bringing your knees up towards your chest as high as possible.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
@@ -267,7 +397,7 @@ function displayPlan(warmup, main, cooldown, summary) {
             sectionHtml += `
                 <div class="bg-gray-800 rounded-2xl overflow-hidden flex flex-col md:flex-row items-center border border-gray-700 shadow-md animate-fade-in mb-6">
                     <div class="w-full md:w-1/3 h-48 md:h-full flex-shrink-0 bg-white p-2">
-                        <img src="${exercise.image}" alt="Sketch of ${exercise.name}" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/ffffff?text=Image+Error';">
+                        <img src="${getExerciseImage(exercise.name)}" alt="Demonstration of ${exercise.name}" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/ffffff?text=Exercise+Demonstration';">
                     </div>
                     <div class="p-6 w-full">
                         <h3 class="text-xl font-bold">${exercise.name}</h3>

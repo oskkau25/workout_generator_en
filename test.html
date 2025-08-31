@@ -43,16 +43,35 @@
     <div id="results"></div>
 
     <script>
-        // Enhanced exercises database
+        // Exercise-specific image database
+        const exerciseImages = {
+            // Warm-up exercises - Real demonstration images
+            "Arm Circles": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "Leg Swings": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "Jumping Jacks": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "Squats": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "Push-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "Dumbbell Bicep Curls": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "Kettlebell Swings": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "Pull-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "TRX Atomic Push-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+            "Quad Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center"
+        };
+
+        function getExerciseImage(exerciseName) {
+            return exerciseImages[exerciseName] || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center";
+        }
+
+        // Enhanced exercises database with exercise-specific images
         const exercises = [
             // Warm-up exercises
-            { name: "Arm Circles", description: "Circle your arms loosely forwards and backwards to mobilize the shoulder joints.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "warmup" },
-            { name: "Jumping Jacks", description: "A classic exercise to get your circulation going. Jump into a straddle while bringing your arms together above your head.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
+            { name: "Arm Circles", description: "Circle your arms loosely forwards and backwards to mobilize the shoulder joints.", image: getExerciseImage("Arm Circles"), equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "warmup" },
+            { name: "Jumping Jacks", description: "A classic exercise to get your circulation going. Jump into a straddle while bringing your arms together above your head.", image: getExerciseImage("Jumping Jacks"), equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
             { name: "High Knees", description: "Run in place, bringing your knees up towards your chest as high as possible.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
             
             // Main exercises - Bodyweight (Beginner)
-            { name: "Squats", description: "Stand hip-width apart, lower your buttocks as if sitting on a chair. Keep your back straight.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-            { name: "Push-ups", description: "Place hands shoulder-width apart, tense your body, and lower your chest to the floor. Beginners can keep their knees on the ground.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Chest", type: "main" },
+            { name: "Squats", description: "Stand hip-width apart, lower your buttocks as if sitting on a chair. Keep your back straight.", image: getExerciseImage("Squats"), equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "main" },
+            { name: "Push-ups", description: "Place hands shoulder-width apart, tense your body, and lower your chest to the floor. Beginners can keep their knees on the ground.", image: getExerciseImage("Push-ups"), equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Chest", type: "main" },
             { name: "Wall Sit", description: "Lean against a wall and slide down until your thighs are parallel to the floor. Hold the position.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Legs", type: "main" },
             { name: "Bird Dog", description: "On all fours, extend one arm forward and the opposite leg back. Keep your core stable.", image: "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Core", type: "main" },
             
