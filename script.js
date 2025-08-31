@@ -1,4 +1,6 @@
-// --- IMPROVED EXERCISE DATABASE WITH UNIQUE IMAGES ---
+// --- FINAL IMPROVED WORKOUT GENERATOR WITH UNIQUE IMAGES ---
+
+// Use the exercise images database
 const exerciseImages = {
     // Warm-up exercises with unique images
     "Arm Circles": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
