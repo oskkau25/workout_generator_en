@@ -1,81 +1,543 @@
 // --- FINAL IMPROVED WORKOUT GENERATOR ---
-// Simplified version without images - focuses on exercise descriptions and links
+// Enhanced version with detailed exercise descriptions and safety guidelines
 
-// --- IMPROVED EXERCISE DATABASE ---
+// --- ENHANCED EXERCISE DATABASE WITH SAFETY GUIDELINES ---
 const exercises = [
     // Warm-up exercises
-    { name: "Arm Circles", description: "Circle your arms loosely forwards and backwards to mobilize the shoulder joints.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "warmup" },
-    { name: "Leg Swings", description: "Hold onto a wall and swing one leg loosely forward and back, as well as side to side.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "warmup" },
-    { name: "Jumping Jacks", description: "A classic exercise to get your circulation going. Jump into a straddle while bringing your arms together above your head.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
-    { name: "Jumping Rope (slow)", description: "Jump rope at a relaxed pace to slowly raise your heart rate and train coordination.", equipment: "Jump Rope", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
-    { name: "Torso Twists", description: "Stand with feet shoulder-width apart and twist your upper body from side to side.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Core", type: "warmup" },
-    { name: "High Knees", description: "Run in place, bringing your knees up towards your chest as high as possible.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
-    { name: "Butt Kicks", description: "Run in place, trying to kick your glutes with your heels.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "warmup" },
-    { name: "Cat-Cow Stretch", description: "On all fours, arch your back up like a cat, then drop your belly down like a cow. Mobilizes the spine.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Back", type: "warmup" },
-    { name: "Hip Circles", description: "Stand on one leg and make large circles with the other knee to open up the hips.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "warmup" },
-    { name: "Ankle Rotations", description: "Sit or stand and rotate one ankle in circles, first clockwise, then counter-clockwise.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "warmup" },
-    { name: "Inchworm", description: "From a standing position, walk your hands out to a plank, then walk your feet towards your hands.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
-    { name: "World's Greatest Stretch", description: "Step into a deep lunge and place both hands on the floor. Twist your torso and reach one arm to the sky.", equipment: "Bodyweight", level: ["Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
-    { name: "Light Rowing", description: "Start with a few minutes of easy rowing to warm up the entire body.", equipment: "Rower", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "warmup" },
-    { name: "Dynamic Chest Stretch", description: "Swing your arms open wide to stretch the chest, then cross them in front of you.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Chest", type: "warmup" },
-    { name: "Side Lunges", description: "Step out to one side, keeping the other leg straight. Sink your hips back to stretch the inner thigh.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "warmup" },
-    { name: "Frankenstein Kicks", description: "Walk forward, kicking one leg straight out in front of you, trying to touch it with the opposite hand.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "warmup" },
-    { name: "Glute Bridges (Warm-up)", description: "Lie on your back with knees bent. Lift your hips towards the ceiling, squeezing your glutes.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "warmup" },
-    { name: "Shoulder Taps", description: "In a plank position, slowly tap your left shoulder with your right hand, and vice versa. Keep hips stable.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Core", type: "warmup" },
-    { name: "Wrist Circles", description: "Gently rotate your wrists in both directions to prepare them for exercise.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Arms", type: "warmup" },
-    { name: "Neck Rolls", description: "Slowly and gently roll your head from side to side, avoiding full circles to protect the neck.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Back", type: "warmup" },
+    { 
+        name: "Arm Circles", 
+        description: "Stand with feet shoulder-width apart. Start with small circles, gradually increasing size. Circle forward for 10 reps, then backward for 10 reps. Keep shoulders relaxed and avoid shrugging. ⚠️ DO: Start small and controlled. DON'T: Force large circles or shrug shoulders. Stop if you feel shoulder pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "warmup" 
+    },
+    { 
+        name: "Leg Swings", 
+        description: "Hold onto a wall or sturdy surface for balance. Swing one leg forward and back in a controlled motion, keeping the movement smooth. Do 10-15 swings per leg, then switch. ⚠️ DO: Keep upper body stable, swing from hip joint. DON'T: Swing too fast or let momentum take over. Stop if you feel hip or knee pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Jumping Jacks", 
+        description: "Start standing with feet together and arms at sides. Jump feet apart while raising arms overhead, then jump back to starting position. Land softly on balls of feet. ⚠️ DO: Land softly, keep core engaged, breathe rhythmically. DON'T: Land hard on heels, hold breath, or jump too high if you have joint issues.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "Jumping Rope (slow)", 
+        description: "Hold rope handles at hip level. Jump just high enough to clear the rope, keeping jumps small and controlled. Land softly on balls of feet. ⚠️ DO: Keep jumps small, maintain rhythm, land softly. DON'T: Jump too high, let rope hit feet repeatedly, or continue if you feel ankle pain.", 
+        equipment: "Jump Rope", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "Torso Twists", 
+        description: "Stand with feet shoulder-width apart, arms extended at shoulder height. Rotate upper body from side to side, keeping hips facing forward. Move slowly and controlled. ⚠️ DO: Keep hips stable, rotate from waist, breathe normally. DON'T: Twist too fast, let hips rotate, or force range of motion.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "warmup" 
+    },
+    { 
+        name: "High Knees", 
+        description: "Run in place, bringing knees up toward chest level. Pump arms naturally and stay on balls of feet. Keep torso upright and core engaged. ⚠️ DO: Keep good posture, engage core, land softly. DON'T: Lean back, let knees go too high if you have hip issues, or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "Butt Kicks", 
+        description: "Run in place, kicking heels back toward glutes. Keep torso upright and pump arms naturally. Stay on balls of feet throughout movement. ⚠️ DO: Keep good posture, kick heels back naturally, maintain rhythm. DON'T: Lean forward, kick too hard, or let feet slap down.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Cat-Cow Stretch", 
+        description: "Start on hands and knees. Inhale, drop belly and lift head (cow). Exhale, round back and tuck chin (cat). Move slowly with breath. ⚠️ DO: Move with breath, keep movements controlled, feel spine mobility. DON'T: Force range of motion, move too fast, or continue if you feel back pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "warmup" 
+    },
+    { 
+        name: "Hip Circles", 
+        description: "Stand on one leg, holding onto support if needed. Make large circles with opposite knee, moving slowly and controlled. Do 5-8 circles each direction. ⚠️ DO: Keep standing leg stable, move slowly, hold support if needed. DON'T: Rush the movement, lose balance, or continue if you feel hip pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Ankle Rotations", 
+        description: "Sit or stand and lift one foot off ground. Rotate ankle in circles, first clockwise then counter-clockwise. Do 10 rotations each direction per foot. ⚠️ DO: Move slowly, feel ankle mobility, keep movements controlled. DON'T: Force range of motion, move too fast, or continue if you feel ankle pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Inchworm", 
+        description: "Stand with feet together. Bend forward and walk hands out to plank position. Hold plank briefly, then walk feet toward hands, keeping legs straight. ⚠️ DO: Keep core engaged, move slowly, maintain plank form. DON'T: Let hips sag in plank, rush the movement, or round back excessively.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "World's Greatest Stretch", 
+        description: "Step into deep lunge, place both hands on floor inside front foot. Twist torso and reach one arm to sky, looking up. Hold 2-3 seconds, then switch sides. ⚠️ DO: Keep back knee off ground, twist from torso, breathe deeply. DON'T: Force the stretch, let back knee touch ground, or twist too aggressively.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "Light Rowing", 
+        description: "Sit on rower with feet secured. Start with easy pace, focusing on proper form: push with legs, then pull with arms. Keep back straight throughout. ⚠️ DO: Maintain good posture, use full range of motion, breathe rhythmically. DON'T: Round back, pull too hard, or ignore proper form for speed.", 
+        equipment: "Rower", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "Dynamic Chest Stretch", 
+        description: "Stand with arms extended at shoulder height. Swing arms back to open chest, then cross arms in front. Move slowly and feel chest stretch. ⚠️ DO: Move slowly, feel chest opening, keep shoulders relaxed. DON'T: Force the stretch, move too fast, or continue if you feel shoulder pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Chest", 
+        type: "warmup" 
+    },
+    { 
+        name: "Side Lunges", 
+        description: "Stand with feet wide apart. Step to one side, bending knee and keeping other leg straight. Push back to center and repeat on other side. ⚠️ DO: Keep chest up, push through heel, maintain balance. DON'T: Let knee cave inward, round back, or lose balance.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Frankenstein Kicks", 
+        description: "Walk forward, kicking one leg straight out in front, trying to touch opposite hand to toe. Keep standing leg straight and maintain balance. ⚠️ DO: Keep good posture, kick leg straight, maintain balance. DON'T: Round back, kick too high if you have hamstring issues, or rush the movement.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Glute Bridges (Warm-up)", 
+        description: "Lie on back with knees bent, feet flat on floor. Lift hips toward ceiling, squeezing glutes. Hold briefly, then lower with control. ⚠️ DO: Squeeze glutes, keep core engaged, lower slowly. DON'T: Arch back excessively, lift hips too high, or let knees cave inward.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Shoulder Taps", 
+        description: "Start in plank position on hands. Slowly tap left shoulder with right hand, then right shoulder with left hand. Keep hips stable throughout. ⚠️ DO: Keep hips level, move slowly, maintain plank form. DON'T: Let hips rotate, move too fast, or let body sag.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "warmup" 
+    },
+    { 
+        name: "Wrist Circles", 
+        description: "Extend arms in front, make fists, and rotate wrists in circles. Do 10 circles clockwise, then 10 counter-clockwise. ⚠️ DO: Move slowly, feel wrist mobility, keep movements controlled. DON'T: Force range of motion, move too fast, or continue if you feel wrist pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "warmup" 
+    },
+    { 
+        name: "Neck Rolls", 
+        description: "Stand or sit with good posture. Slowly tilt head to one side, then roll forward and to other side. Avoid full circles - go side to side only. ⚠️ DO: Move very slowly, keep movements small, stop if uncomfortable. DON'T: Do full circles, move too fast, or continue if you feel neck pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "warmup" 
+    },
 
     // Main exercises - Bodyweight
-    { name: "Squats", description: "Stand hip-width apart, lower your buttocks as if sitting on a chair. Keep your back straight.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-    { name: "Push-ups", description: "Place hands shoulder-width apart, tense your body, and lower your chest to the floor. Beginners can keep their knees on the ground.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Chest", type: "main" },
-    { name: "Lunges", description: "Take a big step forward and bend both knees to about 90 degrees. Push back and switch sides.", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Legs", type: "main" },
-    { name: "Plank", description: "Support yourself on your forearms and toes. Keep your body in a straight line from head to toe.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Core", type: "main" },
-    { name: "Glute Bridge", description: "Lie on your back, knees bent, and lift your hips off the floor until your body forms a straight line from shoulders to knees.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-    { name: "Wall Sit", description: "Lean against a wall and slide down until your thighs are parallel to the floor. Hold the position.", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Legs", type: "main" },
-    { name: "Step-ups", description: "Step up onto a sturdy surface with one foot, then step back down. Alternate legs.", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Legs", type: "main" },
-    { name: "Calf Raises", description: "Stand on the edge of a step and raise your heels up and down to strengthen your calves.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-    { name: "Bird Dog", description: "On all fours, extend one arm forward and the opposite leg back. Keep your core stable.", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Core", type: "main" },
-    { name: "Dead Bug", description: "Lie on your back with arms and legs in the air. Lower opposite arm and leg while keeping your back flat.", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Core", type: "main" },
-    { name: "Burpees", description: "A combination of a squat, push-up, and vertical jump. Very intense for the whole body.", equipment: "Bodyweight", level: ["Intermediate", "Advanced"], muscle: "Full Body", type: "main" },
-    { name: "Diamond Push-ups", description: "Perform a push-up with your hands close together, forming a diamond shape. Focuses on the triceps.", equipment: "Bodyweight", level: ["Intermediate", "Advanced"], muscle: "Arms", type: "main" },
-    { name: "Pike Push-ups", description: "From a downward-dog position, lower your head towards the floor. Focuses on the shoulders.", equipment: "Bodyweight", level: ["Intermediate", "Advanced"], muscle: "Shoulders", type: "main" },
-    { name: "Superman", description: "Lie on your stomach and simultaneously lift your arms, chest, and legs off the floor. Strengthens the lower back.", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Back", type: "main" },
-    { name: "Russian Twists", description: "Sit on the floor, lean back, and lift your feet. Twist your torso from side to side.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Core", type: "main" },
-    { name: "Bicycle Crunches", description: "Lie on your back and bring opposite knee to opposite elbow in a cycling motion.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Core", type: "main" },
-    { name: "Mountain Climbers", description: "In a plank position, alternate bringing your knees to your chest as if you're climbing a mountain.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Full Body", type: "main" },
-    { name: "Jump Squats", description: "Perform a squat and then explosively jump up, landing softly back into a squat position.", equipment: "Bodyweight", level: ["Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-    { name: "Split Squats", description: "Step one foot back and lower into a lunge position. Keep your front knee over your toes.", equipment: "Bodyweight", level: ["Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-    { name: "Single-leg Glute Bridge", description: "Perform a glute bridge with one leg extended straight up in the air.", equipment: "Bodyweight", level: ["Intermediate", "Advanced"], muscle: "Legs", type: "main" },
+    { 
+        name: "Squats", 
+        description: "Stand with feet shoulder-width apart, toes slightly out. Push hips back and lower as if sitting in chair. Keep chest up, knees over toes. Push through heels to stand. ⚠️ DO: Keep chest up, push knees out, go to parallel or higher. DON'T: Let knees cave inward, round back, or go too deep if you have knee issues.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Push-ups", 
+        description: "Start in plank position, hands slightly wider than shoulders. Lower chest toward floor, keeping body straight. Push back up to start. Beginners: keep knees on ground. ⚠️ DO: Keep body straight, lower chest not head, breathe rhythmically. DON'T: Let hips sag, touch floor with face, or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Chest", 
+        type: "main" 
+    },
+    { 
+        name: "Lunges", 
+        description: "Step forward with one leg, lowering until both knees are bent at 90 degrees. Front knee should be over toes, back knee near ground. Push back to start and switch legs. ⚠️ DO: Keep chest up, front knee over toes, back knee near ground. DON'T: Let front knee go past toes, round back, or lose balance.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Plank", 
+        description: "Start in push-up position, then lower to forearms. Keep body in straight line from head to heels. Engage core and hold position. ⚠️ DO: Keep body straight, engage core, breathe normally. DON'T: Let hips sag or lift, hold breath, or let head drop.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Glute Bridge", 
+        description: "Lie on back with knees bent, feet flat on floor. Lift hips toward ceiling, squeezing glutes. Hold briefly at top, then lower with control. ⚠️ DO: Squeeze glutes, keep core engaged, lift hips high enough. DON'T: Arch back excessively, let knees cave inward, or lift hips too high.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Wall Sit", 
+        description: "Lean against wall, slide down until thighs are parallel to floor. Keep back against wall, feet shoulder-width apart. Hold position. ⚠️ DO: Keep back against wall, thighs parallel to floor, breathe normally. DON'T: Let knees go past toes, slide too low, or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Step-ups", 
+        description: "Stand facing sturdy step or bench. Step up with one foot, then bring other foot up. Step back down with control and repeat. ⚠️ DO: Use full foot on step, keep chest up, step down with control. DON'T: Use momentum, let knee cave inward, or step down too hard.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Calf Raises", 
+        description: "Stand on edge of step with heels hanging off. Rise up onto balls of feet, then lower heels below step level. Keep knees straight throughout. ⚠️ DO: Use full range of motion, keep knees straight, control the movement. DON'T: Bounce at bottom, let heels hit ground hard, or use momentum.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Bird Dog", 
+        description: "Start on hands and knees. Extend right arm forward and left leg back, keeping both straight. Hold briefly, then switch sides. Keep core engaged throughout. ⚠️ DO: Keep core stable, extend arm and leg straight, maintain balance. DON'T: Let hips rotate, lift too high, or lose balance.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Dead Bug", 
+        description: "Lie on back with arms extended toward ceiling, knees bent at 90 degrees. Lower opposite arm and leg toward floor, keeping back flat. Return and switch sides. ⚠️ DO: Keep back flat on floor, move slowly, engage core. DON'T: Let back arch, move too fast, or let legs drop too low.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Burpees", 
+        description: "Start standing, drop into squat, place hands on floor, jump feet back to plank, do push-up, jump feet forward, then jump up with arms overhead. ⚠️ DO: Land softly, maintain good form throughout, breathe rhythmically. DON'T: Rush the movement, sacrifice form for speed, or land hard on feet.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Diamond Push-ups", 
+        description: "Form diamond shape with hands under chest, thumbs and index fingers touching. Perform push-up, keeping elbows close to body. Focuses on triceps. ⚠️ DO: Keep elbows close to body, lower chest to hands, maintain straight body. DON'T: Let elbows flare out, touch face to ground, or let hips sag.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "Pike Push-ups", 
+        description: "Start in downward dog position, hands and feet on ground, hips high. Lower head toward ground, then push back up. Focuses on shoulders. ⚠️ DO: Keep hips high, lower head not chest, maintain straight arms. DON'T: Let hips drop, round back, or touch head to ground too hard.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Superman", 
+        description: "Lie face down on floor. Lift chest, arms, and legs off ground simultaneously. Hold briefly, then lower with control. Strengthens lower back. ⚠️ DO: Lift chest and legs together, keep neck neutral, breathe normally. DON'T: Lift too high, strain neck, or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "Russian Twists", 
+        description: "Sit on floor, lean back slightly, lift feet off ground. Twist torso from side to side, touching hands to floor on each side. Keep feet elevated. ⚠️ DO: Keep feet off ground, twist from torso, maintain balance. DON'T: Let feet touch ground, twist too fast, or round back excessively.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Bicycle Crunches", 
+        description: "Lie on back, lift shoulders off ground. Bring opposite knee to opposite elbow in cycling motion. Keep lower back pressed to floor. ⚠️ DO: Keep lower back on floor, move slowly, engage core. DON'T: Pull on neck, let lower back lift, or move too fast.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Mountain Climbers", 
+        description: "Start in plank position. Alternate bringing knees toward chest as if climbing. Keep hips level and core engaged throughout. ⚠️ DO: Keep hips level, move knees toward chest, maintain plank form. DON'T: Let hips lift, move too fast, or sacrifice form for speed.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Squats", 
+        description: "Perform regular squat, then explosively jump up, landing softly back in squat position. Land on balls of feet with knees slightly bent. ⚠️ DO: Land softly, maintain squat form, use arms for momentum. DON'T: Land hard on heels, let knees cave inward, or jump too high if you have joint issues.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Split Squats", 
+        description: "Step one foot back into lunge position. Lower body until back knee nearly touches ground. Keep front knee over toes. Push back up and repeat. ⚠️ DO: Keep front knee over toes, back knee near ground, chest up. DON'T: Let front knee go past toes, round back, or lose balance.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Single-leg Glute Bridge", 
+        description: "Lie on back with knees bent. Extend one leg straight up. Lift hips using only the bent leg, squeezing glutes. Lower with control and repeat. ⚠️ DO: Keep extended leg straight, squeeze glutes, maintain hip level. DON'T: Let hips tilt, let extended leg drop, or arch back excessively.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
 
     // Main exercises - Dumbbells
-    { name: "Dumbbell Bicep Curls", description: "Hold a dumbbell in each hand. Bend your arms and lift the dumbbells to your shoulders without swinging your upper body.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Arms", type: "main" },
-    { name: "Dumbbell Shoulder Press", description: "Sit upright and hold the dumbbells at shoulder height. Press them vertically upwards until your arms are almost straight.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "main" },
-    { name: "Bent-over Dumbbell Rows", description: "Bend your upper body forward with a straight back. Pull the dumbbells up the side of your body towards your chest.", equipment: "Dumbbells", level: ["Intermediate", "Advanced"], muscle: "Back", type: "main" },
-    { name: "Goblet Squat", description: "Hold a dumbbell vertically in front of your chest. Perform a deep squat while keeping your back straight.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-    { name: "Dumbbell Flys", description: "Lie on your back and press dumbbells above your chest. Lower them out to the sides in a wide arc.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Chest", type: "main" },
-    { name: "Tricep Kickbacks", description: "Lean forward with a dumbbell in one hand. Extend your arm straight back, squeezing the tricep.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Arms", type: "main" },
-    { name: "Overhead Tricep Extension", description: "Hold one dumbbell with both hands above your head. Lower it behind your head by bending your elbows.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Arms", type: "main" },
-    { name: "Dumbbell Lunges", description: "Hold a dumbbell in each hand and perform lunges. Adds resistance to the standard lunge.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-    { name: "Romanian Deadlifts (RDLs)", description: "Hold dumbbells in front of your thighs. Hinge at your hips, keeping your back straight and legs almost straight.", equipment: "Dumbbells", level: ["Intermediate", "Advanced"], muscle: "Legs", type: "main" },
-    { name: "Lateral Raises", description: "Stand and hold dumbbells at your sides. Raise your arms out to the sides until they're at shoulder level.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "main" },
-    { name: "Front Raises", description: "Hold dumbbells in front of your thighs. Raise them straight out in front of you to shoulder level.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "main" },
-    { name: "Dumbbell Deadlift", description: "Stand with dumbbells in front of your thighs. Hinge at your hips and lower the dumbbells down your legs.", equipment: "Dumbbells", level: ["Intermediate", "Advanced"], muscle: "Back", type: "main" },
-    { name: "Dumbbell Chest Press", description: "Lie on your back and press dumbbells straight up from your chest, then lower them back down.", equipment: "Dumbbells", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Chest", type: "main" },
+    { 
+        name: "Dumbbell Bicep Curls", 
+        description: "Stand with dumbbells at sides, palms facing forward. Curl dumbbells toward shoulders, keeping elbows at sides. Lower with control and repeat. ⚠️ DO: Keep elbows at sides, control the movement, squeeze biceps. DON'T: Swing body, let elbows move forward, or use momentum.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "Dumbbell Shoulder Press", 
+        description: "Sit or stand with dumbbells at shoulder height, palms facing forward. Press dumbbells overhead until arms are straight. Lower with control and repeat. ⚠️ DO: Keep core engaged, press straight up, control the movement. DON'T: Arch back, let elbows flare out, or use momentum.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Bent-over Dumbbell Rows", 
+        description: "Bend forward at hips, keeping back straight. Hold dumbbells with arms hanging down. Pull dumbbells toward chest, squeezing shoulder blades. Lower with control. ⚠️ DO: Keep back straight, pull elbows back, squeeze shoulder blades. DON'T: Round back, use momentum, or let shoulders shrug.", 
+        equipment: "Dumbbells", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "Goblet Squat", 
+        description: "Hold dumbbell vertically at chest level. Perform squat, keeping dumbbell close to chest. Go as deep as comfortable while maintaining good form. ⚠️ DO: Keep dumbbell close to chest, maintain upright posture, go to comfortable depth. DON'T: Let knees cave inward, round back, or let dumbbell move away from body.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Dumbbell Flys", 
+        description: "Lie on back with dumbbells extended above chest. Lower dumbbells out to sides in wide arc, keeping slight bend in elbows. Return to start and repeat. ⚠️ DO: Keep slight bend in elbows, control the movement, feel chest stretch. DON'T: Lock elbows, let dumbbells drop too low, or use momentum.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Chest", 
+        type: "main" 
+    },
+    { 
+        name: "Tricep Kickbacks", 
+        description: "Bend forward at hips, keeping back straight. Hold dumbbell with elbow bent at 90 degrees. Extend arm straight back, squeezing tricep. Return and repeat. ⚠️ DO: Keep upper arm still, extend arm straight back, squeeze tricep. DON'T: Move upper arm, use momentum, or round back.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "Overhead Tricep Extension", 
+        description: "Hold one dumbbell with both hands above head. Lower dumbbell behind head by bending elbows. Extend arms back to start and repeat. ⚠️ DO: Keep elbows close to head, control the movement, feel tricep work. DON'T: Let elbows flare out, arch back, or use momentum.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "Dumbbell Lunges", 
+        description: "Hold dumbbells at sides. Step forward into lunge, lowering until both knees are bent at 90 degrees. Push back to start and repeat with other leg. ⚠️ DO: Keep chest up, front knee over toes, control the movement. DON'T: Let front knee go past toes, round back, or use momentum.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Romanian Deadlifts (RDLs)", 
+        description: "Hold dumbbells in front of thighs. Hinge at hips, pushing butt back while lowering dumbbells down legs. Keep back straight and legs nearly straight. ⚠️ DO: Hinge at hips, keep back straight, feel hamstring stretch. DON'T: Round back, bend knees too much, or let dumbbells swing.", 
+        equipment: "Dumbbells", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Lateral Raises", 
+        description: "Stand with dumbbells at sides, palms facing body. Raise arms out to sides until they're at shoulder level. Lower with control and repeat. ⚠️ DO: Keep slight bend in elbows, raise to shoulder level, control the movement. DON'T: Raise above shoulder level, use momentum, or shrug shoulders.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Front Raises", 
+        description: "Stand with dumbbells in front of thighs, palms facing body. Raise dumbbells straight out in front to shoulder level. Lower with control and repeat. ⚠️ DO: Keep slight bend in elbows, raise to shoulder level, control the movement. DON'T: Raise above shoulder level, use momentum, or arch back.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Dumbbell Deadlift", 
+        description: "Stand with dumbbells in front of thighs. Hinge at hips, lowering dumbbells down legs while keeping back straight. Return to start by pushing hips forward. ⚠️ DO: Hinge at hips, keep back straight, control the movement. DON'T: Round back, bend knees too much, or use momentum.", 
+        equipment: "Dumbbells", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "Dumbbell Chest Press", 
+        description: "Lie on back with dumbbells at chest level, palms facing forward. Press dumbbells straight up until arms are extended. Lower with control and repeat. ⚠️ DO: Keep core engaged, press straight up, control the movement. DON'T: Arch back, let elbows flare out, or use momentum.", 
+        equipment: "Dumbbells", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Chest", 
+        type: "main" 
+    },
 
     // Cool-down exercises
-    { name: "Quad Stretch", description: "Stand upright, pull one foot towards your glutes, and keep the knee pointing downwards. Hold for 30 seconds per side.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "cooldown" },
-    { name: "Chest Stretch", description: "Stand in a doorway and press your forearms against the frame to open up the chest muscles. Hold for 30 seconds.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Chest", type: "cooldown" },
-    { name: "Child's Pose", description: "Kneel on the floor, sit back on your heels, and bend your torso forward until your forehead touches the floor. Relaxes the back.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Back", type: "cooldown" },
-    { name: "Hamstring Stretch", description: "Sit on the floor with one leg extended, and gently lean forward to feel a stretch in the back of your thigh.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "cooldown" },
-    { name: "Pigeon Pose", description: "A deep stretch for the glutes and hip flexors. Bring one knee forward and extend the other leg back.", equipment: "Bodyweight", level: ["Intermediate", "Advanced"], muscle: "Legs", type: "cooldown" },
-    { name: "Triceps Stretch", description: "Reach one arm overhead, bend the elbow, and gently pull the elbow with the opposite hand.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Arms", type: "cooldown" },
-    { name: "Shoulder Stretch", description: "Bring one arm across your body and gently pull it closer with your other arm.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Shoulders", type: "cooldown" },
-    { name: "Calf Stretch", description: "Stand facing a wall and step one foot back, pressing the heel into the floor.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "cooldown" },
-    { name: "Hip Flexor Stretch", description: "Kneel in a lunge position and gently push your hips forward to stretch the front of the hip.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "cooldown" },
-    { name: "Knees to Chest", description: "Lie on your back and hug both knees to your chest to release tension in the lower back.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Back", type: "cooldown" },
-    { name: "Cobra Pose", description: "Lie on your stomach and gently push your upper body up, arching your back.", equipment: "Bodyweight", level: ["Beginner", "Intermediate"], muscle: "Back", type: "cooldown" },
-    { name: "Butterfly Stretch", description: "Sit with the soles of your feet together and gently press your knees towards the floor.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Legs", type: "cooldown" },
-    { name: "Spinal Twist", description: "Lie on your back, bring one knee across your body, and look in the opposite direction.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Back", type: "cooldown" }
+    { 
+        name: "Quad Stretch", 
+        description: "Stand upright, bend one knee and grab foot behind you. Pull foot toward glutes, keeping knee pointing down. Hold 30 seconds per side. ⚠️ DO: Keep knee pointing down, hold stretch gently, breathe normally. DON'T: Force the stretch, let knee point outward, or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Chest Stretch", 
+        description: "Stand in doorway, place forearms against door frame. Step forward to feel chest stretch. Hold 30 seconds, breathing deeply. ⚠️ DO: Keep shoulders relaxed, breathe deeply, feel gentle stretch. DON'T: Force the stretch, hold breath, or continue if you feel shoulder pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Chest", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Child's Pose", 
+        description: "Kneel on floor, sit back on heels, bend forward until forehead touches floor. Extend arms forward or rest them at sides. Hold 30-60 seconds. ⚠️ DO: Relax into the stretch, breathe deeply, let back round naturally. DON'T: Force the stretch, hold breath, or continue if you feel knee pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Hamstring Stretch", 
+        description: "Sit on floor with one leg extended, other leg bent. Lean forward from hips toward extended foot. Hold 30 seconds per side. ⚠️ DO: Lean from hips, keep back straight, feel gentle stretch. DON'T: Round back, force the stretch, or continue if you feel sharp pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Pigeon Pose", 
+        description: "Start on hands and knees. Bring one knee forward and place it behind wrist, extending other leg back. Lower hips toward floor and hold 30 seconds per side. ⚠️ DO: Keep hips square, breathe deeply, feel gentle stretch. DON'T: Force the stretch, let hips tilt, or continue if you feel knee pain.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Triceps Stretch", 
+        description: "Reach one arm overhead, bend elbow and place hand behind head. Use other hand to gently pull elbow toward head. Hold 30 seconds per side. ⚠️ DO: Pull gently, keep shoulders relaxed, breathe normally. DON'T: Pull too hard, hold breath, or continue if you feel shoulder pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Shoulder Stretch", 
+        description: "Bring one arm across chest at shoulder level. Use other arm to gently pull it closer to chest. Hold 30 seconds per side. ⚠️ DO: Pull gently, keep shoulders relaxed, breathe normally. DON'T: Pull too hard, round back, or continue if you feel shoulder pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Calf Stretch", 
+        description: "Stand facing wall, step one foot back. Press heel into floor while keeping back leg straight. Hold 30 seconds per side. ⚠️ DO: Keep back leg straight, press heel down, feel gentle stretch. DON'T: Bounce, force the stretch, or continue if you feel ankle pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Hip Flexor Stretch", 
+        description: "Kneel in lunge position, one foot forward. Gently push hips forward while keeping back straight. Hold 30 seconds per side. ⚠️ DO: Keep back straight, push hips gently forward, breathe deeply. DON'T: Arch back, force the stretch, or continue if you feel hip pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Knees to Chest", 
+        description: "Lie on back, hug both knees to chest. Rock gently side to side if comfortable. Hold 30-60 seconds, breathing deeply. ⚠️ DO: Hug knees gently, breathe deeply, relax into stretch. DON'T: Force knees too close, hold breath, or continue if you feel back pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Cobra Pose", 
+        description: "Lie face down, place hands under shoulders. Gently push upper body up, arching back slightly. Keep hips on floor and hold 15-30 seconds. ⚠️ DO: Push up gently, keep hips on floor, breathe normally. DON'T: Push up too high, strain neck, or continue if you feel back pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Butterfly Stretch", 
+        description: "Sit on floor, bring soles of feet together. Gently press your knees towards the floor while keeping back straight. Hold 30-60 seconds. ⚠️ DO: Keep back straight, press knees gently, breathe deeply. DON'T: Force knees down, round back, or continue if you feel groin pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Spinal Twist", 
+        description: "Lie on back, bring one knee across your body, and look in the opposite direction. Hold 30 seconds per side. ⚠️ DO: Keep shoulders on floor, breathe deeply, feel gentle twist. DON'T: Force the twist, lift shoulders, or continue if you feel back pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    }
 ];
 
 // --- HELPER FUNCTIONS ---
