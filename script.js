@@ -1,86 +1,5 @@
 // --- FINAL IMPROVED WORKOUT GENERATOR WITH UNIQUE IMAGES ---
-
-// Use the exercise images database
-const exerciseImages = {
-    // Warm-up exercises with unique images
-    "Arm Circles": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Leg Swings": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Jumping Jacks": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Jumping Rope (slow)": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Torso Twists": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "High Knees": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Butt Kicks": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Cat-Cow Stretch": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Hip Circles": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Ankle Rotations": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Inchworm": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "World's Greatest Stretch": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Light Rowing": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Dynamic Chest Stretch": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Side Lunges": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Frankenstein Kicks": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Glute Bridges (Warm-up)": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Shoulder Taps": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Wrist Circles": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Neck Rolls": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-
-    // Main exercises - Bodyweight with unique images
-    "Squats": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Push-ups": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Lunges": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Plank": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Glute Bridge": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Wall Sit": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Step-ups": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Calf Raises": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Bird Dog": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Dead Bug": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Burpees": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Diamond Push-ups": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Pike Push-ups": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Superman": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Russian Twists": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Bicycle Crunches": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Mountain Climbers": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Jump Squats": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Split Squats": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Single-leg Glute Bridge": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-
-    // Main exercises - Dumbbells with unique images
-    "Dumbbell Bicep Curls": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Dumbbell Shoulder Press": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Bent-over Dumbbell Rows": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Goblet Squat": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Dumbbell Flys": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Tricep Kickbacks": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Overhead Tricep Extension": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Dumbbell Lunges": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Romanian Deadlifts (RDLs)": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Lateral Raises": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Front Raises": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Dumbbell Deadlift": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Dumbbell Chest Press": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-
-    // Cool-down exercises with unique images
-    "Quad Stretch": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Chest Stretch": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Child's Pose": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Hamstring Stretch": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Pigeon Pose": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Triceps Stretch": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Shoulder Stretch": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Calf Stretch": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Hip Flexor Stretch": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center",
-    "Knees to Chest": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center",
-    "Cobra Pose": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-    "Butterfly Stretch": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop&crop=center",
-    "Spinal Twist": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center"
-};
-
-// Function to get exercise-specific image with fallback
-function getExerciseImage(exerciseName) {
-    return exerciseImages[exerciseName] || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center";
-}
+// Note: exerciseImages and getExerciseImage are now imported from exercise_images_database.js
 
 // --- IMPROVED EXERCISE DATABASE ---
 const exercises = [
@@ -159,20 +78,10 @@ const exercises = [
     { name: "Spinal Twist", description: "Lie on your back, bring one knee across your body, and look in the opposite direction.", equipment: "Bodyweight", level: ["Beginner", "Intermediate", "Advanced"], muscle: "Back", type: "cooldown" }
 ];
 
-// --- DOM ELEMENT REFERENCES ---
-const form = document.getElementById('workout-form');
-const durationSlider = document.getElementById('duration');
-const durationValue = document.getElementById('duration-value');
-const workoutPlanDiv = document.getElementById('workout-plan');
-const planContentDiv = document.getElementById('plan-content');
-const noResultsDiv = document.getElementById('no-results');
-const loadingDiv = document.getElementById('loading');
-const generateBtn = document.getElementById('generate-btn');
-
-// --- INPUT VALIDATION ---
+// --- HELPER FUNCTIONS ---
 function validateForm() {
     const level = document.getElementById('fitness-level').value;
-    const mainDuration = parseInt(durationSlider.value);
+    const mainDuration = parseInt(document.getElementById('duration').value);
     const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
     
     // Validate fitness level
@@ -193,7 +102,6 @@ function validateForm() {
     return true;
 }
 
-// --- ERROR HANDLING ---
 function showError(message) {
     // Create error notification
     const errorDiv = document.createElement('div');
@@ -238,77 +146,10 @@ function showSuccess(message) {
     }, 3000);
 }
 
-// --- EVENT LISTENERS ---
-durationSlider.addEventListener('input', (e) => {
-    durationValue.textContent = e.target.value;
-});
-
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    try {
-        // Validate form input
-        validateForm();
-        
-        // Hide previous results
-        workoutPlanDiv.classList.add('hidden');
-        noResultsDiv.classList.add('hidden');
-        
-        setLoading(true);
-
-        const level = document.getElementById('fitness-level').value;
-        const mainDuration = parseInt(durationSlider.value);
-        const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-        let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
-        
-        // Ensure Bodyweight is always available as fallback
-        if (selectedEquipment.length === 0) {
-            selectedEquipment.push("Bodyweight");
-        }
-
-        // Improved filtering logic
-        const filterByType = (type) => exercises.filter(ex => 
-            ex.type === type &&
-            ex.level.includes(level) &&
-            selectedEquipment.includes(ex.equipment)
-        );
-
-        const availableWarmup = filterByType('warmup');
-        const availableMain = filterByType('main');
-        const availableCooldown = filterByType('cooldown');
-        
-        console.log(`Available exercises - Warmup: ${availableWarmup.length}, Main: ${availableMain.length}, Cooldown: ${availableCooldown.length}`);
-        console.log('Selected equipment:', selectedEquipment);
-        console.log('Fitness level:', level);
-        
-        const warmupPlan = generateRandomSet(availableWarmup, 5);
-        const cooldownPlan = generateRandomSet(availableCooldown, 5);
-
-        // FIXED: Improved logic - only check if we have enough exercises for the requested duration
-        if (availableMain.length === 0) {
-            throw new Error('No exercises available for the selected criteria. Please try different equipment or fitness level.');
-        }
-
-        // Use fallback plan if AI is not available
-        const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
-        displayPlan(warmupPlan, fallbackMainPlan, cooldownPlan, `Generated ${mainDuration}-minute workout plan with ${selectedEquipment.join(', ')} equipment.`);
-        
-        showSuccess('Workout plan generated successfully!');
-        
-    } catch (error) {
-        console.error("Error generating plan:", error);
-        showError(error.message || 'Failed to generate workout plan. Please try again.');
-        
-        // Show no results message
-        workoutPlanDiv.classList.add('hidden');
-        noResultsDiv.classList.remove('hidden');
-    } finally {
-        setLoading(false);
-    }
-});
-
-// --- HELPER & DISPLAY FUNCTIONS ---
 function setLoading(isLoading) {
+    const loadingDiv = document.getElementById('loading');
+    const generateBtn = document.getElementById('generate-btn');
+    
     loadingDiv.classList.toggle('hidden', !isLoading);
     generateBtn.disabled = isLoading;
     generateBtn.classList.toggle('opacity-50', isLoading);
@@ -323,6 +164,10 @@ function generateRandomSet(exerciseList, count) {
 }
 
 function displayPlan(warmup, main, cooldown, summary) {
+    const planContentDiv = document.getElementById('plan-content');
+    const workoutPlanDiv = document.getElementById('workout-plan');
+    const noResultsDiv = document.getElementById('no-results');
+    
     planContentDiv.innerHTML = '';
     
     if (!main || main.length === 0) {
@@ -367,24 +212,112 @@ function displayPlan(warmup, main, cooldown, summary) {
     workoutPlanDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
-// --- ACCESSIBILITY IMPROVEMENTS ---
+// --- MAIN INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Add ARIA labels and roles
-    const generateButton = document.getElementById('generate-btn');
-    generateButton.setAttribute('aria-label', 'Generate workout plan');
-    generateButton.setAttribute('role', 'button');
+    console.log('DOM loaded, initializing workout generator...');
     
-    // Add time slider functionality
+    // Get DOM elements
+    const form = document.getElementById('workout-form');
     const durationSlider = document.getElementById('duration');
     const durationValue = document.getElementById('duration-value');
+    const generateBtn = document.getElementById('generate-btn');
     
-    // Update duration display when slider changes
-    durationSlider.addEventListener('input', function() {
-        durationValue.textContent = this.value;
+    console.log('DOM elements found:', {
+        form: !!form,
+        durationSlider: !!durationSlider,
+        durationValue: !!durationValue,
+        generateBtn: !!generateBtn
     });
     
-    // Initialize duration display
-    durationValue.textContent = durationSlider.value;
+    // Add time slider functionality
+    if (durationSlider && durationValue) {
+        durationSlider.addEventListener('input', function() {
+            durationValue.textContent = this.value;
+        });
+        
+        // Initialize duration display
+        durationValue.textContent = durationSlider.value;
+    }
+    
+    // Add form submission handler
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Form submitted!');
+            
+            try {
+                // Validate form input
+                validateForm();
+                
+                // Hide previous results
+                const workoutPlanDiv = document.getElementById('workout-plan');
+                const noResultsDiv = document.getElementById('no-results');
+                workoutPlanDiv.classList.add('hidden');
+                noResultsDiv.classList.add('hidden');
+                
+                setLoading(true);
+
+                const level = document.getElementById('fitness-level').value;
+                const mainDuration = parseInt(durationSlider.value);
+                const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
+                
+                // Ensure Bodyweight is always available as fallback
+                if (selectedEquipment.length === 0) {
+                    selectedEquipment.push("Bodyweight");
+                }
+
+                // Improved filtering logic
+                const filterByType = (type) => exercises.filter(ex => 
+                    ex.type === type &&
+                    ex.level.includes(level) &&
+                    selectedEquipment.includes(ex.equipment)
+                );
+
+                const availableWarmup = filterByType('warmup');
+                const availableMain = filterByType('main');
+                const availableCooldown = filterByType('cooldown');
+                
+                console.log(`Available exercises - Warmup: ${availableWarmup.length}, Main: ${availableMain.length}, Cooldown: ${availableCooldown.length}`);
+                console.log('Selected equipment:', selectedEquipment);
+                console.log('Fitness level:', level);
+                
+                const warmupPlan = generateRandomSet(availableWarmup, 5);
+                const cooldownPlan = generateRandomSet(availableCooldown, 5);
+
+                // FIXED: Improved logic - only check if we have enough exercises for the requested duration
+                if (availableMain.length === 0) {
+                    throw new Error('No exercises available for the selected criteria. Please try different equipment or fitness level.');
+                }
+
+                // Use fallback plan if AI is not available
+                const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
+                displayPlan(warmupPlan, fallbackMainPlan, cooldownPlan, `Generated ${mainDuration}-minute workout plan with ${selectedEquipment.join(', ')} equipment.`);
+                
+                showSuccess('Workout plan generated successfully!');
+                
+            } catch (error) {
+                console.error("Error generating plan:", error);
+                showError(error.message || 'Failed to generate workout plan. Please try again.');
+                
+                // Show no results message
+                const workoutPlanDiv = document.getElementById('workout-plan');
+                const noResultsDiv = document.getElementById('no-results');
+                workoutPlanDiv.classList.add('hidden');
+                noResultsDiv.classList.remove('hidden');
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        console.log('Form event listener attached successfully');
+    }
+    
+    // Add ARIA labels and roles
+    if (generateBtn) {
+        generateBtn.setAttribute('aria-label', 'Generate workout plan');
+        generateBtn.setAttribute('role', 'button');
+    }
     
     // Add keyboard navigation
     document.addEventListener('keydown', (e) => {
@@ -406,4 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
             element.style.outlineOffset = '';
         });
     });
+    
+    console.log('Workout generator initialized successfully!');
 });

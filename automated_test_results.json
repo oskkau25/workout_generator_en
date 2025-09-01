@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-01T11:48:14.142387",
+  "timestamp": "2025-09-01T12:06:47.418002",
   "overall_status": "WARNING",
   "tests": {
     "preflight": {
@@ -10,7 +10,7 @@
       "status": "PASSED",
       "details": "High: 0, Medium: 0, Low: 0",
       "ai_report": {
-        "timestamp": "2025-09-01 11:48:16",
+        "timestamp": "2025-09-01 12:06:49",
         "project": "Workout Generator",
         "summary": {
           "total_files": 2,
@@ -210,10 +210,10 @@
         "code_complexity": {
           "status": "WARNING",
           "metrics": {
-            "lines_of_code": 410,
-            "functions": 7,
+            "lines_of_code": 345,
+            "functions": 6,
             "classes": 0,
-            "comment_ratio": "9.27%"
+            "comment_ratio": "8.70%"
           }
         },
         "security_analysis": {
@@ -390,16 +390,16 @@
         },
         "ui_performance": {
           "status": "WARNING",
-          "score": "6/7",
+          "score": "5/7",
           "details": {
             "reasonable_js_size": true,
             "reasonable_html_size": true,
             "has_efficient_selectors": true,
             "has_event_delegation": true,
             "has_lazy_loading": false,
-            "has_optimized_images": true,
+            "has_optimized_images": false,
             "has_minimal_dom_manipulation": true,
-            "js_size_bytes": 34719,
+            "js_size_bytes": 27573,
             "html_size_bytes": 9216
           }
         },
@@ -424,7 +424,7 @@
       "status": "PASSED",
       "details": {
         "file_sizes": {
-          "script.js": 34725,
+          "script.js": 27579,
           "index.html": 9218,
           "exercise_images_database.js": 16080
         },
@@ -446,7 +446,7 @@
     "failed": 0,
     "success_rate": "50.0%"
   },
-  "execution_time": "2.62 seconds",
+  "execution_time": "2.74 seconds",
   "release_ready": true,
   "release_recommendation": "APPROVED WITH WARNINGS - Review warnings before release"
 }
