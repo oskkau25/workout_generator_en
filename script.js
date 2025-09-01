@@ -743,6 +743,36 @@ function displayPlan(warmup, main, cooldown, summary, workTime, restTime) {
     workoutPlanDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
+// Image loading error handler
+function handleImageError(imgElement) {
+    // Create a fallback image element
+    const fallbackDiv = document.createElement('div');
+    fallbackDiv.className = 'w-full h-48 bg-gray-700 flex items-center justify-center rounded-lg';
+    fallbackDiv.innerHTML = `
+        <div class="text-center">
+            <div class="text-4xl mb-2">🏋️‍♂️</div>
+            <div class="text-gray-400 text-sm">Exercise Image</div>
+        </div>
+    `;
+    
+    // Replace the broken image with fallback
+    if (imgElement.parentElement) {
+        imgElement.parentElement.replaceChild(fallbackDiv, imgElement);
+    }
+}
+
+// Safe image loading function
+function loadImageSafely(imgElement, src) {
+    return new Promise((resolve, reject) => {
+        imgElement.onload = () => resolve(imgElement);
+        imgElement.onerror = () => {
+            handleImageError(imgElement);
+            reject(new Error(`Failed to load image: ${src}`));
+        };
+        imgElement.src = src;
+    });
+}
+
 // --- MAIN INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
     // Get DOM elements
