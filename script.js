@@ -645,11 +645,53 @@ function displayPlan(warmup, main, cooldown, summary) {
         if (!exercises || exercises.length === 0) return '';
         let sectionHtml = `<h2 class="text-2xl font-bold text-center text-blue-400 my-6">${title}</h2>`;
         exercises.forEach((exercise) => {
+            // Split description into instruction and safety parts
+            const descriptionParts = exercise.description.split('⚠️');
+            const instruction = descriptionParts[0].trim();
+            const safetyGuidelines = descriptionParts[1] ? descriptionParts[1].trim() : '';
+            
+            // Split safety guidelines into DO's and DON'Ts
+            let doSection = '';
+            let dontSection = '';
+            if (safetyGuidelines) {
+                const doMatch = safetyGuidelines.match(/DO: (.+?)\. DON'T:/);
+                const dontMatch = safetyGuidelines.match(/DON'T: (.+)/);
+                
+                if (doMatch) doSection = doMatch[1].trim();
+                if (dontMatch) dontSection = dontMatch[1].trim();
+            }
+            
             sectionHtml += `
                 <div class="bg-gray-800 rounded-2xl overflow-hidden border border-gray-700 shadow-md animate-fade-in mb-6">
                     <div class="p-6">
-                        <h3 class="text-xl font-bold text-blue-300">${exercise.name}</h3>
-                        <p class="text-gray-400 mt-2">${exercise.description}</p>
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">${exercise.name}</h3>
+                        
+                        <!-- Exercise Instructions -->
+                        <div class="mb-4">
+                            <h4 class="text-lg font-semibold text-white mb-2">📋 Instructions:</h4>
+                            <p class="text-gray-300 leading-relaxed">${instruction}</p>
+                        </div>
+                        
+                        <!-- Safety Guidelines -->
+                        ${safetyGuidelines ? `
+                        <div class="mb-4">
+                            <h4 class="text-lg font-semibold text-white mb-2">⚠️ Safety Guidelines:</h4>
+                            ${doSection ? `
+                            <div class="bg-green-900/20 border border-green-700 rounded-lg p-3 mb-2">
+                                <h5 class="text-green-400 font-semibold mb-1">✅ DO:</h5>
+                                <p class="text-green-300 text-sm">${doSection}</p>
+                            </div>
+                            ` : ''}
+                            ${dontSection ? `
+                            <div class="bg-red-900/20 border border-red-700 rounded-lg p-3 mb-2">
+                                <h5 class="text-red-400 font-semibold mb-1">❌ DON'T:</h5>
+                                <p class="text-red-300 text-sm">${dontSection}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ` : ''}
+                        
+                        <!-- Exercise Details -->
                         <div class="mt-4 flex flex-wrap gap-2">
                             <div class="bg-gray-700 inline-block px-4 py-2 rounded-full text-sm font-semibold">
                                 <span class="text-white">Duration: </span>
