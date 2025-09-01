@@ -1,5 +1,5 @@
-// --- FINAL IMPROVED WORKOUT GENERATOR WITH UNIQUE IMAGES ---
-// Note: exerciseImages and getExerciseImage are now imported from exercise_images_database.js
+// --- FINAL IMPROVED WORKOUT GENERATOR WITH EXERCISE LINKS ---
+// Note: Images replaced with links to ACE Fitness exercise library for detailed instructions
 
 // --- IMPROVED EXERCISE DATABASE ---
 const exercises = [

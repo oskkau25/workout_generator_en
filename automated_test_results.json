@@ -1,6 +1,6 @@
 {
-  "timestamp": "2025-09-01T12:06:47.418002",
-  "overall_status": "WARNING",
+  "timestamp": "2025-09-01T16:56:39.015559",
+  "overall_status": "FAILED",
   "tests": {
     "preflight": {
       "status": "PASSED",
@@ -10,7 +10,7 @@
       "status": "PASSED",
       "details": "High: 0, Medium: 0, Low: 0",
       "ai_report": {
-        "timestamp": "2025-09-01 12:06:49",
+        "timestamp": "2025-09-01 16:56:41",
         "project": "Workout Generator",
         "summary": {
           "total_files": 2,
@@ -271,7 +271,7 @@
       }
     },
     "ui_functionality": {
-      "status": "WARNING",
+      "status": "FAILED",
       "details": {
         "html_structure": {
           "status": "PASSED",
@@ -400,14 +400,16 @@
             "has_optimized_images": false,
             "has_minimal_dom_manipulation": true,
             "js_size_bytes": 27573,
-            "html_size_bytes": 9216
+            "html_size_bytes": 9160
           }
         },
         "actual_functionality": {
-          "status": "PASSED",
-          "script_files_checked": 3,
-          "all_files_present": true,
-          "functionality_verified": true
+          "status": "FAILED",
+          "critical_issues": [
+            "Exercise images database not included"
+          ],
+          "missing_files": [],
+          "total_issues": 1
         }
       }
     },
@@ -425,7 +427,7 @@
       "details": {
         "file_sizes": {
           "script.js": 27579,
-          "index.html": 9218,
+          "index.html": 9162,
           "exercise_images_database.js": 16080
         },
         "warnings": []
@@ -442,11 +444,11 @@
   "summary": {
     "total_tests": 8,
     "passed": 4,
-    "warnings": 4,
-    "failed": 0,
+    "warnings": 3,
+    "failed": 1,
     "success_rate": "50.0%"
   },
   "execution_time": "2.74 seconds",
-  "release_ready": true,
-  "release_recommendation": "APPROVED WITH WARNINGS - Review warnings before release"
+  "release_ready": false,
+  "release_recommendation": "REJECTED - Fix failed tests before release"
 }
