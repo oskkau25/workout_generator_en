@@ -865,5 +865,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
+    // Add keyboard navigation for equipment checkboxes
+    const equipmentLabels = document.querySelectorAll('label[for^="eq-"]');
+    equipmentLabels.forEach(label => {
+        label.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const checkbox = document.getElementById(label.getAttribute('for'));
+                if (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    label.setAttribute('aria-checked', checkbox.checked.toString());
+                    // Trigger change event
+                    const event = new Event('change', { bubbles: true });
+                    checkbox.dispatchEvent(event);
+                }
+            }
+        });
+        
+        // Update aria-checked attribute when checkbox changes
+        const checkbox = document.getElementById(label.getAttribute('for'));
+        if (checkbox) {
+            checkbox.addEventListener('change', () => {
+                label.setAttribute('aria-checked', checkbox.checked.toString());
+            });
+        }
+    });
+    
     console.log('Workout generator initialized successfully!');
 });

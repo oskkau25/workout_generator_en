@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-01T18:57:49.745596",
+  "timestamp": "2025-09-01T19:09:42.062936",
   "overall_status": "WARNING",
   "tests": {
     "preflight": {
@@ -10,7 +10,7 @@
       "status": "PASSED",
       "details": "High: 0, Medium: 0, Low: 0",
       "ai_report": {
-        "timestamp": "2025-09-01 18:57:51",
+        "timestamp": "2025-09-01 19:09:44",
         "project": "Workout Generator",
         "summary": {
           "total_files": 2,
@@ -210,10 +210,10 @@
         "code_complexity": {
           "status": "WARNING",
           "metrics": {
-            "lines_of_code": 870,
+            "lines_of_code": 896,
             "functions": 6,
             "classes": 0,
-            "comment_ratio": "3.91%"
+            "comment_ratio": "4.13%"
           }
         },
         "security_analysis": {
@@ -233,13 +233,9 @@
           "total_issues": 3
         },
         "accessibility_analysis": {
-          "status": "WARNING",
-          "issues_found": [
-            "Missing ARIA labels",
-            "Missing ARIA roles",
-            "Missing keyboard navigation support"
-          ],
-          "total_issues": 3
+          "status": "PASSED",
+          "issues_found": [],
+          "total_issues": 0
         },
         "best_practices": {
           "status": "WARNING",
@@ -353,12 +349,12 @@
         },
         "accessibility_features": {
           "status": "WARNING",
-          "score": "4/9",
+          "score": "6/9",
           "details": {
             "has_semantic_html": false,
             "has_form_labels": true,
-            "has_button_roles": false,
-            "has_aria_labels": false,
+            "has_button_roles": true,
+            "has_aria_labels": true,
             "has_keyboard_navigation": true,
             "has_focus_management": true,
             "has_alt_text": false,
@@ -391,19 +387,24 @@
             "has_lazy_loading": false,
             "has_optimized_images": false,
             "has_minimal_dom_manipulation": true,
-            "js_size_bytes": 46758,
-            "html_size_bytes": 10245
+            "js_size_bytes": 47912,
+            "html_size_bytes": 11547
           }
         },
         "timing_functionality": {
           "status": "WARNING",
-          "score": "3/5",
+          "score": "9/10",
           "details": {
-            "has_duration_slider_interaction": false,
-            "has_workout_plan_display": false,
-            "has_smooth_transitions": true,
-            "has_no_flickering": true,
-            "has_efficient_re-renders": true
+            "has_work_time_slider": true,
+            "has_rest_time_slider": true,
+            "has_work_time_value_display": true,
+            "has_rest_time_value_display": true,
+            "has_work_time_validation": true,
+            "has_rest_time_validation": true,
+            "has_timing_parameters": true,
+            "has_dynamic_timing_display": true,
+            "has_timing_range_validation": true,
+            "has_timing_slider_events": false
           }
         },
         "actual_functionality": {
@@ -418,8 +419,8 @@
       "status": "PASSED",
       "details": {
         "file_sizes": {
-          "script.js": 47043,
-          "index.html": 10247
+          "script.js": 48197,
+          "index.html": 11549
         },
         "warnings": []
       }
@@ -439,7 +440,7 @@
     "failed": 0,
     "success_rate": "57.1%"
   },
-  "execution_time": "2.22 seconds",
+  "execution_time": "2.25 seconds",
   "release_ready": true,
   "release_recommendation": "APPROVED WITH WARNINGS - Review warnings before release"
 }

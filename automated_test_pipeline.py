@@ -765,18 +765,27 @@ class AutomatedTestPipeline:
             return {'status': 'FAILED', 'details': str(e)}
     
     def test_timing_functionality(self):
-        """Test timing functionality (e.g., duration slider, workout plan display)"""
+        """Test work and rest time slider functionality"""
         try:
             html_path = self.project_root / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
             tests = {
-                'has_duration_slider_interaction': 'duration' in html_content and 'durationSlider' in html_content,
-                'has_workout_plan_display': 'workout-plan' in html_content and 'displayPlan' in html_content,
-                'has_smooth_transitions': 'transition' in html_content,
-                'has_no_flickering': 'innerHTML' not in html_content,
-                'has_efficient_re-renders': 'innerHTML' not in html_content or 'createElement' in html_content
+                'has_work_time_slider': 'work-time' in html_content,
+                'has_rest_time_slider': 'rest-time' in html_content,
+                'has_work_time_value_display': 'work-time-value' in html_content,
+                'has_rest_time_value_display': 'rest-time-value' in html_content,
+                'has_work_time_validation': 'workTime' in js_content and 'work-time' in js_content,
+                'has_rest_time_validation': 'restTime' in js_content and 'rest-time' in js_content,
+                'has_timing_parameters': 'workTime, restTime' in js_content,
+                'has_dynamic_timing_display': '${workTime} sec work, ${restTime} sec rest' in js_content,
+                'has_timing_range_validation': 'workTime < 15 || workTime > 60' in js_content or 'restTime < 15 || restTime > 60' in js_content,
+                'has_timing_slider_events': 'workTimeSlider' in js_content and 'restTimeSlider' in js_content
             }
             
             passed = sum(tests.values())
