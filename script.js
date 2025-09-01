@@ -544,6 +544,8 @@ const exercises = [
 function validateForm() {
     const level = document.getElementById('fitness-level').value;
     const mainDuration = parseInt(document.getElementById('duration').value);
+    const workTime = parseInt(document.getElementById('work-time').value);
+    const restTime = parseInt(document.getElementById('rest-time').value);
     const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
     
     // Validate fitness level
@@ -554,6 +556,16 @@ function validateForm() {
     // Validate duration
     if (isNaN(mainDuration) || mainDuration < 10 || mainDuration > 60) {
         throw new Error('Invalid duration selected');
+    }
+    
+    // Validate work time
+    if (isNaN(workTime) || workTime < 15 || workTime > 60) {
+        throw new Error('Invalid work time selected');
+    }
+    
+    // Validate rest time
+    if (isNaN(restTime) || restTime < 15 || restTime > 60) {
+        throw new Error('Invalid rest time selected');
     }
     
     // Validate equipment selection
@@ -695,7 +707,7 @@ function displayPlan(warmup, main, cooldown, summary) {
                         <div class="mt-4 flex flex-wrap gap-2">
                             <div class="bg-gray-700 inline-block px-4 py-2 rounded-full text-sm font-semibold">
                                 <span class="text-white">Duration: </span>
-                                <span class="text-blue-300">45 sec work, 15 sec rest</span>
+                                <span class="text-blue-300">${workTime} sec work, ${restTime} sec rest</span>
                             </div>
                             <div class="bg-gray-700 inline-block px-4 py-2 rounded-full text-sm font-semibold">
                                 <span class="text-white">Muscle: </span>
@@ -770,6 +782,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const level = document.getElementById('fitness-level').value;
                 const mainDuration = parseInt(durationSlider.value);
+                const workTime = parseInt(document.getElementById('work-time').value);
+                const restTime = parseInt(document.getElementById('rest-time').value);
                 const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
                 let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
                 

@@ -90,6 +90,20 @@
                 </div>
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                    <label for="work-time" class="block text-sm font-medium text-gray-300 mb-2">Work Time: <span id="work-time-value" class="font-bold text-green-400">45</span> sec</label>
+                    <input id="work-time" type="range" min="15" max="60" value="45" step="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                    <p class="text-xs text-gray-500 mt-2">Time spent performing each exercise.</p>
+                </div>
+
+                <div>
+                    <label for="rest-time" class="block text-sm font-medium text-gray-300 mb-2">Rest Time: <span id="rest-time-value" class="font-bold text-orange-400">15</span> sec</label>
+                    <input id="rest-time" type="range" min="15" max="60" value="15" step="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                    <p class="text-xs text-gray-500 mt-2">Rest period between exercises.</p>
+                </div>
+            </div>
+
             <div class="mt-6">
                 <label class="block text-sm font-medium text-gray-300 mb-3">Available Equipment</label>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">

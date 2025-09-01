@@ -441,13 +441,16 @@ class AutomatedTestPipeline:
             # Test performance aspects
             performance_tests = self.test_ui_performance()
             
+            # Test timing functionality
+            timing_tests = self.test_timing_functionality()
+            
             # CRITICAL: Test actual functionality and script dependencies
             functionality_tests = self.test_actual_functionality()
             
             # Combine all test results
             all_tests = [html_tests, js_tests, form_tests, exercise_tests, 
                         image_tests, responsive_tests, accessibility_tests, 
-                        error_tests, performance_tests, functionality_tests]
+                        error_tests, performance_tests, timing_tests, functionality_tests]
             
             ui_status = 'PASSED'
             if any(test['status'] == 'FAILED' for test in all_tests):
@@ -467,6 +470,7 @@ class AutomatedTestPipeline:
                     'accessibility_features': accessibility_tests,
                     'error_handling': error_tests,
                     'ui_performance': performance_tests,
+                    'timing_functionality': timing_tests,
                     'actual_functionality': functionality_tests
                 }
             }
@@ -755,6 +759,33 @@ class AutomatedTestPipeline:
                     'js_size_bytes': js_size,
                     'html_size_bytes': html_size
                 }
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+    
+    def test_timing_functionality(self):
+        """Test timing functionality (e.g., duration slider, workout plan display)"""
+        try:
+            html_path = self.project_root / 'index.html'
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            tests = {
+                'has_duration_slider_interaction': 'duration' in html_content and 'durationSlider' in html_content,
+                'has_workout_plan_display': 'workout-plan' in html_content and 'displayPlan' in html_content,
+                'has_smooth_transitions': 'transition' in html_content,
+                'has_no_flickering': 'innerHTML' not in html_content,
+                'has_efficient_re-renders': 'innerHTML' not in html_content or 'createElement' in html_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests
             }
             
         except Exception as e:

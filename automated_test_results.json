@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-01T18:16:32.723077",
+  "timestamp": "2025-09-01T18:57:49.745596",
   "overall_status": "WARNING",
   "tests": {
     "preflight": {
@@ -10,7 +10,7 @@
       "status": "PASSED",
       "details": "High: 0, Medium: 0, Low: 0",
       "ai_report": {
-        "timestamp": "2025-09-01 18:16:34",
+        "timestamp": "2025-09-01 18:57:51",
         "project": "Workout Generator",
         "summary": {
           "total_files": 2,
@@ -210,10 +210,10 @@
         "code_complexity": {
           "status": "WARNING",
           "metrics": {
-            "lines_of_code": 352,
+            "lines_of_code": 870,
             "functions": 6,
             "classes": 0,
-            "comment_ratio": "8.52%"
+            "comment_ratio": "3.91%"
           }
         },
         "security_analysis": {
@@ -382,17 +382,28 @@
         },
         "ui_performance": {
           "status": "WARNING",
-          "score": "5/7",
+          "score": "4/7",
           "details": {
             "reasonable_js_size": true,
-            "reasonable_html_size": true,
+            "reasonable_html_size": false,
             "has_efficient_selectors": true,
             "has_event_delegation": true,
             "has_lazy_loading": false,
             "has_optimized_images": false,
             "has_minimal_dom_manipulation": true,
-            "js_size_bytes": 27858,
-            "html_size_bytes": 9160
+            "js_size_bytes": 46758,
+            "html_size_bytes": 10245
+          }
+        },
+        "timing_functionality": {
+          "status": "WARNING",
+          "score": "3/5",
+          "details": {
+            "has_duration_slider_interaction": false,
+            "has_workout_plan_display": false,
+            "has_smooth_transitions": true,
+            "has_no_flickering": true,
+            "has_efficient_re-renders": true
           }
         },
         "actual_functionality": {
@@ -407,8 +418,8 @@
       "status": "PASSED",
       "details": {
         "file_sizes": {
-          "script.js": 27864,
-          "index.html": 9162
+          "script.js": 47043,
+          "index.html": 10247
         },
         "warnings": []
       }
@@ -428,7 +439,7 @@
     "failed": 0,
     "success_rate": "57.1%"
   },
-  "execution_time": "2.24 seconds",
+  "execution_time": "2.22 seconds",
   "release_ready": true,
   "release_recommendation": "APPROVED WITH WARNINGS - Review warnings before release"
 }
