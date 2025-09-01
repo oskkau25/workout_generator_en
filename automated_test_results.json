@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-01T10:19:30.651124",
+  "timestamp": "2025-09-01T10:35:43.538147",
   "overall_status": "WARNING",
   "tests": {
     "preflight": {
@@ -10,7 +10,7 @@
       "status": "PASSED",
       "details": "High: 0, Medium: 0, Low: 0",
       "ai_report": {
-        "timestamp": "2025-09-01 10:19:33",
+        "timestamp": "2025-09-01 10:35:46",
         "project": "Workout Generator",
         "summary": {
           "total_files": 3,
@@ -284,8 +284,74 @@
         }
       }
     },
+    "ai_analysis": {
+      "status": "WARNING",
+      "details": {
+        "code_complexity": {
+          "status": "WARNING",
+          "metrics": {
+            "lines_of_code": 398,
+            "functions": 7,
+            "classes": 0,
+            "comment_ratio": "8.79%"
+          }
+        },
+        "security_analysis": {
+          "status": "WARNING",
+          "issues_found": [
+            "innerHTML usage detected"
+          ],
+          "total_issues": 1
+        },
+        "performance_patterns": {
+          "status": "WARNING",
+          "issues_found": [
+            "Consider using for...of instead of forEach",
+            "Event listeners may not be properly cleaned up",
+            "setTimeout without clearTimeout"
+          ],
+          "total_issues": 3
+        },
+        "accessibility_analysis": {
+          "status": "WARNING",
+          "issues_found": [
+            "Missing ARIA labels",
+            "Missing ARIA roles",
+            "Missing keyboard navigation support"
+          ],
+          "total_issues": 3
+        },
+        "best_practices": {
+          "status": "WARNING",
+          "issues_found": [
+            "Console.log statements should be removed in production"
+          ],
+          "total_issues": 1
+        }
+      }
+    },
+    "static_analysis": {
+      "status": "WARNING",
+      "details": {
+        "syntax_check": {
+          "status": "PASSED",
+          "issues": []
+        },
+        "structure_analysis": {
+          "status": "WARNING",
+          "issues": [
+            "Multiple exercise arrays detected"
+          ]
+        },
+        "dependency_check": {
+          "status": "PASSED",
+          "dependencies_found": [],
+          "total_dependencies": 0
+        }
+      }
+    },
     "ui_functionality": {
-      "status": "PASSED",
+      "status": "WARNING",
       "details": {
         "html_structure": {
           "status": "PASSED",
@@ -315,13 +381,106 @@
         },
         "form_interactions": {
           "status": "PASSED",
-          "score": "5/5",
+          "score": "10/10",
           "details": {
             "has_duration_validation": true,
             "has_equipment_filtering": true,
             "has_level_filtering": true,
             "has_exercise_filtering": true,
-            "has_fallback_logic": true
+            "has_fallback_logic": true,
+            "has_input_validation": true,
+            "has_error_handling": true,
+            "has_success_notifications": true,
+            "has_loading_states": true,
+            "has_form_submission": true
+          }
+        },
+        "exercise_database": {
+          "status": "WARNING",
+          "score": "9/10",
+          "details": {
+            "has_warmup_exercises": true,
+            "has_main_exercises": true,
+            "has_cooldown_exercises": true,
+            "has_bodyweight_exercises": true,
+            "has_dumbbell_exercises": true,
+            "has_beginner_level": true,
+            "has_intermediate_level": true,
+            "has_advanced_level": false,
+            "has_exercise_descriptions": true,
+            "has_muscle_groups": true
+          }
+        },
+        "image_functionality": {
+          "status": "PASSED",
+          "score": "8/8",
+          "details": {
+            "has_image_database": true,
+            "has_getExerciseImage_function": true,
+            "has_image_fallback": true,
+            "has_image_alt_text": true,
+            "has_unique_images": true,
+            "has_unsplash_images": true,
+            "has_image_dimensions": true,
+            "has_image_error_handling": true
+          }
+        },
+        "responsive_design": {
+          "status": "PASSED",
+          "score": "8/8",
+          "details": {
+            "has_viewport_meta": true,
+            "has_tailwind_css": true,
+            "has_responsive_classes": true,
+            "has_flexbox_layout": true,
+            "has_grid_layout": true,
+            "has_mobile_friendly": true,
+            "has_responsive_text": true,
+            "has_responsive_spacing": true
+          }
+        },
+        "accessibility_features": {
+          "status": "WARNING",
+          "score": "4/9",
+          "details": {
+            "has_semantic_html": false,
+            "has_form_labels": true,
+            "has_button_roles": false,
+            "has_aria_labels": false,
+            "has_keyboard_navigation": true,
+            "has_focus_management": true,
+            "has_alt_text": false,
+            "has_heading_structure": false,
+            "has_color_contrast": true
+          }
+        },
+        "error_handling": {
+          "status": "WARNING",
+          "score": "7/8",
+          "details": {
+            "has_error_functions": true,
+            "has_success_functions": true,
+            "has_try_catch_blocks": true,
+            "has_validation": true,
+            "has_fallback_mechanisms": true,
+            "has_loading_states": true,
+            "has_user_notifications": true,
+            "has_graceful_degradation": false
+          }
+        },
+        "ui_performance": {
+          "status": "WARNING",
+          "score": "6/7",
+          "details": {
+            "reasonable_js_size": true,
+            "reasonable_html_size": true,
+            "has_efficient_selectors": true,
+            "has_event_delegation": true,
+            "has_lazy_loading": false,
+            "has_optimized_images": true,
+            "has_minimal_dom_manipulation": true,
+            "js_size_bytes": 34280,
+            "html_size_bytes": 9261
           }
         }
       }
@@ -355,13 +514,13 @@
     }
   },
   "summary": {
-    "total_tests": 6,
-    "passed": 5,
-    "warnings": 1,
+    "total_tests": 8,
+    "passed": 4,
+    "warnings": 4,
     "failed": 0,
-    "success_rate": "83.3%"
+    "success_rate": "50.0%"
   },
-  "execution_time": "3.74 seconds",
+  "execution_time": "3.72 seconds",
   "release_ready": true,
   "release_recommendation": "APPROVED WITH WARNINGS - Review warnings before release"
 }
