@@ -817,7 +817,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Use fallback plan if AI is not available
                 const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
-                displayPlan(warmupPlan, fallbackMainPlan, cooldownPlan, `Generated ${mainDuration}-minute workout plan with ${selectedEquipment.join(', ')} equipment.`);
+                displayPlan(warmupPlan, fallbackMainPlan, cooldownPlan, `Generated ${mainDuration}-minute workout plan with ${selectedEquipment.join(', ')} equipment.`, workTime, restTime);
                 
                 showSuccess('Workout plan generated successfully!');
                 
