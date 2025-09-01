@@ -637,12 +637,13 @@ function generateRandomSet(exerciseList, count) {
     return shuffled.slice(0, numToReturn);
 }
 
-function displayPlan(warmup, main, cooldown, summary) {
+function displayPlan(warmup, main, cooldown, summary, workTime, restTime) {
     const planContentDiv = document.getElementById('plan-content');
     const workoutPlanDiv = document.getElementById('workout-plan');
     const noResultsDiv = document.getElementById('no-results');
     
-    planContentDiv.innerHTML = '';
+    // Clear content safely
+    planContentDiv.textContent = '';
     
     if (!main || main.length === 0) {
         workoutPlanDiv.classList.add('hidden');
@@ -727,30 +728,32 @@ function displayPlan(warmup, main, cooldown, summary) {
 
     const summaryHtml = `<div class="text-center text-blue-300 bg-gray-800 p-4 rounded-lg mb-8 border border-gray-700">${summary}</div>`;
 
-    planContentDiv.innerHTML += createSection("Warm-up (5 Minutes)", warmup);
-    planContentDiv.innerHTML += `<h2 class="text-2xl font-bold text-center text-blue-400 my-6">Main Workout (${main.length} Minutes)</h2>` + summaryHtml;
-    planContentDiv.innerHTML += createSection("", main);
-    planContentDiv.innerHTML += createSection("Cool-down (5 Minutes)", cooldown);
+    // Create content safely using a temporary container
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = createSection("Warm-up (5 Minutes)", warmup);
+    tempContainer.innerHTML += `<h2 class="text-2xl font-bold text-center text-blue-400 my-6">Main Workout (${main.length} Minutes)</h2>` + summaryHtml;
+    tempContainer.innerHTML += createSection("", main);
+    tempContainer.innerHTML += createSection("Cool-down (5 Minutes)", cooldown);
+    
+    // Move all children to the actual container
+    while (tempContainer.firstChild) {
+        planContentDiv.appendChild(tempContainer.firstChild);
+    }
 
     workoutPlanDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
 // --- MAIN INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing workout generator...');
-    
     // Get DOM elements
     const form = document.getElementById('workout-form');
     const durationSlider = document.getElementById('duration');
     const durationValue = document.getElementById('duration-value');
+    const workTimeSlider = document.getElementById('work-time');
+    const workTimeValue = document.getElementById('work-time-value');
+    const restTimeSlider = document.getElementById('rest-time');
+    const restTimeValue = document.getElementById('rest-time-value');
     const generateBtn = document.getElementById('generate-btn');
-    
-    console.log('DOM elements found:', {
-        form: !!form,
-        durationSlider: !!durationSlider,
-        durationValue: !!durationValue,
-        generateBtn: !!generateBtn
-    });
     
     // Add time slider functionality
     if (durationSlider && durationValue) {
@@ -762,11 +765,30 @@ document.addEventListener('DOMContentLoaded', () => {
         durationValue.textContent = durationSlider.value;
     }
     
+    // Add work time slider functionality
+    if (workTimeSlider && workTimeValue) {
+        workTimeSlider.addEventListener('input', function() {
+            workTimeValue.textContent = this.value;
+        });
+        
+        // Initialize work time display
+        workTimeValue.textContent = workTimeSlider.value;
+    }
+    
+    // Add rest time slider functionality
+    if (restTimeSlider && restTimeValue) {
+        restTimeSlider.addEventListener('input', function() {
+            restTimeValue.textContent = this.value;
+        });
+        
+        // Initialize rest time display
+        restTimeValue.textContent = restTimeSlider.value;
+    }
+    
     // Add form submission handler
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            console.log('Form submitted!');
             
             try {
                 // Validate form input
@@ -802,11 +824,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const availableWarmup = filterByType('warmup');
                 const availableMain = filterByType('main');
                 const availableCooldown = filterByType('cooldown');
-                
-                console.log(`Available exercises - Warmup: ${availableWarmup.length}, Main: ${availableMain.length}, Cooldown: ${availableCooldown.length}`);
-                console.log('Selected equipment:', selectedEquipment);
-                console.log('Fitness level:', level);
-                
+
                 const warmupPlan = generateRandomSet(availableWarmup, 5);
                 const cooldownPlan = generateRandomSet(availableCooldown, 5);
 
@@ -822,7 +840,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showSuccess('Workout plan generated successfully!');
                 
             } catch (error) {
-                console.error("Error generating plan:", error);
                 showError(error.message || 'Failed to generate workout plan. Please try again.');
                 
                 // Show no results message
@@ -834,8 +851,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 setLoading(false);
             }
         });
-        
-        console.log('Form event listener attached successfully');
     }
     
     // Add ARIA labels and roles
@@ -890,6 +905,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
-    
-    console.log('Workout generator initialized successfully!');
 });
