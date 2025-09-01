@@ -1,0 +1,99 @@
+name: 🤖 Automated Test Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  automated-testing:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🚀 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        
+    - name: 🔍 Run Automated Test Pipeline
+      run: |
+        chmod +x run_automated_tests.sh
+        ./run_automated_tests.sh
+        
+    - name: 📊 Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: |
+          automated_test_results.json
+          test_pipeline.log
+          ai_code_review_report.json
+          
+    - name: 📋 Display Test Summary
+      if: always()
+      run: |
+        echo "=== 🧪 TEST PIPELINE RESULTS ==="
+        if [ -f "automated_test_results.json" ]; then
+          echo "Overall Status: $(python -c "import json; data=json.load(open('automated_test_results.json')); print(data.get('overall_status', 'UNKNOWN'))")"
+          echo "Release Ready: $(python -c "import json; data=json.load(open('automated_test_results.json')); print(data.get('release_ready', False))")"
+          echo "Success Rate: $(python -c "import json; data=json.load(open('automated_test_results.json')); print(data.get('summary', {}).get('success_rate', '0%'))")"
+        else
+          echo "❌ Test results file not found"
+        fi
+        
+    - name: 🚨 Fail on Critical Issues
+      if: failure()
+      run: |
+        echo "❌ Pipeline failed! Check the logs above for details."
+        exit 1
+        
+    - name: ✅ Success Notification
+      if: success()
+      run: |
+        echo "🎉 All tests passed! Code is ready for release."
+        
+  quality-gate:
+    needs: automated-testing
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 🚀 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📊 Download Test Results
+      uses: actions/download-artifact@v3
+      with:
+        name: test-results
+        
+    - name: 🔍 Quality Gate Check
+      run: |
+        if [ -f "automated_test_results.json" ]; then
+          OVERALL_STATUS=$(python -c "import json; data=json.load(open('automated_test_results.json')); print(data.get('overall_status', 'UNKNOWN'))")
+          RELEASE_READY=$(python -c "import json; data=json.load(open('automated_test_results.json')); print(data.get('release_ready', False))")
+          
+          echo "=== 🚪 QUALITY GATE ==="
+          echo "Overall Status: $OVERALL_STATUS"
+          echo "Release Ready: $RELEASE_READY"
+          
+          if [ "$RELEASE_READY" = "True" ]; then
+            echo "✅ QUALITY GATE PASSED - Code can be released"
+          else
+            echo "❌ QUALITY GATE FAILED - Code needs fixes before release"
+            exit 1
+          fi
+        else
+          echo "❌ Test results not available"
+          exit 1
+        fi
