@@ -821,9 +821,6 @@ class AutomatedTestPipeline:
             if 'script.js' not in script_tags:
                 functionality_issues.append('Main script.js not included')
             
-            if 'exercise_images_database.js' not in script_tags:
-                functionality_issues.append('Exercise images database not included')
-            
             # Check for form submission functionality
             js_path = self.project_root / 'script.js'
             if js_path.exists():
@@ -833,11 +830,16 @@ class AutomatedTestPipeline:
                 if 'addEventListener' not in js_content or 'submit' not in js_content:
                     functionality_issues.append('Form submission handler missing')
                 
-                if 'getExerciseImage' not in js_content:
-                    functionality_issues.append('Image function missing')
+                # Check for exercise links functionality (replaced images)
+                if 'getExerciseLink' not in js_content:
+                    functionality_issues.append('Exercise link function missing')
                 
                 if 'exercises' not in js_content:
                     functionality_issues.append('Exercise database missing')
+                
+                # Check for ACE Fitness links
+                if 'acefitness.org' not in js_content:
+                    functionality_issues.append('Exercise description links missing')
             
             # Check for broken references (like the ui_test_suite.js issue)
             if 'ui_test_suite.js' in script_tags:
