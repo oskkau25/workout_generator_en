@@ -442,10 +442,13 @@ class AutomatedTestPipeline:
             # Test performance aspects
             performance_tests = self.test_ui_performance()
             
+            # CRITICAL: Test actual functionality and script dependencies
+            functionality_tests = self.test_actual_functionality()
+            
             # Combine all test results
             all_tests = [html_tests, js_tests, form_tests, exercise_tests, 
                         image_tests, responsive_tests, accessibility_tests, 
-                        error_tests, performance_tests]
+                        error_tests, performance_tests, functionality_tests]
             
             ui_status = 'PASSED'
             if any(test['status'] == 'FAILED' for test in all_tests):
@@ -464,7 +467,8 @@ class AutomatedTestPipeline:
                     'responsive_design': responsive_tests,
                     'accessibility_features': accessibility_tests,
                     'error_handling': error_tests,
-                    'ui_performance': performance_tests
+                    'ui_performance': performance_tests,
+                    'actual_functionality': functionality_tests
                 }
             }
             
@@ -781,6 +785,85 @@ class AutomatedTestPipeline:
             
         except Exception as e:
             return {'status': 'FAILED', 'details': str(e)}
+    
+    def test_actual_functionality(self):
+        """CRITICAL: Test actual application functionality and script dependencies"""
+        try:
+            html_path = self.project_root / 'index.html'
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # Extract all script tags
+            import re
+            script_tags = re.findall(r'<script[^>]*src=["\']([^"\']+)["\'][^>]*>', html_content)
+            
+            functionality_issues = []
+            missing_files = []
+            
+            # Check if all referenced script files exist (skip CDN URLs)
+            for script_src in script_tags:
+                # Skip CDN URLs and external resources
+                if script_src.startswith('http') or script_src.startswith('//'):
+                    continue
+                    
+                script_path = self.project_root / script_src
+                if not script_path.exists():
+                    missing_files.append(script_src)
+                    functionality_issues.append(f'Missing script file: {script_src}')
+            
+            # Check for critical functionality
+            if 'workout-form' not in html_content:
+                functionality_issues.append('Missing workout form')
+            
+            if 'generate-btn' not in html_content:
+                functionality_issues.append('Missing generate button')
+            
+            if 'script.js' not in script_tags:
+                functionality_issues.append('Main script.js not included')
+            
+            if 'exercise_images_database.js' not in script_tags:
+                functionality_issues.append('Exercise images database not included')
+            
+            # Check for form submission functionality
+            js_path = self.project_root / 'script.js'
+            if js_path.exists():
+                with open(js_path, 'r', encoding='utf-8') as f:
+                    js_content = f.read()
+                
+                if 'addEventListener' not in js_content or 'submit' not in js_content:
+                    functionality_issues.append('Form submission handler missing')
+                
+                if 'getExerciseImage' not in js_content:
+                    functionality_issues.append('Image function missing')
+                
+                if 'exercises' not in js_content:
+                    functionality_issues.append('Exercise database missing')
+            
+            # Check for broken references (like the ui_test_suite.js issue)
+            if 'ui_test_suite.js' in script_tags:
+                functionality_issues.append('CRITICAL: Reference to deleted ui_test_suite.js file')
+            
+            # This is a CRITICAL test - if any issues found, it should FAIL
+            if functionality_issues:
+                return {
+                    'status': 'FAILED',
+                    'critical_issues': functionality_issues,
+                    'missing_files': missing_files,
+                    'total_issues': len(functionality_issues)
+                }
+            
+            return {
+                'status': 'PASSED',
+                'script_files_checked': len(script_tags),
+                'all_files_present': True,
+                'functionality_verified': True
+            }
+            
+        except Exception as e:
+            return {
+                'status': 'FAILED',
+                'details': f'Functionality test failed: {str(e)}'
+            }
     
     def run_image_validation_tests(self):
         """Test image uniqueness and availability"""
