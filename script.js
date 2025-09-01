@@ -374,6 +374,18 @@ document.addEventListener('DOMContentLoaded', () => {
     generateButton.setAttribute('aria-label', 'Generate workout plan');
     generateButton.setAttribute('role', 'button');
     
+    // Add time slider functionality
+    const durationSlider = document.getElementById('duration');
+    const durationValue = document.getElementById('duration-value');
+    
+    // Update duration display when slider changes
+    durationSlider.addEventListener('input', function() {
+        durationValue.textContent = this.value;
+    });
+    
+    // Initialize duration display
+    durationValue.textContent = durationSlider.value;
+    
     // Add keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && e.target.tagName === 'SELECT') {

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-01T10:35:43.538147",
+  "timestamp": "2025-09-01T11:48:14.142387",
   "overall_status": "WARNING",
   "tests": {
     "preflight": {
@@ -10,10 +10,10 @@
       "status": "PASSED",
       "details": "High: 0, Medium: 0, Low: 0",
       "ai_report": {
-        "timestamp": "2025-09-01 10:35:46",
+        "timestamp": "2025-09-01 11:48:16",
         "project": "Workout Generator",
         "summary": {
-          "total_files": 3,
+          "total_files": 2,
           "models_used": [
             "Manual",
             "Gemini",
@@ -183,86 +183,6 @@
                 "Configure local model for code analysis"
               ]
             }
-          },
-          "exercise_images.js": {
-            "manual": {
-              "model": "Manual Analysis",
-              "overall_score": "7/10",
-              "strengths": [
-                "Well-structured HTML with semantic elements",
-                "Comprehensive exercise database with 120+ exercises",
-                "Good separation of concerns (HTML, CSS, JS)",
-                "Responsive design with Tailwind CSS",
-                "Error handling for API calls",
-                "Fallback mechanism when AI is unavailable"
-              ],
-              "issues": [
-                "Hardcoded API key placeholder in script.js",
-                "All exercise images use the same URL (repetitive)",
-                "No input validation for form submissions",
-                "Missing error boundaries for image loading",
-                "Large exercise database could be externalized",
-                "No accessibility features (ARIA labels, keyboard navigation)"
-              ],
-              "suggestions": [
-                "Move API key to environment variables or config file",
-                "Implement proper image handling with fallbacks",
-                "Add form validation and sanitization",
-                "Implement proper error handling for all async operations",
-                "Add loading states and user feedback",
-                "Consider using a CDN for images",
-                "Add unit tests for core functionality",
-                "Implement proper logging for debugging"
-              ],
-              "security_concerns": [
-                "API key exposed in client-side code",
-                "No CSRF protection",
-                "No input sanitization",
-                "External image URLs without validation"
-              ],
-              "performance_tips": [
-                "Lazy load exercise images",
-                "Implement image caching",
-                "Minify and compress JavaScript",
-                "Use service worker for offline functionality",
-                "Implement proper caching headers"
-              ]
-            },
-            "gemini": {
-              "model": "Gemini-2.0",
-              "status": "API key required",
-              "suggestions": [
-                "Set GEMINI_API_KEY environment variable",
-                "Get API key from: https://makersuite.google.com/app/apikey"
-              ]
-            },
-            "claude": {
-              "model": "Claude-3.5-Sonnet",
-              "status": "API key required",
-              "suggestions": [
-                "Install Claude API client: pip install anthropic",
-                "Set ANTHROPIC_API_KEY environment variable",
-                "Use Claude for detailed code analysis and suggestions"
-              ]
-            },
-            "gpt4": {
-              "model": "GPT-4",
-              "status": "API key required",
-              "suggestions": [
-                "Install OpenAI client: pip install openai",
-                "Set OPENAI_API_KEY environment variable",
-                "Use GPT-4 for code review and optimization suggestions"
-              ]
-            },
-            "local_llm": {
-              "model": "Local LLM",
-              "status": "Not configured",
-              "suggestions": [
-                "Install Ollama: https://ollama.ai/",
-                "Or use LM Studio for local model inference",
-                "Configure local model for code analysis"
-              ]
-            }
           }
         },
         "recommendations": {
@@ -290,10 +210,10 @@
         "code_complexity": {
           "status": "WARNING",
           "metrics": {
-            "lines_of_code": 398,
+            "lines_of_code": 410,
             "functions": 7,
             "classes": 0,
-            "comment_ratio": "8.79%"
+            "comment_ratio": "9.27%"
           }
         },
         "security_analysis": {
@@ -479,9 +399,15 @@
             "has_lazy_loading": false,
             "has_optimized_images": true,
             "has_minimal_dom_manipulation": true,
-            "js_size_bytes": 34280,
-            "html_size_bytes": 9261
+            "js_size_bytes": 34719,
+            "html_size_bytes": 9216
           }
+        },
+        "actual_functionality": {
+          "status": "PASSED",
+          "script_files_checked": 3,
+          "all_files_present": true,
+          "functionality_verified": true
         }
       }
     },
@@ -498,8 +424,8 @@
       "status": "PASSED",
       "details": {
         "file_sizes": {
-          "script.js": 34286,
-          "index.html": 9263,
+          "script.js": 34725,
+          "index.html": 9218,
           "exercise_images_database.js": 16080
         },
         "warnings": []
@@ -520,7 +446,7 @@
     "failed": 0,
     "success_rate": "50.0%"
   },
-  "execution_time": "3.72 seconds",
+  "execution_time": "2.62 seconds",
   "release_ready": true,
   "release_recommendation": "APPROVED WITH WARNINGS - Review warnings before release"
 }
