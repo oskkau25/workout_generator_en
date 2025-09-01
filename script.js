@@ -1,5 +1,5 @@
-// --- FINAL IMPROVED WORKOUT GENERATOR WITH EXERCISE LINKS ---
-// Note: Images replaced with links to ACE Fitness exercise library for detailed instructions
+// --- FINAL IMPROVED WORKOUT GENERATOR ---
+// Simplified version without images - focuses on exercise descriptions and links
 
 // --- IMPROVED EXERCISE DATABASE ---
 const exercises = [
@@ -179,106 +179,14 @@ function displayPlan(warmup, main, cooldown, summary) {
     noResultsDiv.classList.add('hidden');
     workoutPlanDiv.classList.remove('hidden');
 
-    // Function to get exercise description link
-    function getExerciseLink(exerciseName) {
-        const exerciseLinks = {
-            // Warm-up exercises
-            "Arm Circles": "https://www.acefitness.org/resources/everyone/exercise-library/arm-circles/",
-            "Leg Swings": "https://www.acefitness.org/resources/everyone/exercise-library/leg-swings/",
-            "Jumping Jacks": "https://www.acefitness.org/resources/everyone/exercise-library/jumping-jacks/",
-            "Jumping Rope (slow)": "https://www.acefitness.org/resources/everyone/exercise-library/jump-rope/",
-            "Torso Twists": "https://www.acefitness.org/resources/everyone/exercise-library/torso-twists/",
-            "High Knees": "https://www.acefitness.org/resources/everyone/exercise-library/high-knees/",
-            "Butt Kicks": "https://www.acefitness.org/resources/everyone/exercise-library/butt-kicks/",
-            "Cat-Cow Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/cat-cow-stretch/",
-            "Hip Circles": "https://www.acefitness.org/resources/everyone/exercise-library/hip-circles/",
-            "Ankle Rotations": "https://www.acefitness.org/resources/everyone/exercise-library/ankle-rotations/",
-            "Inchworm": "https://www.acefitness.org/resources/everyone/exercise-library/inchworm/",
-            "World's Greatest Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/worlds-greatest-stretch/",
-            "Light Rowing": "https://www.acefitness.org/resources/everyone/exercise-library/rowing/",
-            "Dynamic Chest Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/dynamic-chest-stretch/",
-            "Side Lunges": "https://www.acefitness.org/resources/everyone/exercise-library/side-lunges/",
-            "Frankenstein Kicks": "https://www.acefitness.org/resources/everyone/exercise-library/frankenstein-kicks/",
-            "Glute Bridges (Warm-up)": "https://www.acefitness.org/resources/everyone/exercise-library/glute-bridge/",
-            "Shoulder Taps": "https://www.acefitness.org/resources/everyone/exercise-library/shoulder-taps/",
-            "Wrist Circles": "https://www.acefitness.org/resources/everyone/exercise-library/wrist-circles/",
-            "Neck Rolls": "https://www.acefitness.org/resources/everyone/exercise-library/neck-rolls/",
-            
-            // Main exercises - Bodyweight
-            "Squats": "https://www.acefitness.org/resources/everyone/exercise-library/squat/",
-            "Push-ups": "https://www.acefitness.org/resources/everyone/exercise-library/push-up/",
-            "Lunges": "https://www.acefitness.org/resources/everyone/exercise-library/lunge/",
-            "Plank": "https://www.acefitness.org/resources/everyone/exercise-library/plank/",
-            "Glute Bridge": "https://www.acefitness.org/resources/everyone/exercise-library/glute-bridge/",
-            "Wall Sit": "https://www.acefitness.org/resources/everyone/exercise-library/wall-sit/",
-            "Step-ups": "https://www.acefitness.org/resources/everyone/exercise-library/step-up/",
-            "Calf Raises": "https://www.acefitness.org/resources/everyone/exercise-library/calf-raise/",
-            "Bird Dog": "https://www.acefitness.org/resources/everyone/exercise-library/bird-dog/",
-            "Dead Bug": "https://www.acefitness.org/resources/everyone/exercise-library/dead-bug/",
-            "Burpees": "https://www.acefitness.org/resources/everyone/exercise-library/burpee/",
-            "Diamond Push-ups": "https://www.acefitness.org/resources/everyone/exercise-library/diamond-push-up/",
-            "Pike Push-ups": "https://www.acefitness.org/resources/everyone/exercise-library/pike-push-up/",
-            "Superman": "https://www.acefitness.org/resources/everyone/exercise-library/superman/",
-            "Russian Twists": "https://www.acefitness.org/resources/everyone/exercise-library/russian-twist/",
-            "Bicycle Crunches": "https://www.acefitness.org/resources/everyone/exercise-library/bicycle-crunch/",
-            "Mountain Climbers": "https://www.acefitness.org/resources/everyone/exercise-library/mountain-climber/",
-            "Jump Squats": "https://www.acefitness.org/resources/everyone/exercise-library/jump-squat/",
-            "Split Squats": "https://www.acefitness.org/resources/everyone/exercise-library/split-squat/",
-            "Single-leg Glute Bridge": "https://www.acefitness.org/resources/everyone/exercise-library/single-leg-glute-bridge/",
-            
-            // Main exercises - Dumbbells
-            "Dumbbell Bicep Curls": "https://www.acefitness.org/resources/everyone/exercise-library/dumbbell-bicep-curl/",
-            "Dumbbell Shoulder Press": "https://www.acefitness.org/resources/everyone/exercise-library/dumbbell-shoulder-press/",
-            "Bent-over Dumbbell Rows": "https://www.acefitness.org/resources/everyone/exercise-library/bent-over-dumbbell-row/",
-            "Goblet Squat": "https://www.acefitness.org/resources/everyone/exercise-library/goblet-squat/",
-            "Dumbbell Flys": "https://www.acefitness.org/resources/everyone/exercise-library/dumbbell-fly/",
-            "Tricep Kickbacks": "https://www.acefitness.org/resources/everyone/exercise-library/tricep-kickback/",
-            "Overhead Tricep Extension": "https://www.acefitness.org/resources/everyone/exercise-library/overhead-tricep-extension/",
-            "Dumbbell Lunges": "https://www.acefitness.org/resources/everyone/exercise-library/dumbbell-lunge/",
-            "Romanian Deadlifts (RDLs)": "https://www.acefitness.org/resources/everyone/exercise-library/romanian-deadlift/",
-            "Lateral Raises": "https://www.acefitness.org/resources/everyone/exercise-library/lateral-raise/",
-            "Front Raises": "https://www.acefitness.org/resources/everyone/exercise-library/front-raise/",
-            "Dumbbell Deadlift": "https://www.acefitness.org/resources/everyone/exercise-library/dumbbell-deadlift/",
-            "Dumbbell Chest Press": "https://www.acefitness.org/resources/everyone/exercise-library/dumbbell-chest-press/",
-            
-            // Cool-down exercises
-            "Quad Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/quad-stretch/",
-            "Chest Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/chest-stretch/",
-            "Child's Pose": "https://www.acefitness.org/resources/everyone/exercise-library/childs-pose/",
-            "Hamstring Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/hamstring-stretch/",
-            "Pigeon Pose": "https://www.acefitness.org/resources/everyone/exercise-library/pigeon-pose/",
-            "Triceps Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/tricep-stretch/",
-            "Shoulder Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/shoulder-stretch/",
-            "Calf Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/calf-stretch/",
-            "Hip Flexor Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/hip-flexor-stretch/",
-            "Knees to Chest": "https://www.acefitness.org/resources/everyone/exercise-library/knees-to-chest/",
-            "Cobra Pose": "https://www.acefitness.org/resources/everyone/exercise-library/cobra-pose/",
-            "Butterfly Stretch": "https://www.acefitness.org/resources/everyone/exercise-library/butterfly-stretch/",
-            "Spinal Twist": "https://www.acefitness.org/resources/everyone/exercise-library/spinal-twist/"
-        };
-        
-        // Return the specific link or a fallback to ACE Fitness search
-        return exerciseLinks[exerciseName] || `https://www.acefitness.org/resources/everyone/exercise-library/?search=${encodeURIComponent(exerciseName)}`;
-    }
-
     const createSection = (title, exercises) => {
         if (!exercises || exercises.length === 0) return '';
         let sectionHtml = `<h2 class="text-2xl font-bold text-center text-blue-400 my-6">${title}</h2>`;
         exercises.forEach((exercise) => {
-            const exerciseLink = getExerciseLink(exercise.name);
             sectionHtml += `
-                <div class="bg-gray-800 rounded-2xl overflow-hidden flex flex-col md:flex-row items-center border border-gray-700 shadow-md animate-fade-in mb-6">
-                    <div class="w-full md:w-1/3 h-48 md:h-full flex-shrink-0 bg-gradient-to-br from-blue-600 to-purple-600 p-6 flex items-center justify-center">
-                        <div class="text-center text-white">
-                            <div class="text-4xl mb-2">💪</div>
-                            <div class="text-sm font-semibold">Exercise Demo</div>
-                            <a href="${exerciseLink}" target="_blank" rel="noopener noreferrer" class="inline-block mt-3 bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition duration-200">
-                                Learn More →
-                            </a>
-                        </div>
-                    </div>
-                    <div class="p-6 w-full">
-                        <h3 class="text-xl font-bold">${exercise.name}</h3>
+                <div class="bg-gray-800 rounded-2xl overflow-hidden border border-gray-700 shadow-md animate-fade-in mb-6">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-blue-300">${exercise.name}</h3>
                         <p class="text-gray-400 mt-2">${exercise.description}</p>
                         <div class="mt-4 flex flex-wrap gap-2">
                             <div class="bg-gray-700 inline-block px-4 py-2 rounded-full text-sm font-semibold">
@@ -293,11 +201,6 @@ function displayPlan(warmup, main, cooldown, summary) {
                                 <span class="text-white">Equipment: </span>
                                 <span class="text-yellow-300">${exercise.equipment}</span>
                             </div>
-                        </div>
-                        <div class="mt-4">
-                            <a href="${exerciseLink}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline font-semibold">
-                                📖 View detailed instructions and form guide
-                            </a>
                         </div>
                     </div>
                 </div>

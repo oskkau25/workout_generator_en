@@ -57,8 +57,8 @@ class AutomatedTestPipeline:
             # Phase 3: UI functionality tests
             self.run_ui_functionality_tests()
             
-            # Phase 4: Image validation tests
-            self.run_image_validation_tests()
+            # Phase 4: Image validation tests (SKIPPED - images removed)
+            # self.run_image_validation_tests()
             
             # Phase 5: Performance tests
             self.run_performance_tests()
@@ -88,7 +88,6 @@ class AutomatedTestPipeline:
         required_files = [
             'script.js',
             'index.html',
-            'exercise_images_database.js',
             'requirements.txt'
         ]
         
@@ -519,7 +518,6 @@ class AutomatedTestPipeline:
             
             tests = {
                 'has_exercises_array': 'const exercises = [' in js_content,
-                'has_getExerciseImage': 'getExerciseImage' in js_content,
                 'has_form_handler': 'addEventListener' in js_content,
                 'has_validation': 'validateForm' in js_content,
                 'has_error_handling': 'showError' in js_content,
@@ -612,39 +610,15 @@ class AutomatedTestPipeline:
             return {'status': 'FAILED', 'details': str(e)}
     
     def test_image_functionality(self):
-        """Test image functionality and uniqueness"""
+        """Test image functionality and uniqueness (SKIPPED - images removed)"""
         try:
-            # Check exercise images database
-            images_path = self.project_root / 'exercise_images_database.js'
-            if not images_path.exists():
-                return {'status': 'FAILED', 'details': 'Exercise images database not found'}
-            
-            with open(images_path, 'r', encoding='utf-8') as f:
-                images_content = f.read()
-            
-            # Check script.js for image functionality
-            js_path = self.project_root / 'script.js'
-            with open(js_path, 'r', encoding='utf-8') as f:
-                js_content = f.read()
-            
-            tests = {
-                'has_image_database': 'exerciseImages' in images_content,
-                'has_getExerciseImage_function': 'getExerciseImage' in images_content,
-                'has_image_fallback': 'onerror' in js_content,
-                'has_image_alt_text': 'alt=' in js_content,
-                'has_unique_images': len(set(images_content.split('https://'))) > 50,  # At least 50 unique images
-                'has_unsplash_images': 'unsplash.com' in images_content,
-                'has_image_dimensions': 'w=400&h=300' in images_content,
-                'has_image_error_handling': 'onerror=' in js_content
-            }
-            
-            passed = sum(tests.values())
-            total = len(tests)
+            # Images have been removed from the application
+            # This test is now skipped as the app no longer uses images
             
             return {
-                'status': 'PASSED' if passed == total else 'WARNING',
-                'score': f'{passed}/{total}',
-                'details': tests
+                'status': 'SKIPPED',
+                'score': '0/0',
+                'details': {'note': 'Image functionality removed from application'}
             }
             
         except Exception as e:
@@ -830,16 +804,13 @@ class AutomatedTestPipeline:
                 if 'addEventListener' not in js_content or 'submit' not in js_content:
                     functionality_issues.append('Form submission handler missing')
                 
-                # Check for exercise links functionality (replaced images)
-                if 'getExerciseLink' not in js_content:
-                    functionality_issues.append('Exercise link function missing')
-                
+                # Check for exercise database (images removed, simplified functionality)
                 if 'exercises' not in js_content:
                     functionality_issues.append('Exercise database missing')
                 
-                # Check for ACE Fitness links
-                if 'acefitness.org' not in js_content:
-                    functionality_issues.append('Exercise description links missing')
+                # Check for display functionality (simplified without images)
+                if 'displayPlan' not in js_content:
+                    functionality_issues.append('Display plan function missing')
             
             # Check for broken references (like the ui_test_suite.js issue)
             if 'ui_test_suite.js' in script_tags:
