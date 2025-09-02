@@ -87,59 +87,67 @@ print_status $BLUE "======================================"
 print_status $YELLOW "🔄 Stopping any existing server on port 5173..."
 lsof -ti:5173 | xargs kill -9 2>/dev/null || echo "No existing server found"
 
-# Start the local server
+# Start the local server with better error handling
 print_status $BLUE "🚀 Starting local server on http://localhost:5173..."
 python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
 SERVER_PID=$!
 
 # Wait a moment for server to start
-sleep 2
+sleep 3
 
-# Check if server started successfully
+# Check if server started successfully and is responding
 if kill -0 $SERVER_PID 2>/dev/null; then
-    print_status $GREEN "✅ Local server started successfully"
-    print_status $BLUE "🌐 Your app is now running at: http://localhost:5173"
-    
-    # Try to automatically open the browser
-    print_status $BLUE "🌐 Attempting to open browser automatically..."
-    if command -v open &> /dev/null; then
-        # macOS
-        open "http://localhost:5173" 2>/dev/null &
-        print_status $GREEN "✅ Browser opened automatically (macOS)"
-    elif command -v xdg-open &> /dev/null; then
-        # Linux
-        xdg-open "http://localhost:5173" 2>/dev/null &
-        print_status $GREEN "✅ Browser opened automatically (Linux)"
+    # Test if server is actually responding
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:5173 | grep -q "200"; then
+        print_status $GREEN "✅ Local server started successfully"
+        print_status $BLUE "🌐 Your app is now running at: http://localhost:5173"
+        
+        # Try to automatically open the browser
+        print_status $BLUE "🌐 Attempting to open browser automatically..."
+        if command -v open &> /dev/null; then
+            # macOS
+            open "http://localhost:5173" 2>/dev/null &
+            print_status $GREEN "✅ Browser opened automatically (macOS)"
+        elif command -v xdg-open &> /dev/null; then
+            # Linux
+            xdg-open "http://localhost:5173" 2>/dev/null &
+            print_status $GREEN "✅ Browser opened automatically (Linux)"
+        else
+            print_status $YELLOW "⚠️  Please manually open: http://localhost:5173"
+        fi
+        
+        print_status $YELLOW "📱 Review the changes in your browser"
+        
+        print_status $BLUE "🔍 VISUAL REVIEW CHECKLIST:"
+        print_status $BLUE "======================================"
+        print_status $BLUE "✅ Form is visible as landing page"
+        print_status $BLUE "✅ Equipment icons: Professional SVG icons (not emojis)"
+        print_status $BLUE "✅ Duration icons: Clean SVG representations"
+        print_status $BLUE "✅ Fitness level options: Clean text without symbols"
+        print_status $BLUE "✅ Work/Rest icons: Professional SVG icons"
+        print_status $BLUE "✅ Generate button with lightning SVG icon"
+        print_status $BLUE "✅ Resume workout button (if applicable)"
+        print_status $BLUE "✅ All icons are properly aligned and sized"
+        print_status $BLUE "✅ Form layout is clean and professional"
+        print_status $BLUE "✅ Overall appearance is modern and sports-focused"
+        print_status $BLUE "======================================"
+        
+        print_status $BLUE "⏳ Waiting for your review... (press Enter when ready to continue)"
+        
+        # Wait for user input
+        read -p "Press Enter to continue with commit, or Ctrl+C to abort..."
+        
+        # Stop the server
+        print_status $YELLOW "🛑 Stopping local server..."
+        kill $SERVER_PID 2>/dev/null
+        sleep 1
+        
+        print_status $GREEN "✅ Local preview completed"
     else
-        print_status $YELLOW "⚠️  Please manually open: http://localhost:5173"
+        print_status $RED "❌ Server started but not responding properly"
+        kill $SERVER_PID 2>/dev/null
+        print_status $YELLOW "⚠️  Continuing without local preview..."
     fi
-    
-    print_status $YELLOW "📱 Review the changes in your browser"
-    
-    print_status $BLUE "🔍 VISUAL REVIEW CHECKLIST:"
-    print_status $BLUE "======================================"
-    print_status $BLUE "✅ Form is visible as landing page"
-    print_status $BLUE "✅ Equipment icons: 💪🏋️⚖️🎯🔄🏗️⏰🚣"
-    print_status $BLUE "✅ Duration icons: ⚡🔥💪🏆"
-    print_status $BLUE "✅ Fitness level icons: 🌱🔥⚡"
-    print_status $BLUE "✅ Work/Rest icons: 💪😴"
-    print_status $BLUE "✅ Generate button with lightning icon ⚡"
-    print_status $BLUE "✅ Resume workout button (if applicable)"
-    print_status $BLUE "✅ All symbols are properly aligned and sized"
-    print_status $BLUE "✅ Form layout is clean and professional"
-    print_status $BLUE "======================================"
-    
-    print_status $BLUE "⏳ Waiting for your review... (press Enter when ready to continue)"
-    
-    # Wait for user input
-    read -p "Press Enter to continue with commit, or Ctrl+C to abort..."
-    
-    # Stop the server
-    print_status $YELLOW "🛑 Stopping local server..."
-    kill $SERVER_PID 2>/dev/null
-    sleep 1
-    
-    print_status $GREEN "✅ Local preview completed"
 else
     print_status $RED "❌ Failed to start local server"
     print_status $YELLOW "⚠️  Continuing without local preview..."
@@ -185,17 +193,16 @@ if [ -f "automated_test_results.json" ]; then
     if [ "$overall_status" = "PASSED" ] || [ "$overall_status" = "WARNING" ]; then
         if [ "$failed_tests" -eq 0 ]; then
             print_status $GREEN "✅ All tests passed!"
-print_status $BLUE "======================================"
-print_status $BLUE "🎯 FINAL COMMIT CONFIRMATION"
-print_status $BLUE "======================================"
-print_status $YELLOW "📋 Summary of what will be committed:"
-print_status $YELLOW "   - All visual symbols and icons added"
-print_status $YELLOW "   - Form is now always the landing page"
-print_status $YELLOW "   - Equipment selection with emojis"
-print_status $YELLOW "   - Duration options with progress icons"
-print_status $YELLOW "   - Fitness level with growth symbols"
-print_status $YELLOW "   - Work/Rest timing with activity icons"
-print_status $BLUE "======================================"
+            print_status $BLUE "======================================"
+            print_status $BLUE "🎯 FINAL COMMIT CONFIRMATION"
+            print_status $BLUE "======================================"
+            print_status $YELLOW "📋 Summary of what will be committed:"
+            print_status $YELLOW "   - Professional SVG icons replacing emojis"
+            print_status $YELLOW "   - Modern, clean equipment representations"
+            print_status $YELLOW "   - Professional section header icons"
+            print_status $YELLOW "   - Consistent icon styling and sizing"
+            print_status $YELLOW "   - Enhanced visual appeal for sports enthusiasts"
+            print_status $BLUE "======================================"
 
 print_status $BLUE "⏳ Ready to commit? (press Enter to continue, or Ctrl+C to abort)"
 read -p "Press Enter to commit changes..."
