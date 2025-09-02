@@ -1429,7 +1429,7 @@ const exercises = [
 // --- HELPER FUNCTIONS ---
 function validateForm() {
     const level = document.getElementById('fitness-level').value;
-    const mainDuration = parseInt(document.getElementById('duration').value);
+    const mainDuration = parseInt(document.querySelector('input[name="duration"]:checked').value);
     const workTime = parseInt(document.getElementById('work-time').value);
     const restTime = parseInt(document.getElementById('rest-time').value);
     const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -1440,17 +1440,17 @@ function validateForm() {
     }
     
     // Validate duration
-    if (isNaN(mainDuration) || mainDuration < 10 || mainDuration > 60) {
+    if (isNaN(mainDuration) || mainDuration < 15 || mainDuration > 60) {
         throw new Error('Invalid duration selected');
     }
     
     // Validate work time
-    if (isNaN(workTime) || workTime < 15 || workTime > 60) {
+    if (isNaN(workTime) || workTime < 20 || workTime > 120) {
         throw new Error('Invalid work time selected');
     }
     
     // Validate rest time
-    if (isNaN(restTime) || restTime < 15 || restTime > 60) {
+    if (isNaN(restTime) || restTime < 10 || restTime > 60) {
         throw new Error('Invalid rest time selected');
     }
     
@@ -1465,12 +1465,20 @@ function validateForm() {
 function showError(message) {
     // Create error notification
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+    errorDiv.className = 'fixed top-4 right-4 bg-fit-danger text-white px-6 py-4 rounded-xl shadow-lg z-50 animate-fade-in';
     errorDiv.innerHTML = `
         <div class="flex items-center">
-            <span class="mr-2">❌</span>
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">×</button>
+            <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </div>
+            <span class="font-medium">${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white/80 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </div>
     `;
     
@@ -1487,12 +1495,20 @@ function showError(message) {
 function showSuccess(message) {
     // Create success notification
     const successDiv = document.createElement('div');
-    successDiv.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+    successDiv.className = 'fixed top-4 right-4 bg-fit-success text-white px-6 py-4 rounded-xl shadow-lg z-50 animate-fade-in';
     successDiv.innerHTML = `
         <div class="flex items-center">
-            <span class="mr-2">✅</span>
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">×</button>
+            <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <span class="font-medium">${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white/80 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </div>
     `;
     
@@ -1512,8 +1528,26 @@ function setLoading(isLoading) {
     
     loadingDiv.classList.toggle('hidden', !isLoading);
     generateBtn.disabled = isLoading;
-    generateBtn.classList.toggle('opacity-50', isLoading);
-    generateBtn.classList.toggle('cursor-not-allowed', isLoading);
+    
+    if (isLoading) {
+        generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        generateBtn.innerHTML = `
+            <span class="flex items-center justify-center space-x-2">
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <span>Generating...</span>
+            </span>
+        `;
+    } else {
+        generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        generateBtn.innerHTML = `
+            <span class="flex items-center justify-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <span>Generate Workout</span>
+            </span>
+        `;
+    }
 }
 
 function generateRandomSet(exerciseList, count) {
@@ -1604,28 +1638,58 @@ document.addEventListener('DOMContentLoaded', () => {
 		const createGroup = (title, items, sectionType) => {
 			if (!items || items.length === 0) return;
 			const group = document.createElement('div');
-			group.className = 'bg-gray-900/40 border border-gray-700 rounded-xl p-4';
+			group.className = 'card';
 			const h = document.createElement('h3');
-			h.className = 'text-lg font-semibold text-blue-300 mb-2';
-			h.textContent = `${title} • ${items.length} item${items.length>1?'s':''}`;
+			h.className = 'text-xl font-display font-semibold text-fit-dark mb-4 flex items-center';
+			
+			// Add section icon
+			let icon = '🔥';
+			if (title.includes('Warm-up')) icon = '🔥';
+			else if (title.includes('Main')) icon = '💪';
+			else if (title.includes('Cool-down')) icon = '🧘';
+			
+			h.innerHTML = `${icon} ${title} <span class="ml-auto text-fit-secondary text-lg font-normal">${items.length} exercises</span>`;
 			group.appendChild(h);
+			
 			const ul = document.createElement('ul');
-			ul.className = 'space-y-2 text-gray-300 text-sm';
+			ul.className = 'space-y-3';
 			items.forEach((ex, i) => {
 				const li = document.createElement('li');
-				li.className = 'flex items-center justify-between bg-gray-800/30 rounded-lg p-2';
+				li.className = 'flex items-center justify-between bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors';
 				li.innerHTML = `
-					<div class="flex items-center">
-						<span class="text-gray-500 mr-3 w-6 text-center">${i+1}.</span>
-						<span class="text-gray-300">${ex.name}</span>
-						<span class="text-gray-500 ml-2 text-xs">${ex.muscle}</span>
+					<div class="flex items-center space-x-4">
+						<div class="w-8 h-8 bg-fit-primary text-white rounded-full flex items-center justify-center text-sm font-semibold">
+							${i+1}
+						</div>
+						<div>
+							<h4 class="font-semibold text-fit-dark">${ex.name}</h4>
+							<div class="flex items-center space-x-3 text-sm text-fit-secondary">
+								<span class="flex items-center space-x-1">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+									</svg>
+									<span>${ex.muscle}</span>
+								</span>
+								<span class="flex items-center space-x-1">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+									</svg>
+									<span>${ex.equipment}</span>
+								</span>
+							</div>
+						</div>
 					</div>
 					<button 
 						onclick="swapExercise('${sectionType}', ${i})" 
-						class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-2 py-1 rounded transition-colors"
+						class="btn-secondary text-sm px-4 py-2"
 						title="Swap for similar exercise"
 					>
-						🔄 Swap
+						<span class="flex items-center space-x-2">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+							</svg>
+							<span>Swap</span>
+						</span>
 					</button>
 				`;
 				ul.appendChild(li);
@@ -1822,18 +1886,18 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (safety || doText || dontText) {
 				let html = '';
 				if (safety) {
-					html += '<h4 class="text-lg font-semibold text-white mb-2">⚠️ Safety Guidelines:</h4>';
+					html += '<h4 class="text-lg font-semibold text-fit-dark mb-4 flex items-center"><span class="text-2xl mr-2">⚠️</span> Safety Guidelines</h4>';
 				}
 				if (doText) {
-					html += '<div class="bg-green-900/20 border border-green-700 rounded-lg p-3 mb-2">' +
-						'<h5 class="text-green-400 font-semibold mb-1">✅ DO:</h5>' +
-						`<p class="text-green-300 text-sm">${doText}</p>` +
+					html += '<div class="bg-fit-success/10 border border-fit-success/20 rounded-xl p-4 mb-4">' +
+						'<h5 class="text-fit-success font-semibold mb-2 flex items-center"><span class="mr-2">✅</span> DO:</h5>' +
+						`<p class="text-fit-dark text-sm leading-relaxed">${doText}</p>` +
 						'</div>';
 				}
 				if (dontText) {
-					html += '<div class="bg-red-900/20 border border-red-700 rounded-lg p-3 mb-2">' +
-						'<h5 class="text-red-400 font-semibold mb-1">❌ DON\'T:</h5>' +
-						`<p class="text-red-300 text-sm">${dontText}</p>` +
+					html += '<div class="bg-fit-danger/10 border border-fit-danger/20 rounded-xl p-4 mb-4">' +
+						'<h5 class="text-fit-danger font-semibold mb-2 flex items-center"><span class="mr-2">❌</span> DON\'T:</h5>' +
+						`<p class="text-fit-dark text-sm leading-relaxed">${dontText}</p>` +
 						'</div>';
 				}
 				safetyEl.innerHTML = html;
@@ -1844,6 +1908,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		}
 		if (progressEl) progressEl.textContent = `Exercise ${appState.currentIndex + 1} / ${total}`;
+		
+		// Update progress bar
+		const progressBar = document.getElementById('progress-bar');
+		if (progressBar) {
+			const progress = ((appState.currentIndex + 1) / total) * 100;
+			progressBar.style.width = `${progress}%`;
+		}
 		if (prevBtn) prevBtn.disabled = appState.currentIndex === 0;
 		if (nextBtn) nextBtn.textContent = appState.currentIndex === total - 1 ? 'Finish' : 'Next';
 		if (workTimer) workTimer.textContent = formatSeconds(appState.workTime);
@@ -1853,9 +1924,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			sectionBadge.classList.remove('hidden');
 			sectionBadge.textContent = section;
 			const base = 'px-3 py-1 rounded-full text-xs font-semibold';
-			let color = 'bg-blue-900/40 text-blue-300 border border-blue-700';
-			if (section === 'Warm-up') color = 'bg-yellow-900/30 text-yellow-300 border border-yellow-700';
-			if (section === 'Cool-down') color = 'bg-green-900/30 text-green-300 border border-green-700';
+			let color = 'bg-fit-primary text-white';
+			if (section === 'Warm-up') color = 'bg-fit-warning text-white';
+			if (section === 'Cool-down') color = 'bg-fit-success text-white';
 			sectionBadge.className = `${base} ${color}`;
 		}
 
@@ -2105,7 +2176,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setLoading(true);
 
                 const level = document.getElementById('fitness-level').value;
-                const mainDuration = parseInt(durationSlider.value);
+                const mainDuration = parseInt(document.querySelector('input[name="duration"]:checked').value);
                 const workTime = parseInt(document.getElementById('work-time').value);
                 const restTime = parseInt(document.getElementById('rest-time').value);
                 const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -2265,24 +2336,57 @@ document.addEventListener('DOMContentLoaded', () => {
 		
 		// Create swap selection modal
 		const modal = document.createElement('div');
-		modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+		modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4';
 		modal.innerHTML = `
-			<div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
-				<h3 class="text-xl font-semibold text-white mb-4">Swap "${currentExercise.name}"</h3>
-				<p class="text-gray-300 mb-4">Choose a similar exercise:</p>
-				<div class="space-y-3">
+			<div class="bg-white rounded-2xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto card-shadow">
+				<div class="text-center mb-6">
+					<div class="w-16 h-16 bg-fit-primary rounded-full flex items-center justify-center mx-auto mb-4">
+						<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+						</svg>
+					</div>
+					<h3 class="text-2xl font-display font-bold text-fit-dark mb-2">Swap Exercise</h3>
+					<p class="text-fit-secondary">Choose a similar alternative for:</p>
+					<p class="text-lg font-semibold text-fit-primary">"${currentExercise.name}"</p>
+				</div>
+				
+				<div class="space-y-4 mb-6">
 					${similarExercises.map((candidate, i) => `
-						<div class="bg-gray-700 rounded-lg p-3 cursor-pointer hover:bg-gray-600 transition-colors" 
+						<div class="border border-fit-border rounded-xl p-4 cursor-pointer hover:border-fit-primary hover:shadow-md transition-all duration-200" 
 							 onclick="selectSwapExercise('${sectionType}', ${index}, ${i})">
-							<div class="font-medium text-white">${candidate.exercise.name}</div>
-							<div class="text-sm text-gray-400">
-								${candidate.exercise.muscle} • ${candidate.exercise.equipment} • ${candidate.exercise.level.join(', ')}
+							<div class="flex items-start justify-between">
+								<div class="flex-1">
+									<h4 class="font-semibold text-fit-dark text-lg mb-2">${candidate.exercise.name}</h4>
+									<div class="flex items-center space-x-4 text-sm text-fit-secondary mb-3">
+										<span class="flex items-center space-x-1">
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+											</svg>
+											<span>${candidate.exercise.muscle}</span>
+										</span>
+										<span class="flex items-center space-x-1">
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+											</svg>
+											<span>${candidate.exercise.equipment}</span>
+										</span>
+									</div>
+									<div class="text-sm text-fit-secondary leading-relaxed">${candidate.exercise.description.split('⚠️')[0].trim()}</div>
+									<div class="mt-3">
+										<span class="inline-block bg-fit-primary/10 text-fit-primary text-xs px-2 py-1 rounded-full">${candidate.exercise.level.join(', ')}</span>
+									</div>
+								</div>
+								<div class="ml-4">
+									<svg class="w-6 h-6 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+									</svg>
+								</div>
 							</div>
-							<div class="text-xs text-gray-500 mt-1">${candidate.exercise.description.split('⚠️')[0].trim()}</div>
 						</div>
 					`).join('')}
 				</div>
-				<button onclick="closeSwapModal()" class="mt-4 w-full bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition-colors">
+				
+				<button onclick="closeSwapModal()" class="w-full btn-secondary py-3">
 					Cancel
 				</button>
 			</div>
