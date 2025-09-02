@@ -1511,6 +1511,11 @@ class AutomatedTestPipeline:
                 logger.info("🏗️ Detected pyramid training functionality")
                 dynamic_tests.append(self.test_pyramid_training_functionality())
             
+            # 20. Detect smart calculation functionality
+            if 'workoutDurationMinutes' in js_content and 'updatePatternSettingsForDuration' in js_content:
+                logger.info("🧮 Detected smart calculation functionality")
+                dynamic_tests.append(self.test_smart_calculation_functionality())
+            
             logger.info(f"🎯 Dynamic detection found {len(dynamic_tests)} feature tests to run")
             return dynamic_tests
             
@@ -1545,6 +1550,63 @@ class AutomatedTestPipeline:
             
         except Exception as e:
             return {'status': 'FAILED', 'details': str(e), 'feature': 'Exercise Swapping'}
+    
+    def test_smart_calculation_functionality(self):
+        """Test smart calculation of training pattern settings based on workout duration"""
+        try:
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            html_path = self.project_root / 'index.html'
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            tests = {
+                # Core smart calculation functions
+                'has_duration_parsing': 'parseInt(selectedDuration)' in js_content,
+                'has_workout_duration_variable': 'workoutDurationMinutes' in js_content,
+                'has_auto_update_function': 'updatePatternSettingsForDuration' in js_content,
+                
+                # Circuit training smart calculation
+                'has_circuit_duration_calculation': 'Math.floor(workoutDurationMinutes / 10)' in js_content,
+                'has_circuit_round_limits': 'Math.max(2, Math.min(6,' in js_content,
+                'has_circuit_round_auto_update': 'circuit-rounds' in js_content and 'value =' in js_content,
+                
+                # Tabata training smart calculation
+                'has_tabata_duration_calculation': 'Math.floor(workoutDurationMinutes / 5)' in js_content,
+                'has_tabata_round_limits': 'Math.max(4, Math.min(12,' in js_content,
+                'has_tabata_round_auto_update': 'tabata-rounds' in js_content and 'value =' in js_content,
+                
+                # Pyramid training smart calculation
+                'has_pyramid_duration_calculation': 'Math.floor(workoutDurationMinutes / 8)' in js_content,
+                'has_pyramid_level_limits': 'Math.max(3, Math.min(7,' in js_content,
+                'has_pyramid_level_auto_update': 'pyramid-levels' in js_content and 'value =' in js_content,
+                
+                # Duration change event handling
+                'has_duration_change_listeners': 'input[name="duration"]' in js_content,
+                'has_duration_change_callback': 'addEventListener' in js_content and 'updatePatternSettingsForDuration' in js_content,
+                
+                # UI feedback for smart calculation
+                'has_smart_calculation_info': 'Smart Calculation' in html_content,
+                'has_duration_recommendations': '15min:' in html_content and '30min:' in html_content,
+                'has_circuit_recommendations': '15min: 2-3, 30min: 3-4' in html_content,
+                'has_tabata_recommendations': '15min: 6, 30min: 8' in html_content,
+                'has_pyramid_recommendations': '15min: 3-4, 30min: 4-5' in html_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests,
+                'feature': 'Smart Calculation'
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e), 'feature': 'Smart Calculation'}
     
     def run_image_validation_tests(self):
         """Test image uniqueness and availability"""

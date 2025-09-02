@@ -153,6 +153,8 @@ if kill -0 $SERVER_PID 2>/dev/null; then
         print_status $BLUE "✅ Generate button with lightning SVG icon"
         print_status $BLUE "✅ Training pattern selection (Standard, Circuit, Tabata, Pyramid)"
         print_status $BLUE "✅ Pattern-specific settings appear when selected"
+        print_status $BLUE "✅ Smart calculation info boxes show duration-based recommendations"
+        print_status $BLUE "✅ Duration recommendations display (15min: X-X, 30min: Y-Y, etc.)"
         print_status $BLUE "✅ Resume workout button (if applicable)"
         print_status $BLUE "✅ All icons are properly aligned and sized"
         print_status $BLUE "✅ Form layout is clean and professional"
