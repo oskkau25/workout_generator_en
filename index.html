@@ -88,8 +88,14 @@
         <div id="workout-plan" class="animate-fade-in">
             <div class="max-w-4xl mx-auto">
                 <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-fit-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-4xl">💪</span>
+                    </div>
                     <h2 class="text-3xl font-display font-bold text-fit-dark mb-3">Create Your Perfect Workout</h2>
-                    <p class="text-fit-secondary text-lg">Generate personalized workouts based on your preferences and available equipment</p>
+                    <p class="text-fit-secondary text-lg mb-4">Generate personalized workouts based on your preferences and available equipment</p>
+                    <div class="inline-flex items-center space-x-2 bg-fit-primary/10 text-fit-primary px-4 py-2 rounded-full">
+                        <span class="text-sm font-medium">🎯 Personalized • ⚡ Smart • 🏆 Effective</span>
+                    </div>
                 </div>
 
                 <form id="workout-form" class="card mb-8">
@@ -97,45 +103,72 @@
                         <!-- Left Column -->
                         <div class="space-y-6">
                             <div>
-                                <label class="block text-fit-dark font-semibold mb-3">Workout Duration</label>
+                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                    <span class="text-xl mr-2">⏱️</span>
+                                    Workout Duration
+                                </label>
                                 <div class="space-y-3">
                                     <div class="flex items-center space-x-3">
                                         <input type="radio" id="duration-15" name="duration" value="15" class="w-5 h-5 text-fit-primary">
-                                        <label for="duration-15" class="text-fit-secondary">15 minutes</label>
+                                        <label for="duration-15" class="text-fit-secondary flex items-center">
+                                            <span class="text-lg mr-2">⚡</span>
+                                            15 minutes
+                                        </label>
                                     </div>
                                     <div class="flex items-center space-x-3">
                                         <input type="radio" id="duration-30" name="duration" value="30" class="w-5 h-5 text-fit-primary" checked>
-                                        <label for="duration-30" class="text-fit-secondary">30 minutes</label>
+                                        <label for="duration-30" class="text-fit-secondary flex items-center">
+                                            <span class="text-lg mr-2">🔥</span>
+                                            30 minutes
+                                        </label>
                                     </div>
                                     <div class="flex items-center space-x-3">
                                         <input type="radio" id="duration-45" name="duration" value="45" class="w-5 h-5 text-fit-primary">
-                                        <label for="duration-45" class="text-fit-secondary">45 minutes</label>
+                                        <label for="duration-45" class="text-fit-secondary flex items-center">
+                                            <span class="text-lg mr-2">💪</span>
+                                            45 minutes
+                                        </label>
                                     </div>
                                     <div class="flex items-center space-x-3">
                                         <input type="radio" id="duration-60" name="duration" value="60" class="w-5 h-5 text-fit-primary">
-                                        <label for="duration-60" class="text-fit-secondary">60 minutes</label>
+                                        <label for="duration-60" class="text-fit-secondary flex items-center">
+                                            <span class="text-lg mr-2">🏆</span>
+                                            60 minutes
+                                        </label>
                                     </div>
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-fit-dark font-semibold mb-3">Fitness Level</label>
+                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                    <span class="text-xl mr-2">📈</span>
+                                    Fitness Level
+                                </label>
                                 <select id="fitness-level" class="input-field">
-                                    <option value="Beginner">Beginner</option>
-                                    <option value="Intermediate" selected>Intermediate</option>
-                                    <option value="Advanced">Advanced</option>
+                                    <option value="Beginner">🌱 Beginner</option>
+                                    <option value="Intermediate" selected>🔥 Intermediate</option>
+                                    <option value="Advanced">⚡ Advanced</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label class="block text-fit-dark font-semibold mb-3">Work/Rest Timing</label>
+                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                    <span class="text-xl mr-2">⚡</span>
+                                    Work/Rest Timing
+                                </label>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm text-fit-secondary mb-2">Work (seconds)</label>
+                                        <label class="block text-sm text-fit-secondary mb-2 flex items-center">
+                                            <span class="mr-2">💪</span>
+                                            Work (seconds)
+                                        </label>
                                         <input type="number" id="work-time" value="45" min="20" max="120" class="input-field">
                                     </div>
                                     <div>
-                                        <label class="block text-sm text-fit-secondary mb-2">Rest (seconds)</label>
+                                        <label class="block text-sm text-fit-secondary mb-2 flex items-center">
+                                            <span class="mr-2">😴</span>
+                                            Rest (seconds)
+                                        </label>
                                         <input type="number" id="rest-time" value="15" min="10" max="60" class="input-field">
                                     </div>
                                 </div>
@@ -145,54 +178,91 @@
                         <!-- Right Column -->
                         <div class="space-y-6">
                             <div>
-                                <label class="block text-fit-dark font-semibold mb-3">Available Equipment</label>
+                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                    <span class="text-xl mr-2">🏋️</span>
+                                    Available Equipment
+                                </label>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="eq-bodyweight" value="Bodyweight" class="w-4 h-4 text-fit-primary" checked>
-                                        <span class="text-fit-secondary">Bodyweight</span>
+                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all duration-200 peer-checked:bg-fit-primary/10 peer-checked:border-2 peer-checked:border-fit-primary peer-checked:scale-105">
+                                        <input type="checkbox" id="eq-bodyweight" value="Bodyweight" class="w-4 h-4 text-fit-primary peer" checked>
+                                        <span class="text-fit-secondary flex items-center peer-checked:text-fit-primary">
+                                            <span class="text-xl mr-2">💪</span>
+                                            Bodyweight
+                                        </span>
                                     </label>
-                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="eq-dumbbells" value="Dumbbells" class="w-4 h-4 text-fit-primary">
-                                        <span class="text-fit-secondary">Dumbbells</span>
+                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all duration-200 peer-checked:bg-fit-primary/10 peer-checked:border-2 peer-checked:border-fit-primary peer-checked:scale-105">
+                                        <input type="checkbox" id="eq-dumbbells" value="Dumbbells" class="w-4 h-4 text-fit-primary peer">
+                                        <span class="text-fit-secondary flex items-center peer-checked:text-fit-primary">
+                                            <span class="text-xl mr-2">🏋️</span>
+                                            Dumbbells
+                                        </span>
                                     </label>
-                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="eq-kettlebell" value="Kettlebell" class="w-4 h-4 text-fit-primary">
-                                        <span class="text-fit-secondary">Kettlebell</span>
+                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all duration-200 peer-checked:bg-fit-primary/10 peer-checked:border-2 peer-checked:border-fit-primary peer-checked:scale-105">
+                                        <input type="checkbox" id="eq-kettlebell" value="Kettlebell" class="w-4 h-4 text-fit-primary peer">
+                                        <span class="text-fit-secondary flex items-center peer-checked:text-fit-primary">
+                                            <span class="text-xl mr-2">⚖️</span>
+                                            Kettlebell
+                                        </span>
                                     </label>
-                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="eq-trx" value="TRX Bands" class="w-4 h-4 text-fit-primary">
-                                        <span class="text-fit-secondary">TRX Bands</span>
+                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all duration-200 peer-checked:bg-fit-primary/10 peer-checked:border-2 peer-checked:border-fit-primary peer-checked:scale-105">
+                                        <input type="checkbox" id="eq-trx" value="TRX Bands" class="w-4 h-4 text-fit-primary peer">
+                                        <span class="text-fit-secondary flex items-center peer-checked:text-fit-primary">
+                                            <span class="text-xl mr-2">🎯</span>
+                                            TRX Bands
+                                        </span>
                                     </label>
-                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="eq-resistance" value="Resistance Band" class="w-4 h-4 text-fit-primary">
-                                        <span class="text-fit-secondary">Resistance Band</span>
+                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all duration-200 peer-checked:bg-fit-primary/10 peer-checked:border-2 peer-checked:border-fit-primary peer-checked:scale-105">
+                                        <input type="checkbox" id="eq-resistance" value="Resistance Band" class="w-4 h-4 text-fit-primary peer">
+                                        <span class="text-fit-secondary flex items-center peer-checked:text-fit-primary">
+                                            <span class="text-xl mr-2">🔄</span>
+                                            Resistance Band
+                                        </span>
                                     </label>
-                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="eq-pullup" value="Pull-up Bar" class="w-4 h-4 text-fit-primary">
-                                        <span class="text-fit-secondary">Pull-up Bar</span>
+                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all duration-200 peer-checked:bg-fit-primary/10 peer-checked:border-2 peer-checked:border-fit-primary peer-checked:scale-105">
+                                        <input type="checkbox" id="eq-pullup" value="Pull-up Bar" class="w-4 h-4 text-fit-primary peer">
+                                        <span class="text-fit-secondary flex items-center peer-checked:text-fit-primary">
+                                            <span class="text-xl mr-2">🏗️</span>
+                                            Pull-up Bar
+                                        </span>
                                     </label>
-                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="eq-jumprope" value="Jump Rope" class="w-4 h-4 text-fit-primary">
-                                        <span class="text-fit-secondary">Jump Rope</span>
+                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all duration-200 peer-checked:bg-fit-primary/10 peer-checked:border-2 peer-checked:border-fit-primary peer-checked:scale-105">
+                                        <input type="checkbox" id="eq-jumprope" value="Jump Rope" class="w-4 h-4 text-fit-primary peer">
+                                        <span class="text-fit-secondary flex items-center peer-checked:text-fit-primary">
+                                            <span class="text-xl mr-2">⏰</span>
+                                            Jump Rope
+                                        </span>
                                     </label>
-                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="eq-rower" value="Rower" class="w-4 h-4 text-fit-primary">
-                                        <span class="text-fit-secondary">Rower</span>
+                                    <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all duration-200 peer-checked:bg-fit-primary/10 peer-checked:border-2 peer-checked:border-fit-primary peer-checked:scale-105">
+                                        <input type="checkbox" id="eq-rower" value="Rower" class="w-4 h-4 text-fit-primary peer">
+                                        <span class="text-fit-secondary flex items-center peer-checked:text-fit-primary">
+                                            <span class="text-xl mr-2">🚣</span>
+                                            Rower
+                                        </span>
                                     </label>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-8 text-center">
-                        <button type="submit" id="generate-btn" class="btn-primary text-lg px-8 py-4">
-                            <span class="flex items-center justify-center space-x-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
+                    <div class="mt-8 text-center space-y-4">
+                        <button type="submit" id="generate-btn" class="btn-primary text-lg px-8 py-4 relative overflow-hidden">
+                            <span class="flex items-center justify-center space-x-2 relative z-10">
+                                <span class="text-2xl">⚡</span>
                                 <span>Generate Workout</span>
                             </span>
+                            <div class="absolute inset-0 bg-gradient-to-r from-fit-primary to-blue-600 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                         </button>
+                        
+                        <div id="resume-workout-section" class="hidden">
+                            <button type="button" id="resume-workout-btn" class="btn-secondary text-lg px-8 py-4">
+                                <span class="flex items-center justify-center space-x-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    <span>Resume Previous Workout</span>
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </form>
 

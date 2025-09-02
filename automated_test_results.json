@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-02T17:44:55.708603",
+  "timestamp": "2025-09-02T17:59:34.432759",
   "overall_status": "WARNING",
   "tests": {
     "preflight": {
@@ -10,7 +10,7 @@
       "status": "PASSED",
       "details": "High: 0, Medium: 0, Low: 0",
       "ai_report": {
-        "timestamp": "2025-09-02 17:44:57",
+        "timestamp": "2025-09-02 17:59:36",
         "project": "Workout Generator",
         "summary": {
           "total_files": 2,
@@ -210,10 +210,10 @@
         "code_complexity": {
           "status": "WARNING",
           "metrics": {
-            "lines_of_code": 2447,
+            "lines_of_code": 2536,
             "functions": 32,
             "classes": 0,
-            "comment_ratio": "3.19%"
+            "comment_ratio": "3.71%"
           }
         },
         "security_analysis": {
@@ -467,8 +467,8 @@
             "has_lazy_loading": true,
             "has_optimized_images": true,
             "has_minimal_dom_manipulation": true,
-            "js_size_bytes": 112091,
-            "html_size_bytes": 21037
+            "js_size_bytes": 115358,
+            "html_size_bytes": 27351
           }
         },
         "dynamic_test_13": {
@@ -495,8 +495,8 @@
       "status": "WARNING",
       "details": {
         "file_sizes": {
-          "script.js": 112841,
-          "index.html": 21043
+          "script.js": 116108,
+          "index.html": 27441
         },
         "warnings": [
           "script.js is larger than 100KB"
@@ -519,7 +519,7 @@
     "success_rate": "57.1%"
   },
   "pipeline_config": {
-    "timestamp": "2025-09-02T17:44:55.710485",
+    "timestamp": "2025-09-02T17:59:34.436096",
     "detected_features": {
       "workout_flow": true,
       "timers": true,
@@ -539,7 +539,7 @@
     "feature_count": 13,
     "total_features": 14
   },
-  "execution_time": "2.28 seconds",
+  "execution_time": "2.29 seconds",
   "release_ready": true,
   "release_recommendation": "APPROVED WITH WARNINGS - Review warnings before release"
 }

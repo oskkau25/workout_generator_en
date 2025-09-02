@@ -2487,32 +2487,49 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	}
 
-	// Attempt to restore previous session
+	// Always show the form as the landing page
+	const workoutPlanDiv = document.getElementById('workout-plan');
+	const overviewDiv = document.getElementById('workout-overview');
+	const playerDiv = document.getElementById('workout-player');
+	
+	// Ensure form is always visible by default
+	if (workoutPlanDiv) workoutPlanDiv.classList.remove('hidden');
+	if (overviewDiv) overviewDiv.classList.add('hidden');
+	if (playerDiv) playerDiv.classList.add('hidden');
+	
+	
+	
+	// If there's a saved workout, we can still access it via the overview
+	// but the form remains the primary landing page
 	if (loadState()) {
 		// Ensure sequence fields like _section exist even after reload
 		if (!appState.sequence[0]._section) {
 			buildSequence();
 		}
-		// Show overview if there's a saved workout, otherwise show form
-		renderOverview();
+		// Don't automatically show overview - keep form visible
+		// User can access saved workout via other means if needed
 		attachOverviewHandlers();
 		attachPlayerHandlers();
-	} else {
-		// Ensure form is visible by default
-		const workoutPlanDiv = document.getElementById('workout-plan');
-		const overviewDiv = document.getElementById('workout-overview');
-		const playerDiv = document.getElementById('workout-player');
 		
-		console.log('No saved state found, showing form by default');
-		console.log('workoutPlanDiv:', workoutPlanDiv);
-		console.log('overviewDiv:', overviewDiv);
-		console.log('playerDiv:', playerDiv);
-		
-		if (workoutPlanDiv) {
-			workoutPlanDiv.classList.remove('hidden');
-			console.log('Form should now be visible');
+		// Show resume button if there's a saved workout
+		const resumeSection = document.getElementById('resume-workout-section');
+		if (resumeSection) {
+			resumeSection.classList.remove('hidden');
 		}
-		if (overviewDiv) overviewDiv.classList.add('hidden');
-		if (playerDiv) playerDiv.classList.add('hidden');
+	}
+	
+	// Add resume workout button functionality
+	const resumeWorkoutBtn = document.getElementById('resume-workout-btn');
+	if (resumeWorkoutBtn) {
+		resumeWorkoutBtn.addEventListener('click', () => {
+			// Show overview screen
+			const workoutPlanDiv = document.getElementById('workout-plan');
+			const overviewDiv = document.getElementById('workout-overview');
+			const playerDiv = document.getElementById('workout-player');
+			
+			if (workoutPlanDiv) workoutPlanDiv.classList.add('hidden');
+			if (overviewDiv) overviewDiv.classList.remove('hidden');
+			if (playerDiv) playerDiv.classList.add('hidden');
+		});
 	}
 });
