@@ -5,7 +5,6 @@
 Runs comprehensive tests in the background before releases:
 - Code quality checks
 - UI functionality tests
-- Image uniqueness validation
 - Performance benchmarks
 - Security scans
 """
@@ -42,6 +41,20 @@ class AutomatedTestPipeline:
         }
         self.pipeline_start_time = time.time()
         
+        # Performance thresholds and constants
+        self.MAX_JS_SIZE = 100000  # 100KB
+        self.MAX_HTML_SIZE = 40000  # 40KB
+        self.HIGH_COMPLEXITY_THRESHOLD = 15  # Number of features for high complexity
+        self.FEATURE_DETECTION_TIMEOUT = 10  # Seconds for feature detection
+        self.SERVER_STARTUP_DELAY = 5  # Seconds to wait for server startup
+        
+        # Status constants
+        self.STATUS_PASSED = 'PASSED'
+        self.STATUS_WARNING = 'WARNING'
+        self.STATUS_FAILED = 'FAILED'
+        self.STATUS_SKIPPED = 'SKIPPED'
+        self.STATUS_PENDING = 'PENDING'
+    
     def run_pipeline(self):
         """Main pipeline execution"""
         logger.info("🚀 Starting Automated Test Pipeline")
@@ -65,8 +78,7 @@ class AutomatedTestPipeline:
             # Phase 4: UI functionality tests
             self.run_ui_functionality_tests()
             
-            # Phase 5: Image validation tests (SKIPPED - images removed)
-            # self.run_image_validation_tests()
+            # Phase 5: Image validation tests (REMOVED - images no longer used)
             
             # Phase 6: Performance tests
             self.run_performance_tests()
@@ -108,7 +120,7 @@ class AutomatedTestPipeline:
             raise FileNotFoundError(f"Missing required files: {missing_files}")
         
         logger.info("✅ Pre-flight checks passed")
-        self.test_results['tests']['preflight'] = {'status': 'PASSED', 'details': 'All required files present'}
+        self.test_results['tests']['preflight'] = {'status': self.STATUS_PASSED, 'details': 'All required files present'}
     
     def auto_update_pipeline_config(self):
         """Automatically update pipeline configuration based on detected features"""
@@ -168,7 +180,7 @@ class AutomatedTestPipeline:
             logger.info(f"📊 Feature categories: {', '.join(features_config['metadata']['categories'].keys())}")
             
             # Update pipeline thresholds based on feature complexity
-            if len(active_features) > 15:
+            if len(active_features) > self.HIGH_COMPLEXITY_THRESHOLD:
                 logger.info("🚀 High-complexity features detected - adjusting pipeline thresholds")
             
             logger.info("✅ Pipeline configuration updated successfully")
@@ -623,7 +635,7 @@ class AutomatedTestPipeline:
                     'javascript_functionality': js_tests,
                     'form_interactions': form_tests,
                     'exercise_database': exercise_tests,
-                    'image_functionality': image_tests,
+                    # 'image_functionality': image_tests,  # REMOVED - images no longer used
                     'responsive_design': responsive_tests,
                     'accessibility_features': accessibility_tests,
                     'error_handling': error_tests,
@@ -782,20 +794,9 @@ class AutomatedTestPipeline:
         except Exception as e:
             return {'status': 'FAILED', 'details': str(e)}
     
-    def test_image_functionality(self):
-        """Test image functionality and uniqueness (SKIPPED - images removed)"""
-        try:
-            # Images have been removed from the application
-            # This test is now skipped as the app no longer uses images
-            
-            return {
-                'status': 'SKIPPED',
-                'score': '0/0',
-                'details': {'note': 'Image functionality removed from application'}
-            }
-            
-        except Exception as e:
-            return {'status': 'FAILED', 'details': str(e)}
+    # def test_image_functionality(self):  # REMOVED - images no longer used
+    #     """Test image functionality and uniqueness (REMOVED)"""
+    #     pass
     
     def test_responsive_design(self):
         """Test responsive design implementation"""
@@ -913,7 +914,7 @@ class AutomatedTestPipeline:
                 'has_efficient_selectors': 'querySelector' in js_content or 'getElementById' in js_content,
                 'has_event_delegation': 'addEventListener' in js_content,
                 'has_lazy_loading': True,  # not applicable; mark as true
-                'has_optimized_images': True,  # images removed
+                'has_optimized_images': True,  # images no longer used
                 'has_minimal_dom_manipulation': True
             }
             
@@ -1715,63 +1716,9 @@ class AutomatedTestPipeline:
         except Exception as e:
             return {'status': 'FAILED', 'details': str(e), 'feature': 'Smart Calculation'}
     
-    def run_image_validation_tests(self):
-        """Test image uniqueness and availability"""
-        logger.info("🖼️ Running Image Validation Tests")
-        
-        try:
-            # Check exercise images database
-            images_path = self.project_root / 'exercise_images_database.js'
-            if not images_path.exists():
-                raise FileNotFoundError("Exercise images database not found")
-            
-            with open(images_path, 'r', encoding='utf-8') as f:
-                images_content = f.read()
-            
-            # Extract image URLs
-            import re
-            image_urls = re.findall(r'https://[^\s"\']+', images_content)
-            
-            # Check for duplicates
-            unique_urls = set(image_urls)
-            duplicate_count = len(image_urls) - len(unique_urls)
-            
-            # Check image accessibility (sample a few)
-            accessible_images = 0
-            total_checked = min(5, len(unique_urls))
-            
-            for url in list(unique_urls)[:total_checked]:
-                try:
-                    response = requests.head(url, timeout=10)
-                    if response.status_code == 200:
-                        accessible_images += 1
-                except:
-                    pass
-            
-            image_status = 'PASSED'
-            if duplicate_count > 0:
-                image_status = 'WARNING'
-            if accessible_images < total_checked * 0.8:  # Less than 80% accessible
-                image_status = 'WARNING'
-            
-            self.test_results['tests']['image_validation'] = {
-                'status': image_status,
-                'details': {
-                    'total_images': len(image_urls),
-                    'unique_images': len(unique_urls),
-                    'duplicates': duplicate_count,
-                    'accessibility_score': f'{accessible_images}/{total_checked}'
-                }
-            }
-            
-            logger.info(f"✅ Image validation completed: {image_status}")
-            
-        except Exception as e:
-            logger.error(f"❌ Image validation failed: {str(e)}")
-            self.test_results['tests']['image_validation'] = {
-                'status': 'FAILED',
-                'details': str(e)
-            }
+    # def run_image_validation_tests(self):  # REMOVED - images no longer used
+    #     """Test image uniqueness and availability (REMOVED)"""
+    #     pass
     
     def run_performance_tests(self):
         """Run basic performance benchmarks"""
@@ -1789,8 +1736,8 @@ class AutomatedTestPipeline:
             performance_status = 'PASSED'
             warnings = []
             
-            if file_sizes.get('script.js', 0) > 100000:  # 100KB
-                warnings.append('script.js is larger than 100KB')
+            if file_sizes.get('script.js', 0) > self.MAX_JS_SIZE:
+                warnings.append(f'script.js is larger than {self.MAX_JS_SIZE // 1000}KB')
                 performance_status = 'WARNING'
             
             if file_sizes.get('exercise_images_database.js', 0) > 50000:  # 50KB
