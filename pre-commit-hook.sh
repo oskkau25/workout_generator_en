@@ -79,8 +79,10 @@ else
     exit 1
 fi
 
-# Step 2: Local Page Preview
-print_status $BLUE "🌐 Starting Local Page Preview..."
+# Step 2: Local Page Preview (MANDATORY)
+print_status $BLUE "🌐 Starting Local Page Preview (MANDATORY STEP)..."
+print_status $BLUE "======================================"
+print_status $YELLOW "⚠️  This step is MANDATORY - you must review the changes locally before committing"
 print_status $BLUE "======================================"
 
 # Kill any existing server on port 5173
@@ -142,6 +144,7 @@ if kill -0 $SERVER_PID 2>/dev/null; then
         fi
         
         print_status $YELLOW "📱 Review the changes in your browser"
+        print_status $RED "🚨 IMPORTANT: You MUST complete this review before committing!"
         
         print_status $BLUE "🔍 VISUAL REVIEW CHECKLIST:"
         print_status $BLUE "======================================"
@@ -162,8 +165,9 @@ if kill -0 $SERVER_PID 2>/dev/null; then
         print_status $BLUE "======================================"
         
         print_status $BLUE "⏳ Waiting for your review... (press Enter when ready to continue)"
+        print_status $RED "🚨 You cannot skip this step - it's mandatory for quality assurance!"
         
-        # Wait for user input
+        # Wait for user input - this is MANDATORY
         read -p "Press Enter to continue with commit, or Ctrl+C to abort..."
         
         # Stop the server
@@ -171,16 +175,20 @@ if kill -0 $SERVER_PID 2>/dev/null; then
         kill $SERVER_PID 2>/dev/null
         sleep 1
         
-        print_status $GREEN "✅ Local preview completed"
+        print_status $GREEN "✅ Local preview completed - changes approved for commit"
     else
         print_status $RED "❌ Server failed to respond after $max_attempts attempts"
         print_status $RED "❌ Server may be blocked by firewall or port conflicts"
         kill $SERVER_PID 2>/dev/null
-        print_status $YELLOW "⚠️  Continuing without local preview..."
+        print_status $RED "🚨 LOCAL PREVIEW FAILED - COMMIT BLOCKED"
+        print_status $RED "🚨 You must be able to preview changes locally before committing"
+        exit 1
     fi
 else
     print_status $RED "❌ Failed to start local server"
-    print_status $YELLOW "⚠️  Continuing without local preview..."
+    print_status $RED "🚨 LOCAL PREVIEW FAILED - COMMIT BLOCKED"
+    print_status $RED "🚨 You must be able to preview changes locally before committing"
+    exit 1
 fi
 
 # Step 3: Show what will be committed

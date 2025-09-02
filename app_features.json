@@ -1,0 +1,214 @@
+{
+  "app_features": {
+    "workout_flow": {
+      "name": "Multi-step Workout Flow",
+      "description": "Complete workout experience from overview to individual exercise execution",
+      "detection_patterns": {
+        "html": ["workout-overview", "workout-player"],
+        "js": ["renderOverview", "renderExercisePlayer"]
+      },
+      "test_function": "test_overview_and_player_ui",
+      "category": "core_workout"
+    },
+    "timers": {
+      "name": "Timer Functionality",
+      "description": "Work/rest phase timers with countdown and auto-advance",
+      "detection_patterns": {
+        "html": ["timer", "countdown"],
+        "js": ["setInterval", "setTimeout", "remainingSeconds"]
+      },
+      "test_function": "test_timer_and_pause_resume_presence",
+      "category": "core_workout"
+    },
+    "audio_vibration": {
+      "name": "Audio and Vibration Cues",
+      "description": "Sound and vibration notifications for phase changes",
+      "detection_patterns": {
+        "html": ["audio", "vibration"],
+        "js": ["AudioContext", "navigator.vibrate", "playSound"]
+      },
+      "test_function": "test_cues_and_preferences_presence",
+      "category": "user_experience"
+    },
+    "rest_overlay": {
+      "name": "Rest Overlay",
+      "description": "Dark overlay during rest periods showing remaining time and next exercise",
+      "detection_patterns": {
+        "html": ["rest-overlay"],
+        "js": ["rest-overlay", "showRestOverlay"]
+      },
+      "test_function": "test_rest_overlay_presence",
+      "category": "user_experience"
+    },
+    "navigation": {
+      "name": "Navigation Features",
+      "description": "Keyboard shortcuts and swipe gestures for workout control",
+      "detection_patterns": {
+        "html": ["keyboard", "swipe"],
+        "js": ["keydown", "addEventListener", "swipe"]
+      },
+      "test_function": "test_keyboard_and_swipe_presence",
+      "category": "user_experience"
+    },
+    "section_badges": {
+      "name": "Section Badges",
+      "description": "Visual indicators for warm-up, main, and cool-down sections",
+      "detection_patterns": {
+        "html": ["section-badge"],
+        "js": ["section-badge", "renderSectionBadge"]
+      },
+      "test_function": "test_section_badge_presence",
+      "category": "ui_components"
+    },
+    "speech": {
+      "name": "Speech Functionality",
+      "description": "Spoken countdown and exercise instructions",
+      "detection_patterns": {
+        "html": ["speech", "tts"],
+        "js": ["speechSynthesis", "speak("]
+      },
+      "test_function": "test_spoken_countdown_presence",
+      "category": "accessibility"
+    },
+    "exercise_swapping": {
+      "name": "Exercise Swapping",
+      "description": "Ability to replace exercises with similar alternatives",
+      "detection_patterns": {
+        "html": ["swap", "alternative"],
+        "js": ["swapExercise", "findSimilarExercise"]
+      },
+      "test_function": "test_exercise_swapping_functionality",
+      "category": "workout_customization"
+    },
+    "form_interactions": {
+      "name": "Form Interactions",
+      "description": "Workout generation form with validation and submission",
+      "detection_patterns": {
+        "html": ["generate-btn", "form"],
+        "js": ["addEventListener", "generateWorkout"]
+      },
+      "test_function": "test_form_interactions",
+      "category": "core_workout"
+    },
+    "responsive_design": {
+      "name": "Responsive Design",
+      "description": "Mobile-friendly layout with responsive breakpoints",
+      "detection_patterns": {
+        "html": ["md:", "lg:", "sm:"],
+        "js": ["responsive", "mobile"]
+      },
+      "test_function": "test_responsive_design",
+      "category": "ui_components"
+    },
+    "accessibility": {
+      "name": "Accessibility Features",
+      "description": "ARIA labels, keyboard navigation, and screen reader support",
+      "detection_patterns": {
+        "html": ["aria-", "role="],
+        "js": ["accessibility", "aria"]
+      },
+      "test_function": "test_accessibility_features",
+      "category": "accessibility"
+    },
+    "error_handling": {
+      "name": "Error Handling",
+      "description": "Graceful error handling and user feedback",
+      "detection_patterns": {
+        "html": ["error", "warning"],
+        "js": ["showError", "try {", "} catch"]
+      },
+      "test_function": "test_error_handling",
+      "category": "robustness"
+    },
+    "performance": {
+      "name": "Performance Features",
+      "description": "Local storage, caching, and performance optimizations",
+      "detection_patterns": {
+        "html": ["performance", "cache"],
+        "js": ["localStorage", "performance", "optimize"]
+      },
+      "test_function": "test_ui_performance",
+      "category": "performance"
+    },
+    "timing": {
+      "name": "Timing Functionality",
+      "description": "Work/rest time sliders and validation",
+      "detection_patterns": {
+        "html": ["work-time", "rest-time"],
+        "js": ["workTime", "restTime", "workTimeSlider"]
+      },
+      "test_function": "test_timing_functionality",
+      "category": "core_workout"
+    },
+    "training_patterns": {
+      "name": "Training Pattern Selection",
+      "description": "Standard, Circuit, Tabata, and Pyramid training options",
+      "detection_patterns": {
+        "html": ["training-pattern"],
+        "js": ["generatePatternBasedWorkout"]
+      },
+      "test_function": "test_training_pattern_functionality",
+      "category": "workout_customization"
+    },
+    "circuit_training": {
+      "name": "Circuit Training",
+      "description": "Multiple rounds of exercises with circuit rest periods",
+      "detection_patterns": {
+        "html": ["circuit", "rounds"],
+        "js": ["generateCircuitWorkout", "circuit_round"]
+      },
+      "test_function": "test_circuit_training_functionality",
+      "category": "workout_customization"
+    },
+    "tabata_intervals": {
+      "name": "Tabata Intervals",
+      "description": "High-intensity interval training with work/rest cycles",
+      "detection_patterns": {
+        "html": ["tabata", "intervals"],
+        "js": ["generateTabataWorkout", "tabata_set"]
+      },
+      "test_function": "test_tabata_functionality",
+      "category": "workout_customization"
+    },
+    "pyramid_training": {
+      "name": "Pyramid Training",
+      "description": "Increasing then decreasing intensity levels",
+      "detection_patterns": {
+        "html": ["pyramid", "levels"],
+        "js": ["generatePyramidWorkout", "pyramid_set"]
+      },
+      "test_function": "test_pyramid_training_functionality",
+      "category": "workout_customization"
+    },
+    "smart_calculation": {
+      "name": "Smart Calculation",
+      "description": "Automatic adjustment of training pattern settings based on workout duration",
+      "detection_patterns": {
+        "html": ["Smart Calculation", "15min:", "30min:"],
+        "js": ["workoutDurationMinutes", "updatePatternSettingsForDuration"]
+      },
+      "test_function": "test_smart_calculation_functionality",
+      "category": "workout_customization"
+    }
+  },
+  "metadata": {
+    "version": "2.0",
+    "last_updated": "2025-09-02T19:50:00Z",
+    "total_features": 20,
+    "categories": {
+      "core_workout": 4,
+      "user_experience": 3,
+      "ui_components": 2,
+      "accessibility": 2,
+      "workout_customization": 6,
+      "robustness": 1,
+      "performance": 1,
+      "other": 1
+    },
+    "pipeline_integration": {
+      "auto_detection": true,
+      "dynamic_testing": true,
+      "feature_tracking": true
+    }
+  }
+}

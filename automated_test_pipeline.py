@@ -1407,6 +1407,15 @@ class AutomatedTestPipeline:
         logger.info("🔍 Running Dynamic Feature Detection")
         
         try:
+            # Load centralized feature list
+            features_file = self.project_root / 'app_features.json'
+            if not features_file.exists():
+                logger.warning("⚠️ app_features.json not found, using fallback detection")
+                return self._fallback_dynamic_detection()
+            
+            with open(features_file, 'r', encoding='utf-8') as f:
+                features_config = json.load(f)
+            
             js_path = self.project_root / 'script.js'
             html_path = self.project_root / 'index.html'
             
@@ -1417,110 +1426,145 @@ class AutomatedTestPipeline:
             
             dynamic_tests = []
             
-            # 1. Detect workout flow features
-            if 'workout-overview' in html_content and 'workout-player' in html_content:
-                logger.info("📱 Detected multi-step workout flow")
-                dynamic_tests.append(self.test_overview_and_player_ui())
+            # Use centralized feature list for dynamic detection
+            for feature_key, feature_data in features_config['app_features'].items():
+                html_patterns = feature_data['detection_patterns']['html']
+                js_patterns = feature_data['detection_patterns']['js']
+                
+                # Check if feature is present in codebase
+                html_detected = any(pattern in html_content for pattern in html_patterns)
+                js_detected = any(pattern in js_content for pattern in js_patterns)
+                
+                if html_detected or js_detected:
+                    logger.info(f"🎯 Detected: {feature_data['name']}")
+                    
+                    # Get the test function name and call it
+                    test_function_name = feature_data['test_function']
+                    if hasattr(self, test_function_name):
+                        test_function = getattr(self, test_function_name)
+                        try:
+                            test_result = test_function()
+                            dynamic_tests.append(test_result)
+                        except Exception as e:
+                            logger.warning(f"⚠️ Test function {test_function_name} failed: {str(e)}")
+                    else:
+                        logger.warning(f"⚠️ Test function {test_function_name} not found for {feature_data['name']}")
+                else:
+                    logger.info(f"❌ Not detected: {feature_data['name']}")
             
-            # 2. Detect timer functionality
-            if 'timer' in js_content.lower() and ('setInterval' in js_content or 'setTimeout' in js_content):
-                logger.info("⏱️ Detected timer functionality")
-                dynamic_tests.append(self.test_timer_and_pause_resume_presence())
-            
-            # 3. Detect audio/vibration features
-            if 'AudioContext' in js_content or 'navigator.vibrate' in js_content:
-                logger.info("🔊 Detected audio/vibration features")
-                dynamic_tests.append(self.test_cues_and_preferences_presence())
-            
-            # 4. Detect rest overlay
-            if 'rest-overlay' in html_content and 'rest-overlay' in js_content:
-                logger.info("😴 Detected rest overlay")
-                dynamic_tests.append(self.test_rest_overlay_presence())
-            
-            # 5. Detect navigation features
-            if 'keydown' in js_content or 'addEventListener' in js_content:
-                logger.info("⌨️ Detected navigation features")
-                dynamic_tests.append(self.test_keyboard_and_swipe_presence())
-            
-            # 6. Detect section badges
-            if 'section-badge' in html_content and 'section-badge' in js_content:
-                logger.info("🏷️ Detected section badges")
-                dynamic_tests.append(self.test_section_badge_presence())
-            
-            # 7. Detect speech functionality
-            if 'speechSynthesis' in js_content or 'speak(' in js_content:
-                logger.info("🗣️ Detected speech functionality")
-                dynamic_tests.append(self.test_spoken_countdown_presence())
-            
-            # 8. Detect exercise swapping
-            if 'swapExercise' in js_content or 'findSimilarExercise' in js_content:
-                logger.info("🔄 Detected exercise swapping")
-                dynamic_tests.append(self.test_exercise_swapping_functionality())
-            
-            # 9. Detect equipment validation (always run this as it's core to our functionality)
+            # Special case: Equipment validation (always run as it's core functionality)
             logger.info("🏋️ Running equipment validation")
             dynamic_tests.append(self.test_exhaustive_equipment_combinations())
-            
-            # 10. Detect form interactions if they exist
-            if 'generate-btn' in html_content and 'addEventListener' in js_content:
-                logger.info("📝 Detected form interactions")
-                dynamic_tests.append(self.test_form_interactions())
-            
-            # 11. Detect responsive design features
-            if 'md:' in html_content or 'lg:' in html_content:
-                logger.info("📱 Detected responsive design")
-                dynamic_tests.append(self.test_responsive_design())
-            
-            # 12. Detect accessibility features
-            if 'aria-' in html_content or 'role=' in html_content:
-                logger.info("♿ Detected accessibility features")
-                dynamic_tests.append(self.test_accessibility_features())
-            
-            # 13. Detect error handling
-            if 'showError' in js_content or 'try {' in js_content:
-                logger.info("⚠️ Detected error handling")
-                dynamic_tests.append(self.test_error_handling())
-            
-            # 14. Detect performance features
-            if 'localStorage' in js_content or 'performance' in js_content:
-                logger.info("⚡ Detected performance features")
-                dynamic_tests.append(self.test_ui_performance())
-            
-            # 15. Detect timing functionality
-            if 'workTime' in js_content or 'restTime' in js_content:
-                logger.info("⏰ Detected timing functionality")
-                dynamic_tests.append(self.test_timing_functionality())
-            
-            # 16. Detect training pattern functionality
-            if 'training-pattern' in html_content and 'generatePatternBasedWorkout' in js_content:
-                logger.info("🎯 Detected training pattern functionality")
-                dynamic_tests.append(self.test_training_pattern_functionality())
-            
-            # 17. Detect circuit training
-            if 'generateCircuitWorkout' in js_content or 'circuit_round' in js_content:
-                logger.info("🔄 Detected circuit training functionality")
-                dynamic_tests.append(self.test_circuit_training_functionality())
-            
-            # 18. Detect Tabata intervals
-            if 'generateTabataWorkout' in js_content or 'tabata_set' in js_content:
-                logger.info("⏱️ Detected Tabata interval functionality")
-                dynamic_tests.append(self.test_tabata_functionality())
-            
-            # 19. Detect pyramid training
-            if 'generatePyramidWorkout' in js_content or 'pyramid_set' in js_content:
-                logger.info("🏗️ Detected pyramid training functionality")
-                dynamic_tests.append(self.test_pyramid_training_functionality())
-            
-            # 20. Detect smart calculation functionality
-            if 'workoutDurationMinutes' in js_content and 'updatePatternSettingsForDuration' in js_content:
-                logger.info("🧮 Detected smart calculation functionality")
-                dynamic_tests.append(self.test_smart_calculation_functionality())
             
             logger.info(f"🎯 Dynamic detection found {len(dynamic_tests)} feature tests to run")
             return dynamic_tests
             
         except Exception as e:
             logger.error(f"❌ Dynamic feature detection failed: {str(e)}")
+            logger.info("🔄 Falling back to hardcoded detection")
+            return self._fallback_dynamic_detection()
+    
+    def _fallback_dynamic_detection(self):
+        """Fallback dynamic detection when app_features.json is not available"""
+        logger.info("🔄 Using fallback dynamic feature detection")
+        
+        try:
+            js_path = self.project_root / 'script.js'
+            html_path = self.project_root / 'index.html'
+            
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            dynamic_tests = []
+            
+            # Fallback detection patterns (legacy method)
+            if 'workout-overview' in html_content and 'workout-player' in html_content:
+                logger.info("📱 Detected multi-step workout flow")
+                dynamic_tests.append(self.test_overview_and_player_ui())
+            
+            if 'timer' in js_content.lower() and ('setInterval' in js_content or 'setTimeout' in js_content):
+                logger.info("⏱️ Detected timer functionality")
+                dynamic_tests.append(self.test_timer_and_pause_resume_presence())
+            
+            if 'AudioContext' in js_content or 'navigator.vibrate' in js_content:
+                logger.info("🔊 Detected audio/vibration features")
+                dynamic_tests.append(self.test_cues_and_preferences_presence())
+            
+            if 'rest-overlay' in html_content and 'rest-overlay' in js_content:
+                logger.info("😴 Detected rest overlay")
+                dynamic_tests.append(self.test_rest_overlay_presence())
+            
+            if 'keydown' in js_content or 'addEventListener' in js_content:
+                logger.info("⌨️ Detected navigation features")
+                dynamic_tests.append(self.test_keyboard_and_swipe_presence())
+            
+            if 'section-badge' in html_content and 'section-badge' in js_content:
+                logger.info("🏷️ Detected section badges")
+                dynamic_tests.append(self.test_section_badge_presence())
+            
+            if 'speechSynthesis' in js_content or 'speak(' in js_content:
+                logger.info("🗣️ Detected speech functionality")
+                dynamic_tests.append(self.test_spoken_countdown_presence())
+            
+            if 'swapExercise' in js_content or 'findSimilarExercise' in js_content:
+                logger.info("🔄 Detected exercise swapping")
+                dynamic_tests.append(self.test_exercise_swapping_functionality())
+            
+            # Equipment validation (always run)
+            logger.info("🏋️ Running equipment validation")
+            dynamic_tests.append(self.test_exhaustive_equipment_combinations())
+            
+            if 'generate-btn' in html_content and 'addEventListener' in js_content:
+                logger.info("📝 Detected form interactions")
+                dynamic_tests.append(self.test_form_interactions())
+            
+            if 'md:' in html_content or 'lg:' in html_content:
+                logger.info("📱 Detected responsive design")
+                dynamic_tests.append(self.test_responsive_design())
+            
+            if 'aria-' in html_content or 'role=' in html_content:
+                logger.info("♿ Detected accessibility features")
+                dynamic_tests.append(self.test_accessibility_features())
+            
+            if 'showError' in js_content or 'try {' in js_content:
+                logger.info("⚠️ Detected error handling")
+                dynamic_tests.append(self.test_error_handling())
+            
+            if 'localStorage' in js_content or 'performance' in js_content:
+                logger.info("⚡ Detected performance features")
+                dynamic_tests.append(self.test_ui_performance())
+            
+            if 'workTime' in js_content or 'restTime' in js_content:
+                logger.info("⏰ Detected timing functionality")
+                dynamic_tests.append(self.test_timing_functionality())
+            
+            if 'training-pattern' in html_content and 'generatePatternBasedWorkout' in js_content:
+                logger.info("🎯 Detected training pattern functionality")
+                dynamic_tests.append(self.test_training_pattern_functionality())
+            
+            if 'generateCircuitWorkout' in js_content or 'circuit_round' in js_content:
+                logger.info("🔄 Detected circuit training functionality")
+                dynamic_tests.append(self.test_circuit_training_functionality())
+            
+            if 'generateTabataWorkout' in js_content or 'tabata_set' in js_content:
+                logger.info("⏱️ Detected Tabata interval functionality")
+                dynamic_tests.append(self.test_tabata_functionality())
+            
+            if 'generatePyramidWorkout' in js_content or 'pyramid_set' in js_content:
+                logger.info("🏗️ Detected pyramid training functionality")
+                dynamic_tests.append(self.test_pyramid_training_functionality())
+            
+            if 'workoutDurationMinutes' in js_content and 'updatePatternSettingsForDuration' in js_content:
+                logger.info("🧮 Detected smart calculation functionality")
+                dynamic_tests.append(self.test_smart_calculation_functionality())
+            
+            logger.info(f"🔄 Fallback detection found {len(dynamic_tests)} feature tests to run")
+            return dynamic_tests
+            
+        except Exception as e:
+            logger.error(f"❌ Fallback dynamic detection failed: {str(e)}")
             return []
     
     def test_exercise_swapping_functionality(self):
