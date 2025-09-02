@@ -245,10 +245,16 @@
                                 <div id="pattern-settings" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
                                     <!-- Circuit Training Settings -->
                                     <div id="circuit-settings" class="hidden">
+                                        <div class="mb-3 p-3 bg-fit-primary/10 rounded-lg">
+                                            <p class="text-sm text-fit-primary font-medium">
+                                                💡 <strong>Smart Calculation:</strong> Rounds automatically adjust based on your workout duration
+                                            </p>
+                                        </div>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label class="block text-sm text-fit-secondary mb-2">Circuit Rounds</label>
                                                 <input type="number" id="circuit-rounds" value="3" min="2" max="6" class="input-field">
+                                                <p class="text-xs text-fit-secondary mt-1">15min: 2-3, 30min: 3-4, 45min: 4-5, 60min: 5-6</p>
                                             </div>
                                             <div>
                                                 <label class="block text-sm text-fit-secondary mb-2">Rest Between Circuits (sec)</label>
@@ -259,10 +265,16 @@
                                     
                                     <!-- Tabata Settings -->
                                     <div id="tabata-settings" class="hidden">
+                                        <div class="mb-3 p-3 bg-fit-accent/10 rounded-lg">
+                                            <p class="text-sm text-fit-accent font-medium">
+                                                ⏱️ <strong>Smart Calculation:</strong> Rounds automatically adjust based on your workout duration
+                                            </p>
+                                        </div>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label class="block text-sm text-fit-secondary mb-2">Tabata Rounds</label>
                                                 <input type="number" id="tabata-rounds" value="8" min="4" max="12" class="input-field">
+                                                <p class="text-xs text-fit-secondary mt-1">15min: 6, 30min: 8, 45min: 10, 60min: 12</p>
                                             </div>
                                             <div>
                                                 <label class="block text-sm text-fit-secondary mb-2">Rest Between Sets (sec)</label>
@@ -273,10 +285,16 @@
                                     
                                     <!-- Pyramid Settings -->
                                     <div id="pyramid-settings" class="hidden">
+                                        <div class="mb-3 p-3 bg-fit-warning/10 rounded-lg">
+                                            <p class="text-sm text-fit-warning font-medium">
+                                                🏗️ <strong>Smart Calculation:</strong> Levels automatically adjust based on your workout duration
+                                            </p>
+                                        </div>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label class="block text-sm text-fit-secondary mb-2">Pyramid Levels</label>
                                                 <input type="number" id="pyramid-levels" value="5" min="3" max="7" class="input-field">
+                                                <p class="text-xs text-fit-secondary mt-1">15min: 3-4, 30min: 4-5, 45min: 5-6, 60min: 6-7</p>
                                             </div>
                                             <div>
                                                 <label class="block text-sm text-fit-secondary mb-2">Rest Between Levels (sec)</label>

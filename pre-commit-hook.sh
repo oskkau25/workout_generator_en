@@ -92,15 +92,40 @@ print_status $BLUE "🚀 Starting local server on http://localhost:5173..."
 python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
 SERVER_PID=$!
 
-# Wait a moment for server to start
-sleep 3
+# Wait longer for server to fully start and be ready to accept connections
+print_status $YELLOW "⏳ Waiting for server to be ready..."
+sleep 5
 
 # Check if server started successfully and is responding
 if kill -0 $SERVER_PID 2>/dev/null; then
-    # Test if server is actually responding
-    if curl -s -o /dev/null -w "%{http_code}" http://localhost:5173 | grep -q "200"; then
+    # Test server connection multiple times to ensure it's fully ready
+    print_status $YELLOW "🔍 Testing server connection..."
+    connection_attempts=0
+    max_attempts=10
+    server_ready=false
+    
+    while [ $connection_attempts -lt $max_attempts ] && [ "$server_ready" = false ]; do
+        connection_attempts=$((connection_attempts + 1))
+        print_status $BLUE "   Attempt $connection_attempts/$max_attempts..."
+        
+        if curl -s -o /dev/null -w "%{http_code}" http://localhost:5173 --connect-timeout 5 --max-time 10 2>/dev/null | grep -q "200"; then
+            server_ready=true
+            print_status $GREEN "✅ Server connection successful!"
+        else
+            if [ $connection_attempts -lt $max_attempts ]; then
+                print_status $YELLOW "   Server not ready yet, waiting 2 seconds..."
+                sleep 2
+            fi
+        fi
+    done
+    
+    if [ "$server_ready" = true ]; then
         print_status $GREEN "✅ Local server started successfully"
         print_status $BLUE "🌐 Your app is now running at: http://localhost:5173"
+        
+        # Wait a moment more to ensure server is fully stable
+        print_status $YELLOW "⏳ Ensuring server stability..."
+        sleep 2
         
         # Try to automatically open the browser
         print_status $BLUE "🌐 Attempting to open browser automatically..."
@@ -146,7 +171,8 @@ if kill -0 $SERVER_PID 2>/dev/null; then
         
         print_status $GREEN "✅ Local preview completed"
     else
-        print_status $RED "❌ Server started but not responding properly"
+        print_status $RED "❌ Server failed to respond after $max_attempts attempts"
+        print_status $RED "❌ Server may be blocked by firewall or port conflicts"
         kill $SERVER_PID 2>/dev/null
         print_status $YELLOW "⚠️  Continuing without local preview..."
     fi

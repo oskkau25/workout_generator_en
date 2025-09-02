@@ -1591,8 +1591,46 @@ function generateRandomSet(exerciseList, count) {
 					const pattern = e.target.value;
 					appState.trainingPattern = pattern;
 					showPatternSettings(pattern);
+					updatePatternSettingsForDuration();
 				});
 			});
+			
+			// Add listeners for duration changes to auto-update pattern settings
+			const durationInputs = document.querySelectorAll('input[name="duration"]');
+			durationInputs.forEach(input => {
+				input.addEventListener('change', () => {
+					updatePatternSettingsForDuration();
+				});
+			});
+		}
+
+		function updatePatternSettingsForDuration() {
+			// Only update if a pattern is selected
+			if (appState.trainingPattern === 'standard') return;
+			
+			const selectedDuration = document.querySelector('input[name="duration"]:checked')?.value || '30';
+			const workoutDurationMinutes = parseInt(selectedDuration);
+			
+			switch(appState.trainingPattern) {
+				case 'circuit':
+					const circuitRounds = Math.max(2, Math.min(6, Math.floor(workoutDurationMinutes / 10)));
+					if (document.getElementById('circuit-rounds')) {
+						document.getElementById('circuit-rounds').value = circuitRounds;
+					}
+					break;
+				case 'tabata':
+					const tabataRounds = Math.max(4, Math.min(12, Math.floor(workoutDurationMinutes / 5)));
+					if (document.getElementById('tabata-rounds')) {
+						document.getElementById('tabata-rounds').value = tabataRounds;
+					}
+					break;
+				case 'pyramid':
+					const pyramidLevels = Math.max(3, Math.min(7, Math.floor(workoutDurationMinutes / 8)));
+					if (document.getElementById('pyramid-levels')) {
+						document.getElementById('pyramid-levels').value = pyramidLevels;
+					}
+					break;
+			}
 		}
 
 		function showPatternSettings(pattern) {
@@ -1628,17 +1666,30 @@ function generateRandomSet(exerciseList, count) {
 		function getPatternSettings() {
 			const settings = {};
 			
+			// Get the selected workout duration
+			const selectedDuration = document.querySelector('input[name="duration"]:checked')?.value || '30';
+			const workoutDurationMinutes = parseInt(selectedDuration);
+			
 			switch(appState.trainingPattern) {
 				case 'circuit':
-					settings.rounds = parseInt(document.getElementById('circuit-rounds')?.value) || 3;
+					// Calculate rounds based on workout duration
+					// 15min: 2-3 rounds, 30min: 3-4 rounds, 45min: 4-5 rounds, 60min: 5-6 rounds
+					const circuitRounds = Math.max(2, Math.min(6, Math.floor(workoutDurationMinutes / 10)));
+					settings.rounds = parseInt(document.getElementById('circuit-rounds')?.value) || circuitRounds;
 					settings.circuitRest = parseInt(document.getElementById('circuit-rest')?.value) || 60;
 					break;
 				case 'tabata':
-					settings.rounds = parseInt(document.getElementById('tabata-rounds')?.value) || 8;
+					// Calculate rounds based on workout duration
+					// 15min: 6 rounds, 30min: 8 rounds, 45min: 10 rounds, 60min: 12 rounds
+					const tabataRounds = Math.max(4, Math.min(12, Math.floor(workoutDurationMinutes / 5)));
+					settings.rounds = parseInt(document.getElementById('tabata-rounds')?.value) || tabataRounds;
 					settings.setRest = parseInt(document.getElementById('tabata-rest')?.value) || 30;
 					break;
 				case 'pyramid':
-					settings.levels = parseInt(document.getElementById('pyramid-levels')?.value) || 5;
+					// Calculate levels based on workout duration
+					// 15min: 3-4 levels, 30min: 4-5 levels, 45min: 5-6 levels, 60min: 6-7 levels
+					const pyramidLevels = Math.max(3, Math.min(7, Math.floor(workoutDurationMinutes / 8)));
+					settings.levels = parseInt(document.getElementById('pyramid-levels')?.value) || pyramidLevels;
 					settings.levelRest = parseInt(document.getElementById('pyramid-rest')?.value) || 45;
 					break;
 			}
