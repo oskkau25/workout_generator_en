@@ -1557,25 +1557,232 @@ function generateRandomSet(exerciseList, count) {
     return shuffled.slice(0, numToReturn);
 }
 
-// --- MAIN INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', () => {
-	// App state for overview/player flow
-	const appState = {
-		warmup: [],
-		main: [],
-		cooldown: [],
-		sequence: [],
-		workTime: 45,
-		restTime: 15,
-		currentIndex: 0,
-		phase: 'work', // 'work' | 'rest'
-		remainingSeconds: 0,
-		timerId: null,
-		isPaused: false,
-		enableSound: true,
-		enableVibration: true,
-		audioContext: null
-	};
+	// --- MAIN INITIALIZATION ---
+	document.addEventListener('DOMContentLoaded', () => {
+		// Initialize training pattern functionality
+		initializeTrainingPatterns();
+		// App state for overview/player flow
+		const appState = {
+			warmup: [],
+			main: [],
+			cooldown: [],
+			sequence: [],
+			workTime: 45,
+			restTime: 15,
+			currentIndex: 0,
+			phase: 'work', // 'work' | 'rest'
+			remainingSeconds: 0,
+			timerId: null,
+			isPaused: false,
+			enableSound: true,
+			enableVibration: true,
+			audioContext: null,
+			trainingPattern: 'standard', // New: training pattern
+			patternSettings: {} // New: pattern-specific settings
+		};
+
+		// --- Training Pattern Management ---
+		function initializeTrainingPatterns() {
+			const patternInputs = document.querySelectorAll('input[name="training-pattern"]');
+			const patternSettings = document.getElementById('pattern-settings');
+			
+			patternInputs.forEach(input => {
+				input.addEventListener('change', (e) => {
+					const pattern = e.target.value;
+					appState.trainingPattern = pattern;
+					showPatternSettings(pattern);
+				});
+			});
+		}
+
+		function showPatternSettings(pattern) {
+			const patternSettings = document.getElementById('pattern-settings');
+			const circuitSettings = document.getElementById('circuit-settings');
+			const tabataSettings = document.getElementById('tabata-settings');
+			const pyramidSettings = document.getElementById('pyramid-settings');
+			
+			// Hide all settings first
+			circuitSettings.classList.add('hidden');
+			tabataSettings.classList.add('hidden');
+			pyramidSettings.classList.add('hidden');
+			
+			// Show pattern settings container
+			patternSettings.classList.remove('hidden');
+			
+			// Show specific settings based on pattern
+			switch(pattern) {
+				case 'circuit':
+					circuitSettings.classList.remove('hidden');
+					break;
+				case 'tabata':
+					tabataSettings.classList.remove('hidden');
+					break;
+				case 'pyramid':
+					pyramidSettings.classList.remove('hidden');
+					break;
+				default:
+					patternSettings.classList.add('hidden');
+			}
+		}
+
+		function getPatternSettings() {
+			const settings = {};
+			
+			switch(appState.trainingPattern) {
+				case 'circuit':
+					settings.rounds = parseInt(document.getElementById('circuit-rounds')?.value) || 3;
+					settings.circuitRest = parseInt(document.getElementById('circuit-rest')?.value) || 60;
+					break;
+				case 'tabata':
+					settings.rounds = parseInt(document.getElementById('tabata-rounds')?.value) || 8;
+					settings.setRest = parseInt(document.getElementById('tabata-rest')?.value) || 30;
+					break;
+				case 'pyramid':
+					settings.levels = parseInt(document.getElementById('pyramid-levels')?.value) || 5;
+					settings.levelRest = parseInt(document.getElementById('pyramid-rest')?.value) || 45;
+					break;
+			}
+			
+			return settings;
+		}
+
+		// --- Enhanced Workout Generation with Training Patterns ---
+		function generatePatternBasedWorkout(exercises, pattern, settings) {
+			switch(pattern) {
+				case 'circuit':
+					return generateCircuitWorkout(exercises, settings);
+				case 'tabata':
+					return generateTabataWorkout(exercises, settings);
+				case 'pyramid':
+					return generatePyramidWorkout(exercises, settings);
+				default:
+					return generateStandardWorkout(exercises);
+			}
+		}
+
+		function generateCircuitWorkout(exercises, settings) {
+			const { rounds = 3, circuitRest = 60 } = settings;
+			const workout = [];
+			
+			// Create multiple rounds of the same exercises
+			for (let round = 1; round <= rounds; round++) {
+				// Add round header
+				workout.push({
+					name: `Round ${round}`,
+					description: `Complete all exercises in this round. Rest ${circuitRest} seconds after completing the round.`,
+					equipment: "Bodyweight",
+					level: ["Beginner", "Intermediate", "Advanced"],
+					muscle: "Full Body",
+					type: "circuit_round",
+					_round: round,
+					_restAfter: circuitRest
+				});
+				
+				// Add exercises for this round
+				exercises.forEach(exercise => {
+					workout.push({
+						...exercise,
+						_round: round,
+						_originalName: exercise.name,
+						name: `${exercise.name} (Round ${round})`
+					});
+				});
+			}
+			
+			return workout;
+		}
+
+		function generateTabataWorkout(exercises, settings) {
+			const { rounds = 8, setRest = 30 } = settings;
+			const workout = [];
+			
+			// Tabata: 20 seconds work, 10 seconds rest, 8 rounds
+			exercises.forEach((exercise, exerciseIndex) => {
+				// Add exercise set header
+				workout.push({
+					name: `${exercise.name} - Tabata Set`,
+					description: `Complete 8 rounds: 20 seconds work, 10 seconds rest. Rest ${setRest} seconds after completing all rounds.`,
+					equipment: exercise.equipment,
+					level: exercise.level,
+					muscle: exercise.muscle,
+					type: "tabata_set",
+					_exerciseIndex: exerciseIndex,
+					_restAfter: setRest
+				});
+				
+				// Add 8 rounds of the same exercise
+				for (let round = 1; round <= rounds; round++) {
+					workout.push({
+						...exercise,
+						_round: round,
+						_originalName: exercise.name,
+						name: `${exercise.name} - Round ${round}`,
+						_workTime: 20,
+						_restTime: 10,
+						_isLastRound: round === rounds
+					});
+				}
+			});
+			
+			return workout;
+		}
+
+		function generatePyramidWorkout(exercises, settings) {
+			const { levels = 5, levelRest = 45 } = settings;
+			const workout = [];
+			
+			// Pyramid: increasing then decreasing intensity
+			exercises.forEach((exercise, exerciseIndex) => {
+				// Add exercise pyramid header
+				workout.push({
+					name: `${exercise.name} - Pyramid Set`,
+					description: `Complete ${levels} levels: increasing then decreasing intensity. Rest ${levelRest} seconds between levels.`,
+					equipment: exercise.equipment,
+					level: exercise.level,
+					muscle: exercise.muscle,
+					type: "pyramid_set",
+					_exerciseIndex: exerciseIndex,
+					_levelRest: levelRest
+				});
+				
+				// Ascending pyramid (1 to levels)
+				for (let level = 1; level <= levels; level++) {
+					workout.push({
+						...exercise,
+						_level: level,
+						_originalName: exercise.name,
+						name: `${exercise.name} - Level ${level}`,
+						_intensity: level,
+						_isAscending: true,
+						_restAfter: levelRest
+					});
+				}
+				
+				// Descending pyramid (levels-1 to 1)
+				for (let level = levels - 1; level >= 1; level--) {
+					workout.push({
+						...exercise,
+						_level: level,
+						_originalName: exercise.name,
+						name: `${exercise.name} - Level ${level}`,
+						_intensity: level,
+						_isAscending: false,
+						_restAfter: level === 1 ? 0 : levelRest
+					});
+				}
+			});
+			
+			return workout;
+		}
+
+		function generateStandardWorkout(exercises) {
+			// Standard workout: each exercise appears once
+			return exercises.map(exercise => ({
+				...exercise,
+				_round: 1,
+				_originalName: exercise.name
+			}));
+		}
 
 	function buildSequence() {
 		appState.sequence = [
@@ -1642,13 +1849,24 @@ document.addEventListener('DOMContentLoaded', () => {
 			const h = document.createElement('h3');
 			h.className = 'text-xl font-display font-semibold text-fit-dark mb-4 flex items-center';
 			
-			// Add section icon
-			let icon = '🔥';
-			if (title.includes('Warm-up')) icon = '🔥';
-			else if (title.includes('Main')) icon = '💪';
-			else if (title.includes('Cool-down')) icon = '🧘';
+					// Add section icon
+		let icon = '🔥';
+		if (title.includes('Warm-up')) icon = '🔥';
+		else if (title.includes('Main')) icon = '💪';
+		else if (title.includes('Cool-down')) icon = '🧘';
+		
+		// Add training pattern indicator for main section
+		let patternInfo = '';
+		if (title.includes('Main') && appState.trainingPattern !== 'standard') {
+			const patternNames = {
+				'circuit': '🔄 Circuit Training',
+				'tabata': '⏱️ Tabata Intervals',
+				'pyramid': '🏗️ Pyramid Training'
+			};
+			patternInfo = ` <span class="text-sm text-fit-primary font-medium">(${patternNames[appState.trainingPattern]})</span>`;
+		}
 			
-			h.innerHTML = `${icon} ${title} <span class="ml-auto text-fit-secondary text-lg font-normal">${items.length} exercises</span>`;
+			h.innerHTML = `${icon} ${title}${patternInfo} <span class="ml-auto text-fit-secondary text-lg font-normal">${items.length} exercises</span>`;
 			group.appendChild(h);
 			
 			const ul = document.createElement('ul');
@@ -1662,7 +1880,12 @@ document.addEventListener('DOMContentLoaded', () => {
 							${i+1}
 						</div>
 						<div>
-							<h4 class="font-semibold text-fit-dark">${ex.name}</h4>
+							<h4 class="font-semibold text-fit-dark">
+								${ex.name}
+								${ex._round && ex._round > 1 ? `<span class="inline-block px-2 py-1 text-xs font-medium bg-fit-primary/10 text-fit-primary rounded-full ml-2">Round ${ex._round}</span>` : ''}
+								${ex._level ? `<span class="inline-block px-2 py-1 text-xs font-medium ${ex._isAscending ? 'bg-fit-warning/10 text-fit-warning' : 'bg-fit-success/10 text-fit-success'} rounded-full ml-2">Level ${ex._level} ${ex._isAscending ? '↑' : '↓'}</span>` : ''}
+								${ex._workTime && ex._restTime ? `<span class="inline-block px-2 py-1 text-xs font-medium bg-fit-accent/10 text-fit-accent rounded-full ml-2">${ex._workTime}s/${ex._restTime}s</span>` : ''}
+							</h4>
 							<div class="flex items-center space-x-3 text-sm text-fit-secondary">
 								<span class="flex items-center space-x-1">
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1797,7 +2020,19 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 	function startPhase(phase) {
 		appState.phase = phase;
-		appState.remainingSeconds = phase === 'work' ? appState.workTime : appState.restTime;
+		
+		// Get timing based on training pattern and current exercise
+		const currentExercise = appState.sequence[appState.currentIndex];
+		let workTime = appState.workTime;
+		let restTime = appState.restTime;
+		
+		// Override timing for pattern-based workouts
+		if (currentExercise && appState.trainingPattern !== 'standard') {
+			if (currentExercise._workTime) workTime = currentExercise._workTime;
+			if (currentExercise._restTime) restTime = currentExercise._restTime;
+		}
+		
+		appState.remainingSeconds = phase === 'work' ? workTime : restTime;
 		setTimerDisplays();
 		saveState();
 		cuePhase(phase);
@@ -1880,7 +2115,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		const sectionBadge = document.getElementById('section-badge');
 
 		if (titleEl) titleEl.textContent = ex.name;
-		if (metaEl) metaEl.textContent = `${ex._section} • ${ex.muscle} • ${ex.equipment} • ${appState.workTime}s work / ${appState.restTime}s rest`;
+		// Get timing display based on training pattern
+		let timingDisplay = `${appState.workTime}s work / ${appState.restTime}s rest`;
+		if (ex._workTime && ex._restTime) {
+			timingDisplay = `${ex._workTime}s work / ${ex._restTime}s rest`;
+		}
+		
+		if (metaEl) metaEl.textContent = `${ex._section} • ${ex.muscle} • ${ex.equipment} • ${timingDisplay}`;
 		if (instrEl) instrEl.textContent = instruction;
 		if (safetyEl) {
 			if (safety || doText || dontText) {
@@ -2205,14 +2446,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('No exercises available for the selected criteria. Please try different equipment or fitness level.');
                 }
 
-                const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
+                // Get training pattern and settings
+                const trainingPattern = document.querySelector('input[name="training-pattern"]:checked')?.value || 'standard';
+                const patternSettings = getPatternSettings();
+                
+                // Generate main workout based on training pattern
+                let mainWorkoutPlan;
+                if (trainingPattern === 'standard') {
+                    mainWorkoutPlan = generateRandomSet(availableMain, mainDuration);
+                } else {
+                    // For pattern-based workouts, we need fewer base exercises but they'll be repeated
+                    const baseExerciseCount = Math.max(3, Math.min(6, Math.floor(mainDuration / 2)));
+                    const baseExercises = generateRandomSet(availableMain, baseExerciseCount);
+                    mainWorkoutPlan = generatePatternBasedWorkout(baseExercises, trainingPattern, patternSettings);
+                }
 				
 				// Populate app state for the new flow
 				appState.warmup = warmupPlan;
-				appState.main = fallbackMainPlan;
+				appState.main = mainWorkoutPlan;
 				appState.cooldown = cooldownPlan;
 				appState.workTime = workTime;
 				appState.restTime = restTime;
+				appState.trainingPattern = trainingPattern;
+				appState.patternSettings = patternSettings;
 				buildSequence();
 				appState.currentIndex = 0;
 				appState.phase = 'work';
@@ -2531,5 +2787,143 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (overviewDiv) overviewDiv.classList.remove('hidden');
 			if (playerDiv) playerDiv.classList.add('hidden');
 		});
+	}
+
+	// --- Enhanced Workout Generation with Training Patterns ---
+	function generatePatternBasedWorkout(exercises, pattern, settings) {
+		switch(pattern) {
+			case 'circuit':
+				return generateCircuitWorkout(exercises, settings);
+			case 'tabata':
+				return generateTabataWorkout(exercises, settings);
+			case 'pyramid':
+				return generatePyramidWorkout(exercises, settings);
+			default:
+				return generateStandardWorkout(exercises);
+		}
+	}
+
+	function generateCircuitWorkout(exercises, settings) {
+		const { rounds = 3, circuitRest = 60 } = settings;
+		const workout = [];
+		
+		// Create multiple rounds of the same exercises
+		for (let round = 1; round <= rounds; round++) {
+			// Add round header
+			workout.push({
+				name: `Round ${round}`,
+				description: `Complete all exercises in this round. Rest ${circuitRest} seconds after completing the round.`,
+				equipment: "Bodyweight",
+				level: ["Beginner", "Intermediate", "Advanced"],
+				muscle: "Full Body",
+				type: "circuit_round",
+				_round: round,
+				_restAfter: circuitRest
+			});
+			
+			// Add exercises for this round
+			exercises.forEach(exercise => {
+				workout.push({
+					...exercise,
+					_round: round,
+					_originalName: exercise.name,
+					name: `${exercise.name} (Round ${round})`
+				});
+			});
+		}
+		
+		return workout;
+	}
+
+	function generateTabataWorkout(exercises, settings) {
+		const { rounds = 8, setRest = 30 } = settings;
+		const workout = [];
+		
+		// Tabata: 20 seconds work, 10 seconds rest, 8 rounds
+		exercises.forEach((exercise, exerciseIndex) => {
+			// Add exercise set header
+			workout.push({
+				name: `${exercise.name} - Tabata Set`,
+				description: `Complete 8 rounds: 20 seconds work, 10 seconds rest. Rest ${setRest} seconds after completing all rounds.`,
+				equipment: exercise.equipment,
+				level: exercise.level,
+				muscle: exercise.muscle,
+				type: "tabata_set",
+				_exerciseIndex: exerciseIndex,
+				_restAfter: setRest
+			});
+			
+			// Add 8 rounds of the same exercise
+			for (let round = 1; round <= rounds; round++) {
+				workout.push({
+					...exercise,
+					_round: round,
+					_originalName: exercise.name,
+					name: `${exercise.name} - Round ${round}`,
+					_workTime: 20,
+					_restTime: 10,
+					_isLastRound: round === rounds
+				});
+			}
+		});
+		
+		return workout;
+	}
+
+	function generatePyramidWorkout(exercises, settings) {
+		const { levels = 5, levelRest = 45 } = settings;
+		const workout = [];
+		
+		// Pyramid: increasing then decreasing intensity
+		exercises.forEach((exercise, exerciseIndex) => {
+			// Add exercise pyramid header
+			workout.push({
+				name: `${exercise.name} - Pyramid Set`,
+				description: `Complete ${levels} levels: increasing then decreasing intensity. Rest ${levelRest} seconds between levels.`,
+				equipment: exercise.equipment,
+				level: exercise.level,
+				muscle: exercise.muscle,
+				type: "pyramid_set",
+				_exerciseIndex: exerciseIndex,
+				_levelRest: levelRest
+			});
+			
+			// Ascending pyramid (1 to levels)
+			for (let level = 1; level <= levels; level++) {
+				workout.push({
+					...exercise,
+					_level: level,
+					_originalName: exercise.name,
+					name: `${exercise.name} - Level ${level}`,
+					_intensity: level,
+					_isAscending: true,
+					_restAfter: levelRest
+				});
+			}
+			
+			// Descending pyramid (levels-1 to 1)
+			for (let level = levels - 1; level >= 1; level--) {
+				workout.push({
+					...exercise,
+					_level: level,
+					_originalName: exercise.name,
+					name: `${exercise.name} - Level ${level}`,
+					_intensity: level,
+					_isAscending: false,
+					_restAfter: level === 1 ? 0 : levelRest
+				});
+			}
+		});
+		
+		return workout;
+	}
+
+	function generateStandardWorkout(exercises) {
+		// Standard workout: each exercise appears once
+		return exercises.map(exercise => ({
+			...exercise,
+			_round: 1,
+			_originalName: exercise.name
+		}));
 	}
 });

@@ -193,6 +193,99 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- New Training Pattern Selection -->
+                            <div>
+                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Training Pattern
+                                </label>
+                                <div class="space-y-3">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="radio" id="pattern-standard" name="training-pattern" value="standard" class="w-5 h-5 text-fit-primary" checked>
+                                        <label for="pattern-standard" class="text-fit-secondary flex items-center cursor-pointer">
+                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Standard Training
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <input type="radio" id="pattern-circuit" name="training-pattern" value="circuit" class="w-5 h-5 text-fit-primary">
+                                        <label for="pattern-circuit" class="text-fit-secondary flex items-center cursor-pointer">
+                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                            </svg>
+                                            Circuit Training
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <input type="radio" id="pattern-tabata" name="training-pattern" value="tabata" class="w-5 h-5 text-fit-primary">
+                                        <label for="pattern-tabata" class="text-fit-secondary flex items-center cursor-pointer">
+                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Tabata Intervals
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <input type="radio" id="pattern-pyramid" name="training-pattern" value="pyramid" class="w-5 h-5 text-fit-primary">
+                                        <label for="pattern-pyramid" class="text-fit-secondary flex items-center cursor-pointer">
+                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                            </svg>
+                                            Pyramid Training
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Pattern-specific settings -->
+                                <div id="pattern-settings" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+                                    <!-- Circuit Training Settings -->
+                                    <div id="circuit-settings" class="hidden">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm text-fit-secondary mb-2">Circuit Rounds</label>
+                                                <input type="number" id="circuit-rounds" value="3" min="2" max="6" class="input-field">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-fit-secondary mb-2">Rest Between Circuits (sec)</label>
+                                                <input type="number" id="circuit-rest" value="60" min="30" max="180" class="input-field">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tabata Settings -->
+                                    <div id="tabata-settings" class="hidden">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm text-fit-secondary mb-2">Tabata Rounds</label>
+                                                <input type="number" id="tabata-rounds" value="8" min="4" max="12" class="input-field">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-fit-secondary mb-2">Rest Between Sets (sec)</label>
+                                                <input type="number" id="tabata-rest" value="30" min="15" max="60" class="input-field">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pyramid Settings -->
+                                    <div id="pyramid-settings" class="hidden">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm text-fit-secondary mb-2">Pyramid Levels</label>
+                                                <input type="number" id="pyramid-levels" value="5" min="3" max="7" class="input-field">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-fit-secondary mb-2">Rest Between Levels (sec)</label>
+                                                <input type="number" id="pyramid-rest" value="45" min="20" max="90" class="input-field">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Right Column -->
