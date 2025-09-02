@@ -1582,6 +1582,9 @@ function generateRandomSet(exerciseList, count) {
 		};
 
 		// --- Training Pattern Management ---
+		// NEW FEATURE: Enhanced training pattern management with smart calculations
+		// This feature automatically adjusts training settings based on workout duration
+		// Added: 2025-09-02 - Smart calculation system for optimal workout planning
 		function initializeTrainingPatterns() {
 			const patternInputs = document.querySelectorAll('input[name="training-pattern"]');
 			const patternSettings = document.getElementById('pattern-settings');

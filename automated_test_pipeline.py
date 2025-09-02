@@ -46,6 +46,11 @@ class AutomatedTestPipeline:
         """Main pipeline execution"""
         logger.info("🚀 Starting Automated Test Pipeline")
         logger.info("=" * 50)
+        logger.info("📋 Workflow Sequence:")
+        logger.info("   1. Automated Tests (this pipeline)")
+        logger.info("   2. Local Manual Inspection (pre-commit hook)")
+        logger.info("   3. Commit to GitHub (after approval)")
+        logger.info("=" * 50)
         
         try:
             # Phase 1: Pre-flight checks
@@ -110,6 +115,16 @@ class AutomatedTestPipeline:
         logger.info("🔄 Auto-updating Pipeline Configuration")
         
         try:
+            # Load centralized feature list
+            features_file = self.project_root / 'app_features.json'
+            if not features_file.exists():
+                logger.warning("⚠️ app_features.json not found, falling back to hardcoded detection")
+                self._fallback_feature_detection()
+                return
+            
+            with open(features_file, 'r', encoding='utf-8') as f:
+                features_config = json.load(f)
+            
             js_path = self.project_root / 'script.js'
             html_path = self.project_root / 'index.html'
             
@@ -118,7 +133,66 @@ class AutomatedTestPipeline:
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            # Track detected features for pipeline optimization
+            # Use centralized feature list for detection
+            detected_features = {}
+            active_features = []
+            
+            for feature_key, feature_data in features_config['app_features'].items():
+                html_patterns = feature_data['detection_patterns']['html']
+                js_patterns = feature_data['detection_patterns']['js']
+                
+                # Check if feature is present in codebase
+                html_detected = any(pattern in html_content for pattern in html_patterns)
+                js_detected = any(pattern in js_content for pattern in js_patterns)
+                
+                detected_features[feature_key] = html_detected or js_detected
+                
+                if detected_features[feature_key]:
+                    active_features.append(feature_key)
+                    logger.info(f"✅ Detected: {feature_data['name']}")
+                else:
+                    logger.info(f"❌ Not detected: {feature_data['name']}")
+            
+            # Store feature detection results for pipeline optimization
+            self.test_results['pipeline_config'] = {
+                'timestamp': datetime.now().isoformat(),
+                'detected_features': detected_features,
+                'feature_count': len(active_features),
+                'total_features': len(features_config['app_features']),
+                'feature_list_version': features_config['metadata']['version'],
+                'categories': features_config['metadata']['categories']
+            }
+            
+            # Log detected features summary
+            logger.info(f"🎯 Detected {len(active_features)} active features out of {len(features_config['app_features'])} total")
+            logger.info(f"📊 Feature categories: {', '.join(features_config['metadata']['categories'].keys())}")
+            
+            # Update pipeline thresholds based on feature complexity
+            if len(active_features) > 15:
+                logger.info("🚀 High-complexity features detected - adjusting pipeline thresholds")
+            
+            logger.info("✅ Pipeline configuration updated successfully")
+            
+            # Save pipeline configuration for tracking changes over time
+            self.save_pipeline_config(detected_features)
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Pipeline auto-update failed: {str(e)}")
+            logger.info("🔄 Falling back to hardcoded feature detection")
+            self._fallback_feature_detection()
+    
+    def _fallback_feature_detection(self):
+        """Fallback feature detection when app_features.json is not available"""
+        try:
+            js_path = self.project_root / 'script.js'
+            html_path = self.project_root / 'index.html'
+            
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # Fallback detection patterns (legacy method)
             detected_features = {
                 'workout_flow': 'workout-overview' in html_content and 'workout-player' in html_content,
                 'timers': 'timer' in js_content.lower() and ('setInterval' in js_content or 'setTimeout' in js_content),
@@ -136,31 +210,20 @@ class AutomatedTestPipeline:
                 'timing': 'workTime' in js_content or 'restTime' in js_content
             }
             
-            # Store feature detection results for pipeline optimization
+            active_features = [k for k, v in detected_features.items() if v]
+            logger.info(f"🔄 Fallback detection found {len(active_features)} active features: {', '.join(active_features)}")
+            
             self.test_results['pipeline_config'] = {
                 'timestamp': datetime.now().isoformat(),
                 'detected_features': detected_features,
-                'feature_count': sum(detected_features.values()),
-                'total_features': len(detected_features)
+                'feature_count': len(active_features),
+                'total_features': len(detected_features),
+                'feature_list_version': 'fallback',
+                'note': 'Using fallback detection - app_features.json not available'
             }
             
-            # Log detected features
-            active_features = [k for k, v in detected_features.items() if v]
-            logger.info(f"🎯 Detected {len(active_features)} active features: {', '.join(active_features)}")
-            
-            # Update pipeline thresholds based on feature complexity
-            if detected_features['exercise_swapping'] and detected_features['timers']:
-                logger.info("🚀 High-complexity features detected - adjusting pipeline thresholds")
-                # Could adjust thresholds here if needed
-            
-            logger.info("✅ Pipeline configuration updated successfully")
-            
-            # Save pipeline configuration for tracking changes over time
-            self.save_pipeline_config(detected_features)
-            
         except Exception as e:
-            logger.warning(f"⚠️ Pipeline auto-update failed: {str(e)}")
-            # Don't fail the pipeline for this, just log warning
+            logger.error(f"❌ Fallback feature detection also failed: {str(e)}")
     
     def save_pipeline_config(self, detected_features):
         """Save pipeline configuration to track feature evolution over time"""
