@@ -908,6 +908,133 @@ class AutomatedTestPipeline:
         except Exception as e:
             return {'status': 'FAILED', 'details': str(e)}
     
+    def test_training_pattern_functionality(self):
+        """Test training pattern selection and management functionality"""
+        try:
+            html_path = self.project_root / 'index.html'
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            tests = {
+                'has_training_pattern_section': 'Training Pattern' in html_content,
+                'has_standard_option': 'pattern-standard' in html_content,
+                'has_circuit_option': 'pattern-circuit' in html_content,
+                'has_tabata_option': 'pattern-tabata' in html_content,
+                'has_pyramid_option': 'pattern-pyramid' in html_content,
+                'has_pattern_settings_container': 'pattern-settings' in html_content,
+                'has_circuit_settings': 'circuit-settings' in html_content,
+                'has_tabata_settings': 'tabata-settings' in html_content,
+                'has_pyramid_settings': 'pyramid-settings' in html_content,
+                'has_initialize_function': 'initializeTrainingPatterns' in js_content,
+                'has_pattern_management': 'showPatternSettings' in js_content,
+                'has_settings_retrieval': 'getPatternSettings' in js_content,
+                'has_pattern_based_generation': 'generatePatternBasedWorkout' in js_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+    
+    def test_circuit_training_functionality(self):
+        """Test circuit training workout generation and structure"""
+        try:
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            tests = {
+                'has_circuit_generation': 'generateCircuitWorkout' in js_content,
+                'has_round_headers': 'circuit_round' in js_content,
+                'has_round_tracking': '_round' in js_content,
+                'has_circuit_rest': 'circuitRest' in js_content,
+                'has_round_progression': 'Round ${round}' in js_content,
+                'has_exercise_repetition': 'Round ${round})' in js_content,
+                'has_circuit_structure': 'type: "circuit_round"' in js_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+    
+    def test_tabata_functionality(self):
+        """Test Tabata interval workout generation and timing"""
+        try:
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            tests = {
+                'has_tabata_generation': 'generateTabataWorkout' in js_content,
+                'has_tabata_set_headers': 'tabata_set' in js_content,
+                'has_work_rest_timing': '_workTime' in js_content and '_restTime' in js_content,
+                'has_tabata_rounds': 'Tabata Set' in js_content,
+                'has_interval_structure': '20 seconds work, 10 seconds rest' in js_content,
+                'has_round_tracking': '_isLastRound' in js_content,
+                'has_set_rest': 'setRest' in js_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+    
+    def test_pyramid_training_functionality(self):
+        """Test pyramid training workout generation and progression"""
+        try:
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            tests = {
+                'has_pyramid_generation': 'generatePyramidWorkout' in js_content,
+                'has_pyramid_set_headers': 'pyramid_set' in js_content,
+                'has_level_tracking': '_level' in js_content,
+                'has_intensity_tracking': '_intensity' in js_content,
+                'has_ascending_direction': '_isAscending' in js_content,
+                'has_level_rest': 'levelRest' in js_content,
+                'has_pyramid_structure': 'type: "pyramid_set"' in js_content,
+                'has_level_progression': 'Level ${level}' in js_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+    
     def test_actual_functionality(self):
         """CRITICAL: Test actual application functionality and script dependencies"""
         try:
@@ -1363,6 +1490,26 @@ class AutomatedTestPipeline:
             if 'workTime' in js_content or 'restTime' in js_content:
                 logger.info("⏰ Detected timing functionality")
                 dynamic_tests.append(self.test_timing_functionality())
+            
+            # 16. Detect training pattern functionality
+            if 'training-pattern' in html_content and 'generatePatternBasedWorkout' in js_content:
+                logger.info("🎯 Detected training pattern functionality")
+                dynamic_tests.append(self.test_training_pattern_functionality())
+            
+            # 17. Detect circuit training
+            if 'generateCircuitWorkout' in js_content or 'circuit_round' in js_content:
+                logger.info("🔄 Detected circuit training functionality")
+                dynamic_tests.append(self.test_circuit_training_functionality())
+            
+            # 18. Detect Tabata intervals
+            if 'generateTabataWorkout' in js_content or 'tabata_set' in js_content:
+                logger.info("⏱️ Detected Tabata interval functionality")
+                dynamic_tests.append(self.test_tabata_functionality())
+            
+            # 19. Detect pyramid training
+            if 'generatePyramidWorkout' in js_content or 'pyramid_set' in js_content:
+                logger.info("🏗️ Detected pyramid training functionality")
+                dynamic_tests.append(self.test_pyramid_training_functionality())
             
             logger.info(f"🎯 Dynamic detection found {len(dynamic_tests)} feature tests to run")
             return dynamic_tests
