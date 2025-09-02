@@ -168,6 +168,66 @@
             </div>
         </div>
 
+        <!-- New: Overview Section -->
+        <div id="overview-screen" class="mt-12 max-w-4xl mx-auto hidden">
+            <div class="bg-gray-800 p-6 md:p-8 rounded-2xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-blue-400 mb-4 text-center">Workout Overview</h2>
+                <div id="overview-list" class="space-y-3"></div>
+                <div class="mt-6 flex items-center justify-center">
+                    <button id="start-workout-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg transform hover:scale-105">Start</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- New: Exercise Player Screen -->
+        <div id="exercise-player" class="mt-12 max-w-3xl mx-auto hidden">
+            <div class="bg-gray-800 p-6 md:p-8 rounded-2xl shadow-lg border border-gray-700">
+                <div class="flex items-center justify-between mb-4">
+                    <div id="exercise-progress" class="text-gray-300 text-sm"></div>
+                    <div class="flex items-center gap-4">
+                        <span id="section-badge" class="hidden px-3 py-1 rounded-full text-xs font-semibold"></span>
+                        <label class="flex items-center gap-2 text-gray-300 text-sm cursor-pointer">
+                            <input id="toggle-sound" type="checkbox" class="accent-blue-500">
+                            <span>Sound</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-gray-300 text-sm cursor-pointer">
+                            <input id="toggle-vibration" type="checkbox" class="accent-blue-500">
+                            <span>Vibration</span>
+                        </label>
+                        <button id="exit-workout-btn" class="text-red-400 hover:text-red-300">Exit</button>
+                    </div>
+                </div>
+                <h2 id="exercise-title" class="text-2xl font-bold text-white mb-2"></h2>
+                <div id="exercise-meta" class="text-sm text-gray-400 mb-4"></div>
+                <p id="exercise-instructions" class="text-gray-300 leading-relaxed"></p>
+                <div class="mt-6 flex items-center justify-between gap-4">
+                    <button id="prev-exercise-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed h-12">Prev</button>
+                    <div class="flex items-center gap-3">
+                        <span class="text-gray-400 text-sm">Work</span>
+                        <span id="work-timer" class="text-xl font-bold text-green-400">00:00</span>
+                        <span class="text-gray-400 text-sm ml-4">Rest</span>
+                        <span id="rest-timer" class="text-xl font-bold text-orange-400">00:00</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button id="pause-resume-btn" class="bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg h-12">Pause</button>
+                        <button id="next-exercise-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg h-12">Next</button>
+                    </div>
+                </div>
+
+                <!-- Rest Overlay -->
+                <div id="rest-overlay" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
+                    <div class="text-center px-6">
+                        <div class="text-gray-400 mb-2">Resting</div>
+                        <div id="rest-overlay-timer" class="text-6xl md:text-7xl font-extrabold text-white tracking-widest">00</div>
+                        <div id="rest-overlay-sub" class="text-gray-400 mt-4">Next: <span id="next-exercise-name" class="text-blue-300"></span></div>
+                        <div class="mt-6">
+                            <button id="overlay-exit-btn" class="text-red-400 hover:text-red-300 underline">Exit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="no-results" class="mt-12 text-center text-gray-400 bg-gray-800 p-8 rounded-2xl max-w-md mx-auto hidden">
             <h3 class="text-xl font-semibold mb-2">No suitable exercises found</h3>
             <p>Please adjust your selection. For example, choose more equipment or change the fitness level.</p>

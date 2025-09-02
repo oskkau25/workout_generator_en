@@ -637,302 +637,658 @@ function generateRandomSet(exerciseList, count) {
     return shuffled.slice(0, numToReturn);
 }
 
-function displayPlan(warmup, main, cooldown, summary, workTime, restTime) {
-    const planContentDiv = document.getElementById('plan-content');
-    const workoutPlanDiv = document.getElementById('workout-plan');
-    const noResultsDiv = document.getElementById('no-results');
-    
-    // Clear content safely
-    planContentDiv.textContent = '';
-    
-    if (!main || main.length === 0) {
-        workoutPlanDiv.classList.add('hidden');
-        noResultsDiv.classList.remove('hidden');
-        return;
-    }
-    
-    noResultsDiv.classList.add('hidden');
-    workoutPlanDiv.classList.remove('hidden');
-
-    const createSection = (title, exercises) => {
-        if (!exercises || exercises.length === 0) return '';
-        let sectionHtml = `<h2 class="text-2xl font-bold text-center text-blue-400 my-6">${title}</h2>`;
-        exercises.forEach((exercise) => {
-            // Split description into instruction and safety parts
-            const descriptionParts = exercise.description.split('⚠️');
-            const instruction = descriptionParts[0].trim();
-            const safetyGuidelines = descriptionParts[1] ? descriptionParts[1].trim() : '';
-            
-            // Split safety guidelines into DO's and DON'Ts
-            let doSection = '';
-            let dontSection = '';
-            if (safetyGuidelines) {
-                const doMatch = safetyGuidelines.match(/DO: (.+?)\. DON'T:/);
-                const dontMatch = safetyGuidelines.match(/DON'T: (.+)/);
-                
-                if (doMatch) doSection = doMatch[1].trim();
-                if (dontMatch) dontSection = dontMatch[1].trim();
-            }
-            
-            sectionHtml += `
-                <div class="bg-gray-800 rounded-2xl overflow-hidden border border-gray-700 shadow-md animate-fade-in mb-6">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-blue-300 mb-3">${exercise.name}</h3>
-                        
-                        <!-- Exercise Instructions -->
-                        <div class="mb-4">
-                            <h4 class="text-lg font-semibold text-white mb-2">📋 Instructions:</h4>
-                            <p class="text-gray-300 leading-relaxed">${instruction}</p>
-                        </div>
-                        
-                        <!-- Safety Guidelines -->
-                        ${safetyGuidelines ? `
-                        <div class="mb-4">
-                            <h4 class="text-lg font-semibold text-white mb-2">⚠️ Safety Guidelines:</h4>
-                            ${doSection ? `
-                            <div class="bg-green-900/20 border border-green-700 rounded-lg p-3 mb-2">
-                                <h5 class="text-green-400 font-semibold mb-1">✅ DO:</h5>
-                                <p class="text-green-300 text-sm">${doSection}</p>
-                            </div>
-                            ` : ''}
-                            ${dontSection ? `
-                            <div class="bg-red-900/20 border border-red-700 rounded-lg p-3 mb-2">
-                                <h5 class="text-red-400 font-semibold mb-1">❌ DON'T:</h5>
-                                <p class="text-red-300 text-sm">${dontSection}</p>
-                            </div>
-                            ` : ''}
-                        </div>
-                        ` : ''}
-                        
-                        <!-- Exercise Details -->
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <div class="bg-gray-700 inline-block px-4 py-2 rounded-full text-sm font-semibold">
-                                <span class="text-white">Duration: </span>
-                                <span class="text-blue-300">${workTime} sec work, ${restTime} sec rest</span>
-                            </div>
-                            <div class="bg-gray-700 inline-block px-4 py-2 rounded-full text-sm font-semibold">
-                                <span class="text-white">Muscle: </span>
-                                <span class="text-green-300">${exercise.muscle}</span>
-                            </div>
-                            <div class="bg-gray-700 inline-block px-4 py-2 rounded-full text-sm font-semibold">
-                                <span class="text-white">Equipment: </span>
-                                <span class="text-yellow-300">${exercise.equipment}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        return sectionHtml;
-    };
-
-    const summaryHtml = `<div class="text-center text-blue-300 bg-gray-800 p-4 rounded-lg mb-8 border border-gray-700">${summary}</div>`;
-
-    // Create content safely using a temporary container
-    const tempContainer = document.createElement('div');
-    tempContainer.innerHTML = createSection("Warm-up (5 Minutes)", warmup);
-    tempContainer.innerHTML += `<h2 class="text-2xl font-bold text-center text-blue-400 my-6">Main Workout (${main.length} Minutes)</h2>` + summaryHtml;
-    tempContainer.innerHTML += createSection("", main);
-    tempContainer.innerHTML += createSection("Cool-down (5 Minutes)", cooldown);
-    
-    // Move all children to the actual container
-    while (tempContainer.firstChild) {
-        planContentDiv.appendChild(tempContainer.firstChild);
-    }
-
-    workoutPlanDiv.scrollIntoView({ behavior: 'smooth' });
-}
-
-// Image loading error handler
-function handleImageError(imgElement) {
-    // Create a fallback image element
-    const fallbackDiv = document.createElement('div');
-    fallbackDiv.className = 'w-full h-48 bg-gray-700 flex items-center justify-center rounded-lg';
-    fallbackDiv.innerHTML = `
-        <div class="text-center">
-            <div class="text-4xl mb-2">🏋️‍♂️</div>
-            <div class="text-gray-400 text-sm">Exercise Image</div>
-        </div>
-    `;
-    
-    // Replace the broken image with fallback
-    if (imgElement.parentElement) {
-        imgElement.parentElement.replaceChild(fallbackDiv, imgElement);
-    }
-}
-
-// Safe image loading function
-function loadImageSafely(imgElement, src) {
-    return new Promise((resolve, reject) => {
-        imgElement.onload = () => resolve(imgElement);
-        imgElement.onerror = () => {
-            handleImageError(imgElement);
-            reject(new Error(`Failed to load image: ${src}`));
-        };
-        imgElement.src = src;
-    });
-}
-
 // --- MAIN INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Get DOM elements
-    const form = document.getElementById('workout-form');
-    const durationSlider = document.getElementById('duration');
-    const durationValue = document.getElementById('duration-value');
-    const workTimeSlider = document.getElementById('work-time');
-    const workTimeValue = document.getElementById('work-time-value');
-    const restTimeSlider = document.getElementById('rest-time');
-    const restTimeValue = document.getElementById('rest-time-value');
-    const generateBtn = document.getElementById('generate-btn');
-    
-    // Add time slider functionality
-    if (durationSlider && durationValue) {
-        durationSlider.addEventListener('input', function() {
-            durationValue.textContent = this.value;
-        });
-        
-        // Initialize duration display
-        durationValue.textContent = durationSlider.value;
-    }
-    
-    // Add work time slider functionality
-    if (workTimeSlider && workTimeValue) {
-        workTimeSlider.addEventListener('input', function() {
-            workTimeValue.textContent = this.value;
-        });
-        
-        // Initialize work time display
-        workTimeValue.textContent = workTimeSlider.value;
-    }
-    
-    // Add rest time slider functionality
-    if (restTimeSlider && restTimeValue) {
-        restTimeSlider.addEventListener('input', function() {
-            restTimeValue.textContent = this.value;
-        });
-        
-        // Initialize rest time display
-        restTimeValue.textContent = restTimeSlider.value;
-    }
-    
-    // Add form submission handler
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            try {
-                // Validate form input
-                validateForm();
-                
-                // Hide previous results
-                const workoutPlanDiv = document.getElementById('workout-plan');
-                const noResultsDiv = document.getElementById('no-results');
-                workoutPlanDiv.classList.add('hidden');
-                noResultsDiv.classList.add('hidden');
-                
-                setLoading(true);
+	// App state for overview/player flow
+	const appState = {
+		warmup: [],
+		main: [],
+		cooldown: [],
+		sequence: [],
+		workTime: 45,
+		restTime: 15,
+		currentIndex: 0,
+		phase: 'work', // 'work' | 'rest'
+		remainingSeconds: 0,
+		timerId: null,
+		isPaused: false,
+		enableSound: true,
+		enableVibration: true,
+		audioContext: null
+	};
 
-                const level = document.getElementById('fitness-level').value;
-                const mainDuration = parseInt(durationSlider.value);
-                const workTime = parseInt(document.getElementById('work-time').value);
-                const restTime = parseInt(document.getElementById('rest-time').value);
-                const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-                let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
-                
-                // Ensure Bodyweight is always available as fallback
-                if (selectedEquipment.length === 0) {
-                    selectedEquipment.push("Bodyweight");
-                }
+	function buildSequence() {
+		appState.sequence = [
+			...appState.warmup.map(e => ({...e, _section: 'Warm-up'})),
+			...appState.main.map(e => ({...e, _section: 'Main'})),
+			...appState.cooldown.map(e => ({...e, _section: 'Cool-down'}))
+		];
+	}
 
-                // Improved filtering logic
-                const filterByType = (type) => exercises.filter(ex => 
-                    ex.type === type &&
-                    ex.level.includes(level) &&
-                    selectedEquipment.includes(ex.equipment)
-                );
+	function toggleScreens({ overview = false, player = false, plan = false }) {
+		const overviewScreen = document.getElementById('overview-screen');
+		const playerScreen = document.getElementById('exercise-player');
+		const planScreen = document.getElementById('workout-plan');
+		if (overviewScreen) overviewScreen.classList.toggle('hidden', !overview);
+		if (playerScreen) playerScreen.classList.toggle('hidden', !player);
+		if (planScreen) planScreen.classList.toggle('hidden', !plan);
+	}
 
-                const availableWarmup = filterByType('warmup');
-                const availableMain = filterByType('main');
-                const availableCooldown = filterByType('cooldown');
+	// --- Persistence ---
+	const STORAGE_KEY = 'workout_generator_en_state_v1';
+	function saveState() {
+		try {
+			const toSave = {
+				warmup: appState.warmup,
+				main: appState.main,
+				cooldown: appState.cooldown,
+				sequence: appState.sequence,
+				workTime: appState.workTime,
+				restTime: appState.restTime,
+				currentIndex: appState.currentIndex,
+				phase: appState.phase,
+				remainingSeconds: appState.remainingSeconds,
+				isPaused: appState.isPaused,
+				enableSound: appState.enableSound,
+				enableVibration: appState.enableVibration
+			};
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+		} catch {}
+	}
+	function loadState() {
+		try {
+			const raw = localStorage.getItem(STORAGE_KEY);
+			if (!raw) return false;
+			const parsed = JSON.parse(raw);
+			if (!parsed || !Array.isArray(parsed.sequence) || parsed.sequence.length === 0) return false;
+			Object.assign(appState, parsed);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+	function clearSavedState() {
+		try { localStorage.removeItem(STORAGE_KEY); } catch {}
+	}
 
-                const warmupPlan = generateRandomSet(availableWarmup, 5);
-                const cooldownPlan = generateRandomSet(availableCooldown, 5);
+	function renderOverview() {
+		const list = document.getElementById('overview-list');
+		if (!list) return;
+		list.textContent = '';
+		const createGroup = (title, items) => {
+			if (!items || items.length === 0) return;
+			const group = document.createElement('div');
+			group.className = 'bg-gray-900/40 border border-gray-700 rounded-xl p-4';
+			const h = document.createElement('h3');
+			h.className = 'text-lg font-semibold text-blue-300 mb-2';
+			h.textContent = `${title} • ${items.length} item${items.length>1?'s':''}`;
+			group.appendChild(h);
+			const ul = document.createElement('ul');
+			ul.className = 'space-y-1 text-gray-300 text-sm';
+			items.forEach((ex, i) => {
+				const li = document.createElement('li');
+				li.innerHTML = `<span class="text-gray-500 mr-2">${i+1}.</span>${ex.name}`;
+				ul.appendChild(li);
+			});
+			group.appendChild(ul);
+			list.appendChild(group);
+		};
+		createGroup('Warm-up (5 min)', appState.warmup);
+		createGroup(`Main (${appState.main.length} min)`, appState.main);
+		createGroup('Cool-down (5 min)', appState.cooldown);
 
-                // FIXED: Improved logic - only check if we have enough exercises for the requested duration
-                if (availableMain.length === 0) {
-                    throw new Error('No exercises available for the selected criteria. Please try different equipment or fitness level.');
-                }
+		// Update Start button label based on saved progress
+		const startBtn = document.getElementById('start-workout-btn');
+		if (startBtn) {
+			const hasProgress = appState.sequence.length > 0 && (appState.currentIndex > 0 || appState.phase === 'rest' || appState.remainingSeconds > 0);
+			startBtn.textContent = hasProgress ? 'Resume' : 'Start';
+		}
 
-                // Use fallback plan if AI is not available
-                const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
-                displayPlan(warmupPlan, fallbackMainPlan, cooldownPlan, `Generated ${mainDuration}-minute workout plan with ${selectedEquipment.join(', ')} equipment.`, workTime, restTime);
-                
-                showSuccess('Workout plan generated successfully!');
-                
-            } catch (error) {
-                showError(error.message || 'Failed to generate workout plan. Please try again.');
-                
-                // Show no results message
-                const workoutPlanDiv = document.getElementById('workout-plan');
-                const noResultsDiv = document.getElementById('no-results');
-                workoutPlanDiv.classList.add('hidden');
-                noResultsDiv.classList.remove('hidden');
-            } finally {
-                setLoading(false);
-            }
-        });
-    }
-    
-    // Add ARIA labels and roles
-    if (generateBtn) {
-        generateBtn.setAttribute('aria-label', 'Generate workout plan');
-        generateBtn.setAttribute('role', 'button');
-    }
-    
-    // Add keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && e.target.tagName === 'SELECT') {
-            e.target.blur();
-        }
-    });
-    
-    // Add focus indicators
-    const focusableElements = document.querySelectorAll('button, input, select, a');
-    focusableElements.forEach(element => {
-        element.addEventListener('focus', () => {
-            element.style.outline = '2px solid #3b82f6';
-            element.style.outlineOffset = '2px';
-        });
-        
-        element.addEventListener('blur', () => {
-            element.style.outline = '';
-            element.style.outlineOffset = '';
-        });
-    });
-    
-    // Add keyboard navigation for equipment checkboxes
-    const equipmentLabels = document.querySelectorAll('label[for^="eq-"]');
-    equipmentLabels.forEach(label => {
-        label.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                const checkbox = document.getElementById(label.getAttribute('for'));
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    label.setAttribute('aria-checked', checkbox.checked.toString());
-                    // Trigger change event
-                    const event = new Event('change', { bubbles: true });
-                    checkbox.dispatchEvent(event);
-                }
-            }
-        });
-        
-        // Update aria-checked attribute when checkbox changes
-        const checkbox = document.getElementById(label.getAttribute('for'));
-        if (checkbox) {
-            checkbox.addEventListener('change', () => {
-                label.setAttribute('aria-checked', checkbox.checked.toString());
-            });
-        }
-    });
+		toggleScreens({ overview: true, player: false, plan: false });
+	}
+
+	function parseInstructionAndSafety(description) {
+		const parts = description.split('⚠️');
+		const instruction = (parts[0] || '').trim();
+		const safety = (parts[1] || '').trim();
+		return { instruction, safety };
+	}
+
+	// --- Cues ---
+	function vibrate(pattern = 200) {
+		if (!appState.enableVibration) return;
+		if (navigator.vibrate) {
+			navigator.vibrate(pattern);
+		}
+	}
+	function beep(durationMs = 180, frequency = 880, volume = 0.1) {
+		if (!appState.enableSound) return;
+		try {
+			// Reuse a single AudioContext to satisfy mobile autoplay policies
+			if (!appState.audioContext) {
+				appState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+			}
+			const ctx = appState.audioContext;
+			const oscillator = ctx.createOscillator();
+			const gain = ctx.createGain();
+			oscillator.type = 'sine';
+			oscillator.frequency.value = frequency;
+			gain.gain.value = volume;
+			oscillator.connect(gain);
+			gain.connect(ctx.destination);
+			oscillator.start();
+			setTimeout(() => {
+				oscillator.stop();
+			}, durationMs);
+		} catch {}
+	}
+	function cuePhase(phase) {
+		// Different tones for work/rest
+		if (phase === 'work') {
+			beep(150, 900); vibrate([120, 60, 120]);
+		} else {
+			beep(150, 500); vibrate(160);
+		}
+	}
+
+	// --- Timers & Player ---
+	function setTimerDisplays() {
+		const workTimer = document.getElementById('work-timer');
+		const restTimer = document.getElementById('rest-timer');
+		const restOverlay = document.getElementById('rest-overlay');
+		const restOverlayTimer = document.getElementById('rest-overlay-timer');
+		const nextName = document.getElementById('next-exercise-name');
+		if (appState.phase === 'work') {
+			if (workTimer) workTimer.textContent = formatSeconds(appState.remainingSeconds);
+			if (restTimer) restTimer.textContent = formatSeconds(appState.restTime);
+			if (restOverlay) restOverlay.classList.add('hidden');
+		} else {
+			if (workTimer) workTimer.textContent = formatSeconds(appState.workTime);
+			if (restTimer) restTimer.textContent = formatSeconds(appState.remainingSeconds);
+			if (restOverlay) {
+				restOverlay.classList.remove('hidden');
+				if (restOverlayTimer) restOverlayTimer.textContent = appState.remainingSeconds.toString().padStart(2, '0');
+				if (nextName) {
+					const nextIdx = Math.min(appState.currentIndex + 1, appState.sequence.length - 1);
+					nextName.textContent = appState.sequence[nextIdx]?.name || '';
+				}
+			}
+		}
+	}
+	function clearRunningTimer() {
+		if (appState.timerId) {
+			clearInterval(appState.timerId);
+			appState.timerId = null;
+		}
+	}
+	function startPhase(phase) {
+		appState.phase = phase;
+		appState.remainingSeconds = phase === 'work' ? appState.workTime : appState.restTime;
+		setTimerDisplays();
+		saveState();
+		cuePhase(phase);
+		clearRunningTimer();
+		appState.isPaused = false;
+		updatePauseButton();
+		appState.timerId = setInterval(() => {
+			if (appState.isPaused) return;
+			appState.remainingSeconds -= 1;
+			// 3-2-1 chime at end of rest
+			if (appState.phase === 'rest' && appState.remainingSeconds > 0 && appState.remainingSeconds <= 3) {
+				beep(120, 750);
+			}
+			// Spoken countdown last 5s of exercise work phase
+			if (appState.phase === 'work' && appState.remainingSeconds > 0 && appState.remainingSeconds <= 5) {
+				speak(`${appState.remainingSeconds}`);
+			}
+			if (appState.remainingSeconds <= 0) {
+				clearRunningTimer();
+				if (appState.phase === 'work') {
+					// Speak transition
+					speak('Rest');
+					startPhase('rest');
+				} else {
+					advanceExercise();
+				}
+			} else {
+				setTimerDisplays();
+				saveState();
+			}
+		}, 1000);
+	}
+
+	function speak(text) {
+		try {
+			if (!appState.enableSound) return;
+			if (!('speechSynthesis' in window)) return;
+			const utter = new SpeechSynthesisUtterance(text);
+			utter.rate = 1.0;
+			utter.pitch = 1.0;
+			utter.volume = 1.0;
+			window.speechSynthesis.cancel();
+			window.speechSynthesis.speak(utter);
+		} catch {}
+	}
+
+	function advanceExercise() {
+		if (appState.currentIndex < appState.sequence.length - 1) {
+			appState.currentIndex += 1;
+			// Spoken transition to next section / exercise
+			const next = appState.sequence[appState.currentIndex];
+			speak(next? next.name : 'Next');
+			renderExercisePlayer();
+			startPhase('work');
+			saveState();
+		} else {
+			// Workout end: spoken countdown already happened; announce completion
+			speak('Workout complete. Great job!');
+			showSuccess('Workout complete! Great job!');
+			clearSavedState();
+			renderOverview();
+		}
+	}
+
+	function renderExercisePlayer() {
+		const total = appState.sequence.length;
+		if (total === 0) return;
+		const ex = appState.sequence[appState.currentIndex];
+		const { instruction } = parseInstructionAndSafety(ex.description || '');
+		const titleEl = document.getElementById('exercise-title');
+		const metaEl = document.getElementById('exercise-meta');
+		const instrEl = document.getElementById('exercise-instructions');
+		const progressEl = document.getElementById('exercise-progress');
+		const prevBtn = document.getElementById('prev-exercise-btn');
+		const nextBtn = document.getElementById('next-exercise-btn');
+		const workTimer = document.getElementById('work-timer');
+		const restTimer = document.getElementById('rest-timer');
+		const sectionBadge = document.getElementById('section-badge');
+
+		if (titleEl) titleEl.textContent = ex.name;
+		if (metaEl) metaEl.textContent = `${ex._section} • ${ex.muscle} • ${ex.equipment} • ${appState.workTime}s work / ${appState.restTime}s rest`;
+		if (instrEl) instrEl.textContent = instruction;
+		if (progressEl) progressEl.textContent = `Exercise ${appState.currentIndex + 1} / ${total}`;
+		if (prevBtn) prevBtn.disabled = appState.currentIndex === 0;
+		if (nextBtn) nextBtn.textContent = appState.currentIndex === total - 1 ? 'Finish' : 'Next';
+		if (workTimer) workTimer.textContent = formatSeconds(appState.workTime);
+		if (restTimer) restTimer.textContent = formatSeconds(appState.restTime);
+		if (sectionBadge) {
+			const section = ex._section;
+			sectionBadge.classList.remove('hidden');
+			sectionBadge.textContent = section;
+			// color by section
+			const base = 'px-3 py-1 rounded-full text-xs font-semibold';
+			let color = 'bg-blue-900/40 text-blue-300 border border-blue-700';
+			if (section === 'Warm-up') color = 'bg-yellow-900/30 text-yellow-300 border border-yellow-700';
+			if (section === 'Cool-down') color = 'bg-green-900/30 text-green-300 border border-green-700';
+			sectionBadge.className = `${base} ${color}`;
+		}
+
+		toggleScreens({ overview: false, player: true, plan: false });
+		setTimerDisplays();
+	}
+
+	function formatSeconds(s) {
+		const mm = Math.floor(s / 60).toString().padStart(2, '0');
+		const ss = Math.floor(s % 60).toString().padStart(2, '0');
+		return `${mm}:${ss}`;
+	}
+
+	function updatePauseButton() {
+		const btn = document.getElementById('pause-resume-btn');
+		if (!btn) return;
+		btn.textContent = appState.isPaused ? 'Resume' : 'Pause';
+		btn.className = appState.isPaused
+			? 'bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg'
+			: 'bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg';
+	}
+
+	function isPlayerVisible() {
+		const player = document.getElementById('exercise-player');
+		return player && !player.classList.contains('hidden');
+	}
+
+	// Keyboard shortcuts
+	document.addEventListener('keydown', (e) => {
+		if (!isPlayerVisible()) return;
+		if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) return;
+		switch (e.key) {
+			case ' ':
+				e.preventDefault();
+				appState.isPaused = !appState.isPaused;
+				updatePauseButton();
+				saveState();
+				break;
+			case 'ArrowLeft':
+				e.preventDefault();
+				const prevBtn = document.getElementById('prev-exercise-btn');
+				if (prevBtn && !prevBtn.disabled) prevBtn.click();
+				break;
+			case 'ArrowRight':
+				e.preventDefault();
+				const nextBtn = document.getElementById('next-exercise-btn');
+				if (nextBtn) nextBtn.click();
+				break;
+			case 'Escape':
+				e.preventDefault();
+				const exitBtn = document.getElementById('exit-workout-btn');
+				if (exitBtn) exitBtn.click();
+				break;
+		}
+	});
+
+	// Mobile swipe gestures
+	let touchStartX = 0;
+	let touchStartY = 0;
+	let touchActive = false;
+	const SWIPE_THRESHOLD = 40;
+	function attachSwipe(area) {
+		if (!area) return;
+		area.addEventListener('touchstart', (e) => {
+			if (!isPlayerVisible()) return;
+			touchActive = true;
+			const t = e.changedTouches[0];
+			touchStartX = t.clientX; touchStartY = t.clientY;
+		}, { passive: true });
+		area.addEventListener('touchend', (e) => {
+			if (!isPlayerVisible() || !touchActive) return;
+			touchActive = false;
+			const t = e.changedTouches[0];
+			const dx = t.clientX - touchStartX;
+			const dy = t.clientY - touchStartY;
+			if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
+				if (dx > 0) {
+					const prevBtn = document.getElementById('prev-exercise-btn');
+					if (prevBtn && !prevBtn.disabled) prevBtn.click();
+				} else {
+					const nextBtn = document.getElementById('next-exercise-btn');
+					if (nextBtn) nextBtn.click();
+				}
+			}
+		}, { passive: true });
+	}
+
+	function attachPlayerHandlers() {
+		const prevBtn = document.getElementById('prev-exercise-btn');
+		const nextBtn = document.getElementById('next-exercise-btn');
+		const exitBtn = document.getElementById('exit-workout-btn');
+		const pauseBtn = document.getElementById('pause-resume-btn');
+		const toggleSound = document.getElementById('toggle-sound');
+		const toggleVibration = document.getElementById('toggle-vibration');
+		const overlayExitBtn = document.getElementById('overlay-exit-btn');
+		if (prevBtn) {
+			prevBtn.onclick = () => {
+				if (appState.currentIndex > 0) {
+					clearRunningTimer();
+					appState.currentIndex -= 1;
+					renderExercisePlayer();
+					startPhase('work');
+					saveState();
+				}
+			};
+		}
+		if (nextBtn) {
+			nextBtn.onclick = () => {
+				clearRunningTimer();
+				if (appState.currentIndex < appState.sequence.length - 1) {
+					appState.currentIndex += 1;
+					renderExercisePlayer();
+					startPhase('work');
+					saveState();
+				} else {
+					showSuccess('Workout complete! Great job!');
+					clearSavedState();
+					renderOverview();
+				}
+			};
+		}
+		if (exitBtn) {
+			exitBtn.onclick = () => {
+				clearRunningTimer();
+				renderOverview();
+				saveState();
+			};
+		}
+		if (pauseBtn) {
+			pauseBtn.onclick = () => {
+				appState.isPaused = !appState.isPaused;
+				updatePauseButton();
+				saveState();
+			};
+			updatePauseButton();
+		}
+		if (toggleSound) {
+			// initialize
+			toggleSound.checked = appState.enableSound;
+			toggleSound.onchange = () => {
+				appState.enableSound = !!toggleSound.checked;
+				saveState();
+			};
+		}
+		if (toggleVibration) {
+			// initialize
+			toggleVibration.checked = appState.enableVibration;
+			toggleVibration.onchange = () => {
+				appState.enableVibration = !!toggleVibration.checked;
+				saveState();
+			};
+		}
+		if (overlayExitBtn) {
+			overlayExitBtn.onclick = () => {
+				clearRunningTimer();
+				renderOverview();
+				saveState();
+			};
+		}
+		const playerArea = document.getElementById('exercise-player');
+		attachSwipe(playerArea);
+	}
+
+	function attachOverviewHandlers() {
+		const startBtn = document.getElementById('start-workout-btn');
+		if (startBtn) {
+			startBtn.onclick = () => {
+				clearRunningTimer();
+				if (!appState.sequence || appState.sequence.length === 0) return;
+				// Initialize shared audio context on user gesture for mobile
+				try {
+					if (!appState.audioContext && appState.enableSound) {
+						appState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+					}
+					// resume context if suspended
+					if (appState.audioContext && appState.audioContext.state === 'suspended') {
+						appState.audioContext.resume();
+					}
+				} catch {}
+				// If no remaining seconds set, start fresh work phase
+				if (!appState.remainingSeconds || appState.remainingSeconds <= 0) {
+					appState.phase = 'work';
+					appState.remainingSeconds = appState.workTime;
+				}
+				renderExercisePlayer();
+				startPhase(appState.phase);
+				saveState();
+			};
+		}
+	}
+
+	// Get DOM elements
+	const form = document.getElementById('workout-form');
+	const durationSlider = document.getElementById('duration');
+	const durationValue = document.getElementById('duration-value');
+	const workTimeSlider = document.getElementById('work-time');
+	const workTimeValue = document.getElementById('work-time-value');
+	const restTimeSlider = document.getElementById('rest-time');
+	const restTimeValue = document.getElementById('rest-time-value');
+	const generateBtn = document.getElementById('generate-btn');
+	
+	// Add time slider functionality
+	if (durationSlider && durationValue) {
+		durationSlider.addEventListener('input', function() {
+			durationValue.textContent = this.value;
+		});
+		
+		// Initialize duration display
+		durationValue.textContent = durationSlider.value;
+	}
+	
+	// Add work time slider functionality
+	if (workTimeSlider && workTimeValue) {
+		workTimeSlider.addEventListener('input', function() {
+			workTimeValue.textContent = this.value;
+		});
+		
+		// Initialize work time display
+		workTimeValue.textContent = workTimeSlider.value;
+	}
+	
+	// Add rest time slider functionality
+	if (restTimeSlider && restTimeValue) {
+		restTimeSlider.addEventListener('input', function() {
+			restTimeValue.textContent = this.value;
+		});
+		
+		// Initialize rest time display
+		restTimeValue.textContent = restTimeSlider.value;
+	}
+	
+	// Add form submission handler
+	if (form) {
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			
+			try {
+				// Validate form input
+				validateForm();
+				
+				// Hide previous results
+				const workoutPlanDiv = document.getElementById('workout-plan');
+				const noResultsDiv = document.getElementById('no-results');
+				workoutPlanDiv.classList.add('hidden');
+				noResultsDiv.classList.add('hidden');
+				
+				setLoading(true);
+
+				const level = document.getElementById('fitness-level').value;
+				const mainDuration = parseInt(durationSlider.value);
+				const workTime = parseInt(document.getElementById('work-time').value);
+				const restTime = parseInt(document.getElementById('rest-time').value);
+				const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+				let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
+				
+				// Ensure Bodyweight is always available as fallback
+				if (selectedEquipment.length === 0) {
+					selectedEquipment.push("Bodyweight");
+				}
+
+				// Improved filtering logic
+				const filterByType = (type) => exercises.filter(ex => 
+					ex.type === type &&
+					ex.level.includes(level) &&
+					selectedEquipment.includes(ex.equipment)
+				);
+
+				const availableWarmup = filterByType('warmup');
+				const availableMain = filterByType('main');
+				const availableCooldown = filterByType('cooldown');
+
+				const warmupPlan = generateRandomSet(availableWarmup, 5);
+				const cooldownPlan = generateRandomSet(availableCooldown, 5);
+
+				if (availableMain.length === 0) {
+					throw new Error('No exercises available for the selected criteria. Please try different equipment or fitness level.');
+				}
+
+				const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
+				
+				// Populate app state for the new flow
+				appState.warmup = warmupPlan;
+				appState.main = fallbackMainPlan;
+				appState.cooldown = cooldownPlan;
+				appState.workTime = workTime;
+				appState.restTime = restTime;
+				buildSequence();
+				appState.currentIndex = 0;
+				appState.phase = 'work';
+				appState.remainingSeconds = workTime;
+				saveState();
+
+				// Render overview screen
+				renderOverview();
+				attachOverviewHandlers();
+				attachPlayerHandlers();
+				
+				showSuccess('Workout plan generated successfully!');
+				
+			} catch (error) {
+				showError(error.message || 'Failed to generate workout plan. Please try again.');
+				
+				// Show no results message
+				const workoutPlanDiv = document.getElementById('workout-plan');
+				const noResultsDiv = document.getElementById('no-results');
+				workoutPlanDiv.classList.add('hidden');
+				noResultsDiv.classList.remove('hidden');
+			} finally {
+				setLoading(false);
+			}
+		});
+	}
+	
+	// Accessibility and other enhancements (unchanged)
+	if (generateBtn) {
+		generateBtn.setAttribute('aria-label', 'Generate workout plan');
+		generateBtn.setAttribute('role', 'button');
+	}
+	
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Enter' && e.target.tagName === 'SELECT') {
+			e.target.blur();
+		}
+	});
+	
+	const focusableElements = document.querySelectorAll('button, input, select, a');
+	focusableElements.forEach(element => {
+		element.addEventListener('focus', () => {
+			element.style.outline = '2px solid #3b82f6';
+			element.style.outlineOffset = '2px';
+		});
+		
+		element.addEventListener('blur', () => {
+			element.style.outline = '';
+			element.style.outlineOffset = '';
+		});
+	});
+	
+	const equipmentLabels = document.querySelectorAll('label[for^="eq-"]');
+	equipmentLabels.forEach(label => {
+		label.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				const checkbox = document.getElementById(label.getAttribute('for'));
+				if (checkbox) {
+					checkbox.checked = !checkbox.checked;
+					label.setAttribute('aria-checked', checkbox.checked.toString());
+					const event = new Event('change', { bubbles: true });
+					checkbox.dispatchEvent(event);
+				}
+			}
+		});
+		
+		const checkbox = document.getElementById(label.getAttribute('for'));
+		if (checkbox) {
+			checkbox.addEventListener('change', () => {
+				label.setAttribute('aria-checked', checkbox.checked.toString());
+			});
+		}
+	});
+
+	// Attempt to restore previous session
+	if (loadState()) {
+		// Ensure sequence fields like _section exist even after reload
+		if (!appState.sequence[0]._section) {
+			buildSequence();
+		}
+		renderOverview();
+		attachOverviewHandlers();
+		attachPlayerHandlers();
+	}
 });
