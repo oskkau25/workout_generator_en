@@ -1,0 +1,23 @@
+{
+  "2025-09-02T17:32:39.529792": {
+    "detected_features": {
+      "workout_flow": false,
+      "timers": true,
+      "audio_vibration": true,
+      "rest_overlay": true,
+      "navigation": true,
+      "section_badges": true,
+      "speech": true,
+      "exercise_swapping": true,
+      "form_interactions": true,
+      "responsive_design": true,
+      "accessibility": true,
+      "error_handling": true,
+      "performance": true,
+      "timing": true
+    },
+    "feature_count": 13,
+    "total_features": 14,
+    "pipeline_version": "2.0"
+  }
+}

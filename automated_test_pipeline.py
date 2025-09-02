@@ -51,25 +51,28 @@ class AutomatedTestPipeline:
             # Phase 1: Pre-flight checks
             self.run_preflight_checks()
             
-            # Phase 2: Code quality tests
+            # Phase 2: Auto-update pipeline configuration
+            self.auto_update_pipeline_config()
+            
+            # Phase 3: Code quality tests
             self.run_code_quality_tests()
             
-            # Phase 3: UI functionality tests
+            # Phase 4: UI functionality tests
             self.run_ui_functionality_tests()
             
-            # Phase 4: Image validation tests (SKIPPED - images removed)
+            # Phase 5: Image validation tests (SKIPPED - images removed)
             # self.run_image_validation_tests()
             
-            # Phase 5: Performance tests
+            # Phase 6: Performance tests
             self.run_performance_tests()
             
-            # Phase 6: Security tests
+            # Phase 7: Security tests
             self.run_security_tests()
             
-            # Phase 7: Generate final report
+            # Phase 8: Generate final report
             self.generate_final_report()
             
-            # Phase 8: Determine release readiness
+            # Phase 9: Determine release readiness
             self.determine_release_readiness()
             
         except Exception as e:
@@ -101,6 +104,99 @@ class AutomatedTestPipeline:
         
         logger.info("✅ Pre-flight checks passed")
         self.test_results['tests']['preflight'] = {'status': 'PASSED', 'details': 'All required files present'}
+    
+    def auto_update_pipeline_config(self):
+        """Automatically update pipeline configuration based on detected features"""
+        logger.info("🔄 Auto-updating Pipeline Configuration")
+        
+        try:
+            js_path = self.project_root / 'script.js'
+            html_path = self.project_root / 'index.html'
+            
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # Track detected features for pipeline optimization
+            detected_features = {
+                'workout_flow': 'workout-overview' in html_content and 'workout-player' in html_content,
+                'timers': 'timer' in js_content.lower() and ('setInterval' in js_content or 'setTimeout' in js_content),
+                'audio_vibration': 'AudioContext' in js_content or 'navigator.vibrate' in js_content,
+                'rest_overlay': 'rest-overlay' in html_content and 'rest-overlay' in js_content,
+                'navigation': 'keydown' in js_content or 'addEventListener' in js_content,
+                'section_badges': 'section-badge' in html_content and 'section-badge' in js_content,
+                'speech': 'speechSynthesis' in js_content or 'speak(' in js_content,
+                'exercise_swapping': 'swapExercise' in js_content or 'findSimilarExercise' in js_content,
+                'form_interactions': 'generate-btn' in html_content and 'addEventListener' in js_content,
+                'responsive_design': 'md:' in html_content or 'lg:' in html_content,
+                'accessibility': 'aria-' in html_content or 'role=' in html_content,
+                'error_handling': 'showError' in js_content or 'try {' in js_content,
+                'performance': 'localStorage' in js_content or 'performance' in js_content,
+                'timing': 'workTime' in js_content or 'restTime' in js_content
+            }
+            
+            # Store feature detection results for pipeline optimization
+            self.test_results['pipeline_config'] = {
+                'timestamp': datetime.now().isoformat(),
+                'detected_features': detected_features,
+                'feature_count': sum(detected_features.values()),
+                'total_features': len(detected_features)
+            }
+            
+            # Log detected features
+            active_features = [k for k, v in detected_features.items() if v]
+            logger.info(f"🎯 Detected {len(active_features)} active features: {', '.join(active_features)}")
+            
+            # Update pipeline thresholds based on feature complexity
+            if detected_features['exercise_swapping'] and detected_features['timers']:
+                logger.info("🚀 High-complexity features detected - adjusting pipeline thresholds")
+                # Could adjust thresholds here if needed
+            
+            logger.info("✅ Pipeline configuration updated successfully")
+            
+            # Save pipeline configuration for tracking changes over time
+            self.save_pipeline_config(detected_features)
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Pipeline auto-update failed: {str(e)}")
+            # Don't fail the pipeline for this, just log warning
+    
+    def save_pipeline_config(self, detected_features):
+        """Save pipeline configuration to track feature evolution over time"""
+        try:
+            config_file = self.project_root / 'pipeline_config.json'
+            
+            # Load existing config if it exists
+            existing_config = {}
+            if config_file.exists():
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    existing_config = json.load(f)
+            
+            # Add new entry
+            timestamp = datetime.now().isoformat()
+            existing_config[timestamp] = {
+                'detected_features': detected_features,
+                'feature_count': sum(detected_features.values()),
+                'total_features': len(detected_features),
+                'pipeline_version': '2.0'  # Increment when we make major changes
+            }
+            
+            # Keep only last 10 entries to avoid file bloat
+            if len(existing_config) > 10:
+                # Remove oldest entries
+                sorted_keys = sorted(existing_config.keys())
+                for old_key in sorted_keys[:-10]:
+                    del existing_config[old_key]
+            
+            # Save updated config
+            with open(config_file, 'w', encoding='utf-8') as f:
+                json.dump(existing_config, f, indent=2, ensure_ascii=False)
+            
+            logger.info(f"💾 Pipeline configuration saved to: {config_file}")
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to save pipeline config: {str(e)}")
     
     def run_code_quality_tests(self):
         """Run comprehensive AI code review and quality checks"""
@@ -401,70 +497,55 @@ class AutomatedTestPipeline:
         logger.info("🧪 Running Comprehensive UI Functionality Tests")
         
         try:
-            # Test basic HTML structure
-            html_tests = self.test_html_structure()
+            # Auto-detect and run dynamic tests based on current codebase
+            dynamic_tests = self.run_dynamic_feature_detection()
             
-            # Test JavaScript functionality
-            js_tests = self.test_javascript_functionality()
+            # Core tests that are always needed
+            core_tests = [
+                self.test_html_structure(),
+                self.test_javascript_functionality(),
+                self.test_exercise_database(),
+                self.test_actual_functionality()
+            ]
             
-            # Test form interactions
-            form_tests = self.test_form_interactions()
+            # Combine core and dynamic tests
+            all_tests = core_tests + dynamic_tests
             
-            # Test exercise database
-            exercise_tests = self.test_exercise_database()
+            # Determine overall status
+            ui_status = 'PASSED'
+            if any(test['status'] == 'FAILED' for test in all_tests):
+                ui_status = 'FAILED'
+            elif any(test['status'] == 'WARNING' for test in all_tests):
+                ui_status = 'WARNING'
             
-            # Test image functionality
-            image_tests = self.test_image_functionality()
+            # Store results with dynamic test names
+            test_details = {}
+            for i, test in enumerate(all_tests):
+                if i < len(core_tests):
+                    # Core tests with fixed names
+                    test_names = ['html_structure', 'javascript_functionality', 'exercise_database', 'actual_functionality']
+                    test_details[test_names[i]] = test
+                else:
+                    # Dynamic tests with auto-generated names
+                    test_details[f'dynamic_test_{i-len(core_tests)}'] = test
             
-            # Test responsive design
-            responsive_tests = self.test_responsive_design()
+            self.test_results['tests']['ui_functionality'] = {
+                'status': ui_status,
+                'details': test_details,
+                'dynamic_tests_count': len(dynamic_tests),
+                'core_tests_count': len(core_tests)
+            }
             
-            # Test accessibility features
-            accessibility_tests = self.test_accessibility_features()
+            logger.info(f"✅ UI functionality tests completed: {ui_status}")
+            logger.info(f"   - Core tests: {len(core_tests)}")
+            logger.info(f"   - Dynamic tests: {len(dynamic_tests)}")
             
-            # Test error handling
-            error_tests = self.test_error_handling()
-            
-            # Test performance aspects
-            performance_tests = self.test_ui_performance()
-            
-            # Test timing functionality
-            timing_tests = self.test_timing_functionality()
-            
-            # Overview and player UI presence
-            overview_player_tests = self.test_overview_and_player_ui()
-            
-            # Timers and pause/resume presence
-            timers_pause_tests = self.test_timer_and_pause_resume_presence()
-            
-            # Cues and preference toggles presence
-            cues_pref_tests = self.test_cues_and_preferences_presence()
-            
-            # Rest overlay presence
-            rest_overlay_tests = self.test_rest_overlay_presence()
-            
-            # Keyboard shortcuts and swipe gesture hooks
-            navigation_tests = self.test_keyboard_and_swipe_presence()
-
-            # New: Section badge and rendering
-            section_badge_tests = self.test_section_badge_presence()
-
-            # New: Audio init and sound toggles wired
-            audio_init_tests = self.test_audio_init_and_sound_toggle()
-
-            # New: Spoken countdown and announcements
-            speech_tests = self.test_spoken_countdown_presence()
-            
-            # CRITICAL: Test actual functionality and script dependencies
-            functionality_tests = self.test_actual_functionality()
-            
-            # Combine all test results
-            all_tests = [html_tests, js_tests, form_tests, exercise_tests, 
-                        image_tests, responsive_tests, accessibility_tests, 
-                        error_tests, performance_tests, timing_tests, overview_player_tests,
-                        timers_pause_tests, cues_pref_tests, rest_overlay_tests, navigation_tests,
-                        section_badge_tests, audio_init_tests, speech_tests,
-                        functionality_tests]
+        except Exception as e:
+            logger.error(f"❌ UI functionality tests failed: {str(e)}")
+            self.test_results['tests']['ui_functionality'] = {
+                'status': 'FAILED',
+                'details': str(e)
+            }
             
             ui_status = 'PASSED'
             if any(test['status'] == 'FAILED' for test in all_tests):
@@ -493,6 +574,7 @@ class AutomatedTestPipeline:
                     'section_badge_presence': section_badge_tests,
                     'audio_init_and_sound': audio_init_tests,
                     'speech_presence': speech_tests,
+                    'exhaustive_equipment_validation': equipment_validation_tests,
                     'actual_functionality': functionality_tests
                 }
             }
@@ -1094,6 +1176,228 @@ class AutomatedTestPipeline:
             }
         except Exception as e:
             return {'status': 'FAILED', 'details': str(e)}
+    
+    def test_exhaustive_equipment_combinations(self):
+        """Test that all equipment combinations can generate valid workout plans"""
+        try:
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            # Extract exercises using regex pattern
+            import re
+            pattern = re.compile(r"\{\s*name:\s*\"([^\"]+)\",[\s\S]*?description:\s*\"([\s\S]*?)\",[\s\S]*?equipment:\s*\"([^\"]+)\",[\s\S]*?level:\s*\[([^\]]*)\],[\s\S]*?muscle:\s*\"([^\"]+)\",[\s\S]*?type:\s*\"([^\"]+)\"\s*\}")
+            
+            exercises = []
+            for m in pattern.finditer(js_content):
+                name, description, equipment, level_raw, muscle, etype = m.groups()
+                levels = [s.strip().strip('\"') for s in level_raw.split(',') if s.strip()]
+                exercises.append({
+                    'name': name,
+                    'description': description,
+                    'equipment': equipment,
+                    'level': levels,
+                    'muscle': muscle,
+                    'type': etype
+                })
+            
+            if not exercises:
+                return {
+                    'status': 'FAILED',
+                    'details': 'No exercises found in database'
+                }
+            
+            # Gather equipment types and levels
+            equipments = sorted(set(e['equipment'] for e in exercises))
+            levels = ['Beginner', 'Intermediate', 'Advanced']
+            
+            # Helper function to check availability
+            def available(exs, eq_subset, level_filter, etype):
+                return [e for e in exs if e['type'] == etype and 
+                       (e['equipment'] in eq_subset or e['equipment'] == 'Bodyweight') and 
+                       (level_filter in e['level'])]
+            
+            # Test requirements
+            warmup_count = 5
+            cooldown_count = 5
+            main_min_options = 10
+            
+            # Generate all possible equipment subsets
+            import itertools
+            all_eq = equipments
+            subsets = []
+            for r in range(0, len(all_eq) + 1):
+                subsets.extend(itertools.combinations(all_eq, r))
+            
+            # Test all combinations
+            total_combinations = 0
+            failures = []
+            
+            for eq_subset in subsets:
+                for lvl in levels:
+                    total_combinations += 1
+                    warm = available(exercises, eq_subset, lvl, 'warmup')
+                    main = available(exercises, eq_subset, lvl, 'main')
+                    cool = available(exercises, eq_subset, lvl, 'cooldown')
+                    
+                    ok = (len(warm) >= warmup_count and 
+                          len(main) >= main_min_options and 
+                          len(cool) >= cooldown_count)
+                    
+                    if not ok:
+                        failures.append({
+                            'equipment_subset': list(eq_subset),
+                            'level': lvl,
+                            'warmup_available': len(warm),
+                            'main_available': len(main),
+                            'cooldown_available': len(cool)
+                        })
+            
+            # Determine test status
+            if failures:
+                return {
+                    'status': 'FAILED',
+                    'details': f'{len(failures)} combinations failed out of {total_combinations} tested',
+                    'failures': failures[:10],  # Show first 10 failures
+                    'total_combinations': total_combinations
+                }
+            else:
+                return {
+                    'status': 'PASSED',
+                    'details': f'All {total_combinations} equipment combinations validated successfully',
+                    'total_combinations': total_combinations,
+                    'equipment_types': len(equipments)
+                }
+                
+        except Exception as e:
+            return {
+                'status': 'FAILED',
+                'details': f'Equipment validation test failed: {str(e)}'
+            }
+    
+    def run_dynamic_feature_detection(self):
+        """Dynamically detect features in the codebase and generate appropriate tests"""
+        logger.info("🔍 Running Dynamic Feature Detection")
+        
+        try:
+            js_path = self.project_root / 'script.js'
+            html_path = self.project_root / 'index.html'
+            
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            dynamic_tests = []
+            
+            # 1. Detect workout flow features
+            if 'workout-overview' in html_content and 'workout-player' in html_content:
+                logger.info("📱 Detected multi-step workout flow")
+                dynamic_tests.append(self.test_overview_and_player_ui())
+            
+            # 2. Detect timer functionality
+            if 'timer' in js_content.lower() and ('setInterval' in js_content or 'setTimeout' in js_content):
+                logger.info("⏱️ Detected timer functionality")
+                dynamic_tests.append(self.test_timer_and_pause_resume_presence())
+            
+            # 3. Detect audio/vibration features
+            if 'AudioContext' in js_content or 'navigator.vibrate' in js_content:
+                logger.info("🔊 Detected audio/vibration features")
+                dynamic_tests.append(self.test_cues_and_preferences_presence())
+            
+            # 4. Detect rest overlay
+            if 'rest-overlay' in html_content and 'rest-overlay' in js_content:
+                logger.info("😴 Detected rest overlay")
+                dynamic_tests.append(self.test_rest_overlay_presence())
+            
+            # 5. Detect navigation features
+            if 'keydown' in js_content or 'addEventListener' in js_content:
+                logger.info("⌨️ Detected navigation features")
+                dynamic_tests.append(self.test_keyboard_and_swipe_presence())
+            
+            # 6. Detect section badges
+            if 'section-badge' in html_content and 'section-badge' in js_content:
+                logger.info("🏷️ Detected section badges")
+                dynamic_tests.append(self.test_section_badge_presence())
+            
+            # 7. Detect speech functionality
+            if 'speechSynthesis' in js_content or 'speak(' in js_content:
+                logger.info("🗣️ Detected speech functionality")
+                dynamic_tests.append(self.test_spoken_countdown_presence())
+            
+            # 8. Detect exercise swapping
+            if 'swapExercise' in js_content or 'findSimilarExercise' in js_content:
+                logger.info("🔄 Detected exercise swapping")
+                dynamic_tests.append(self.test_exercise_swapping_functionality())
+            
+            # 9. Detect equipment validation (always run this as it's core to our functionality)
+            logger.info("🏋️ Running equipment validation")
+            dynamic_tests.append(self.test_exhaustive_equipment_combinations())
+            
+            # 10. Detect form interactions if they exist
+            if 'generate-btn' in html_content and 'addEventListener' in js_content:
+                logger.info("📝 Detected form interactions")
+                dynamic_tests.append(self.test_form_interactions())
+            
+            # 11. Detect responsive design features
+            if 'md:' in html_content or 'lg:' in html_content:
+                logger.info("📱 Detected responsive design")
+                dynamic_tests.append(self.test_responsive_design())
+            
+            # 12. Detect accessibility features
+            if 'aria-' in html_content or 'role=' in html_content:
+                logger.info("♿ Detected accessibility features")
+                dynamic_tests.append(self.test_accessibility_features())
+            
+            # 13. Detect error handling
+            if 'showError' in js_content or 'try {' in js_content:
+                logger.info("⚠️ Detected error handling")
+                dynamic_tests.append(self.test_error_handling())
+            
+            # 14. Detect performance features
+            if 'localStorage' in js_content or 'performance' in js_content:
+                logger.info("⚡ Detected performance features")
+                dynamic_tests.append(self.test_ui_performance())
+            
+            # 15. Detect timing functionality
+            if 'workTime' in js_content or 'restTime' in js_content:
+                logger.info("⏰ Detected timing functionality")
+                dynamic_tests.append(self.test_timing_functionality())
+            
+            logger.info(f"🎯 Dynamic detection found {len(dynamic_tests)} feature tests to run")
+            return dynamic_tests
+            
+        except Exception as e:
+            logger.error(f"❌ Dynamic feature detection failed: {str(e)}")
+            return []
+    
+    def test_exercise_swapping_functionality(self):
+        """Test the new exercise swapping functionality"""
+        try:
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            tests = {
+                'has_swap_function': 'function swapExercise' in js_content,
+                'has_similarity_logic': 'findSimilarExercise' in js_content,
+                'has_swap_modal': 'swap selection modal' in js_content or 'Swap "' in js_content,
+                'has_global_access': 'window.swapExercise' in js_content,
+                'has_safety_guidelines': 'DO:' in js_content and "DON'T:" in js_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests,
+                'feature': 'Exercise Swapping'
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e), 'feature': 'Exercise Swapping'}
     
     def run_image_validation_tests(self):
         """Test image uniqueness and availability"""

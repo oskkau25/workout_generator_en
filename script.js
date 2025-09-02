@@ -537,6 +537,892 @@ const exercises = [
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
         type: "cooldown" 
+    },
+    { 
+        name: "Lat Stretch", 
+        description: "Kneel or stand beside a wall or bench. Place forearm on surface and lean hips back to feel stretch along the side of torso. Hold 20–30 seconds each side. ⚠️ DO: Keep ribs down and breathe. DON'T: Force the shoulder into pain or shrug.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Ankle Hops", 
+        description: "Stand tall and perform small, quick hops on the balls of your feet to prime calves and ankles. Keep knees soft and land lightly. ⚠️ DO: Land softly and keep hops small. DON'T: Lock knees or slam heels.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Hip Openers (Lunge + Circle)", 
+        description: "Step into a forward lunge, gently circle the front knee outward for 5 reps, then inward for 5. Switch sides. ⚠️ DO: Move slowly within a comfy range. DON'T: Force deep angles or twist the knee.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Scapular Pulls", 
+        description: "Hang from a bar with straight arms and pull shoulder blades down and together without bending elbows. 6–10 reps. ⚠️ DO: Keep arms straight and control. DON'T: Swing or bend elbows.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "warmup" 
+    },
+    { 
+        name: "Reverse Lunges", 
+        description: "Step one leg back and lower until both knees hit ~90°. Drive through the front heel to stand. Alternate sides. ⚠️ DO: Keep chest up and knee tracking toes. DON'T: Let front knee cave or slam the back knee.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Side Plank", 
+        description: "Lie on your side, prop up on forearm, lift hips to form a straight line from head to feet. Hold. ⚠️ DO: Stack shoulders/hips and brace core. DON'T: Let hips sag or rotate.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Bear Crawl", 
+        description: "On hands and toes with knees hovering off floor, crawl forward/backward keeping hips low and core tight. ⚠️ DO: Move slow and keep back flat. DON'T: Pike hips or let knees drag.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Hollow Body Hold", 
+        description: "Lie on back, press lower back to floor, lift shoulders and legs slightly off ground, arms overhead. Hold. ⚠️ DO: Keep low back pressed down. DON'T: Overarch or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Sumo Squats", 
+        description: "Stand wide with toes out 30°, sit hips down keeping chest tall and knees tracking over toes. ⚠️ DO: Push knees out and stay tall. DON'T: Collapse arches or round back.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Incline Push-ups", 
+        description: "Hands on a bench or countertop, body in line, lower chest to edge and press away. ⚠️ DO: Keep body straight and control depth. DON'T: Flare elbows or drop hips.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Chest", 
+        type: "main" 
+    },
+    { 
+        name: "Chair Dips", 
+        description: "Hands on edge of a sturdy chair, feet forward, bend elbows to lower body then press up. ⚠️ DO: Keep shoulders down/back. DON'T: Let shoulders roll forward or lock out hard.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Swings", 
+        description: "Hinge at hips, hike bell back and snap hips forward to chest height, arms relaxed. ⚠️ DO: Hinge, don't squat; snap hips. DON'T: Lift with arms or round back.", 
+        equipment: "Kettlebell", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Rows", 
+        description: "Hold TRX handles lean back with straight body; pull chest to hands by driving elbows back. ⚠️ DO: Keep core tight and squeeze shoulder blades. DON'T: Shrug or let hips sag.", 
+        equipment: "TRX Bands", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "Band Pull-Aparts", 
+        description: "Hold a resistance band at shoulder height; pull ends apart by squeezing shoulder blades. Control return. ⚠️ DO: Keep ribs down and elbows soft. DON'T: Overextend lower back.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope High Knees", 
+        description: "Jump rope bringing knees up to hip height each turn at a steady rhythm. ⚠️ DO: Land softly and keep cadence. DON'T: Overstride or slam feet.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Rowing Sprints", 
+        description: "On rower, perform short 20–40s sprints focusing on legs-then-hips-then-arms sequence. ⚠️ DO: Maintain form and full strokes. DON'T: Hunch or yank with arms.", 
+        equipment: "Rower", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Seated Forward Fold", 
+        description: "Sit tall with legs extended; hinge forward from hips reaching toward toes. Hold 30–60s. ⚠️ DO: Keep spine long and breathe. DON'T: Bounce or round aggressively.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Figure Four Stretch", 
+        description: "Lie on back, cross ankle over opposite knee and pull thigh toward chest to stretch glute. Hold 30s each. ⚠️ DO: Pull gently and keep neck relaxed. DON'T: Force the stretch into pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Upper Trap Stretch", 
+        description: "Sit tall, gently tilt ear toward shoulder and use hand to add light pressure. Hold 20–30s per side. ⚠️ DO: Keep shoulders down and breathe. DON'T: Yank the head or twist.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Deep Breathing Stretch", 
+        description: "Sit cross-legged, place hands on knees, take deep breaths while gently stretching arms overhead. Hold 60 seconds. ⚠️ DO: Breathe deeply and relax into the stretch. DON'T: Force the stretch or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "cooldown" 
+    },
+    // Additional TRX exercises
+    { 
+        name: "TRX Push-ups", 
+        description: "Place feet in TRX straps, assume plank position, perform push-ups while maintaining stability. ⚠️ DO: Keep core tight and control the movement. DON'T: Let hips sag or lose balance.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Squats", 
+        description: "Hold TRX handles at chest height, squat down while keeping weight in heels, use straps for balance. ⚠️ DO: Keep chest up and knees over toes. DON'T: Let knees cave inward or round back.", 
+        equipment: "TRX Bands", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Lunges", 
+        description: "Step back into lunge with one foot in TRX strap, lower until back knee nearly touches ground. ⚠️ DO: Keep front knee over toes and chest up. DON'T: Let front knee go past toes.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Chest Press", 
+        description: "Face away from anchor, lean forward with arms extended, press forward to standing position. ⚠️ DO: Keep core engaged and control the movement. DON'T: Lock elbows or lose balance.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Tricep Extensions", 
+        description: "Face anchor, lean forward with arms bent, extend arms to straight position. ⚠️ DO: Keep elbows close to body and control movement. DON'T: Swing or use momentum.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Bicep Curls", 
+        description: "Face anchor, hold handles at waist, curl arms up while maintaining body position. ⚠️ DO: Keep elbows stationary and squeeze biceps. DON'T: Swing body or use momentum.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Core Crunches", 
+        description: "Lie on back, place feet in TRX straps, perform crunches while maintaining leg position. ⚠️ DO: Engage core and control movement. DON'T: Pull on neck or arch back.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Pike", 
+        description: "Start in plank with feet in TRX, pike hips up toward ceiling while keeping legs straight. ⚠️ DO: Keep core tight and control movement. DON'T: Let hips drop or swing.", 
+        equipment: "TRX Bands", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Hamstring Curls", 
+        description: "Lie on back, place heels in TRX straps, curl legs toward glutes while keeping hips up. ⚠️ DO: Keep hips elevated and control movement. DON'T: Let hips drop or swing legs.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Single Arm Row", 
+        description: "Stand sideways to anchor, hold one handle, perform single arm row while maintaining balance. ⚠️ DO: Keep core tight and squeeze shoulder blade. DON'T: Twist body or shrug shoulder.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Y-Fly", 
+        description: "Face anchor, hold handles overhead, perform Y-shaped fly motion while maintaining posture. ⚠️ DO: Keep core engaged and control movement. DON'T: Arch back or use momentum.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "TRX T-Fly", 
+        description: "Face anchor, hold handles at chest level, perform T-shaped fly motion for upper back. ⚠️ DO: Keep core tight and squeeze shoulder blades. DON'T: Round back or use momentum.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Atomic Push-ups", 
+        description: "Place feet in TRX straps, perform push-up then bring knees to chest in one fluid motion. ⚠️ DO: Keep core engaged throughout movement. DON'T: Let hips sag or lose control.", 
+        equipment: "TRX Bands", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Fallout", 
+        description: "Kneel facing away from anchor, hold handles at chest, lean forward while maintaining core engagement. ⚠️ DO: Keep core tight and control lean. DON'T: Let back arch or lose balance.", 
+        equipment: "TRX Bands", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "TRX Suspended Lunge", 
+        description: "Place one foot in TRX strap behind you, perform lunge while maintaining balance and form. ⚠️ DO: Keep front knee over toes and chest up. DON'T: Let back knee touch ground hard.", 
+        equipment: "TRX Bands", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    // Additional Kettlebell exercises
+    { 
+        name: "Kettlebell Deadlift", 
+        description: "Stand with feet shoulder-width apart, hold kettlebell between legs, hinge at hips and lower, then stand up. ⚠️ DO: Keep back straight and push through heels. DON'T: Round back or lift with arms.", 
+        equipment: "Kettlebell", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Squat", 
+        description: "Hold kettlebell at chest level, perform squat while keeping chest up and weight in heels. ⚠️ DO: Keep knees over toes and chest up. DON'T: Let knees cave inward or round back.", 
+        equipment: "Kettlebell", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Lunge", 
+        description: "Hold kettlebell at chest, step forward into lunge, lower until back knee nearly touches ground. ⚠️ DO: Keep front knee over toes and chest up. DON'T: Let front knee go past toes.", 
+        equipment: "Kettlebell", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Press", 
+        description: "Hold kettlebell at shoulder level, press overhead while keeping core engaged and avoiding arch. ⚠️ DO: Keep core tight and press straight up. DON'T: Arch back or lean backward.", 
+        equipment: "Kettlebell", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Row", 
+        description: "Bend forward at hips, hold kettlebell in one hand, pull elbow back toward hip. ⚠️ DO: Keep back straight and squeeze shoulder blade. DON'T: Round back or swing the weight.", 
+        equipment: "Kettlebell", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Clean", 
+        description: "Start with kettlebell between legs, explosively lift to shoulder level using hip drive. ⚠️ DO: Use hip drive and keep weight close to body. DON'T: Use arms to lift or round back.", 
+        equipment: "Kettlebell", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Snatch", 
+        description: "Start with kettlebell between legs, explosively lift overhead in one fluid motion. ⚠️ DO: Use hip drive and keep weight close. DON'T: Use arms to lift or lose control.", 
+        equipment: "Kettlebell", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Turkish Get-up", 
+        description: "Lie on back with kettlebell in one hand, perform controlled get-up to standing position. ⚠️ DO: Keep eyes on kettlebell and move slowly. DON'T: Rush or lose control of weight.", 
+        equipment: "Kettlebell", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Windmill", 
+        description: "Hold kettlebell overhead with one arm, bend sideways while keeping arm straight. ⚠️ DO: Keep core engaged and control movement. DON'T: Let back arch or lose balance.", 
+        equipment: "Kettlebell", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Figure-8", 
+        description: "Stand with feet wide, pass kettlebell in figure-8 pattern between legs while maintaining stance. ⚠️ DO: Keep core engaged and control movement. DON'T: Let back round or lose balance.", 
+        equipment: "Kettlebell", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Halo", 
+        description: "Hold kettlebell at chest level, circle it around head while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Let back arch or lose balance.", 
+        equipment: "Kettlebell", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Thruster", 
+        description: "Hold kettlebell at chest, squat down, then explosively stand and press overhead. ⚠️ DO: Use hip drive and keep core engaged. DON'T: Round back or use arms to lift.", 
+        equipment: "Kettlebell", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Sumo Deadlift", 
+        description: "Stand with wide stance, hold kettlebell between legs, hinge at hips and lift. ⚠️ DO: Keep back straight and push through heels. DON'T: Round back or lift with arms.", 
+        equipment: "Kettlebell", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Single Leg Deadlift", 
+        description: "Stand on one leg, hold kettlebell in opposite hand, hinge at hips while extending free leg back. ⚠️ DO: Keep back straight and control movement. DON'T: Round back or lose balance.", 
+        equipment: "Kettlebell", 
+        level: ["Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Side Lunge", 
+        description: "Hold kettlebell at chest, step to side into lunge, lower while keeping weight centered. ⚠️ DO: Keep chest up and knees over toes. DON'T: Let knees cave inward.", 
+        equipment: "Kettlebell", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Kettlebell Step-up", 
+        description: "Hold kettlebell at chest, step up onto elevated surface, drive through front foot. ⚠️ DO: Keep chest up and drive through front foot. DON'T: Push off back foot or round back.", 
+        equipment: "Kettlebell", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    // Additional Resistance Band exercises
+    { 
+        name: "Resistance Band Squats", 
+        description: "Stand on band with feet shoulder-width, hold handles at shoulders, perform squat while maintaining tension. ⚠️ DO: Keep chest up and knees over toes. DON'T: Let knees cave inward.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Rows", 
+        description: "Anchor band at chest height, hold handles, pull elbows back while squeezing shoulder blades. ⚠️ DO: Keep core engaged and squeeze shoulder blades. DON'T: Round back or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Chest Press", 
+        description: "Anchor band behind back, hold handles at chest, press forward while maintaining posture. ⚠️ DO: Keep core engaged and control movement. DON'T: Round back or lock elbows.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Bicep Curls", 
+        description: "Stand on band with feet shoulder-width, hold handles at sides, curl arms up while maintaining tension. ⚠️ DO: Keep elbows stationary and squeeze biceps. DON'T: Swing body or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Tricep Extensions", 
+        description: "Anchor band overhead, hold handles behind head, extend arms overhead while maintaining tension. ⚠️ DO: Keep elbows close to head and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Arms", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Lateral Raises", 
+        description: "Stand on band with feet shoulder-width, hold handles at sides, raise arms to shoulder level. ⚠️ DO: Keep core engaged and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Front Raises", 
+        description: "Stand on band with feet shoulder-width, hold handles at thighs, raise arms to shoulder level. ⚠️ DO: Keep core engaged and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Deadlift", 
+        description: "Stand on band with feet shoulder-width, hold handles at thighs, hinge at hips and lower, then stand up. ⚠️ DO: Keep back straight and push through heels. DON'T: Round back or lift with arms.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Lunges", 
+        description: "Step back into lunge with band under front foot, hold handles at chest, perform lunge. ⚠️ DO: Keep front knee over toes and chest up. DON'T: Let front knee go past toes.", 
+        equipment: "Resistance Band", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Glute Bridge", 
+        description: "Lie on back with band above knees, bend knees, lift hips while pressing knees outward. ⚠️ DO: Keep core engaged and squeeze glutes. DON'T: Arch back or let knees cave inward.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Clamshells", 
+        description: "Lie on side with band above knees, bend knees, open top knee while keeping feet together. ⚠️ DO: Keep core engaged and control movement. DON'T: Let hips roll or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Side Steps", 
+        description: "Place band above knees, step to side while maintaining tension, alternate directions. ⚠️ DO: Keep tension on band and control movement. DON'T: Let knees cave inward.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Woodchoppers", 
+        description: "Anchor band at shoulder height, hold handles with both hands, rotate torso while pulling across body. ⚠️ DO: Keep core engaged and control rotation. DON'T: Use momentum or round back.", 
+        equipment: "Resistance Band", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Pallof Press", 
+        description: "Anchor band at chest height, hold handles with both hands, press forward while resisting rotation. ⚠️ DO: Keep core engaged and resist rotation. DON'T: Let body twist or round back.", 
+        equipment: "Resistance Band", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Face Pulls", 
+        description: "Anchor band at face height, hold handles with both hands, pull toward face while keeping elbows high. ⚠️ DO: Keep elbows high and squeeze shoulder blades. DON'T: Round back or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Reverse Fly", 
+        description: "Anchor band at chest height, hold handles with arms extended, pull arms back while squeezing shoulder blades. ⚠️ DO: Keep core engaged and squeeze shoulder blades. DON'T: Round back or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Upright Rows", 
+        description: "Stand on band with feet shoulder-width, hold handles at thighs, pull elbows up to shoulder level. ⚠️ DO: Keep core engaged and control movement. DON'T: Shrug shoulders or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "main" 
+    },
+    { 
+        name: "Resistance Band Shrugs", 
+        description: "Stand on band with feet shoulder-width, hold handles at sides, shrug shoulders up and down. ⚠️ DO: Keep core engaged and control movement. DON'T: Round back or use momentum.", 
+        equipment: "Resistance Band", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "main" 
+    },
+    // Additional Pull-up Bar exercises
+    { 
+        name: "Pull-up Bar Hanging Leg Raises", 
+        description: "Hang from pull-up bar, raise legs to parallel or higher while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Knee Tucks", 
+        description: "Hang from pull-up bar, bring knees toward chest while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar L-Sit", 
+        description: "Hang from pull-up bar, lift legs to form L-shape while keeping core engaged. ⚠️ DO: Keep core tight and hold position. DON'T: Round back or let legs drop.", 
+        equipment: "Pull-up Bar", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Windshield Wipers", 
+        description: "Hang from pull-up bar, swing legs side to side while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing too fast or lose control.", 
+        equipment: "Pull-up Bar", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Toes to Bar", 
+        description: "Hang from pull-up bar, raise legs to touch bar with toes while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Scissors", 
+        description: "Hang from pull-up bar, alternate raising legs in scissor motion while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Bicycles", 
+        description: "Hang from pull-up bar, perform bicycle motion with legs while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Side Crunches", 
+        description: "Hang from pull-up bar, bring knees toward opposite shoulder while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Oblique Twists", 
+        description: "Hang from pull-up bar, twist legs side to side while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Pike", 
+        description: "Hang from pull-up bar, raise legs toward bar while keeping core engaged and legs straight. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Knee Circles", 
+        description: "Hang from pull-up bar, draw circles with knees while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Figure-8", 
+        description: "Hang from pull-up bar, move legs in figure-8 pattern while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Side Leg Raises", 
+        description: "Hang from pull-up bar, raise legs to side while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Knee Tucks with Twist", 
+        description: "Hang from pull-up bar, bring knees toward chest while twisting to one side, alternate sides. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Leg Extensions", 
+        description: "Hang from pull-up bar, extend legs straight out while keeping core engaged. ⚠️ DO: Keep core tight and control movement. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    { 
+        name: "Pull-up Bar Hanging Knee Raises with Hold", 
+        description: "Hang from pull-up bar, raise knees to chest and hold position while keeping core engaged. ⚠️ DO: Keep core tight and hold position. DON'T: Swing or use momentum.", 
+        equipment: "Pull-up Bar", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Core", 
+        type: "main" 
+    },
+    // Additional Jump Rope exercises
+    { 
+        name: "Jump Rope High Knees", 
+        description: "Jump rope while bringing knees up toward chest with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or let knees cave inward.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Butt Kicks", 
+        description: "Jump rope while kicking heels toward glutes with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or let knees cave inward.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Side to Side", 
+        description: "Jump rope while moving side to side with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose balance.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Forward Backward", 
+        description: "Jump rope while moving forward and backward with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose balance.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Double Unders", 
+        description: "Jump rope while making rope pass under feet twice per jump. ⚠️ DO: Keep core engaged and jump higher. DON'T: Land hard or lose rhythm.", 
+        equipment: "Jump Rope", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Crossovers", 
+        description: "Jump rope while crossing arms in front of body with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose rhythm.", 
+        equipment: "Jump Rope", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Single Leg", 
+        description: "Jump rope while hopping on one leg, alternate legs. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose balance.", 
+        equipment: "Jump Rope", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Criss Cross", 
+        description: "Jump rope while crossing legs in front and back with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose rhythm.", 
+        equipment: "Jump Rope", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Boxer Skip", 
+        description: "Jump rope while moving feet in boxing shuffle pattern. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose rhythm.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Heel Toe", 
+        description: "Jump rope while alternating heel and toe touches with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose rhythm.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Jumping Jacks", 
+        description: "Jump rope while performing jumping jack motion with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose rhythm.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Skier", 
+        description: "Jump rope while moving feet side to side like skiing. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose balance.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Mummy Kicks", 
+        description: "Jump rope while kicking legs forward like a mummy walk. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose balance.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Bell", 
+        description: "Jump rope while jumping in place with feet together. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or let knees cave inward.", 
+        equipment: "Jump Rope", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Scissors", 
+        description: "Jump rope while alternating feet forward and back with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose rhythm.", 
+        equipment: "Jump Rope", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Can Can", 
+        description: "Jump rope while kicking one leg up and out to the side with each jump. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose balance.", 
+        equipment: "Jump Rope", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Jump Rope Russian", 
+        description: "Jump rope while alternating feet in Russian dance pattern. ⚠️ DO: Keep core engaged and land softly. DON'T: Land hard or lose rhythm.", 
+        equipment: "Jump Rope", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    // Additional Rower exercises
+    { 
+        name: "Rower Intervals", 
+        description: "Alternate between 30 seconds hard rowing and 30 seconds easy rowing. ⚠️ DO: Maintain proper form and control breathing. DON'T: Sacrifice form for speed.", 
+        equipment: "Rower", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Rower Pyramid", 
+        description: "Start with 100m, increase by 100m each round, then decrease back down. ⚠️ DO: Maintain proper form throughout. DON'T: Sacrifice form for distance.", 
+        equipment: "Rower", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Rower Tabata", 
+        description: "20 seconds hard rowing, 10 seconds rest, repeat 8 times. ⚠️ DO: Maintain proper form and push hard during work periods. DON'T: Sacrifice form for intensity.", 
+        equipment: "Rower", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Rower Distance Challenge", 
+        description: "Row for distance with consistent pace over 5-10 minutes. ⚠️ DO: Maintain proper form and steady pace. DON'T: Start too fast or sacrifice form.", 
+        equipment: "Rower", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Rower Power Strokes", 
+        description: "Focus on powerful leg drive and strong finish with each stroke. ⚠️ DO: Use legs first, then body, then arms. DON'T: Use only arms or round back.", 
+        equipment: "Rower", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Rower Technique Focus", 
+        description: "Row at moderate pace focusing on perfect form and smooth transitions. ⚠️ DO: Maintain proper sequence and smooth movement. DON'T: Rush or break form.", 
+        equipment: "Rower", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Rower Endurance", 
+        description: "Row at steady pace for 15-30 minutes building cardiovascular endurance. ⚠️ DO: Maintain consistent pace and proper form. DON'T: Start too fast or sacrifice form.", 
+        equipment: "Rower", 
+        level: ["Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
+    },
+    { 
+        name: "Rower Sprint Finish", 
+        description: "Row at moderate pace, finish last 2 minutes with maximum effort sprint. ⚠️ DO: Maintain proper form even during sprint. DON'T: Sacrifice form for speed.", 
+        equipment: "Rower", 
+        level: ["Advanced"], 
+        muscle: "Full Body", 
+        type: "main" 
     }
 ];
 
@@ -715,7 +1601,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const list = document.getElementById('overview-list');
 		if (!list) return;
 		list.textContent = '';
-		const createGroup = (title, items) => {
+		const createGroup = (title, items, sectionType) => {
 			if (!items || items.length === 0) return;
 			const group = document.createElement('div');
 			group.className = 'bg-gray-900/40 border border-gray-700 rounded-xl p-4';
@@ -724,18 +1610,32 @@ document.addEventListener('DOMContentLoaded', () => {
 			h.textContent = `${title} • ${items.length} item${items.length>1?'s':''}`;
 			group.appendChild(h);
 			const ul = document.createElement('ul');
-			ul.className = 'space-y-1 text-gray-300 text-sm';
+			ul.className = 'space-y-2 text-gray-300 text-sm';
 			items.forEach((ex, i) => {
 				const li = document.createElement('li');
-				li.innerHTML = `<span class="text-gray-500 mr-2">${i+1}.</span>${ex.name}`;
+				li.className = 'flex items-center justify-between bg-gray-800/30 rounded-lg p-2';
+				li.innerHTML = `
+					<div class="flex items-center">
+						<span class="text-gray-500 mr-3 w-6 text-center">${i+1}.</span>
+						<span class="text-gray-300">${ex.name}</span>
+						<span class="text-gray-500 ml-2 text-xs">${ex.muscle}</span>
+					</div>
+					<button 
+						onclick="swapExercise('${sectionType}', ${i})" 
+						class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-2 py-1 rounded transition-colors"
+						title="Swap for similar exercise"
+					>
+						🔄 Swap
+					</button>
+				`;
 				ul.appendChild(li);
 			});
 			group.appendChild(ul);
 			list.appendChild(group);
 		};
-		createGroup('Warm-up (5 min)', appState.warmup);
-		createGroup(`Main (${appState.main.length} min)`, appState.main);
-		createGroup('Cool-down (5 min)', appState.cooldown);
+		createGroup('Warm-up (5 min)', appState.warmup, 'warmup');
+		createGroup(`Main (${appState.main.length} min)`, appState.main, 'main');
+		createGroup('Cool-down (5 min)', appState.cooldown, 'cooldown');
 
 		// Update Start button label based on saved progress
 		const startBtn = document.getElementById('start-workout-btn');
@@ -752,6 +1652,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		const instruction = (parts[0] || '').trim();
 		const safety = (parts[1] || '').trim();
 		return { instruction, safety };
+	}
+
+	function parseDoDont(safetyGuidelines) {
+		if (!safetyGuidelines) return { doText: '', dontText: '' };
+		const doMatch = safetyGuidelines.match(/DO:\s*(.+?)\.\s*DON'T:/i);
+		const dontMatch = safetyGuidelines.match(/DON'T:\s*(.+)/i);
+		return {
+			doText: doMatch ? doMatch[1].trim() : '',
+			dontText: dontMatch ? dontMatch[1].trim() : ''
+		};
 	}
 
 	// --- Cues ---
@@ -892,10 +1802,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		const total = appState.sequence.length;
 		if (total === 0) return;
 		const ex = appState.sequence[appState.currentIndex];
-		const { instruction } = parseInstructionAndSafety(ex.description || '');
+		const { instruction, safety } = parseInstructionAndSafety(ex.description || '');
+		const { doText, dontText } = parseDoDont(safety);
 		const titleEl = document.getElementById('exercise-title');
 		const metaEl = document.getElementById('exercise-meta');
 		const instrEl = document.getElementById('exercise-instructions');
+		const safetyEl = document.getElementById('exercise-safety');
 		const progressEl = document.getElementById('exercise-progress');
 		const prevBtn = document.getElementById('prev-exercise-btn');
 		const nextBtn = document.getElementById('next-exercise-btn');
@@ -906,6 +1818,31 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (titleEl) titleEl.textContent = ex.name;
 		if (metaEl) metaEl.textContent = `${ex._section} • ${ex.muscle} • ${ex.equipment} • ${appState.workTime}s work / ${appState.restTime}s rest`;
 		if (instrEl) instrEl.textContent = instruction;
+		if (safetyEl) {
+			if (safety || doText || dontText) {
+				let html = '';
+				if (safety) {
+					html += '<h4 class="text-lg font-semibold text-white mb-2">⚠️ Safety Guidelines:</h4>';
+				}
+				if (doText) {
+					html += '<div class="bg-green-900/20 border border-green-700 rounded-lg p-3 mb-2">' +
+						'<h5 class="text-green-400 font-semibold mb-1">✅ DO:</h5>' +
+						`<p class="text-green-300 text-sm">${doText}</p>` +
+						'</div>';
+				}
+				if (dontText) {
+					html += '<div class="bg-red-900/20 border border-red-700 rounded-lg p-3 mb-2">' +
+						'<h5 class="text-red-400 font-semibold mb-1">❌ DON\'T:</h5>' +
+						`<p class="text-red-300 text-sm">${dontText}</p>` +
+						'</div>';
+				}
+				safetyEl.innerHTML = html;
+				safetyEl.classList.remove('hidden');
+			} else {
+				safetyEl.innerHTML = '';
+				safetyEl.classList.add('hidden');
+			}
+		}
 		if (progressEl) progressEl.textContent = `Exercise ${appState.currentIndex + 1} / ${total}`;
 		if (prevBtn) prevBtn.disabled = appState.currentIndex === 0;
 		if (nextBtn) nextBtn.textContent = appState.currentIndex === total - 1 ? 'Finish' : 'Next';
@@ -915,7 +1852,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			const section = ex._section;
 			sectionBadge.classList.remove('hidden');
 			sectionBadge.textContent = section;
-			// color by section
 			const base = 'px-3 py-1 rounded-full text-xs font-semibold';
 			let color = 'bg-blue-900/40 text-blue-300 border border-blue-700';
 			if (section === 'Warm-up') color = 'bg-yellow-900/30 text-yellow-300 border border-yellow-700';
@@ -1111,94 +2047,94 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
-	// Get DOM elements
-	const form = document.getElementById('workout-form');
-	const durationSlider = document.getElementById('duration');
-	const durationValue = document.getElementById('duration-value');
-	const workTimeSlider = document.getElementById('work-time');
-	const workTimeValue = document.getElementById('work-time-value');
-	const restTimeSlider = document.getElementById('rest-time');
-	const restTimeValue = document.getElementById('rest-time-value');
-	const generateBtn = document.getElementById('generate-btn');
-	
-	// Add time slider functionality
-	if (durationSlider && durationValue) {
-		durationSlider.addEventListener('input', function() {
-			durationValue.textContent = this.value;
-		});
-		
-		// Initialize duration display
-		durationValue.textContent = durationSlider.value;
-	}
-	
-	// Add work time slider functionality
-	if (workTimeSlider && workTimeValue) {
-		workTimeSlider.addEventListener('input', function() {
-			workTimeValue.textContent = this.value;
-		});
-		
-		// Initialize work time display
-		workTimeValue.textContent = workTimeSlider.value;
-	}
-	
-	// Add rest time slider functionality
-	if (restTimeSlider && restTimeValue) {
-		restTimeSlider.addEventListener('input', function() {
-			restTimeValue.textContent = this.value;
-		});
-		
-		// Initialize rest time display
-		restTimeValue.textContent = restTimeSlider.value;
-	}
-	
-	// Add form submission handler
-	if (form) {
-		form.addEventListener('submit', async (e) => {
-			e.preventDefault();
-			
-			try {
-				// Validate form input
-				validateForm();
-				
-				// Hide previous results
-				const workoutPlanDiv = document.getElementById('workout-plan');
-				const noResultsDiv = document.getElementById('no-results');
-				workoutPlanDiv.classList.add('hidden');
-				noResultsDiv.classList.add('hidden');
-				
-				setLoading(true);
+    // Get DOM elements
+    const form = document.getElementById('workout-form');
+    const durationSlider = document.getElementById('duration');
+    const durationValue = document.getElementById('duration-value');
+    const workTimeSlider = document.getElementById('work-time');
+    const workTimeValue = document.getElementById('work-time-value');
+    const restTimeSlider = document.getElementById('rest-time');
+    const restTimeValue = document.getElementById('rest-time-value');
+    const generateBtn = document.getElementById('generate-btn');
+    
+    // Add time slider functionality
+    if (durationSlider && durationValue) {
+        durationSlider.addEventListener('input', function() {
+            durationValue.textContent = this.value;
+        });
+        
+        // Initialize duration display
+        durationValue.textContent = durationSlider.value;
+    }
+    
+    // Add work time slider functionality
+    if (workTimeSlider && workTimeValue) {
+        workTimeSlider.addEventListener('input', function() {
+            workTimeValue.textContent = this.value;
+        });
+        
+        // Initialize work time display
+        workTimeValue.textContent = workTimeSlider.value;
+    }
+    
+    // Add rest time slider functionality
+    if (restTimeSlider && restTimeValue) {
+        restTimeSlider.addEventListener('input', function() {
+            restTimeValue.textContent = this.value;
+        });
+        
+        // Initialize rest time display
+        restTimeValue.textContent = restTimeSlider.value;
+    }
+    
+    // Add form submission handler
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                // Validate form input
+                validateForm();
+                
+                // Hide previous results
+                const workoutPlanDiv = document.getElementById('workout-plan');
+                const noResultsDiv = document.getElementById('no-results');
+                workoutPlanDiv.classList.add('hidden');
+                noResultsDiv.classList.add('hidden');
+                
+                setLoading(true);
 
-				const level = document.getElementById('fitness-level').value;
-				const mainDuration = parseInt(durationSlider.value);
-				const workTime = parseInt(document.getElementById('work-time').value);
-				const restTime = parseInt(document.getElementById('rest-time').value);
-				const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-				let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
-				
-				// Ensure Bodyweight is always available as fallback
-				if (selectedEquipment.length === 0) {
-					selectedEquipment.push("Bodyweight");
-				}
+                const level = document.getElementById('fitness-level').value;
+                const mainDuration = parseInt(durationSlider.value);
+                const workTime = parseInt(document.getElementById('work-time').value);
+                const restTime = parseInt(document.getElementById('rest-time').value);
+                const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
+                
+                // Ensure Bodyweight is always available as fallback
+                if (selectedEquipment.length === 0) {
+                    selectedEquipment.push("Bodyweight");
+                }
 
-				// Improved filtering logic
-				const filterByType = (type) => exercises.filter(ex => 
-					ex.type === type &&
-					ex.level.includes(level) &&
-					selectedEquipment.includes(ex.equipment)
-				);
+                // Improved filtering logic
+                const filterByType = (type) => exercises.filter(ex => 
+                    ex.type === type &&
+                    ex.level.includes(level) &&
+                    selectedEquipment.includes(ex.equipment)
+                );
 
-				const availableWarmup = filterByType('warmup');
-				const availableMain = filterByType('main');
-				const availableCooldown = filterByType('cooldown');
+                const availableWarmup = filterByType('warmup');
+                const availableMain = filterByType('main');
+                const availableCooldown = filterByType('cooldown');
 
-				const warmupPlan = generateRandomSet(availableWarmup, 5);
-				const cooldownPlan = generateRandomSet(availableCooldown, 5);
+                const warmupPlan = generateRandomSet(availableWarmup, 5);
+                const cooldownPlan = generateRandomSet(availableCooldown, 5);
 
-				if (availableMain.length === 0) {
-					throw new Error('No exercises available for the selected criteria. Please try different equipment or fitness level.');
-				}
+                if (availableMain.length === 0) {
+                    throw new Error('No exercises available for the selected criteria. Please try different equipment or fitness level.');
+                }
 
-				const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
+                const fallbackMainPlan = generateRandomSet(availableMain, mainDuration);
 				
 				// Populate app state for the new flow
 				appState.warmup = warmupPlan;
@@ -1216,70 +2152,182 @@ document.addEventListener('DOMContentLoaded', () => {
 				renderOverview();
 				attachOverviewHandlers();
 				attachPlayerHandlers();
-				
-				showSuccess('Workout plan generated successfully!');
-				
-			} catch (error) {
-				showError(error.message || 'Failed to generate workout plan. Please try again.');
-				
-				// Show no results message
-				const workoutPlanDiv = document.getElementById('workout-plan');
-				const noResultsDiv = document.getElementById('no-results');
-				workoutPlanDiv.classList.add('hidden');
-				noResultsDiv.classList.remove('hidden');
-			} finally {
-				setLoading(false);
-			}
-		});
-	}
-	
+                
+                showSuccess('Workout plan generated successfully!');
+                
+            } catch (error) {
+                showError(error.message || 'Failed to generate workout plan. Please try again.');
+                
+                // Show no results message
+                const workoutPlanDiv = document.getElementById('workout-plan');
+                const noResultsDiv = document.getElementById('no-results');
+                workoutPlanDiv.classList.add('hidden');
+                noResultsDiv.classList.remove('hidden');
+            } finally {
+                setLoading(false);
+            }
+        });
+    }
+    
 	// Accessibility and other enhancements (unchanged)
-	if (generateBtn) {
-		generateBtn.setAttribute('aria-label', 'Generate workout plan');
-		generateBtn.setAttribute('role', 'button');
+    if (generateBtn) {
+        generateBtn.setAttribute('aria-label', 'Generate workout plan');
+        generateBtn.setAttribute('role', 'button');
+    }
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.tagName === 'SELECT') {
+            e.target.blur();
+        }
+    });
+    
+    const focusableElements = document.querySelectorAll('button, input, select, a');
+    focusableElements.forEach(element => {
+        element.addEventListener('focus', () => {
+            element.style.outline = '2px solid #3b82f6';
+            element.style.outlineOffset = '2px';
+        });
+        
+        element.addEventListener('blur', () => {
+            element.style.outline = '';
+            element.style.outlineOffset = '';
+        });
+    });
+    
+    const equipmentLabels = document.querySelectorAll('label[for^="eq-"]');
+    equipmentLabels.forEach(label => {
+        label.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const checkbox = document.getElementById(label.getAttribute('for'));
+                if (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    label.setAttribute('aria-checked', checkbox.checked.toString());
+                    const event = new Event('change', { bubbles: true });
+                    checkbox.dispatchEvent(event);
+                }
+            }
+        });
+        
+        const checkbox = document.getElementById(label.getAttribute('for'));
+        if (checkbox) {
+            checkbox.addEventListener('change', () => {
+                label.setAttribute('aria-checked', checkbox.checked.toString());
+            });
+        }
+    });
+
+	// --- Exercise Swap Functionality ---
+	function findSimilarExercise(currentExercise, sectionType) {
+		// Get all available exercises for this section type
+		const availableExercises = exercises.filter(ex => ex.type === sectionType);
+		
+		// Remove the current exercise from consideration
+		const candidates = availableExercises.filter(ex => ex.name !== currentExercise.name);
+		
+		if (candidates.length === 0) return null;
+		
+		// Score candidates based on similarity
+		const scoredCandidates = candidates.map(ex => {
+			let score = 0;
+			
+			// Same muscle group gets highest score
+			if (ex.muscle === currentExercise.muscle) score += 10;
+			
+			// Same equipment gets bonus
+			if (ex.equipment === currentExercise.equipment) score += 5;
+			
+			// Similar difficulty level gets bonus
+			const currentLevels = currentExercise.level || [];
+			const candidateLevels = ex.level || [];
+			const levelOverlap = currentLevels.filter(l => candidateLevels.includes(l));
+			if (levelOverlap.length > 0) score += 3;
+			
+			// Prefer exercises with similar movement patterns
+			if (ex.muscle === currentExercise.muscle && ex.equipment === currentExercise.equipment) score += 2;
+			
+			return { exercise: ex, score: score };
+		});
+		
+		// Sort by score (highest first) and return top 3
+		scoredCandidates.sort((a, b) => b.score - a.score);
+		return scoredCandidates.slice(0, 3);
 	}
 	
-	document.addEventListener('keydown', (e) => {
-		if (e.key === 'Enter' && e.target.tagName === 'SELECT') {
-			e.target.blur();
-		}
-	});
-	
-	const focusableElements = document.querySelectorAll('button, input, select, a');
-	focusableElements.forEach(element => {
-		element.addEventListener('focus', () => {
-			element.style.outline = '2px solid #3b82f6';
-			element.style.outlineOffset = '2px';
-		});
+	function swapExercise(sectionType, index) {
+		const currentExercise = appState[sectionType][index];
+		const similarExercises = findSimilarExercise(currentExercise, sectionType);
 		
-		element.addEventListener('blur', () => {
-			element.style.outline = '';
-			element.style.outlineOffset = '';
-		});
-	});
-	
-	const equipmentLabels = document.querySelectorAll('label[for^="eq-"]');
-	equipmentLabels.forEach(label => {
-		label.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				const checkbox = document.getElementById(label.getAttribute('for'));
-				if (checkbox) {
-					checkbox.checked = !checkbox.checked;
-					label.setAttribute('aria-checked', checkbox.checked.toString());
-					const event = new Event('change', { bubbles: true });
-					checkbox.dispatchEvent(event);
-				}
+		if (!similarExercises || similarExercises.length === 0) {
+			showError('No similar exercises available for swapping.');
+			return;
+		}
+		
+		// Create swap selection modal
+		const modal = document.createElement('div');
+		modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+		modal.innerHTML = `
+			<div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
+				<h3 class="text-xl font-semibold text-white mb-4">Swap "${currentExercise.name}"</h3>
+				<p class="text-gray-300 mb-4">Choose a similar exercise:</p>
+				<div class="space-y-3">
+					${similarExercises.map((candidate, i) => `
+						<div class="bg-gray-700 rounded-lg p-3 cursor-pointer hover:bg-gray-600 transition-colors" 
+							 onclick="selectSwapExercise('${sectionType}', ${index}, ${i})">
+							<div class="font-medium text-white">${candidate.exercise.name}</div>
+							<div class="text-sm text-gray-400">
+								${candidate.exercise.muscle} • ${candidate.exercise.equipment} • ${candidate.exercise.level.join(', ')}
+							</div>
+							<div class="text-xs text-gray-500 mt-1">${candidate.exercise.description.split('⚠️')[0].trim()}</div>
+						</div>
+					`).join('')}
+				</div>
+				<button onclick="closeSwapModal()" class="mt-4 w-full bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition-colors">
+					Cancel
+				</button>
+			</div>
+		`;
+		
+		document.body.appendChild(modal);
+		
+		// Close modal when clicking outside
+		modal.addEventListener('click', (e) => {
+			if (e.target === modal) {
+				closeSwapModal();
 			}
 		});
+	}
+	
+	function selectSwapExercise(sectionType, index, candidateIndex) {
+		const currentExercise = appState[sectionType][index];
+		const similarExercises = findSimilarExercise(currentExercise, sectionType);
+		const selectedExercise = similarExercises[candidateIndex].exercise;
 		
-		const checkbox = document.getElementById(label.getAttribute('for'));
-		if (checkbox) {
-			checkbox.addEventListener('change', () => {
-				label.setAttribute('aria-checked', checkbox.checked.toString());
-			});
+		// Perform the swap
+		appState[sectionType][index] = selectedExercise;
+		
+		// Rebuild sequence and update state
+		buildSequence();
+		saveState();
+		
+		// Close modal and refresh overview
+		closeSwapModal();
+		renderOverview();
+		
+		showSuccess(`Swapped "${currentExercise.name}" for "${selectedExercise.name}"`);
+	}
+	
+	function closeSwapModal() {
+		const modal = document.querySelector('.fixed.inset-0.bg-black\\/50');
+		if (modal) {
+			modal.remove();
 		}
-	});
+	}
+	
+	// Make swap functions globally accessible
+	window.swapExercise = swapExercise;
+	window.selectSwapExercise = selectSwapExercise;
+	window.closeSwapModal = closeSwapModal;
 
 	// Attempt to restore previous session
 	if (loadState()) {
