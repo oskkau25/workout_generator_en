@@ -225,15 +225,21 @@
 
                 <div id="overview-list" class="space-y-6 mb-8"></div>
 
-                <div class="text-center">
+                <div class="text-center space-y-4">
                     <button id="start-workout-btn" class="btn-accent text-lg px-8 py-4">
                         <span class="flex items-center justify-center space-x-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></span>
                             </svg>
                             <span>Start Workout</span>
                         </span>
                     </button>
+                    
+                    <div>
+                        <button id="new-workout-btn" class="text-fit-secondary hover:text-fit-primary font-medium transition-colors">
+                            Create New Workout
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -330,10 +336,16 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 text-center">
+                    <div class="mt-6 text-center space-y-3">
                         <button id="exit-workout-btn" class="text-fit-danger hover:text-red-700 font-medium transition-colors">
                             Exit Workout
                         </button>
+                        
+                        <div>
+                            <button id="new-workout-from-player-btn" class="text-fit-secondary hover:text-fit-primary font-medium transition-colors">
+                                Create New Workout
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

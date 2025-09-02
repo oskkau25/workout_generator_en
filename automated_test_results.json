@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-02T17:44:44.999781",
+  "timestamp": "2025-09-02T17:44:55.708603",
   "overall_status": "WARNING",
   "tests": {
     "preflight": {
@@ -10,7 +10,7 @@
       "status": "PASSED",
       "details": "High: 0, Medium: 0, Low: 0",
       "ai_report": {
-        "timestamp": "2025-09-02 17:44:47",
+        "timestamp": "2025-09-02 17:44:57",
         "project": "Workout Generator",
         "summary": {
           "total_files": 2,
@@ -519,7 +519,7 @@
     "success_rate": "57.1%"
   },
   "pipeline_config": {
-    "timestamp": "2025-09-02T17:44:45.002997",
+    "timestamp": "2025-09-02T17:44:55.710485",
     "detected_features": {
       "workout_flow": true,
       "timers": true,
@@ -539,7 +539,7 @@
     "feature_count": 13,
     "total_features": 14
   },
-  "execution_time": "2.30 seconds",
+  "execution_time": "2.28 seconds",
   "release_ready": true,
   "release_recommendation": "APPROVED WITH WARNINGS - Review warnings before release"
 }

@@ -1586,8 +1586,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function toggleScreens({ overview = false, player = false, plan = false }) {
-		const overviewScreen = document.getElementById('overview-screen');
-		const playerScreen = document.getElementById('exercise-player');
+		const overviewScreen = document.getElementById('workout-overview');
+		const playerScreen = document.getElementById('workout-player');
 		const planScreen = document.getElementById('workout-plan');
 		if (overviewScreen) overviewScreen.classList.toggle('hidden', !overview);
 		if (playerScreen) playerScreen.classList.toggle('hidden', !player);
@@ -1950,7 +1950,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function isPlayerVisible() {
-		const player = document.getElementById('exercise-player');
+		const player = document.getElementById('workout-player');
 		return player && !player.classList.contains('hidden');
 	}
 
@@ -2086,7 +2086,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				saveState();
 			};
 		}
-		const playerArea = document.getElementById('exercise-player');
+		const playerArea = document.getElementById('workout-player');
 		attachSwipe(playerArea);
 	}
 
@@ -2432,6 +2432,60 @@ document.addEventListener('DOMContentLoaded', () => {
 	window.swapExercise = swapExercise;
 	window.selectSwapExercise = selectSwapExercise;
 	window.closeSwapModal = closeSwapModal;
+	
+	// Add new workout button functionality
+	const newWorkoutBtn = document.getElementById('new-workout-btn');
+	if (newWorkoutBtn) {
+		newWorkoutBtn.addEventListener('click', () => {
+			// Clear saved state
+			clearSavedState();
+			
+			// Reset app state
+			appState.warmup = [];
+			appState.main = [];
+			appState.cooldown = [];
+			appState.sequence = [];
+			appState.currentIndex = 0;
+			appState.phase = 'work';
+			appState.remainingSeconds = 0;
+			
+			// Show form, hide other screens
+			const workoutPlanDiv = document.getElementById('workout-plan');
+			const overviewDiv = document.getElementById('workout-overview');
+			const playerDiv = document.getElementById('workout-player');
+			
+			if (workoutPlanDiv) workoutPlanDiv.classList.remove('hidden');
+			if (overviewDiv) overviewDiv.classList.add('hidden');
+			if (playerDiv) playerDiv.classList.add('hidden');
+		});
+	}
+	
+	// Add new workout button functionality from player screen
+	const newWorkoutFromPlayerBtn = document.getElementById('new-workout-from-player-btn');
+	if (newWorkoutFromPlayerBtn) {
+		newWorkoutFromPlayerBtn.addEventListener('click', () => {
+			// Clear saved state
+			clearSavedState();
+			
+			// Reset app state
+			appState.warmup = [];
+			appState.main = [];
+			appState.cooldown = [];
+			appState.sequence = [];
+			appState.currentIndex = 0;
+			appState.phase = 'work';
+			appState.remainingSeconds = 0;
+			
+			// Show form, hide other screens
+			const workoutPlanDiv = document.getElementById('workout-plan');
+			const overviewDiv = document.getElementById('workout-overview');
+			const playerDiv = document.getElementById('workout-player');
+			
+			if (workoutPlanDiv) workoutPlanDiv.classList.remove('hidden');
+			if (overviewDiv) overviewDiv.classList.add('hidden');
+			if (playerDiv) playerDiv.classList.add('hidden');
+		});
+	}
 
 	// Attempt to restore previous session
 	if (loadState()) {
@@ -2439,8 +2493,26 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (!appState.sequence[0]._section) {
 			buildSequence();
 		}
+		// Show overview if there's a saved workout, otherwise show form
 		renderOverview();
 		attachOverviewHandlers();
 		attachPlayerHandlers();
+	} else {
+		// Ensure form is visible by default
+		const workoutPlanDiv = document.getElementById('workout-plan');
+		const overviewDiv = document.getElementById('workout-overview');
+		const playerDiv = document.getElementById('workout-player');
+		
+		console.log('No saved state found, showing form by default');
+		console.log('workoutPlanDiv:', workoutPlanDiv);
+		console.log('overviewDiv:', overviewDiv);
+		console.log('playerDiv:', playerDiv);
+		
+		if (workoutPlanDiv) {
+			workoutPlanDiv.classList.remove('hidden');
+			console.log('Form should now be visible');
+		}
+		if (overviewDiv) overviewDiv.classList.add('hidden');
+		if (playerDiv) playerDiv.classList.add('hidden');
 	}
 });
