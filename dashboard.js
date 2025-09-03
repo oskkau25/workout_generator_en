@@ -308,22 +308,22 @@ class AnalyticsDashboard {
         const tableBody = document.getElementById('activity-table');
         tableBody.innerHTML = '';
 
-        // Show last 10 activities
-        const recentActivity = this.analyticsData.activity.slice(0, 10);
+        // Show last 8 activities to fit better on screen
+        const recentActivity = this.analyticsData.activity.slice(0, 8);
         
         recentActivity.forEach(activity => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-fit-secondary">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-fit-secondary">
                     ${this.formatTimestamp(activity.timestamp)}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-fit-dark">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-fit-dark">
                     ${activity.action}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-fit-secondary">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-fit-secondary">
                     ${activity.details}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-fit-secondary">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-fit-secondary">
                     ${activity.userId}
                 </td>
             `;
@@ -372,7 +372,13 @@ class AnalyticsDashboard {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            padding: 10,
+                            font: {
+                                size: 11
+                            }
+                        }
                     }
                 }
             }
@@ -404,7 +410,19 @@ class AnalyticsDashboard {
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
                     }
                 }
             }
@@ -424,8 +442,9 @@ class AnalyticsDashboard {
                     data: data.values,
                     borderColor: '#10B981',
                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.4,
-                    fill: true
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5
                 }]
             },
             options: {
@@ -438,7 +457,19 @@ class AnalyticsDashboard {
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
                     }
                 }
             }
@@ -467,7 +498,13 @@ class AnalyticsDashboard {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            padding: 10,
+                            font: {
+                                size: 11
+                            }
+                        }
                     }
                 }
             }
