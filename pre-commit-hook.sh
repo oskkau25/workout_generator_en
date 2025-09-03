@@ -129,21 +129,8 @@ if kill -0 $SERVER_PID 2>/dev/null; then
         print_status $YELLOW "⏳ Ensuring server stability..."
         sleep 2
         
-        # Try to automatically open the browser
-        print_status $BLUE "🌐 Attempting to open browser automatically..."
-        if command -v open &> /dev/null; then
-            # macOS
-            open "http://localhost:5173" 2>/dev/null &
-            print_status $GREEN "✅ Browser opened automatically (macOS)"
-        elif command -v xdg-open &> /dev/null; then
-            # Linux
-            xdg-open "http://localhost:5173" 2>/dev/null &
-            print_status $GREEN "✅ Browser opened automatically (Linux)"
-        else
-            print_status $YELLOW "⚠️  Please manually open: http://localhost:5173"
-        fi
-        
-        print_status $YELLOW "📱 Review the changes in your browser"
+        print_status $BLUE "🌐 Server is ready for manual review"
+        print_status $YELLOW "📱 Please manually open: http://localhost:5173 in your browser"
         print_status $RED "🚨 IMPORTANT: You MUST complete this review before committing!"
         
         print_status $BLUE "🔍 VISUAL REVIEW CHECKLIST:"

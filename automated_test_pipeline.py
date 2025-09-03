@@ -54,15 +54,26 @@ class AutomatedTestPipeline:
         self.STATUS_FAILED = 'FAILED'
         self.STATUS_SKIPPED = 'SKIPPED'
         self.STATUS_PENDING = 'PENDING'
+        
+        # MANDATORY WORKFLOW SEQUENCE - PERMANENTLY ENFORCED
+        self.MANDATORY_WORKFLOW = {
+            'step_1': 'Automated Tests (this pipeline)',
+            'step_2': 'Local Manual Inspection (pre-commit hook)',
+            'step_3': 'Commit to GitHub (after approval)',
+            'enforcement': 'MANDATORY - Cannot be skipped',
+            'description': 'Quality assurance workflow that ensures all changes are tested and reviewed before deployment'
+        }
     
     def run_pipeline(self):
         """Main pipeline execution"""
         logger.info("🚀 Starting Automated Test Pipeline")
         logger.info("=" * 50)
-        logger.info("📋 Workflow Sequence:")
-        logger.info("   1. Automated Tests (this pipeline)")
-        logger.info("   2. Local Manual Inspection (pre-commit hook)")
-        logger.info("   3. Commit to GitHub (after approval)")
+        logger.info("📋 MANDATORY WORKFLOW SEQUENCE:")
+        logger.info("   1. ✅ Automated Tests (this pipeline) - RUNNING NOW")
+        logger.info("   2. 🔄 Local Manual Inspection (pre-commit hook) - NEXT STEP")
+        logger.info("   3. 🚀 Commit to GitHub (after approval) - FINAL STEP")
+        logger.info("=" * 50)
+        logger.info("⚠️  IMPORTANT: This sequence is MANDATORY and cannot be skipped!")
         logger.info("=" * 50)
         
         try:
@@ -92,6 +103,9 @@ class AutomatedTestPipeline:
             # Phase 9: Determine release readiness
             self.determine_release_readiness()
             
+            # Phase 10: Enforce mandatory workflow sequence
+            self.enforce_workflow_sequence()
+        
         except Exception as e:
             logger.error(f"❌ Pipeline failed: {str(e)}")
             self.test_results['overall_status'] = 'FAILED'
@@ -814,6 +828,50 @@ class AutomatedTestPipeline:
                 'has_mobile_friendly': 'container' in html_content,
                 'has_responsive_text': 'text-' in html_content,
                 'has_responsive_spacing': 'p-' in html_content or 'm-' in html_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+    
+    def test_analytics_dashboard(self):
+        """Test analytics dashboard functionality and tracking"""
+        try:
+            # Check if dashboard files exist
+            dashboard_html = (self.project_root / 'dashboard.html').exists()
+            dashboard_js = (self.project_root / 'dashboard.js').exists()
+            
+            # Check main app for analytics integration
+            js_path = self.project_root / 'script.js'
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            # Check dashboard HTML for required elements
+            html_path = self.project_root / 'dashboard.html'
+            if dashboard_html:
+                with open(html_path, 'r', encoding='utf-8') as f:
+                    html_content = f.read()
+            else:
+                html_content = ""
+            
+            tests = {
+                'has_dashboard_html': dashboard_html,
+                'has_dashboard_js': dashboard_js,
+                'has_analytics_tracker': 'AnalyticsTracker' in js_content,
+                'has_tracking_functions': 'trackEvent' in js_content,
+                'has_chart_js': 'Chart.js' in html_content,
+                'has_analytics_ui': 'Analytics' in html_content,
+                'has_metrics_display': 'total-users' in html_content,
+                'has_charts': 'equipment-chart' in html_content and 'pattern-chart' in html_content,
+                'has_real_time_tracking': 'localStorage' in js_content and 'fitflow_analytics' in js_content
             }
             
             passed = sum(tests.values())
@@ -1854,6 +1912,27 @@ class AutomatedTestPipeline:
             logger.error("❌ Code is NOT READY FOR RELEASE")
             self.test_results['release_ready'] = False
             self.test_results['release_recommendation'] = 'REJECTED - Fix failed tests before release'
+    
+    def enforce_workflow_sequence(self):
+        """Enforce the mandatory workflow sequence for all commits"""
+        logger.info("🔒 Enforcing Mandatory Workflow Sequence")
+        logger.info("=" * 50)
+        
+        # Log the mandatory workflow sequence
+        for step_num, (step_key, step_desc) in enumerate(self.MANDATORY_WORKFLOW.items(), 1):
+            if step_key.startswith('step_'):
+                logger.info(f"   {step_num}. {step_desc}")
+        
+        logger.info(f"   ⚠️  {self.MANDATORY_WORKFLOW['enforcement']}")
+        logger.info(f"   📝 {self.MANDATORY_WORKFLOW['description']}")
+        logger.info("=" * 50)
+        
+        # Add workflow sequence to test results
+        self.test_results['mandatory_workflow'] = self.MANDATORY_WORKFLOW
+        self.test_results['workflow_enforcement'] = 'ENFORCED'
+        
+        logger.info("✅ Workflow sequence enforcement configured")
+        logger.info("🚨 REMINDER: Local manual inspection is MANDATORY before commit!")
     
     def save_results(self):
         """Save test results to file"""

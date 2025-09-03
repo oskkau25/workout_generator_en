@@ -100,6 +100,16 @@
       "test_function": "test_responsive_design",
       "category": "ui_components"
     },
+    "analytics_dashboard": {
+      "name": "Analytics Dashboard",
+      "description": "Comprehensive user behavior tracking and insights dashboard",
+      "detection_patterns": {
+        "html": ["dashboard.html", "Analytics", "Chart.js"],
+        "js": ["AnalyticsTracker", "trackEvent", "Chart.js"]
+      },
+      "test_function": "test_analytics_dashboard",
+      "category": "analytics"
+    },
     "accessibility": {
       "name": "Accessibility Features",
       "description": "ARIA labels, keyboard navigation, and screen reader support",
@@ -193,8 +203,8 @@
   },
   "metadata": {
     "version": "2.0",
-    "last_updated": "2025-09-02T19:50:00Z",
-    "total_features": 20,
+    "last_updated": "2025-09-03T14:00:00Z",
+    "total_features": 21,
     "categories": {
       "core_workout": 4,
       "user_experience": 3,
@@ -203,6 +213,7 @@
       "workout_customization": 6,
       "robustness": 1,
       "performance": 1,
+      "analytics": 1,
       "other": 1
     },
     "pipeline_integration": {
