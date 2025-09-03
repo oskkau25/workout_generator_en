@@ -1878,117 +1878,6 @@ function generateRandomSet(exerciseList, count) {
 			toggleScreens({ overview: true, player: false, plan: false });
 		}
 		
-		// --- Basic Swapping Demo Function (Old System) ---
-		function testBasicSwapping() {
-			// Create a sample workout to demonstrate basic swapping
-			const sampleExercises = [
-				exercises.find(ex => ex.name === "Squats"),
-				exercises.find(ex => ex.name === "Push-ups"),
-				exercises.find(ex => ex.name === "Leg Swings")
-			].filter(Boolean);
-			
-			if (sampleExercises.length === 0) {
-				showNotification('❌ Sample exercises not found. Please refresh and try again.', 'error');
-				return;
-			}
-			
-			// Create a simple workout
-			appState.warmup = [sampleExercises[2]]; // Leg Swings
-			appState.main = [sampleExercises[0], sampleExercises[1]]; // Squats, Push-ups
-			appState.cooldown = [];
-			
-			// Build sequence WITHOUT smart substitutions
-			buildSequence();
-			
-			// Show overview
-			renderOverview();
-			attachOverviewHandlers();
-			
-			// Show message about basic system
-			showNotification('🔄 Basic workout created. Notice: No smart alternatives available - just basic exercise swapping.', 'info');
-			
-			// Switch to overview screen
-			toggleScreens({ overview: true, player: false, plan: false });
-		}
-		
-		// --- Basic Swap Functions (Old System) ---
-		function showBasicSwapOptions(exerciseName) {
-			// Get random exercises for basic swapping (old behavior)
-			const randomExercises = exercises
-				.filter(ex => ex.name !== exerciseName && ex.type === 'main')
-				.sort(() => Math.random() - 0.5)
-				.slice(0, 3);
-			
-			// Create modal for basic swap options
-			const modal = document.createElement('div');
-			modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-			modal.innerHTML = `
-				<div class="bg-white rounded-lg p-6 max-w-md mx-4">
-					<div class="flex items-center justify-between mb-4">
-						<h3 class="text-lg font-semibold text-fit-dark">🔄 Basic Exercise Swap</h3>
-						<button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
-							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-							</svg>
-						</button>
-					</div>
-					<div class="space-y-4">
-						<div class="bg-gray-50 rounded-lg p-4">
-							<h4 class="font-medium text-fit-dark mb-2">Current Exercise</h4>
-							<p class="text-fit-secondary">${exerciseName}</p>
-						</div>
-						<div class="bg-yellow-50 rounded-lg p-4">
-							<h4 class="font-medium text-yellow-700 mb-2">⚠️ Basic Swap Options</h4>
-							<p class="text-yellow-600 text-sm">These are random exercises - no fitness level or equipment matching</p>
-						</div>
-						<div class="space-y-2">
-							${randomExercises.map(ex => `
-								<button onclick="applyBasicSwap('${exerciseName}', '${ex.name}')" class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-									<div class="font-medium text-fit-dark">${ex.name}</div>
-									<div class="text-xs text-fit-secondary">${ex.muscle} • ${ex.equipment}</div>
-								</button>
-							`).join('')}
-						</div>
-						<div class="bg-blue-50 rounded-lg p-4">
-							<h4 class="font-medium text-blue-700 mb-2">💡 Want Smarter Alternatives?</h4>
-							<p class="text-blue-600 text-sm">Enable "🧠 Smart Substitution" in the workout plan form for AI-powered suggestions!</p>
-						</div>
-					</div>
-				</div>
-			`;
-			
-			document.body.appendChild(modal);
-		}
-		
-		function applyBasicSwap(originalName, newExerciseName) {
-			// Find and replace the exercise in the workout
-			const exerciseIndex = appState.sequence.findIndex(ex => ex.name === originalName);
-			if (exerciseIndex !== -1) {
-				// Find the new exercise
-				const newExercise = exercises.find(ex => ex.name === newExerciseName);
-				if (newExercise) {
-					// Replace the exercise while preserving workout structure
-					const originalExercise = appState.sequence[exerciseIndex];
-					appState.sequence[exerciseIndex] = {
-						...newExercise,
-						_section: originalExercise._section,
-						_round: originalExercise._round,
-						_originalName: originalName,
-						_basicSwapped: true
-					};
-					
-					// Update the display
-					renderOverview();
-					
-					// Show success message
-					showNotification(`Exercise swapped: ${originalName} → ${newExerciseName} (Basic swap)`, 'success');
-				}
-			}
-			
-			// Close the modal
-			document.querySelector('.fixed')?.remove();
-		}
-		
 		// --- Smart Substitution UI Functions ---
 		function showSubstitutionDetails(originalName, alternativeName, reason) {
 			// Create modal for substitution details
@@ -2297,11 +2186,6 @@ function generateRandomSet(exerciseList, count) {
 						🧠 Smart Alternative
 					</button>` : '';
 				
-				// Add basic swap button for all exercises (old functionality)
-				const basicSwapButton = `<button onclick="showBasicSwapOptions('${ex.name}')" class="px-3 py-1 bg-gray-500 text-white text-xs rounded-full hover:bg-gray-600 transition-colors ml-2">
-					🔄 Basic Swap
-				</button>`;
-				
 				li.innerHTML = `
 					<div class="flex items-center space-x-4">
 						<div class="w-8 h-8 bg-fit-primary text-white rounded-full flex items-center justify-center text-sm font-semibold">
@@ -2332,7 +2216,6 @@ function generateRandomSet(exerciseList, count) {
 					</div>
 					<div class="flex items-center space-x-2">
 						${substitutionButton}
-						${basicSwapButton}
 						<button 
 							onclick="swapExercise('${sectionType}', ${i})" 
 							class="btn-secondary text-sm px-4 py-2"
