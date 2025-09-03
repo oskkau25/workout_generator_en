@@ -1,16 +1,22 @@
 // --- FINAL IMPROVED WORKOUT GENERATOR ---
 // Enhanced version with detailed exercise descriptions and safety guidelines
 
-// --- ENHANCED EXERCISE DATABASE WITH SAFETY GUIDELINES ---
+// --- ENHANCED EXERCISE DATABASE WITH SMART SUBSTITUTION ---
+// Enhanced with alternatives, difficulty levels, and equipment requirements
 const exercises = [
     // Warm-up exercises
     { 
         name: "Arm Circles", 
         description: "Stand with feet shoulder-width apart. Start with small circles, gradually increasing size. Circle forward for 10 reps, then backward for 10 reps. Keep shoulders relaxed and avoid shrugging. ⚠️ DO: Start small and controlled. DON'T: Force large circles or shrug shoulders. Stop if you feel shoulder pain.", 
         equipment: "Bodyweight", 
-        level: ["Beginner", "Intermediate", "Advanced"], 
+        level: "Beginner", 
         muscle: "Shoulders", 
-        type: "warmup" 
+        type: "warmup",
+        alternatives: ["Shoulder Rolls", "Arm Swings", "Shoulder Shrugs"],
+        difficulty: 1,
+        equipment_needed: ["none"],
+        muscle_groups: ["deltoids", "trapezius"],
+        injury_safe: ["shoulder_pain", "neck_pain"]
     },
     { 
         name: "Leg Swings", 
@@ -1700,6 +1706,192 @@ function generateRandomSet(exerciseList, count) {
 			return settings;
 		}
 
+		// --- SMART EXERCISE SUBSTITUTION SYSTEM ---
+		// Phase 1: Intelligent exercise alternatives and difficulty scaling
+		
+		function findExerciseAlternatives(targetExercise, userPreferences = {}) {
+			const { availableEquipment = [], fitnessLevel = 'Beginner', injuryLimitations = [] } = userPreferences;
+			
+			// Find exercises that target similar muscle groups
+			const alternatives = exercises.filter(exercise => {
+				// Skip the original exercise
+				if (exercise.name === targetExercise.name) return false;
+				
+				// Check if user has required equipment
+				const hasEquipment = exercise.equipment_needed?.some(eq => 
+					eq === 'none' || availableEquipment.includes(eq)
+				) ?? true;
+				
+				// Check fitness level compatibility
+				const levelCompatible = exercise.difficulty <= getDifficultyLevel(fitnessLevel);
+				
+				// Check injury safety
+				const isInjurySafe = !exercise.injury_safe?.some(injury => 
+					injuryLimitations.includes(injury)
+				);
+				
+				// Check muscle group similarity
+				const muscleSimilar = exercise.muscle_groups?.some(muscle => 
+					targetExercise.muscle_groups?.includes(muscle)
+				) ?? (exercise.muscle === targetExercise.muscle);
+				
+				return hasEquipment && levelCompatible && isInjurySafe && muscleSimilar;
+			});
+			
+			// Sort by relevance (equipment match, difficulty, muscle similarity)
+			return alternatives.sort((a, b) => {
+				let scoreA = 0, scoreB = 0;
+				
+				// Equipment match bonus
+				if (a.equipment_needed?.includes('none')) scoreA += 3;
+				if (b.equipment_needed?.includes('none')) scoreB += 3;
+				
+				// Difficulty match bonus
+				const targetDifficulty = getDifficultyLevel(fitnessLevel);
+				scoreA += 3 - Math.abs(a.difficulty - targetDifficulty);
+				scoreB += 3 - Math.abs(b.difficulty - targetDifficulty);
+				
+				// Muscle group match bonus
+				const muscleMatchA = a.muscle_groups?.filter(m => 
+					targetExercise.muscle_groups?.includes(m)
+				).length ?? 0;
+				const muscleMatchB = b.muscle_groups?.filter(m => 
+					targetExercise.muscle_groups?.includes(m)
+				).length ?? 0;
+				scoreA += muscleMatchA;
+				scoreB += muscleMatchB;
+				
+				return scoreB - scoreA;
+			}).slice(0, 5); // Return top 5 alternatives
+		}
+		
+		function getDifficultyLevel(fitnessLevel) {
+			const levels = { 'Beginner': 1, 'Intermediate': 2, 'Advanced': 3 };
+			return levels[fitnessLevel] || 1;
+		}
+		
+		function suggestExerciseSubstitution(originalExercise, reason, userPreferences = {}) {
+			const alternatives = findExerciseAlternatives(originalExercise, userPreferences);
+			
+			if (alternatives.length === 0) {
+				return {
+					success: false,
+					message: `No suitable alternatives found for ${originalExercise.name}. Consider modifying the exercise or skipping it.`,
+					originalExercise
+				};
+			}
+			
+			const bestAlternative = alternatives[0];
+			return {
+				success: true,
+				message: `Suggested alternative for ${originalExercise.name}: ${bestAlternative.name}`,
+				originalExercise,
+				alternative: bestAlternative,
+				allAlternatives: alternatives,
+				reason: reason
+			};
+		}
+		
+		function enhanceWorkoutWithSubstitutions(workout, userPreferences = {}) {
+			const enhancedWorkout = [];
+			
+			workout.forEach(exercise => {
+				if (exercise.type === 'circuit_round' || exercise.type === 'tabata_set' || exercise.type === 'pyramid_set') {
+					// Keep round/set headers as-is
+					enhancedWorkout.push(exercise);
+				} else {
+					// Check if exercise needs substitution
+					const substitution = suggestExerciseSubstitution(exercise, 'availability', userPreferences);
+					
+					if (substitution.success) {
+						// Add substitution info to exercise
+						enhancedWorkout.push({
+							...exercise,
+							_hasSubstitution: true,
+							_substitution: substitution.alternative,
+							_substitutionReason: substitution.reason
+						});
+					} else {
+						enhancedWorkout.push(exercise);
+					}
+				}
+			});
+			
+			return enhancedWorkout;
+		}
+		
+		// --- Smart Substitution UI Functions ---
+		function showSubstitutionDetails(originalName, alternativeName, reason) {
+			// Create modal for substitution details
+			const modal = document.createElement('div');
+			modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+			modal.innerHTML = `
+				<div class="bg-white rounded-lg p-6 max-w-md mx-4">
+					<div class="flex items-center justify-between mb-4">
+						<h3 class="text-lg font-semibold text-fit-dark">🔄 Exercise Substitution</h3>
+						<button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+							</svg>
+						</button>
+					</div>
+					<div class="space-y-4">
+						<div class="bg-gray-50 rounded-lg p-4">
+							<h4 class="font-medium text-fit-dark mb-2">Original Exercise</h4>
+							<p class="text-fit-secondary">${originalName}</p>
+						</div>
+						<div class="bg-fit-accent/10 rounded-lg p-4">
+							<h4 class="font-medium text-fit-accent mb-2">Suggested Alternative</h4>
+							<p class="text-fit-accent font-semibold">${alternativeName}</p>
+						</div>
+						<div class="bg-blue-50 rounded-lg p-4">
+							<h4 class="font-medium text-blue-700 mb-2">Why This Alternative?</h4>
+							<p class="text-blue-600 text-sm">${reason === 'availability' ? 'Based on your equipment and fitness level' : reason}</p>
+						</div>
+						<div class="flex space-x-3">
+							<button onclick="applySubstitution('${originalName}', '${alternativeName}')" class="flex-1 bg-fit-primary text-white py-2 px-4 rounded-lg hover:bg-fit-primary/80 transition-colors">
+								Apply Substitution
+							</button>
+							<button onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors">
+								Keep Original
+							</button>
+						</div>
+					</div>
+				</div>
+			`;
+			
+			document.body.appendChild(modal);
+		}
+		
+		function applySubstitution(originalName, alternativeName) {
+			// Find and replace the exercise in the workout
+			const exerciseIndex = appState.sequence.findIndex(ex => ex.name === originalName);
+			if (exerciseIndex !== -1) {
+				// Find the alternative exercise
+				const alternative = exercises.find(ex => ex.name === alternativeName);
+				if (alternative) {
+					// Replace the exercise while preserving workout structure
+					const originalExercise = appState.sequence[exerciseIndex];
+					appState.sequence[exerciseIndex] = {
+						...alternative,
+						_section: originalExercise._section,
+						_round: originalExercise._round,
+						_originalName: originalName,
+						_substituted: true
+					};
+					
+					// Update the display
+					renderOverview();
+					
+					// Show success message
+					showNotification(`Exercise substituted: ${originalName} → ${alternativeName}`, 'success');
+				}
+			}
+			
+			// Close the modal
+			document.querySelector('.fixed')?.remove();
+		}
+		
 		// --- Enhanced Workout Generation with Training Patterns ---
 		function generatePatternBasedWorkout(exercises, pattern, settings) {
 			switch(pattern) {
@@ -1928,12 +2120,20 @@ function generateRandomSet(exerciseList, count) {
 			items.forEach((ex, i) => {
 				const li = document.createElement('li');
 				li.className = 'flex items-center justify-between bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors';
+				
+				// Check if exercise has substitution available
+				const hasSubstitution = ex._hasSubstitution && ex._substitution;
+				const substitutionButton = hasSubstitution ? 
+					`<button onclick="showSubstitutionDetails('${ex.name}', '${ex._substitution.name}', '${ex._substitutionReason}')" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
+						🔄 Alternative Available
+					</button>` : '';
+				
 				li.innerHTML = `
 					<div class="flex items-center space-x-4">
 						<div class="w-8 h-8 bg-fit-primary text-white rounded-full flex items-center justify-center text-sm font-semibold">
 							${i+1}
 						</div>
-						<div>
+						<div class="flex-1">
 							<h4 class="font-semibold text-fit-dark">
 								${ex.name}
 								${ex._round && ex._round > 1 ? `<span class="inline-block px-2 py-1 text-xs font-medium bg-fit-primary/10 text-fit-primary rounded-full ml-2">Round ${ex._round}</span>` : ''}
@@ -2559,6 +2759,24 @@ function generateRandomSet(exerciseList, count) {
 				appState.trainingPattern = trainingPattern;
 				appState.patternSettings = patternSettings;
 				buildSequence();
+				
+				// 🚀 PHASE 1: Apply Smart Exercise Substitutions
+				const enableSubstitutions = document.getElementById('enable-substitutions')?.checked ?? true;
+				
+				if (enableSubstitutions) {
+					const userPreferences = {
+						availableEquipment: selectedEquipment,
+						fitnessLevel: level,
+						injuryLimitations: [] // Can be enhanced later with user input
+					};
+					
+					// Enhance workout with smart substitutions
+					appState.sequence = enhanceWorkoutWithSubstitutions(appState.sequence, userPreferences);
+					
+					// Show smart substitution info
+					showNotification('🧠 Smart substitutions applied! Check exercises for alternatives.', 'success');
+				}
+				
 				appState.currentIndex = 0;
 				appState.phase = 'work';
 				appState.remainingSeconds = workTime;
