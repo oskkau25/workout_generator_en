@@ -1982,7 +1982,7 @@ function generateRandomSet(exerciseList, count) {
 		const startBtn = document.getElementById('start-workout-btn');
 		if (startBtn) {
 			const hasProgress = appState.sequence.length > 0 && (appState.currentIndex > 0 || appState.phase === 'rest' || appState.remainingSeconds > 0);
-			startBtn.textContent = hasProgress ? 'Resume' : 'Start';
+			startBtn.textContent = hasProgress ? 'Start Your Challenge' : 'Start';
 		}
 
 		toggleScreens({ overview: true, player: false, plan: false });
