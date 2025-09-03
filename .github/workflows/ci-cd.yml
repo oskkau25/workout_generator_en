@@ -1,0 +1,258 @@
+name: Enhanced CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  enhanced-testing:
+    name: 🚀 Enhanced Automated Testing
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: 🧪 Run Enhanced Test Pipeline
+      run: |
+        python automated_test_pipeline.py --enhanced
+        
+    - name: 📊 Upload test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: |
+          automated_test_results.json
+          performance_report.json
+          test_pipeline.log
+          
+    - name: 📈 Generate test summary
+      run: |
+        echo "## 🧪 Enhanced Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        if [ -f "automated_test_results.json" ]; then
+          echo "### 📊 Overall Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: $(jq -r '.overall_status' automated_test_results.json)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Success Rate**: $(jq -r '.summary.success_rate' automated_test_results.json)%" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Tests**: $(jq -r '.summary.total_tests' automated_test_results.json)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 🔒 Security & Performance" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security Score**: $(jq -r '.summary.security_score' automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
+          echo "- **Accessibility Score**: $(jq -r '.summary.accessibility_score' automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
+          echo "- **Performance Score**: $(jq -r '.summary.performance_metrics.performance_score' automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 💡 Recommendations" >> $GITHUB_STEP_SUMMARY
+          jq -r '.summary.recommendations[]' automated_test_results.json | while read line; do
+            echo "- $line" >> $GITHUB_STEP_SUMMARY
+          done
+        fi
+        
+  security-scan:
+    name: 🔒 Security Scanning
+    runs-on: ubuntu-latest
+    needs: enhanced-testing
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 📦 Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety
+        
+    - name: 🔍 Run security scan
+      run: |
+        echo "Running security scan..."
+        bandit -r . -f json -o bandit-report.json || true
+        
+    - name: 📊 Upload security report
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-report
+        path: bandit-report.json
+        
+  performance-analysis:
+    name: ⚡ Performance Analysis
+    runs-on: ubuntu-latest
+    needs: enhanced-testing
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 📦 Install performance tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install psutil memory-profiler
+        
+    - name: 📊 Analyze bundle sizes
+      run: |
+        echo "## 📦 Bundle Analysis" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f "script.js" ]; then
+          JS_SIZE=$(wc -c < script.js)
+          JS_SIZE_KB=$((JS_SIZE / 1024))
+          echo "- **JavaScript**: ${JS_SIZE_KB}KB" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -f "index.html" ]; then
+          HTML_SIZE=$(wc -c < index.html)
+          HTML_SIZE_KB=$((HTML_SIZE / 1024))
+          echo "- **HTML**: ${HTML_SIZE_KB}KB" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -f "dashboard.html" ]; then
+          DASH_SIZE=$(wc -c < dashboard.html)
+          DASH_SIZE_KB=$((DASH_SIZE / 1024))
+          echo "- **Dashboard**: ${DASH_SIZE_KB}KB" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+    - name: 📈 Upload performance data
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-data
+        path: |
+          performance_report.json
+          automated_test_results.json
+          
+  accessibility-check:
+    name: ♿ Accessibility Check
+    runs-on: ubuntu-latest
+    needs: enhanced-testing
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 📦 Install accessibility tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install axe-selenium-python
+        
+    - name: 🔍 Check accessibility features
+      run: |
+        echo "## ♿ Accessibility Analysis" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Check for ARIA labels
+        if grep -q "aria-label" index.html; then
+          echo "✅ ARIA labels found" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ No ARIA labels found" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        # Check for roles
+        if grep -q "role=" index.html; then
+          echo "✅ HTML roles defined" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ No HTML roles defined" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        # Check for tabindex
+        if grep -q "tabindex=" index.html; then
+          echo "✅ Tabindex attributes found" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ No tabindex attributes found" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+  quality-gate:
+    name: 🚪 Quality Gate
+    runs-on: ubuntu-latest
+    needs: [enhanced-testing, security-scan, performance-analysis, accessibility-check]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Quality assessment
+      run: |
+        echo "## 🚪 Quality Gate Assessment" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f "automated_test_results.json" ]; then
+          STATUS=$(jq -r '.overall_status' automated_test_results.json)
+          SUCCESS_RATE=$(jq -r '.summary.success_rate' automated_test_results.json)
+          SECURITY_SCORE=$(jq -r '.summary.security_score' automated_test_results.json)
+          
+          echo "### 📊 Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **Overall Status**: $STATUS" >> $GITHUB_STEP_SUMMARY
+          echo "- **Success Rate**: ${SUCCESS_RATE}%" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security Score**: ${SECURITY_SCORE}/100" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Quality gate criteria
+          if [ "$STATUS" = "PASSED" ] || [ "$STATUS" = "WARNING" ]; then
+            if [ "$SUCCESS_RATE" -ge 85 ] && [ "$SECURITY_SCORE" -ge 70 ]; then
+              echo "🎉 **QUALITY GATE PASSED** - Code meets quality standards!" >> $GITHUB_STEP_SUMMARY
+              echo "✅ Ready for deployment" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "⚠️ **QUALITY GATE WARNING** - Some criteria not met" >> $GITHUB_STEP_SUMMARY
+              echo "🔍 Review required before deployment" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "❌ **QUALITY GATE FAILED** - Code does not meet quality standards!" >> $GITHUB_STEP_SUMMARY
+            echo "🚫 Deployment blocked" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+        fi
+        
+    - name: 📧 Notify team (optional)
+      if: always()
+      run: |
+        echo "Quality gate assessment completed"
+        # Add notification logic here (Slack, Teams, email, etc.)
+        
+  deploy:
+    name: 🚀 Deploy (Main Branch Only)
+    runs-on: ubuntu-latest
+    needs: quality-gate
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🌐 Deploy to production
+      run: |
+        echo "🚀 Deploying to production..."
+        echo "This is where you would add your deployment logic"
+        echo "Examples:"
+        echo "- Deploy to Vercel/Netlify"
+        echo "- Deploy to AWS S3"
+        echo "- Deploy to custom server"
+        
+    - name: 📧 Deployment notification
+      run: |
+        echo "✅ Deployment completed successfully!"
+        # Add deployment notification logic here

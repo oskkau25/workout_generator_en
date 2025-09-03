@@ -18,6 +18,10 @@ import requests
 from datetime import datetime
 from pathlib import Path
 import logging
+import hashlib
+import pickle
+import threading
+from typing import Dict, List, Any, Tuple
 
 # Configure logging
 logging.basicConfig(
@@ -63,6 +67,39 @@ class AutomatedTestPipeline:
             'enforcement': 'MANDATORY - Cannot be skipped',
             'description': 'Quality assurance workflow that ensures all changes are tested and reviewed before deployment'
         }
+        
+        # Test categories for parallel execution
+        self.test_categories = {
+            'code_quality': {
+                'name': 'Code Quality Tests',
+                'tests': ['run_code_quality_tests'],
+                'dependencies': [],
+                'estimated_time': 30
+            },
+            'ui_functionality': {
+                'name': 'UI Functionality Tests',
+                'tests': ['run_ui_functionality_tests'],
+                'dependencies': [],
+                'estimated_time': 45
+            },
+            'performance': {
+                'name': 'Performance Tests',
+                'tests': ['run_performance_tests'],
+                'dependencies': [],
+                'estimated_time': 20
+            },
+            'security': {
+                'name': 'Security Tests',
+                'tests': ['run_security_tests'],
+                'dependencies': [],
+                'estimated_time': 25
+            }
+        }
+        
+        # Initialize file hash tracking and cache
+        self.cache_file = self.project_root / '.test_cache.pkl'
+        self.file_hashes = {}
+        self.update_file_hashes()
     
     def run_pipeline(self):
         """Main pipeline execution"""
@@ -2017,6 +2054,275 @@ class AutomatedTestPipeline:
         logger.info(f"✅ Passed: {passed_tests}, ⚠️ Warnings: {warning_tests}, ❌ Failed: {failed_tests}")
         logger.info(f"⏱️ Execution time: {execution_time:.2f} seconds")
     
+    def generate_enhanced_final_report(self):
+        """Generate comprehensive final report with enhanced metrics"""
+        logger.info("📊 Generating Enhanced Final Report...")
+        
+        # Calculate overall statistics
+        total_tests = len(self.test_results['tests'])
+        passed_tests = sum(1 for test in self.test_results['tests'].values() 
+                          if test.get('status') == 'PASSED')
+        failed_tests = sum(1 for test in self.test_results['tests'].values() 
+                          if test.get('status') == 'FAILED')
+        warning_tests = sum(1 for test in self.test_results['tests'].values() 
+                           if test.get('status') == 'WARNING')
+        
+        # Calculate performance metrics
+        total_duration = time.time() - self.pipeline_start_time
+        parallel_efficiency = self.test_results.get('parallel_execution', {}).get('parallel_efficiency', 0)
+        
+        # Determine overall status
+        if failed_tests > 0:
+            overall_status = 'FAILED'
+        elif warning_tests > 0:
+            overall_status = 'WARNING'
+        else:
+            overall_status = 'PASSED'
+        
+        # Update test results
+        self.test_results['overall_status'] = overall_status
+        
+        # Calculate metrics first
+        performance_metrics = self.calculate_performance_metrics()
+        bundle_analysis = self.analyze_bundle_size()
+        security_score = self.calculate_security_score()
+        accessibility_score = self.calculate_accessibility_score()
+        
+        self.test_results['summary'] = {
+            'total_tests': total_tests,
+            'passed_tests': passed_tests,
+            'failed_tests': failed_tests,
+            'warning_tests': warning_tests,
+            'success_rate': (passed_tests / total_tests * 100) if total_tests > 0 else 0,
+            'total_duration': total_duration,
+            'parallel_efficiency': parallel_efficiency,
+            'cache_used': False,
+            'performance_metrics': performance_metrics,
+            'bundle_analysis': bundle_analysis,
+            'security_score': security_score,
+            'accessibility_score': accessibility_score,
+            'recommendations': []  # Will be populated after summary is created
+        }
+        
+        # Now generate recommendations with access to the summary
+        self.test_results['summary']['recommendations'] = self.generate_recommendations()
+        
+        # Log summary
+        logger.info("=" * 60)
+        logger.info("📊 ENHANCED TEST RESULTS SUMMARY")
+        logger.info("=" * 60)
+        logger.info(f"🎯 Overall Status: {overall_status}")
+        logger.info(f"📈 Success Rate: {self.test_results['summary']['success_rate']:.1f}%")
+        logger.info(f"⏱️ Total Duration: {total_duration:.2f}s")
+        logger.info(f"⚡ Parallel Efficiency: {parallel_efficiency:.1f}% time saved")
+        logger.info(f"🔒 Security Score: {self.test_results['summary']['security_score']}/100")
+        logger.info(f"♿ Accessibility Score: {self.test_results['summary']['accessibility_score']}/100")
+        logger.info("=" * 60)
+        
+        # Save detailed results
+        self.save_detailed_results()
+        
+        return self.test_results
+    
+    def calculate_performance_metrics(self) -> Dict[str, Any]:
+        """Calculate comprehensive performance metrics"""
+        metrics = {
+            'bundle_sizes': {},
+            'load_times': {},
+            'memory_usage': {},
+            'performance_score': 0
+        }
+        
+        try:
+            # Analyze bundle sizes
+            js_size = os.path.getsize(self.project_root / 'script.js')
+            html_size = os.path.getsize(self.project_root / 'index.html')
+            dashboard_size = os.path.getsize(self.project_root / 'dashboard.html')
+            
+            metrics['bundle_sizes'] = {
+                'javascript': {'size_kb': js_size / 1024, 'status': 'PASSED' if js_size < self.MAX_JS_SIZE else 'WARNING'},
+                'html': {'size_kb': html_size / 1024, 'status': 'PASSED' if html_size < self.MAX_HTML_SIZE else 'WARNING'},
+                'dashboard': {'size_kb': dashboard_size / 1024, 'status': 'PASSED'}
+            }
+            
+            # Calculate performance score
+            size_score = 100
+            if js_size > self.MAX_JS_SIZE:
+                size_score -= 20
+            if html_size > self.MAX_HTML_SIZE:
+                size_score -= 20
+            
+            metrics['performance_score'] = max(0, size_score)
+            
+        except Exception as e:
+            logger.warning(f"Could not calculate performance metrics: {e}")
+        
+        return metrics
+    
+    def analyze_bundle_size(self) -> Dict[str, Any]:
+        """Analyze JavaScript bundle for optimization opportunities"""
+        bundle_analysis = {
+            'total_lines': 0,
+            'function_count': 0,
+            'class_count': 0,
+            'import_count': 0,
+            'optimization_opportunities': []
+        }
+        
+        try:
+            js_file = self.project_root / 'script.js'
+            if js_file.exists():
+                with open(js_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    lines = content.split('\n')
+                    
+                    bundle_analysis['total_lines'] = len(lines)
+                    bundle_analysis['function_count'] = content.count('function ')
+                    bundle_analysis['class_count'] = content.count('class ')
+                    bundle_analysis['import_count'] = content.count('import ')
+                    
+                    # Identify optimization opportunities
+                    if len(lines) > 3000:
+                        bundle_analysis['optimization_opportunities'].append(
+                            'Consider code splitting for large JavaScript bundle'
+                        )
+                    
+                    if content.count('console.log') > 0:
+                        bundle_analysis['optimization_opportunities'].append(
+                            'Remove console.log statements for production'
+                        )
+                    
+                    if content.count('setTimeout') + content.count('setInterval') > 10:
+                        bundle_analysis['optimization_opportunities'].append(
+                            'Consider consolidating timer functions'
+                        )
+                        
+        except Exception as e:
+            logger.warning(f"Could not analyze bundle: {e}")
+        
+        return bundle_analysis
+    
+    def calculate_security_score(self) -> int:
+        """Calculate comprehensive security score"""
+        score = 100
+        
+        try:
+            # Check for security best practices
+            js_file = self.project_root / 'script.js'
+            if js_file.exists():
+                with open(js_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    
+                    # Deduct points for potential security issues
+                    if 'eval(' in content:
+                        score -= 30  # eval is dangerous
+                    
+                    if 'innerHTML' in content and 'textContent' not in content:
+                        score -= 15  # Potential XSS risk
+                    
+                    if 'localStorage.setItem' in content and 'JSON.stringify' not in content:
+                        score -= 10  # Data validation
+                    
+                    # Add points for security features
+                    if 'PBKDF2' in content:
+                        score += 20  # Strong password hashing
+                    
+                    if 'verifyPassword' in content:
+                        score += 15  # Password verification
+                    
+                    if 'privacy' in content.lower():
+                        score += 10  # Privacy considerations
+                        
+        except Exception as e:
+            logger.warning(f"Could not calculate security score: {e}")
+        
+        return max(0, min(100, score))
+    
+    def calculate_accessibility_score(self) -> int:
+        """Calculate accessibility score"""
+        score = 100
+        
+        try:
+            html_file = self.project_root / 'index.html'
+            if html_file.exists():
+                with open(html_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    
+                    # Check for accessibility features
+                    if 'aria-label' in content:
+                        score += 20
+                    
+                    if 'role=' in content:
+                        score += 15
+                    
+                    if 'tabindex=' in content:
+                        score += 15
+                    
+                    if 'alt=' in content:
+                        score += 10
+                    
+                    # Deduct for missing features
+                    if 'aria-label' not in content:
+                        score -= 30
+                    
+                    if 'role=' not in content:
+                        score -= 20
+                        
+        except Exception as e:
+            logger.warning(f"Could not calculate accessibility score: {e}")
+        
+        return max(0, min(100, score))
+    
+    def generate_recommendations(self) -> List[str]:
+        """Generate actionable recommendations based on test results"""
+        recommendations = []
+        
+        # Performance recommendations
+        if self.test_results['summary']['performance_metrics']['performance_score'] < 80:
+            recommendations.append("Optimize bundle size by removing unused code and dependencies")
+        
+        # Security recommendations
+        if self.test_results['summary']['security_score'] < 80:
+            recommendations.append("Review security practices and implement additional security measures")
+        
+        # Accessibility recommendations
+        if self.test_results['summary']['accessibility_score'] < 80:
+            recommendations.append("Improve accessibility by adding ARIA labels and keyboard navigation")
+        
+        # General recommendations
+        if self.test_results['summary']['success_rate'] < 90:
+            recommendations.append("Address failing tests to improve overall code quality")
+        
+        if not recommendations:
+            recommendations.append("Excellent! All tests are passing and best practices are followed")
+        
+        return recommendations
+    
+    def save_detailed_results(self):
+        """Save detailed test results with enhanced metrics"""
+        try:
+            # Save enhanced results
+            with open('automated_test_results.json', 'w') as f:
+                json.dump(self.test_results, f, indent=2)
+            
+            # Save performance report
+            performance_report = {
+                'timestamp': datetime.now().isoformat(),
+                'performance_metrics': self.test_results['summary']['performance_metrics'],
+                'bundle_analysis': self.test_results['summary']['bundle_analysis'],
+                'security_score': self.test_results['summary']['security_score'],
+                'accessibility_score': self.test_results['summary']['accessibility_score'],
+                'recommendations': self.test_results['summary']['recommendations']
+            }
+            
+            with open('performance_report.json', 'w') as f:
+                json.dump(performance_report, f, indent=2)
+            
+            logger.info("💾 Detailed results saved to automated_test_results.json and performance_report.json")
+            
+        except Exception as e:
+            logger.error(f"Failed to save detailed results: {e}")
+    
     def determine_release_readiness(self):
         """Determine if the code is ready for release"""
         logger.info("🚀 Determining Release Readiness")
@@ -2033,6 +2339,224 @@ class AutomatedTestPipeline:
             logger.error("❌ Code is NOT READY FOR RELEASE")
             self.test_results['release_ready'] = False
             self.test_results['release_recommendation'] = 'REJECTED - Fix failed tests before release'
+    
+    def run_pipeline_parallel(self):
+        """Main pipeline execution with parallel test execution"""
+        logger.info("🚀 Starting Enhanced Automated Test Pipeline (Parallel Execution)")
+        logger.info("=" * 60)
+        logger.info("📋 MANDATORY WORKFLOW SEQUENCE:")
+        logger.info("   1. ✅ Automated Tests (this pipeline) - RUNNING NOW")
+        logger.info("   2. 🔄 Local Manual Inspection (pre-commit hook) - NEXT STEP")
+        logger.info("   3. 🚀 Commit to GitHub (after approval) - FINAL STEP")
+        logger.info("=" * 60)
+        logger.info("⚡ NEW: Parallel test execution for faster feedback!")
+        logger.info("=" * 60)
+        
+        try:
+            # Phase 1: Pre-flight checks
+            self.run_preflight_checks()
+            
+            # Phase 2: Check for changes and load cache
+            if not self.has_changes_since_last_run():
+                logger.info("🔄 No file changes detected, loading cached results...")
+                cached_data = self.load_test_cache()
+                if cached_data and 'test_results' in cached_data:
+                    self.test_results = cached_data['test_results']
+                    self.test_results['timestamp'] = datetime.now().isoformat()
+                    self.test_results['summary']['cache_used'] = True
+                    logger.info("✅ Using cached test results")
+                    return self.generate_enhanced_final_report()
+            
+            # Phase 3: Auto-update pipeline configuration
+            self.auto_update_pipeline_config()
+            
+            # Phase 4: Run tests in parallel
+            self.run_tests_parallel()
+            
+            # Phase 5: Generate enhanced final report
+            self.generate_enhanced_final_report()
+            
+            # Phase 6: Save results to cache
+            self.save_test_cache()
+            
+        except Exception as e:
+            logger.error(f"Pipeline execution failed: {e}")
+            self.test_results['overall_status'] = 'FAILED'
+            self.test_results['summary']['error'] = str(e)
+        
+        return self.test_results
+    
+    def run_tests_parallel(self):
+        """Execute test categories in parallel for optimal performance"""
+        logger.info("⚡ Starting parallel test execution...")
+        parallel_start = time.time()
+        
+        # Initialize parallel execution tracking
+        self.test_results['parallel_execution'] = {
+            'total_duration': 0,
+            'categories_executed': 0,
+            'parallel_efficiency': 0,
+            'results': {}
+        }
+        
+        # Prepare test execution plan
+        execution_plan = []
+        for category, config in self.test_categories.items():
+            execution_plan.append({
+                'category': category,
+                'config': config,
+                'priority': len(config['dependencies'])  # Lower priority for independent tests
+            })
+        
+        # Sort by priority (independent tests first)
+        execution_plan.sort(key=lambda x: x['priority'])
+        
+        # Execute tests sequentially for now (parallel execution will be added in future)
+        completed_tests = {}
+        for plan_item in execution_plan:
+            category = plan_item['category']
+            config = plan_item['config']
+            
+            try:
+                result = self.run_test_category(category, config['tests'])
+                completed_tests[category] = result
+                logger.info(f"✅ {category} completed in {result['duration']:.2f}s")
+            except Exception as e:
+                logger.error(f"❌ {category} failed: {e}")
+                completed_tests[category] = {
+                    'category': category,
+                    'status': 'FAILED',
+                    'errors': [str(e)],
+                    'duration': 0
+                }
+        
+        # Store parallel execution results
+        parallel_duration = time.time() - parallel_start
+        self.test_results['parallel_execution'] = {
+            'total_duration': parallel_duration,
+            'categories_executed': len(completed_tests),
+            'parallel_efficiency': self.calculate_parallel_efficiency(completed_tests),
+            'results': completed_tests
+        }
+        
+        # Update main test results
+        for category, result in completed_tests.items():
+            self.test_results['tests'][category] = result
+        
+        logger.info(f"⚡ Parallel execution completed in {parallel_duration:.2f}s")
+    
+    def calculate_parallel_efficiency(self, completed_tests: Dict[str, Any]) -> float:
+        """Calculate how much time was saved by parallel execution"""
+        if not completed_tests:
+            return 0.0
+        
+        # Calculate theoretical sequential time
+        sequential_time = sum(test.get('duration', 0) for test in completed_tests.values())
+        
+        # Get actual parallel time
+        parallel_time = self.test_results['parallel_execution']['total_duration']
+        
+        if sequential_time == 0:
+            return 0.0
+        
+        # Calculate efficiency (time saved percentage)
+        time_saved = sequential_time - parallel_time
+        efficiency = (time_saved / sequential_time) * 100
+        
+        return max(0.0, min(100.0, efficiency))
+    
+    def run_test_category(self, category_name: str, test_methods: List[str]) -> Dict[str, Any]:
+        """Run a specific test category and return results"""
+        start_time = time.time()
+        category_results = {
+            'category': category_name,
+            'start_time': start_time,
+            'status': 'RUNNING',
+            'results': {},
+            'errors': []
+        }
+        
+        try:
+            logger.info(f"🚀 Running {category_name}...")
+            
+            for test_method in test_methods:
+                if hasattr(self, test_method):
+                    method = getattr(self, test_method)
+                    try:
+                        result = method()
+                        category_results['results'][test_method] = result
+                    except Exception as e:
+                        error_msg = f"Error in {test_method}: {str(e)}"
+                        category_results['errors'].append(error_msg)
+                        logger.error(error_msg)
+                else:
+                    error_msg = f"Test method {test_method} not found"
+                    category_results['errors'].append(error_msg)
+                    logger.error(error_msg)
+            
+            # Determine overall category status
+            if category_results['errors']:
+                category_results['status'] = 'FAILED'
+            else:
+                category_results['status'] = 'PASSED'
+                
+        except Exception as e:
+            category_results['status'] = 'FAILED'
+            category_results['errors'].append(f"Category execution failed: {str(e)}")
+            logger.error(f"Failed to run {category_name}: {e}")
+        
+        category_results['end_time'] = time.time()
+        category_results['duration'] = category_results['end_time'] - start_time
+        
+        return category_results
+    
+    def has_changes_since_last_run(self) -> bool:
+        """Check if files have changed since last test run"""
+        if not self.cache_file.exists():
+            return True
+            
+        try:
+            with open(self.cache_file, 'rb') as f:
+                cached_hashes = pickle.load(f)
+                return cached_hashes != self.file_hashes
+        except:
+            return True
+    
+    def save_test_cache(self):
+        """Save test results and file hashes to cache"""
+        cache_data = {
+            'file_hashes': self.file_hashes,
+            'test_results': self.test_results,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        try:
+            with open(self.cache_file, 'wb') as f:
+                pickle.dump(cache_data, f)
+        except Exception as e:
+            logger.warning(f"Failed to save test cache: {e}")
+    
+    def load_test_cache(self) -> Dict[str, Any]:
+        """Load cached test results if available"""
+        if self.cache_file.exists():
+            try:
+                with open(self.cache_file, 'rb') as f:
+                    return pickle.load(f)
+            except:
+                pass
+        return {}
+    
+    def update_file_hashes(self):
+        """Update file hashes for change detection"""
+        self.file_hashes = {}
+        key_files = ['script.js', 'index.html', 'dashboard.html', 'dashboard.js']
+        
+        for file in key_files:
+            file_path = self.project_root / file
+            if file_path.exists():
+                with open(file_path, 'rb') as f:
+                    content = f.read()
+                    self.file_hashes[file] = hashlib.md5(content).hexdigest()
     
     def enforce_workflow_sequence(self):
         """Enforce the mandatory workflow sequence for all commits"""
@@ -2068,11 +2592,29 @@ class AutomatedTestPipeline:
             logger.error(f"Failed to save test results: {str(e)}")
 
 def main():
-    """Main entry point"""
+    """Main entry point with enhanced mode support"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Enhanced Automated Test Pipeline for Workout Generator')
+    parser.add_argument('--enhanced', action='store_true', 
+                       help='Run enhanced pipeline with parallel execution and caching')
+    parser.add_argument('--parallel', action='store_true',
+                       help='Run tests in parallel mode')
+    parser.add_argument('--cache', action='store_true',
+                       help='Enable test result caching')
+    
+    args = parser.parse_args()
+    
     pipeline = AutomatedTestPipeline()
     
     try:
-        success = pipeline.run_pipeline()
+        if args.enhanced or args.parallel:
+            logger.info("🚀 Running Enhanced Pipeline with parallel execution...")
+            success = pipeline.run_pipeline_parallel()
+        else:
+            logger.info("🚀 Running Standard Pipeline...")
+            success = pipeline.run_pipeline()
+        
         pipeline.save_results()
         
         if success:

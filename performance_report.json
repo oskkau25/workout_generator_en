@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-09-03T15:37:09.155009",
+  "performance_metrics": {
+    "bundle_sizes": {
+      "javascript": {
+        "size_kb": 157.869140625,
+        "status": "PASSED"
+      },
+      "html": {
+        "size_kb": 63.486328125,
+        "status": "PASSED"
+      },
+      "dashboard": {
+        "size_kb": 11.6455078125,
+        "status": "PASSED"
+      }
+    },
+    "load_times": {},
+    "memory_usage": {},
+    "performance_score": 100
+  },
+  "bundle_analysis": {
+    "total_lines": 3927,
+    "function_count": 56,
+    "class_count": 2,
+    "import_count": 0,
+    "optimization_opportunities": [
+      "Consider code splitting for large JavaScript bundle"
+    ]
+  },
+  "security_score": 100,
+  "accessibility_score": 100,
+  "recommendations": [
+    "Address failing tests to improve overall code quality"
+  ]
+}

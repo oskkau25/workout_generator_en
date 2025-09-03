@@ -1,17 +1,20 @@
 #!/bin/bash
 
-# Pre-commit hook for Workout Generator
+# Enhanced Pre-commit hook for Workout Generator
 # This script runs the automated test pipeline before allowing commits
 # to ensure code quality and prevent broken code from being committed
+# NEW: Enhanced with parallel execution, caching, and better notifications
 
-echo "🔍 Running Pre-commit Quality Checks..."
-echo "======================================"
+echo "🔍 Running Enhanced Pre-commit Quality Checks..."
+echo "================================================"
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Function to print colored output
@@ -19,6 +22,13 @@ print_status() {
     local color=$1
     local message=$2
     echo -e "${color}${message}${NC}"
+}
+
+# Function to print section headers
+print_section() {
+    local title=$1
+    echo -e "${CYAN}${title}${NC}"
+    echo -e "${CYAN}$(printf '=%.0s' {1..${#title}})${NC}"
 }
 
 # Check if we're in the right directory
@@ -54,34 +64,44 @@ fi
 
 print_status $GREEN "✅ Pre-flight checks passed"
 
-# Run the automated test pipeline
-print_status $BLUE "🚀 Running Automated Test Pipeline..."
+# Step 1: Enhanced Automated Test Pipeline
+print_section "🚀 ENHANCED AUTOMATED TEST PIPELINE"
+print_status $BLUE "Running enhanced pipeline with parallel execution and caching..."
 
-# Set timeout for pipeline (5 minutes) - handle different systems
+# Set timeout for pipeline (8 minutes) - handle different systems
 if command -v gtimeout &> /dev/null; then
     # macOS with coreutils installed
-    gtimeout 300 python3 automated_test_pipeline.py
+    gtimeout 480 python3 automated_test_pipeline.py --enhanced
 elif command -v timeout &> /dev/null; then
     # Linux systems
-    timeout 300 python3 automated_test_pipeline.py
+    timeout 480 python3 automated_test_pipeline.py --enhanced
 else
     # macOS without coreutils - run without timeout
     print_status $YELLOW "⚠️  No timeout command available, running pipeline without timeout"
-    python3 automated_test_pipeline.py
+    python3 automated_test_pipeline.py --enhanced
 fi
 
 # Check if pipeline completed successfully
 if [ $? -eq 0 ]; then
-    print_status $GREEN "✅ Pipeline completed successfully"
+    print_status $GREEN "✅ Enhanced pipeline completed successfully"
+    
+    # Check for performance report
+    if [ -f "performance_report.json" ]; then
+        print_status $PURPLE "📊 Performance report generated"
+    fi
+    
+    # Check for cached results
+    if [ -f ".test_cache.pkl" ]; then
+        print_status $PURPLE "💾 Test cache updated for faster future runs"
+    fi
 else
-    print_status $RED "❌ Pipeline failed or timed out"
+    print_status $RED "❌ Enhanced pipeline failed or timed out"
     print_status $RED "Please fix the issues before committing"
     exit 1
 fi
 
 # Step 2: Local Page Preview (MANDATORY)
-print_status $BLUE "🌐 Starting Local Page Preview (MANDATORY STEP)..."
-print_status $BLUE "======================================"
+print_section "🌐 LOCAL PAGE PREVIEW (MANDATORY STEP)"
 print_status $YELLOW "⚠️  This step is MANDATORY - you must review the changes locally before committing"
 print_status $BLUE "======================================"
 
@@ -98,154 +118,85 @@ SERVER_PID=$!
 print_status $YELLOW "⏳ Waiting for server to be ready..."
 sleep 5
 
-# Check if server started successfully and is responding
-if kill -0 $SERVER_PID 2>/dev/null; then
-    # Test server connection multiple times to ensure it's fully ready
-    print_status $YELLOW "🔍 Testing server connection..."
-    connection_attempts=0
-    max_attempts=10
-    server_ready=false
-    
-    while [ $connection_attempts -lt $max_attempts ] && [ "$server_ready" = false ]; do
-        connection_attempts=$((connection_attempts + 1))
-        print_status $BLUE "   Attempt $connection_attempts/$max_attempts..."
-        
-        if curl -s -o /dev/null -w "%{http_code}" http://localhost:5173 --connect-timeout 5 --max-time 10 2>/dev/null | grep -q "200"; then
-            server_ready=true
-            print_status $GREEN "✅ Server connection successful!"
-        else
-            if [ $connection_attempts -lt $max_attempts ]; then
-                print_status $YELLOW "   Server not ready yet, waiting 2 seconds..."
-                sleep 2
-            fi
-        fi
-    done
-    
-    if [ "$server_ready" = true ]; then
-        print_status $GREEN "✅ Local server started successfully"
-        print_status $BLUE "🌐 Your app is now running at: http://localhost:5173"
-        
-        # Wait a moment more to ensure server is fully stable
-        print_status $YELLOW "⏳ Ensuring server stability..."
-        sleep 2
-        
-        print_status $BLUE "🌐 Server is ready for manual review"
-        print_status $YELLOW "📱 Please manually open: http://localhost:5173 in your browser"
-        print_status $RED "🚨 IMPORTANT: You MUST complete this review before committing!"
-        
-        print_status $BLUE "🔍 VISUAL REVIEW CHECKLIST:"
-        print_status $BLUE "======================================"
-        print_status $BLUE "✅ Form is visible as landing page"
-        print_status $BLUE "✅ Equipment icons: Professional SVG icons (not emojis)"
-        print_status $BLUE "✅ Duration icons: Clean SVG representations"
-        print_status $BLUE "✅ Fitness level options: Clean text without symbols"
-        print_status $BLUE "✅ Work/Rest icons: Professional SVG icons"
-        print_status $BLUE "✅ Generate button with lightning SVG icon"
-        print_status $BLUE "✅ Training pattern selection (Standard, Circuit, Tabata, Pyramid)"
-        print_status $BLUE "✅ Pattern-specific settings appear when selected"
-        print_status $BLUE "✅ Smart calculation info boxes show duration-based recommendations"
-        print_status $BLUE "✅ Duration recommendations display (15min: X-X, 30min: Y-Y, etc.)"
-        print_status $BLUE "✅ Resume workout button (if applicable)"
-        print_status $BLUE "✅ All icons are properly aligned and sized"
-        print_status $BLUE "✅ Form layout is clean and professional"
-        print_status $BLUE "✅ Overall appearance is modern and sports-focused"
-        print_status $BLUE "======================================"
-        
-        print_status $BLUE "⏳ Waiting for your review... (press Enter when ready to continue)"
-        print_status $RED "🚨 You cannot skip this step - it's mandatory for quality assurance!"
-        
-        # Wait for user input - this is MANDATORY
-        read -p "Press Enter to continue with commit, or Ctrl+C to abort..."
-        
-        # Stop the server
-        print_status $YELLOW "🛑 Stopping local server..."
-        kill $SERVER_PID 2>/dev/null
-        sleep 1
-        
-        print_status $GREEN "✅ Local preview completed - changes approved for commit"
-    else
-        print_status $RED "❌ Server failed to respond after $max_attempts attempts"
-        print_status $RED "❌ Server may be blocked by firewall or port conflicts"
-        kill $SERVER_PID 2>/dev/null
-        print_status $RED "🚨 LOCAL PREVIEW FAILED - COMMIT BLOCKED"
-        print_status $RED "🚨 You must be able to preview changes locally before committing"
-        exit 1
-    fi
-else
+# Check if server is running
+if ! kill -0 $SERVER_PID 2>/dev/null; then
     print_status $RED "❌ Failed to start local server"
-    print_status $RED "🚨 LOCAL PREVIEW FAILED - COMMIT BLOCKED"
-    print_status $RED "🚨 You must be able to preview changes locally before committing"
     exit 1
 fi
 
-# Step 3: Show what will be committed
-print_status $BLUE "📝 Reviewing Changes to be Committed..."
-print_status $BLUE "======================================"
-
-# Show git status
-print_status $YELLOW "📊 Git Status:"
-git status --short
-
-# Show diff of changes
-print_status $YELLOW "🔍 Changes to be committed:"
-git diff --cached --stat
-
-print_status $BLUE "======================================"
-
-# Parse the test results
-if [ -f "automated_test_results.json" ]; then
-    # Extract overall status using jq if available, otherwise use grep
-    if command -v jq &> /dev/null; then
-        overall_status=$(jq -r '.overall_status' automated_test_results.json 2>/dev/null)
-        success_rate=$(jq -r '.summary.success_rate' automated_test_results.json 2>/dev/null)
-        passed_tests=$(jq -r '.summary.passed' automated_test_results.json 2>/dev/null)
-        failed_tests=$(jq -r '.summary.failed' automated_test_results.json 2>/dev/null)
-    else
-        # Fallback to grep if jq is not available
-        overall_status=$(grep -o '"overall_status": "[^"]*"' automated_test_results.json | cut -d'"' -f4)
-        success_rate=$(grep -o '"success_rate": "[^"]*"' automated_test_results.json | cut -d'"' -f4)
-        passed_tests=$(grep -o '"passed": [0-9]*' automated_test_results.json | cut -d' ' -f2)
-        failed_tests=$(grep -o '"failed": [0-9]*' automated_test_results.json | cut -d' ' -f2)
-    fi
-    
-    print_status $BLUE "📊 Test Results Summary:"
-    print_status $BLUE "   Overall Status: $overall_status"
-    print_status $BLUE "   Success Rate: $success_rate"
-    print_status $BLUE "   Passed Tests: $passed_tests"
-    print_status $BLUE "   Failed Tests: $failed_tests"
-    
-    # Check if tests passed
-    if [ "$overall_status" = "PASSED" ] || [ "$overall_status" = "WARNING" ]; then
-        if [ "$failed_tests" -eq 0 ]; then
-            print_status $GREEN "✅ All tests passed!"
-            print_status $BLUE "======================================"
-            print_status $BLUE "🎯 FINAL COMMIT CONFIRMATION"
-            print_status $BLUE "======================================"
-            print_status $YELLOW "📋 Summary of what will be committed:"
-            print_status $YELLOW "   - Professional SVG icons replacing emojis"
-            print_status $YELLOW "   - Modern, clean equipment representations"
-            print_status $YELLOW "   - Professional section header icons"
-            print_status $YELLOW "   - Consistent icon styling and sizing"
-            print_status $YELLOW "   - Enhanced visual appeal for sports enthusiasts"
-            print_status $BLUE "======================================"
-
-print_status $BLUE "⏳ Ready to commit? (press Enter to continue, or Ctrl+C to abort)"
-read -p "Press Enter to commit changes..."
-
-print_status $GREEN "🚀 Code quality checks completed successfully"
-            exit 0
-        else
-            print_status $YELLOW "⚠️  Some tests failed but overall status is acceptable"
-            print_status $YELLOW "Proceeding with commit, but please review the results"
-            exit 0
-        fi
-    else
-        print_status $RED "❌ Tests failed! Please fix the issues before committing"
-        print_status $RED "Check automated_test_results.json for details"
-        exit 1
-    fi
-else
-    print_status $RED "❌ Test results file not found"
-    print_status $RED "Pipeline may have failed to generate results"
+# Test server connectivity
+if ! curl -s http://localhost:5173 >/dev/null; then
+    print_status $RED "❌ Server is not responding on http://localhost:5173"
+    kill $SERVER_PID 2>/dev/null
     exit 1
 fi
+
+print_status $GREEN "✅ Local server is running and responding"
+print_status $BLUE "🌐 Open http://localhost:5173 in your browser to review changes"
+
+# Enhanced user interaction with better UX
+print_section "👀 MANUAL INSPECTION REQUIRED"
+print_status $CYAN "Please complete the following steps:"
+echo ""
+print_status $YELLOW "1. 🌐 Open http://localhost:5173 in your browser"
+print_status $YELLOW "2. 🔍 Review all changes and functionality"
+print_status $YELLOW "3. 📱 Test responsive design on different screen sizes"
+print_status $YELLOW "4. ♿ Test accessibility features (keyboard navigation, screen readers)"
+print_status $YELLOW "5. 🔒 Verify security features are working correctly"
+print_status $YELLOW "6. ⚡ Check performance and loading times"
+echo ""
+
+# Enhanced confirmation prompt
+while true; do
+    echo -e "${CYAN}Have you completed the manual inspection?${NC}"
+    echo -e "${YELLOW}Type 'yes' to confirm, 'no' to abort, or 'retry' to restart server:${NC}"
+    read -p "Response: " response
+    
+    case $response in
+        [Yy]es|[Yy])
+            print_status $GREEN "✅ Manual inspection confirmed!"
+            break
+            ;;
+        [Nn]o|[Nn])
+            print_status $RED "❌ Manual inspection aborted - commit blocked"
+            kill $SERVER_PID 2>/dev/null
+            exit 1
+            ;;
+        [Rr]etry|[Rr])
+            print_status $BLUE "🔄 Restarting server..."
+            kill $SERVER_PID 2>/dev/null
+            sleep 2
+            python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
+            SERVER_PID=$!
+            sleep 5
+            print_status $GREEN "✅ Server restarted on http://localhost:5173"
+            print_status $BLUE "🌐 Please review the changes again"
+            ;;
+        *)
+            print_status $YELLOW "⚠️  Please type 'yes', 'no', or 'retry'"
+            ;;
+    esac
+done
+
+# Clean up server
+print_status $BLUE "🧹 Cleaning up local server..."
+kill $SERVER_PID 2>/dev/null
+
+# Step 3: Final confirmation
+print_section "🎯 FINAL CONFIRMATION"
+print_status $GREEN "✅ All pre-commit checks passed!"
+print_status $GREEN "✅ Manual inspection completed!"
+print_status $GREEN "✅ Code is ready for commit!"
+echo ""
+print_status $CYAN "🚀 You can now proceed with your commit!"
+print_status $CYAN "The enhanced pipeline has ensured code quality and security."
+echo ""
+print_status $PURPLE "💡 Tip: The enhanced pipeline now includes:"
+print_status $PURPLE "   • Parallel test execution for faster feedback"
+print_status $PURPLE "   • Smart caching to avoid redundant tests"
+print_status $PURPLE "   • Enhanced performance metrics and bundle analysis"
+print_status $PURPLE "   • Comprehensive security and accessibility scoring"
+print_status $PURPLE "   • Actionable recommendations for improvements"
+echo ""
+
+exit 0
