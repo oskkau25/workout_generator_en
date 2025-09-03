@@ -1,13 +1,13 @@
 {
-  "timestamp": "2025-09-03T20:57:42.015047",
+  "timestamp": "2025-09-03T21:04:56.490302",
   "performance_metrics": {
     "bundle_sizes": {
       "javascript": {
-        "size_kb": 168.2939453125,
+        "size_kb": 166.75390625,
         "status": "PASSED"
       },
       "html": {
-        "size_kb": 66.6162109375,
+        "size_kb": 68.5595703125,
         "status": "PASSED"
       },
       "dashboard": {
@@ -20,8 +20,8 @@
     "performance_score": 100
   },
   "bundle_analysis": {
-    "total_lines": 4206,
-    "function_count": 63,
+    "total_lines": 4161,
+    "function_count": 62,
     "class_count": 2,
     "import_count": 0,
     "optimization_opportunities": [
