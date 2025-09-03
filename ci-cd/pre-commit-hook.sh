@@ -5,6 +5,20 @@
 # to ensure code quality and prevent broken code from being committed
 # NEW: Enhanced with parallel execution, caching, and better notifications
 
+# Signal handler to gracefully exit and clean up
+cleanup() {
+    echo -e "\033[1;33m🔄 Interrupt received, cleaning up...\033[0m"
+    if [ ! -z "$SERVER_PID" ]; then
+        kill $SERVER_PID 2>/dev/null
+        echo -e "\033[0;34m🧹 Local server stopped\033[0m"
+    fi
+    echo -e "\033[0;31m❌ Pre-commit hook interrupted - commit blocked for safety\033[0m"
+    exit 1
+}
+
+# Set up signal handlers
+trap cleanup INT TERM
+
 echo "🔍 Running Enhanced Pre-commit Quality Checks..."
 echo "================================================"
 
@@ -148,38 +162,115 @@ print_status $YELLOW "5. 🔒 Verify security features are working correctly"
 print_status $YELLOW "6. ⚡ Check performance and loading times"
 echo ""
 
-# Enhanced confirmation prompt
-while true; do
-    echo -e "${CYAN}Have you completed the manual inspection?${NC}"
-    echo -e "${YELLOW}Type 'yes' to confirm, 'no' to abort, or 'retry' to restart server:${NC}"
-    read -p "Response: " response
+# Enhanced confirmation prompt with timeout and better error handling
+print_status $CYAN "Have you completed the manual inspection?"
+print_status $YELLOW "Type 'yes' to confirm, 'no' to abort, 'retry' to restart server, or 'skip' to bypass:"
+print_status $BLUE "⏰ You have 5 minutes to respond, or the server will be stopped automatically"
+print_status $PURPLE "💡 Tip: Use 'skip' if you're confident the changes are safe and don't need manual review"
+
+# Set a timeout for user response (5 minutes)
+timeout_seconds=300
+start_time=$(date +%s)
+max_attempts=3
+attempt_count=0
+
+while [ $attempt_count -lt $max_attempts ]; do
+    # Check if timeout has been reached
+    current_time=$(date +%s)
+    elapsed_time=$((current_time - start_time))
+    remaining_time=$((timeout_seconds - elapsed_time))
     
-    case $response in
-        [Yy]es|[Yy])
-            print_status $GREEN "✅ Manual inspection confirmed!"
+    if [ $remaining_time -le 0 ]; then
+        print_status $RED "⏰ Timeout reached! Stopping server and blocking commit for safety."
+        kill $SERVER_PID 2>/dev/null
+        exit 1
+    fi
+    
+    # Show remaining time and attempts
+    print_status $YELLOW "⏰ Time remaining: ${remaining_time}s | Attempts: $((attempt_count + 1))/$max_attempts"
+    
+    # Use timeout with read to prevent infinite hanging
+    if command -v gtimeout &> /dev/null; then
+        # macOS with coreutils
+        if gtimeout 10 read -p "Response: " response; then
             break
-            ;;
-        [Nn]o|[Nn])
-            print_status $RED "❌ Manual inspection aborted - commit blocked"
+        fi
+    elif command -v timeout &> /dev/null; then
+        # Linux systems
+        if timeout 10 read -p "Response: " response; then
+            break
+        fi
+    else
+        # macOS without coreutils - use a simple read with shorter timeout
+        print_status $YELLOW "⚠️  No timeout command available, please respond quickly"
+        if read -t 10 -p "Response: " response; then
+            break
+        fi
+    fi
+    
+    # If read times out, increment attempt counter and continue
+    attempt_count=$((attempt_count + 1))
+    if [ $attempt_count -ge $max_attempts ]; then
+        print_status $RED "❌ Maximum attempts reached - commit blocked for safety"
+        kill $SERVER_PID 2>/dev/null
+        exit 1
+    fi
+    
+    print_status $YELLOW "⏰ No response received, please try again... (Attempt $attempt_count/$max_attempts)"
+    echo ""
+done
+
+# Process the response
+case $response in
+    [Yy]es|[Yy])
+        print_status $GREEN "✅ Manual inspection confirmed!"
+        ;;
+    [Nn]o|[Nn])
+        print_status $RED "❌ Manual inspection aborted - commit blocked"
+        kill $SERVER_PID 2>/dev/null
+        exit 1
+        ;;
+    [Ss]kip|[Ss])
+        print_status $YELLOW "⚠️  Manual inspection skipped - proceed with caution!"
+        print_status $YELLOW "💡 Remember: Always test your changes before pushing to production"
+        ;;
+    [Rr]etry|[Rr])
+        print_status $BLUE "🔄 Restarting server..."
+        kill $SERVER_PID 2>/dev/null
+        sleep 2
+        cd src && python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
+        SERVER_PID=$!
+        cd ..
+        sleep 5
+        print_status $GREEN "✅ Server restarted on http://localhost:5173"
+        print_status $BLUE "🌐 Please review the changes again"
+        
+        # Give user another chance after restart
+        print_status $CYAN "Have you completed the manual inspection now?"
+        if read -p "Type 'yes' to confirm or 'no' to abort: " final_response; then
+            case $final_response in
+                [Yy]es|[Yy])
+                    print_status $GREEN "✅ Manual inspection confirmed after restart!"
+                    ;;
+                *)
+                    print_status $RED "❌ Manual inspection aborted - commit blocked"
+                    kill $SERVER_PID 2>/dev/null
+                    exit 1
+                    ;;
+            esac
+        else
+            print_status $RED "❌ No response received - commit blocked for safety"
             kill $SERVER_PID 2>/dev/null
             exit 1
-            ;;
-        [Rr]etry|[Rr])
-            print_status $BLUE "🔄 Restarting server..."
-            kill $SERVER_PID 2>/dev/null
-            sleep 2
-            cd src && python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
-            SERVER_PID=$!
-            cd ..
-            sleep 5
-            print_status $GREEN "✅ Server restarted on http://localhost:5173"
-            print_status $BLUE "🌐 Please review the changes again"
-            ;;
-        *)
-            print_status $YELLOW "⚠️  Please type 'yes', 'no', or 'retry'"
-            ;;
-    esac
-done
+        fi
+        ;;
+    *)
+        print_status $RED "❌ Invalid response '$response' - commit blocked for safety"
+        print_status $YELLOW "Valid responses: 'yes', 'no', 'retry', 'skip'"
+        kill $SERVER_PID 2>/dev/null
+        exit 1
+        ;;
+esac
 
 # Clean up server
 print_status $BLUE "🧹 Cleaning up local server..."
