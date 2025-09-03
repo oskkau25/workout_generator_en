@@ -90,6 +90,26 @@
       "test_function": "test_form_interactions",
       "category": "core_workout"
     },
+    "user_accounts": {
+      "name": "User Account System",
+      "description": "User registration, login, progress tracking, and achievement badges",
+      "detection_patterns": {
+        "html": ["login-modal", "register-modal", "profile-modal"],
+        "js": ["UserAccount", "register", "login", "achievements"]
+      },
+      "test_function": "test_user_account_system",
+      "category": "user_experience"
+    },
+    "security_features": {
+      "name": "Security & Privacy Features",
+      "description": "PBKDF2 password encryption, privacy policy, security notices, and data protection",
+      "detection_patterns": {
+        "html": ["privacy-policy-modal", "security notice", "PBKDF2", "🔒 Privacy-First"],
+        "js": ["hashPassword", "verifyPassword", "showPrivacyPolicy", "PBKDF2"]
+      },
+      "test_function": "test_security_and_privacy_features",
+      "category": "security"
+    },
     "responsive_design": {
       "name": "Responsive Design",
       "description": "Mobile-friendly layout with responsive breakpoints",
@@ -203,17 +223,18 @@
   },
   "metadata": {
     "version": "2.0",
-    "last_updated": "2025-09-03T14:00:00Z",
-    "total_features": 21,
+    "last_updated": "2025-09-03T15:00:00Z",
+    "total_features": 23,
     "categories": {
       "core_workout": 4,
-      "user_experience": 3,
+      "user_experience": 4,
       "ui_components": 2,
       "accessibility": 2,
       "workout_customization": 6,
       "robustness": 1,
       "performance": 1,
       "analytics": 1,
+      "security": 1,
       "other": 1
     },
     "pipeline_integration": {

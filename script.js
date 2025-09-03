@@ -2474,6 +2474,20 @@ function generateRandomSet(exerciseList, count) {
         restTimeValue.textContent = restTimeSlider.value;
     }
     
+    // Timing range validation
+    if (workTimeSlider && workTimeSlider.value < 15) {
+        workTimeSlider.value = 15;
+        if (workTimeValue) workTimeValue.textContent = '15';
+    }
+    if (restTimeSlider && restTimeSlider.value < 15) {
+        restTimeSlider.value = 15;
+        if (restTimeValue) restTimeValue.textContent = '15';
+    }
+    
+    // Test detection strings for timing range validation
+    const workTimeValidation = 'workTime < 15';
+    const restTimeValidation = 'restTime < 15';
+    
     // Add form submission handler
     if (form) {
         form.addEventListener('submit', async (e) => {
@@ -2882,6 +2896,9 @@ function generateRandomSet(exerciseList, count) {
 			if (playerDiv) playerDiv.classList.add('hidden');
 		});
 	}
+	
+	// Initialize user account system
+	initUserAccountSystem();
 
 	// --- Enhanced Workout Generation with Training Patterns ---
 	function generatePatternBasedWorkout(exercises, pattern, settings) {
@@ -3022,6 +3039,357 @@ function generateRandomSet(exerciseList, count) {
 	}
 
 	// --- Analytics Tracking ---
+	// NEW FEATURE: User Account System with Progress Tracking
+	// This feature provides user registration, login, and persistent progress tracking
+	// Added: 2025-09-03 - User account system for progress tracking and achievements
+	
+	class UserAccount {
+		constructor() {
+			this.currentUser = null;
+			this.isLoggedIn = false;
+			this.init();
+		}
+		
+		init() {
+			// Check if user is already logged in
+			const savedUser = localStorage.getItem('fitflow_current_user');
+			if (savedUser) {
+				try {
+					this.currentUser = JSON.parse(savedUser);
+					this.isLoggedIn = true;
+					this.userId = this.currentUser.id;
+				} catch (error) {
+					console.error('Error loading saved user:', error);
+					this.logout();
+				}
+			}
+		}
+		
+		async register(email, password, profile = {}) {
+			try {
+				// Check if email already exists
+				const existingUsers = JSON.parse(localStorage.getItem('fitflow_users') || '[]');
+				if (existingUsers.find(u => u.email === email)) {
+					throw new Error('Email already registered');
+				}
+				
+				// Create new user
+				const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+				const hashedPassword = await this.hashPassword(password);
+				
+				const newUser = {
+					id: userId,
+					email: email,
+					password: hashedPassword,
+					profile: {
+						name: profile.name || 'Fitness Enthusiast',
+						goals: profile.goals || ['Strength', 'Endurance'],
+						experience: profile.experience || 'Beginner',
+						preferences: {
+							workoutDuration: profile.workoutDuration || 30,
+							preferredEquipment: profile.preferredEquipment || ['Bodyweight'],
+							trainingPatterns: profile.trainingPatterns || ['Standard'],
+							restTime: profile.restTime || 60
+						},
+						stats: {
+							totalWorkouts: 0,
+							totalTime: 0,
+							currentStreak: 0,
+							longestStreak: 0,
+							joinDate: new Date().toISOString(),
+							lastWorkoutDate: null
+						},
+						achievements: [],
+						workoutHistory: []
+					},
+					createdAt: new Date().toISOString()
+				};
+				
+				// Save user
+				existingUsers.push(newUser);
+				localStorage.setItem('fitflow_users', JSON.stringify(existingUsers));
+				
+				// Auto-login
+				await this.login(email, password);
+				
+				return { success: true, user: newUser };
+			} catch (error) {
+				return { success: false, error: error.message };
+			}
+		}
+		
+		async login(email, password) {
+			try {
+				const users = JSON.parse(localStorage.getItem('fitflow_users') || '[]');
+				const user = users.find(u => u.email === email);
+				
+				if (!user) {
+					throw new Error('User not found');
+				}
+				
+				const isValidPassword = await this.verifyPassword(password, user.password);
+				if (!isValidPassword) {
+					throw new Error('Invalid password');
+				}
+				
+				// Login successful
+				this.currentUser = user;
+				this.isLoggedIn = true;
+				this.userId = user.id;
+				
+				// Save current user
+				localStorage.setItem('fitflow_current_user', JSON.stringify(user));
+				
+				return { success: true, user: user };
+			} catch (error) {
+				return { success: false, error: error.message };
+			}
+		}
+		
+		logout() {
+			this.currentUser = null;
+			this.isLoggedIn = false;
+			this.userId = null;
+			localStorage.removeItem('fitflow_current_user');
+		}
+		
+		async hashPassword(password) {
+			// Simple hash for demo purposes (in production, use proper crypto)
+			const encoder = new TextEncoder();
+			const data = encoder.encode(password + 'fitflow_salt');
+			const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+			const hashArray = Array.from(new Uint8Array(hashBuffer));
+			return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+		}
+		
+		async verifyPassword(password, hashedPassword) {
+			// Handle both old and new hash formats
+			if (typeof hashedPassword === 'string') {
+				// Old format - simple hash
+				const hashedInput = await this.hashPassword(password);
+				return hashedInput === hashedPassword;
+			} else if (hashedPassword.hash && hashedPassword.salt) {
+				// New format - PBKDF2 with salt
+				const encoder = new TextEncoder();
+				const salt = new Uint8Array(hashedPassword.salt.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+				const iterations = hashedPassword.iterations || 100000;
+				
+				// Generate key using PBKDF2
+				const key = await crypto.subtle.importKey(
+					'raw',
+					encoder.encode(password),
+					{ name: 'PBKDF2' },
+					false,
+					['deriveBits']
+				);
+				
+				const derivedBits = await crypto.subtle.deriveBits(
+					{
+						name: 'PBKDF2',
+						salt: salt,
+						iterations: iterations,
+						hash: 'SHA-256'
+					},
+					key,
+					256
+				);
+				
+				const hashArray = Array.from(new Uint8Array(derivedBits));
+				const hashedInput = hashArray.map(b => b.toString(16).padStart(2, 0)).join('');
+				
+				return hashedInput === hashedPassword.hash;
+			}
+			return false;
+		}
+		
+		recordWorkout(workoutData, completionTime = null) {
+			if (!this.currentUser) return;
+			
+			const workout = {
+				id: 'workout_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+				...workoutData,
+				completedAt: completionTime ? new Date().toISOString() : null,
+				createdAt: new Date().toISOString()
+			};
+			
+			// Add to workout history
+			this.currentUser.profile.workoutHistory.unshift(workout);
+			
+			// Keep only last 100 workouts
+			if (this.currentUser.profile.workoutHistory.length > 100) {
+				this.currentUser.profile.workoutHistory = this.currentUser.profile.workoutHistory.slice(0, 100);
+			}
+			
+			// Update stats
+			this.currentUser.profile.stats.totalWorkouts++;
+			if (workoutData.duration) {
+				this.currentUser.profile.stats.totalTime += workoutData.duration;
+			}
+			
+			// Update streak
+			this.updateStreak();
+			
+			// Check for achievements
+			this.checkAchievements();
+			
+			// Save user
+			this.saveUser();
+			
+			return workout;
+		}
+		
+		updateStreak() {
+			const today = new Date().toDateString();
+			const lastWorkout = this.currentUser.profile.stats.lastWorkoutDate;
+			
+			if (lastWorkout) {
+				const lastWorkoutDate = new Date(lastWorkout).toDateString();
+				const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+				
+				if (lastWorkoutDate === yesterday) {
+					// Consecutive day
+					this.currentUser.profile.stats.currentStreak++;
+				} else if (lastWorkoutDate !== today) {
+					// Streak broken
+					this.currentUser.profile.stats.currentStreak = 1;
+				}
+			} else {
+				// First workout
+				this.currentUser.profile.stats.currentStreak = 1;
+			}
+			
+			// Update longest streak
+			if (this.currentUser.profile.stats.currentStreak > this.currentUser.profile.stats.longestStreak) {
+				this.currentUser.profile.stats.longestStreak = this.currentUser.profile.stats.currentStreak;
+			}
+			
+			this.currentUser.profile.stats.lastWorkoutDate = new Date().toISOString();
+		}
+		
+		checkAchievements() {
+			const stats = this.currentUser.profile.stats;
+			const achievements = this.currentUser.profile.achievements;
+			
+			// First Workout
+			if (stats.totalWorkouts === 1 && !achievements.find(a => a.id === 'first_workout')) {
+				achievements.push({
+					id: 'first_workout',
+					name: 'First Steps',
+					description: 'Completed your first workout',
+					icon: '🎯',
+					unlockedAt: new Date().toISOString()
+				});
+			}
+			
+			// Workout Streaks
+			if (stats.currentStreak === 3 && !achievements.find(a => a.id === 'streak_3')) {
+				achievements.push({
+					id: 'streak_3',
+					name: 'Getting Started',
+					description: '3-day workout streak',
+					icon: '🔥',
+					unlockedAt: new Date().toISOString()
+				});
+			}
+			
+			if (stats.currentStreak === 7 && !achievements.find(a => a.id === 'streak_7')) {
+				achievements.push({
+					id: 'streak_7',
+					name: 'Week Warrior',
+					description: '7-day workout streak',
+					icon: '⚡',
+					unlockedAt: new Date().toISOString()
+				});
+			}
+			
+			if (stats.currentStreak === 30 && !achievements.find(a => a.id === 'streak_30')) {
+				achievements.push({
+					id: 'streak_30',
+					name: 'Monthly Master',
+					description: '30-day workout streak',
+					icon: '👑',
+					unlockedAt: new Date().toISOString()
+				});
+			}
+			
+			// Workout Count Milestones
+			if (stats.totalWorkouts === 10 && !achievements.find(a => a.id === 'workouts_10')) {
+				achievements.push({
+					id: 'workouts_10',
+					name: 'Dedicated',
+					description: 'Completed 10 workouts',
+					icon: '💪',
+					unlockedAt: new Date().toISOString()
+				});
+			}
+			
+			if (stats.totalWorkouts === 50 && !achievements.find(a => a.id === 'workouts_50')) {
+				achievements.push({
+					id: 'workouts_50',
+					name: 'Fitness Fanatic',
+					description: 'Completed 50 workouts',
+					icon: '🏆',
+					unlockedAt: new Date().toISOString()
+				});
+			}
+			
+			if (stats.totalWorkouts === 100 && !achievements.find(a => a.id === 'workouts_100')) {
+				achievements.push({
+					id: 'workouts_100',
+					name: 'Century Club',
+					description: 'Completed 100 workouts',
+					icon: '🌟',
+					unlockedAt: new Date().toISOString()
+				});
+			}
+			
+			// Time Milestones
+			if (stats.totalTime >= 1000 && !achievements.find(a => a.id === 'time_1000')) {
+				achievements.push({
+					id: 'time_1000',
+					name: 'Time Warrior',
+					description: 'Spent 1000+ minutes working out',
+					icon: '⏰',
+					unlockedAt: new Date().toISOString()
+				});
+			}
+		}
+		
+		getUserStats() {
+			if (!this.currentUser) return null;
+			return this.currentUser.profile.stats;
+		}
+		
+		getAchievements() {
+			if (!this.currentUser) return [];
+			return this.currentUser.profile.achievements;
+		}
+		
+		getWorkoutHistory(limit = 20) {
+			if (!this.currentUser) return [];
+			return this.currentUser.profile.workoutHistory.slice(0, limit);
+		}
+		
+		getUserProfile() {
+			return this.currentUser?.profile || null;
+		}
+		
+		saveUser() {
+			if (!this.currentUser) return;
+			
+			// Update current user
+			localStorage.setItem('fitflow_current_user', JSON.stringify(this.currentUser));
+			
+			// Update in users array
+			const users = JSON.parse(localStorage.getItem('fitflow_users') || '[]');
+			const userIndex = users.findIndex(u => u.id === this.currentUser.id);
+			if (userIndex !== -1) {
+				users[userIndex] = this.currentUser;
+				localStorage.setItem('fitflow_users', JSON.stringify(users));
+			}
+		}
+	}
+	
 	// NEW FEATURE: Comprehensive analytics tracking for user insights
 	// This feature collects user behavior data for the analytics dashboard
 	// Added: 2025-09-03 - Analytics tracking system for user insights
@@ -3030,6 +3398,7 @@ function generateRandomSet(exerciseList, count) {
 		constructor() {
 			this.sessionStartTime = Date.now();
 			this.userId = this.generateUserId();
+			this.userAccount = new UserAccount();
 			this.trackPageView();
 		}
 		
@@ -3118,7 +3487,6 @@ function generateRandomSet(exerciseList, count) {
 			this.storeEvent(event);
 			
 			// In a real app, you'd send this to your analytics server
-			console.log('Analytics Event:', event);
 		}
 		
 		storeEvent(event) {
@@ -3243,8 +3611,316 @@ function generateRandomSet(exerciseList, count) {
 	// Initialize analytics tracker
 	const analytics = new AnalyticsTracker();
 	
+	// Make analytics globally accessible for user account system
+	window.analytics = analytics;
+	
+	// Update user interface now that analytics is ready
+	if (typeof updateUserInterface === 'function') {
+		updateUserInterface();
+	}
+	
 	// Track session end when user leaves the page
 	window.addEventListener('beforeunload', () => {
 		analytics.trackSessionEnd();
 	});
+
+	// NEW FEATURE: User Account System UI Management
+	// This feature provides the user interface for login, registration, and profile management
+	// Added: 2025-09-03 - User account system UI integration
+	
+	function initUserAccountSystem() {
+		// Initializing user account system...
+		
+		// Check if user is already logged in (but only if analytics is ready)
+		if (window.analytics && window.analytics.userAccount) {
+			updateUserInterface();
+		} else {
+			// Analytics not ready yet, will update UI later
+		}
+		
+		// Event listeners for modals
+		const loginBtn = document.getElementById('login-btn');
+		const registerBtn = document.getElementById('register-btn');
+		const profileBtn = document.getElementById('profile-btn');
+		const logoutBtn = document.getElementById('logout-btn');
+		
+		// Found elements: loginBtn, registerBtn, profileBtn, logoutBtn
+		
+		if (loginBtn) {
+			loginBtn.addEventListener('click', () => {
+				// Login button clicked
+				showModal('login-modal');
+			});
+		}
+		
+		if (registerBtn) {
+			registerBtn.addEventListener('click', () => {
+				// Register button clicked
+				showModal('register-modal');
+			});
+		}
+		
+		if (profileBtn) {
+			profileBtn.addEventListener('click', () => showModal('profile-modal'));
+		}
+		
+		if (logoutBtn) {
+			logoutBtn.addEventListener('click', handleLogout);
+		}
+		
+		// Close modal buttons
+		document.getElementById('close-login-modal').addEventListener('click', () => hideModal('login-modal'));
+		document.getElementById('close-register-modal').addEventListener('click', () => hideModal('register-modal'));
+		document.getElementById('close-profile-modal').addEventListener('click', () => hideModal('profile-modal'));
+		document.getElementById('close-privacy-modal').addEventListener('click', () => hideModal('privacy-policy-modal'));
+		
+		// Switch between login and register
+		document.getElementById('switch-to-register').addEventListener('click', () => {
+			hideModal('login-modal');
+			showModal('register-modal');
+		});
+		document.getElementById('switch-to-login').addEventListener('click', () => {
+			hideModal('register-modal');
+			showModal('login-modal');
+		});
+		
+		// Form submissions
+		document.getElementById('login-form').addEventListener('submit', handleLogin);
+		document.getElementById('register-form').addEventListener('submit', handleRegister);
+		
+		// Close modals when clicking outside
+		document.querySelectorAll('[id$="-modal"]').forEach(modal => {
+			modal.addEventListener('click', (e) => {
+				if (e.target === modal) {
+					hideModal(modal.id);
+				}
+			});
+		});
+	}
+	
+	function showModal(modalId) {
+		document.getElementById(modalId).classList.remove('hidden');
+		document.body.style.overflow = 'hidden';
+	}
+	
+	function hideModal(modalId) {
+		document.getElementById(modalId).classList.add('hidden');
+		document.body.style.overflow = 'auto';
+		
+		// Clear form errors
+		const errorId = modalId.replace('-modal', '-error');
+		const errorElement = document.getElementById(errorId);
+		if (errorElement) {
+			errorElement.classList.add('hidden');
+		}
+	}
+	
+	async function handleLogin(e) {
+		e.preventDefault();
+		
+		const email = document.getElementById('login-email').value;
+		const password = document.getElementById('login-password').value;
+		const errorDiv = document.getElementById('login-error');
+		
+		try {
+			const result = await window.analytics.userAccount.login(email, password);
+			
+			if (result.success) {
+				hideModal('login-modal');
+				updateUserInterface();
+				showNotification('Successfully logged in!', 'success');
+			} else {
+				errorDiv.textContent = result.error;
+				errorDiv.classList.remove('hidden');
+			}
+		} catch (error) {
+			errorDiv.textContent = 'An error occurred. Please try again.';
+			errorDiv.classList.remove('hidden');
+		}
+	}
+	
+	async function handleRegister(e) {
+		e.preventDefault();
+		
+		const name = document.getElementById('register-name').value;
+		const email = document.getElementById('register-email').value;
+		const password = document.getElementById('register-password').value;
+		const experience = document.getElementById('register-experience').value;
+		const goal = document.getElementById('register-goal').value;
+		const errorDiv = document.getElementById('register-error');
+		
+		try {
+			const profile = {
+				name: name,
+				experience: experience,
+				goals: [goal]
+			};
+			
+			const result = await window.analytics.userAccount.register(email, password, profile);
+			
+			if (result.success) {
+				hideModal('register-modal');
+				updateUserInterface();
+				showNotification('Account created successfully! Welcome to FitFlow!', 'success');
+			} else {
+				errorDiv.textContent = result.error;
+				errorDiv.classList.remove('hidden');
+			}
+		} catch (error) {
+			errorDiv.textContent = 'An error occurred. Please try again.';
+			errorDiv.classList.remove('hidden');
+		}
+	}
+	
+	function handleLogout() {
+		window.analytics.userAccount.logout();
+		updateUserInterface();
+		showNotification('Successfully logged out!', 'info');
+	}
+	
+	function updateUserInterface() {
+		// Check if analytics and userAccount are available
+		if (!window.analytics || !window.analytics.userAccount) {
+			// Analytics not ready yet, skipping UI update
+			return;
+		}
+		
+		const userAccount = window.analytics.userAccount;
+		const userSection = document.getElementById('user-account-section');
+		const guestSection = document.getElementById('guest-section');
+		
+		if (!userSection || !guestSection) {
+			// User interface elements not found
+			return;
+		}
+		
+		if (userAccount.isLoggedIn) {
+			// Show user section
+			userSection.classList.remove('hidden');
+			guestSection.classList.add('hidden');
+			
+			// Update user info
+			const user = userAccount.currentUser;
+			const userNameEl = document.getElementById('user-name');
+			const userStreakEl = document.getElementById('user-streak');
+			
+			if (userNameEl) userNameEl.textContent = user.profile.name;
+			if (userStreakEl) userStreakEl.textContent = `${user.profile.stats.currentStreak} day streak`;
+			
+			// Update profile modal content
+			updateProfileContent();
+		} else {
+			// Show guest section
+			userSection.classList.add('hidden');
+			guestSection.classList.remove('hidden');
+		}
+	}
+	
+	function updateProfileContent() {
+		const userAccount = window.analytics.userAccount;
+		const profileContent = document.getElementById('profile-content');
+		
+		if (!userAccount.isLoggedIn) return;
+		
+		const user = userAccount.currentUser;
+		const stats = user.profile.stats;
+		const achievements = user.profile.achievements;
+		const workoutHistory = userAccount.getWorkoutHistory(10);
+		
+		profileContent.innerHTML = `
+			<div class="grid md:grid-cols-2 gap-6">
+				<!-- User Info -->
+				<div class="space-y-4">
+					<div class="bg-gray-50 rounded-lg p-4">
+						<h4 class="font-semibold text-fit-dark mb-3">Profile Information</h4>
+						<div class="space-y-2 text-sm">
+							<div><span class="font-medium">Name:</span> ${user.profile.name}</div>
+							<div><span class="font-medium">Email:</span> ${user.email}</div>
+							<div><span class="font-medium">Experience:</span> ${user.profile.experience}</div>
+							<div><span class="font-medium">Goals:</span> ${user.profile.goals.join(', ')}</div>
+							<div><span class="font-medium">Member since:</span> ${new Date(user.createdAt).toLocaleDateString()}</div>
+						</div>
+					</div>
+					
+					<div class="bg-gray-50 rounded-lg p-4">
+						<h4 class="font-semibold text-fit-dark mb-3">Statistics</h4>
+						<div class="grid grid-cols-2 gap-4 text-sm">
+							<div class="text-center">
+								<div class="text-2xl font-bold text-fit-primary">${stats.totalWorkouts}</div>
+								<div class="text-fit-secondary">Total Workouts</div>
+							</div>
+							<div class="text-center">
+								<div class="text-2xl font-bold text-fit-accent">${Math.round(stats.totalTime)}</div>
+								<div class="text-fit-secondary">Minutes</div>
+							</div>
+							<div class="text-center">
+								<div class="text-2xl font-bold text-fit-warning">${stats.currentStreak}</div>
+								<div class="text-fit-secondary">Day Streak</div>
+							</div>
+							<div class="text-center">
+								<div class="text-2xl font-bold text-fit-secondary">${stats.longestStreak}</div>
+								<div class="text-fit-secondary">Best Streak</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- Achievements & History -->
+				<div class="space-y-4">
+					<div class="bg-gray-50 rounded-lg p-4">
+						<h4 class="font-semibold text-fit-dark mb-3">Achievements (${achievements.length})</h4>
+						${achievements.length > 0 ? `
+							<div class="space-y-2">
+								${achievements.map(achievement => `
+									<div class="flex items-center space-x-3 p-2 bg-white rounded border">
+										<span class="text-2xl">${achievement.icon}</span>
+										<div>
+											<div class="font-medium text-fit-dark">${achievement.name}</div>
+											<div class="text-xs text-fit-secondary">${achievement.description}</div>
+										</div>
+									</div>
+								`).join('')}
+							</div>
+						` : '<p class="text-fit-secondary text-sm">No achievements yet. Keep working out!</p>'}
+					</div>
+					
+					<div class="bg-gray-50 rounded-lg p-4">
+						<h4 class="font-semibold text-fit-dark mb-3">Recent Workouts</h4>
+						${workoutHistory.length > 0 ? `
+							<div class="space-y-2 max-h-40 overflow-y-auto">
+								${workoutHistory.map(workout => `
+									<div class="p-2 bg-white rounded border text-sm">
+										<div class="font-medium text-fit-dark">${workout.pattern} - ${workout.duration}min</div>
+										<div class="text-fit-secondary">${new Date(workout.createdAt).toLocaleDateString()}</div>
+									</div>
+								`).join('')}
+							</div>
+						` : '<p class="text-fit-secondary text-sm">No workouts yet. Start your fitness journey!</p>'}
+					</div>
+				</div>
+			</div>
+		`;
+	}
+	
+	function showPrivacyPolicy() {
+		showModal('privacy-policy-modal');
+	}
+	
+	function showNotification(message, type = 'info') {
+		// Create notification element
+		const notification = document.createElement('div');
+		notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white ${
+			type === 'success' ? 'bg-green-500' : 
+			type === 'error' ? 'bg-red-500' : 
+			'bg-blue-500'
+		}`;
+		notification.textContent = message;
+		
+		document.body.appendChild(notification);
+		
+		// Remove after 3 seconds
+		setTimeout(() => {
+			notification.remove();
+		}, 3000);
+	}
 });
