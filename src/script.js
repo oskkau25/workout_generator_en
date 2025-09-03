@@ -1835,48 +1835,7 @@ function generateRandomSet(exerciseList, count) {
 			return enhancedWorkout;
 		}
 		
-		// --- Smart Substitution Demo Function ---
-		function testSmartSubstitution() {
-			// Create a sample workout to demonstrate substitutions
-			const sampleExercises = [
-				exercises.find(ex => ex.name === "Squats"),
-				exercises.find(ex => ex.name === "Push-ups"),
-				exercises.find(ex => ex.name === "Leg Swings")
-			].filter(Boolean);
-			
-			if (sampleExercises.length === 0) {
-				showNotification('❌ Sample exercises not found. Please refresh and try again.', 'error');
-				return;
-			}
-			
-			// Create a simple workout
-			appState.warmup = [sampleExercises[2]]; // Leg Swings
-			appState.main = [sampleExercises[0], sampleExercises[1]]; // Squats, Push-ups
-			appState.cooldown = [];
-			
-			// Build sequence
-			buildSequence();
-			
-			// Apply smart substitutions
-			const userPreferences = {
-				availableEquipment: ["none"], // Bodyweight only
-				fitnessLevel: "Beginner", // Force beginner level for demo
-				injuryLimitations: []
-			};
-			
-			// Enhance workout with smart substitutions
-			appState.sequence = enhanceWorkoutWithSubstitutions(appState.sequence, userPreferences);
-			
-			// Show overview
-			renderOverview();
-			attachOverviewHandlers();
-			
-			// Show success message
-			showNotification('🧠 Smart substitution demo created! Check the workout overview for alternatives.', 'success');
-			
-			// Switch to overview screen
-			toggleScreens({ overview: true, player: false, plan: false });
-		}
+
 		
 		// --- Smart Substitution UI Functions ---
 		function showSubstitutionDetails(originalName, alternativeName, reason) {
@@ -2822,21 +2781,17 @@ function generateRandomSet(exerciseList, count) {
 				buildSequence();
 				
 				// 🚀 PHASE 1: Apply Smart Exercise Substitutions
-				const enableSubstitutions = document.getElementById('enable-substitutions')?.checked ?? true;
+				const userPreferences = {
+					availableEquipment: selectedEquipment,
+					fitnessLevel: level,
+					injuryLimitations: [] // Can be enhanced later with user input
+				};
 				
-				if (enableSubstitutions) {
-					const userPreferences = {
-						availableEquipment: selectedEquipment,
-						fitnessLevel: level,
-						injuryLimitations: [] // Can be enhanced later with user input
-					};
-					
-					// Enhance workout with smart substitutions
-					appState.sequence = enhanceWorkoutWithSubstitutions(appState.sequence, userPreferences);
-					
-					// Show smart substitution info
-					showNotification('🧠 Smart substitutions applied! Check exercises for alternatives.', 'success');
-				}
+				// Enhance workout with smart substitutions
+				appState.sequence = enhanceWorkoutWithSubstitutions(appState.sequence, userPreferences);
+				
+				// Show smart substitution info
+				showNotification('🧠 Smart substitutions applied! Check exercises for alternatives.', 'success');
 				
 				appState.currentIndex = 0;
 				appState.phase = 'work';
