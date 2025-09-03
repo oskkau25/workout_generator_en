@@ -2146,6 +2146,17 @@ function generateRandomSet(exerciseList, count) {
 			// Workout end: spoken countdown already happened; announce completion
 			speak('Workout complete. Great job!');
 			showSuccess('Workout complete! Great job!');
+			
+			// Track workout completion for analytics
+			const completionTime = Date.now() - (appState.sessionStartTime || Date.now());
+			analytics.trackWorkoutCompleted({
+				pattern: appState.trainingPattern,
+				duration: appState.workoutDuration,
+				equipment: appState.equipment,
+				fitnessLevel: appState.fitnessLevel,
+				exercises: appState.sequence
+			}, completionTime);
+			
 			clearSavedState();
 			renderOverview();
 		}
@@ -2391,6 +2402,16 @@ function generateRandomSet(exerciseList, count) {
 			startBtn.onclick = () => {
 				clearRunningTimer();
 				if (!appState.sequence || appState.sequence.length === 0) return;
+				
+				// Track workout start for analytics
+				analytics.trackWorkoutStarted({
+					pattern: appState.trainingPattern,
+					duration: appState.workoutDuration,
+					equipment: appState.equipment,
+					fitnessLevel: appState.fitnessLevel,
+					exercises: appState.sequence
+				});
+				
 				// Initialize shared audio context on user gesture for mobile
 				try {
 					if (!appState.audioContext && appState.enableSound) {
@@ -2528,6 +2549,25 @@ function generateRandomSet(exerciseList, count) {
 				appState.phase = 'work';
 				appState.remainingSeconds = workTime;
 				saveState();
+
+				// Track workout generation for analytics
+				analytics.trackWorkoutGenerated({
+					pattern: trainingPattern,
+					duration: mainDuration,
+					equipment: selectedEquipment,
+					fitnessLevel: level,
+					exercises: appState.sequence
+				});
+				
+				// Track equipment selection for analytics
+				if (appState.equipment && appState.equipment.length > 0) {
+					analytics.trackEquipmentChange(appState.equipment, selectedEquipment);
+				}
+				
+				// Track training pattern change for analytics
+				if (appState.trainingPattern && appState.trainingPattern !== trainingPattern) {
+					analytics.trackTrainingPatternChange(appState.trainingPattern, trainingPattern);
+				}
 
 				// Render overview screen
 				renderOverview();
@@ -2980,4 +3020,231 @@ function generateRandomSet(exerciseList, count) {
 			_originalName: exercise.name
 		}));
 	}
+
+	// --- Analytics Tracking ---
+	// NEW FEATURE: Comprehensive analytics tracking for user insights
+	// This feature collects user behavior data for the analytics dashboard
+	// Added: 2025-09-03 - Analytics tracking system for user insights
+	
+	class AnalyticsTracker {
+		constructor() {
+			this.sessionStartTime = Date.now();
+			this.userId = this.generateUserId();
+			this.trackPageView();
+		}
+		
+		generateUserId() {
+			let userId = localStorage.getItem('fitflow_user_id');
+			if (!userId) {
+				userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+				localStorage.setItem('fitflow_user_id', userId);
+			}
+			return userId;
+		}
+		
+		trackPageView() {
+			this.trackEvent('Page Visited', {
+				page: window.location.pathname || '/',
+				timestamp: new Date().toISOString()
+			});
+		}
+		
+		trackWorkoutGenerated(workoutData) {
+			this.trackEvent('Workout Generated', {
+				pattern: workoutData.pattern || 'Standard',
+				duration: workoutData.duration || 30,
+				equipment: workoutData.equipment || [],
+				fitnessLevel: workoutData.fitnessLevel || 'Beginner',
+				exerciseCount: workoutData.exercises?.length || 0,
+				timestamp: new Date().toISOString()
+			});
+		}
+		
+		trackWorkoutStarted(workoutData) {
+			this.trackEvent('Workout Started', {
+				pattern: workoutData.pattern || 'Standard',
+				duration: workoutData.duration || 30,
+				equipment: workoutData.equipment || [],
+				fitnessLevel: workoutData.fitnessLevel || 'Beginner',
+				timestamp: new Date().toISOString()
+			});
+		}
+		
+		trackWorkoutCompleted(workoutData, completionTime) {
+			this.trackEvent('Workout Completed', {
+				pattern: workoutData.pattern || 'Standard',
+				duration: workoutData.duration || 30,
+				equipment: workoutData.equipment || [],
+				fitnessLevel: workoutData.fitnessLevel || 'Beginner',
+				completionTime: completionTime,
+				timestamp: new Date().toISOString()
+			});
+		}
+		
+		trackEquipmentChange(oldEquipment, newEquipment) {
+			this.trackEvent('Equipment Changed', {
+				from: oldEquipment,
+				to: newEquipment,
+				timestamp: new Date().toISOString()
+			});
+		}
+		
+		trackTrainingPatternChange(oldPattern, newPattern) {
+			this.trackEvent('Training Pattern Changed', {
+				from: oldPattern,
+				to: newPattern,
+				timestamp: new Date().toISOString()
+			});
+		}
+		
+		trackSessionEnd() {
+			const sessionDuration = Math.round((Date.now() - this.sessionStartTime) / 1000 / 60);
+			this.trackEvent('Session Ended', {
+				duration: sessionDuration,
+				timestamp: new Date().toISOString()
+			});
+		}
+		
+		trackEvent(action, details) {
+			const event = {
+				id: 'event_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+				userId: this.userId,
+				action: action,
+				details: details,
+				timestamp: new Date().toISOString()
+			};
+			
+			// Store in localStorage for the dashboard
+			this.storeEvent(event);
+			
+			// In a real app, you'd send this to your analytics server
+			console.log('Analytics Event:', event);
+		}
+		
+		storeEvent(event) {
+			try {
+				const events = JSON.parse(localStorage.getItem('fitflow_analytics_events') || '[]');
+				events.push(event);
+				
+				// Keep only last 1000 events to prevent localStorage overflow
+				if (events.length > 1000) {
+					events.splice(0, events.length - 1000);
+				}
+				
+				localStorage.setItem('fitflow_analytics_events', JSON.stringify(events));
+			} catch (error) {
+				console.error('Error storing analytics event:', error);
+			}
+		}
+		
+		getAnalyticsData() {
+			try {
+				const events = JSON.parse(localStorage.getItem('fitflow_analytics_events') || '[]');
+				const users = [{
+					id: this.userId,
+					type: this.getUserType(),
+					preferredEquipment: this.getPreferredEquipment(),
+					joinDate: this.getJoinDate(),
+					totalWorkouts: this.getTotalWorkouts()
+				}];
+				
+				const workouts = this.processWorkoutEvents(events);
+				const sessions = this.processSessionEvents(events);
+				
+				return {
+					users: users,
+					workouts: workouts,
+					sessions: sessions,
+					activity: events
+				};
+			} catch (error) {
+				console.error('Error getting analytics data:', error);
+				return { users: [], workouts: [], sessions: [], activity: [] };
+			}
+		}
+		
+		getUserType() {
+			// Determine user type based on workout patterns
+			const events = JSON.parse(localStorage.getItem('fitflow_analytics_events') || '[]');
+			const workoutEvents = events.filter(e => e.action === 'Workout Generated');
+			
+			if (workoutEvents.length === 0) return 'Beginner';
+			if (workoutEvents.length < 10) return 'Beginner';
+			if (workoutEvents.length < 30) return 'Intermediate';
+			return 'Advanced';
+		}
+		
+		getPreferredEquipment() {
+			const events = JSON.parse(localStorage.getItem('fitflow_analytics_events') || '[]');
+			const equipmentEvents = events.filter(e => e.action === 'Equipment Changed' || e.action === 'Workout Generated');
+			
+			const equipmentCounts = {};
+			equipmentEvents.forEach(event => {
+				const equipment = event.details.equipment || event.details.to;
+				if (equipment && Array.isArray(equipment)) {
+					equipment.forEach(eq => {
+						equipmentCounts[eq] = (equipmentCounts[eq] || 0) + 1;
+					});
+				}
+			});
+			
+			const mostUsed = Object.keys(equipmentCounts).reduce((a, b) => 
+				equipmentCounts[a] > equipmentCounts[b] ? a : b, 'Bodyweight');
+			
+			return mostUsed;
+		}
+		
+		getJoinDate() {
+			const events = JSON.parse(localStorage.getItem('fitflow_analytics_events') || '[]');
+			if (events.length === 0) return new Date().toISOString();
+			
+			const firstEvent = events.reduce((earliest, current) => 
+				new Date(current.timestamp) < new Date(earliest.timestamp) ? current : earliest);
+			
+			return firstEvent.timestamp;
+		}
+		
+		getTotalWorkouts() {
+			const events = JSON.parse(localStorage.getItem('fitflow_analytics_events') || '[]');
+			return events.filter(e => e.action === 'Workout Generated').length;
+		}
+		
+		processWorkoutEvents(events) {
+			const workoutEvents = events.filter(e => e.action === 'Workout Generated');
+			return workoutEvents.map(event => ({
+				id: event.id,
+				userId: event.userId,
+				pattern: event.details.pattern,
+				duration: event.details.duration,
+				equipment: event.details.equipment,
+				fitnessLevel: event.details.fitnessLevel,
+				timestamp: event.timestamp,
+				completed: events.some(e => 
+					e.action === 'Workout Completed' && 
+					e.details.pattern === event.details.pattern &&
+					e.details.timestamp > event.details.timestamp
+				)
+			}));
+		}
+		
+		processSessionEvents(events) {
+			const sessionEvents = events.filter(e => e.action === 'Session Ended');
+			return sessionEvents.map(event => ({
+				id: event.id,
+				userId: event.userId,
+				startTime: new Date(event.timestamp - (event.details.duration * 60 * 1000)).toISOString(),
+				duration: event.details.duration,
+				pagesVisited: events.filter(e => e.action === 'Page Visited').length,
+				workoutGenerated: events.some(e => e.action === 'Workout Generated')
+			}));
+		}
+	}
+	
+	// Initialize analytics tracker
+	const analytics = new AnalyticsTracker();
+	
+	// Track session end when user leaves the page
+	window.addEventListener('beforeunload', () => {
+		analytics.trackSessionEnd();
+	});
 });
