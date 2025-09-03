@@ -111,8 +111,10 @@ lsof -ti:5173 | xargs kill -9 2>/dev/null || echo "No existing server found"
 
 # Start the local server with better error handling
 print_status $BLUE "🚀 Starting local server on http://localhost:5173..."
-python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
+print_status $YELLOW "📁 Serving from src/ directory (where your workout generator is located)"
+cd src && python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
 SERVER_PID=$!
+cd ..
 
 # Wait longer for server to fully start and be ready to accept connections
 print_status $YELLOW "⏳ Waiting for server to be ready..."
@@ -166,8 +168,9 @@ while true; do
             print_status $BLUE "🔄 Restarting server..."
             kill $SERVER_PID 2>/dev/null
             sleep 2
-            python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
+            cd src && python3 -m http.server 5173 --bind 127.0.0.1 >/dev/null 2>&1 &
             SERVER_PID=$!
+            cd ..
             sleep 5
             print_status $GREEN "✅ Server restarted on http://localhost:5173"
             print_status $BLUE "🌐 Please review the changes again"
