@@ -22,9 +22,14 @@ const exercises = [
         name: "Leg Swings", 
         description: "Hold onto a wall or sturdy surface for balance. Swing one leg forward and back in a controlled motion, keeping the movement smooth. Do 10-15 swings per leg, then switch. ⚠️ DO: Keep upper body stable, swing from hip joint. DON'T: Swing too fast or let momentum take over. Stop if you feel hip or knee pain.", 
         equipment: "Bodyweight", 
-        level: ["Beginner", "Intermediate", "Advanced"], 
+        level: "Beginner", 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        alternatives: ["Hip Circles", "Ankle Rotations", "Marching in Place"],
+        difficulty: 1,
+        equipment_needed: ["none"],
+        muscle_groups: ["quadriceps", "hamstrings", "glutes"],
+        injury_safe: ["knee_pain", "hip_pain"]
     },
     { 
         name: "Jumping Jacks", 
@@ -176,17 +181,27 @@ const exercises = [
         name: "Squats", 
         description: "Stand with feet shoulder-width apart, toes slightly out. Push hips back and lower as if sitting in chair. Keep chest up, knees over toes. Push through heels to stand. ⚠️ DO: Keep chest up, push knees out, go to parallel or higher. DON'T: Let knees cave inward, round back, or go too deep if you have knee issues.", 
         equipment: "Bodyweight", 
-        level: ["Beginner", "Intermediate", "Advanced"], 
+        level: "Intermediate", 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        alternatives: ["Wall Sits", "Chair Squats", "Glute Bridges"],
+        difficulty: 2,
+        equipment_needed: ["none"],
+        muscle_groups: ["quadriceps", "glutes", "hamstrings"],
+        injury_safe: ["knee_pain", "back_pain"]
     },
     { 
         name: "Push-ups", 
         description: "Start in plank position, hands slightly wider than shoulders. Lower chest toward floor, keeping body straight. Push back up to start. Beginners: keep knees on ground. ⚠️ DO: Keep body straight, lower chest not head, breathe rhythmically. DON'T: Let hips sag, touch floor with face, or hold breath.", 
         equipment: "Bodyweight", 
-        level: ["Beginner", "Intermediate", "Advanced"], 
+        level: "Intermediate", 
         muscle: "Chest", 
-        type: "main" 
+        type: "main",
+        alternatives: ["Wall Push-ups", "Knee Push-ups", "Incline Push-ups"],
+        difficulty: 2,
+        equipment_needed: ["none"],
+        muscle_groups: ["chest", "triceps", "shoulders"],
+        injury_safe: ["shoulder_pain", "wrist_pain"]
     },
     { 
         name: "Lunges", 
@@ -1818,6 +1833,49 @@ function generateRandomSet(exerciseList, count) {
 			});
 			
 			return enhancedWorkout;
+		}
+		
+		// --- Smart Substitution Demo Function ---
+		function testSmartSubstitution() {
+			// Create a sample workout to demonstrate substitutions
+			const sampleExercises = [
+				exercises.find(ex => ex.name === "Squats"),
+				exercises.find(ex => ex.name === "Push-ups"),
+				exercises.find(ex => ex.name === "Leg Swings")
+			].filter(Boolean);
+			
+			if (sampleExercises.length === 0) {
+				showNotification('❌ Sample exercises not found. Please refresh and try again.', 'error');
+				return;
+			}
+			
+			// Create a simple workout
+			appState.warmup = [sampleExercises[2]]; // Leg Swings
+			appState.main = [sampleExercises[0], sampleExercises[1]]; // Squats, Push-ups
+			appState.cooldown = [];
+			
+			// Build sequence
+			buildSequence();
+			
+			// Apply smart substitutions
+			const userPreferences = {
+				availableEquipment: ["none"], // Bodyweight only
+				fitnessLevel: "Beginner", // Force beginner level for demo
+				injuryLimitations: []
+			};
+			
+			// Enhance workout with smart substitutions
+			appState.sequence = enhanceWorkoutWithSubstitutions(appState.sequence, userPreferences);
+			
+			// Show overview
+			renderOverview();
+			attachOverviewHandlers();
+			
+			// Show success message
+			showNotification('🧠 Smart substitution demo created! Check the workout overview for alternatives.', 'success');
+			
+			// Switch to overview screen
+			toggleScreens({ overview: true, player: false, plan: false });
 		}
 		
 		// --- Smart Substitution UI Functions ---
