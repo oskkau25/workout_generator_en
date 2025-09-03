@@ -27,36 +27,36 @@ jobs:
         
     - name: 🧪 Run Enhanced Test Pipeline
       run: |
-        python automated_test_pipeline.py --enhanced
+        python ci-cd/automated_test_pipeline.py --enhanced
         
     - name: 📊 Upload test results
       uses: actions/upload-artifact@v3
       with:
         name: test-results
         path: |
-          automated_test_results.json
-          performance_report.json
-          test_pipeline.log
+          reports/test_results/automated_test_results.json
+          reports/test_results/performance_report.json
+          reports/logs/test_pipeline.log
           
     - name: 📈 Generate test summary
       run: |
         echo "## 🧪 Enhanced Test Results" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        if [ -f "automated_test_results.json" ]; then
+        if [ -f "reports/test_results/automated_test_results.json" ]; then
           echo "### 📊 Overall Status" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status**: $(jq -r '.overall_status' automated_test_results.json)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Success Rate**: $(jq -r '.summary.success_rate' automated_test_results.json)%" >> $GITHUB_STEP_SUMMARY
-          echo "- **Total Tests**: $(jq -r '.summary.total_tests' automated_test_results.json)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: $(jq -r '.overall_status' reports/test_results/automated_test_results.json)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Success Rate**: $(jq -r '.summary.success_rate' reports/test_results/automated_test_results.json)%" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Tests**: $(jq -r '.summary.total_tests' reports/test_results/automated_test_results.json)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           echo "### 🔒 Security & Performance" >> $GITHUB_STEP_SUMMARY
-          echo "- **Security Score**: $(jq -r '.summary.security_score' automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
-          echo "- **Accessibility Score**: $(jq -r '.summary.accessibility_score' automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
-          echo "- **Performance Score**: $(jq -r '.summary.performance_metrics.performance_score' automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security Score**: $(jq -r '.summary.security_score' reports/test_results/automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
+          echo "- **Accessibility Score**: $(jq -r '.summary.accessibility_score' reports/test_results/automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
+          echo "- **Performance Score**: $(jq -r '.summary.performance_metrics.performance_score' reports/test_results/automated_test_results.json)/100" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           echo "### 💡 Recommendations" >> $GITHUB_STEP_SUMMARY
-          jq -r '.summary.recommendations[]' automated_test_results.json | while read line; do
+          jq -r '.summary.recommendations[]' reports/test_results/automated_test_results.json | while read line; do
             echo "- $line" >> $GITHUB_STEP_SUMMARY
           done
         fi
@@ -115,20 +115,20 @@ jobs:
         echo "## 📦 Bundle Analysis" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
-        if [ -f "script.js" ]; then
-          JS_SIZE=$(wc -c < script.js)
+        if [ -f "src/script.js" ]; then
+          JS_SIZE=$(wc -c < src/script.js)
           JS_SIZE_KB=$((JS_SIZE / 1024))
           echo "- **JavaScript**: ${JS_SIZE_KB}KB" >> $GITHUB_STEP_SUMMARY
         fi
         
-        if [ -f "index.html" ]; then
-          HTML_SIZE=$(wc -c < index.html)
+        if [ -f "src/index.html" ]; then
+          HTML_SIZE=$(wc -c < src/index.html)
           HTML_SIZE_KB=$((HTML_SIZE / 1024))
           echo "- **HTML**: ${HTML_SIZE_KB}KB" >> $GITHUB_STEP_SUMMARY
         fi
         
-        if [ -f "dashboard.html" ]; then
-          DASH_SIZE=$(wc -c < dashboard.html)
+        if [ -f "src/dashboard.html" ]; then
+          DASH_SIZE=$(wc -c < src/dashboard.html)
           DASH_SIZE_KB=$((DASH_SIZE / 1024))
           echo "- **Dashboard**: ${DASH_SIZE_KB}KB" >> $GITHUB_STEP_SUMMARY
         fi
@@ -138,8 +138,8 @@ jobs:
       with:
         name: performance-data
         path: |
-          performance_report.json
-          automated_test_results.json
+          reports/test_results/performance_report.json
+          reports/test_results/automated_test_results.json
           
   accessibility-check:
     name: ♿ Accessibility Check
@@ -166,21 +166,21 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         
         # Check for ARIA labels
-        if grep -q "aria-label" index.html; then
+        if grep -q "aria-label" src/index.html; then
           echo "✅ ARIA labels found" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ No ARIA labels found" >> $GITHUB_STEP_SUMMARY
         fi
         
         # Check for roles
-        if grep -q "role=" index.html; then
+        if grep -q "role=" src/index.html; then
           echo "✅ HTML roles defined" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ No HTML roles defined" >> $GITHUB_STEP_SUMMARY
         fi
         
         # Check for tabindex
-        if grep -q "tabindex=" index.html; then
+        if grep -q "tabindex=" src/index.html; then
           echo "✅ Tabindex attributes found" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ No tabindex attributes found" >> $GITHUB_STEP_SUMMARY

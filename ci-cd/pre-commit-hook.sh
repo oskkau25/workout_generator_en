@@ -32,7 +32,7 @@ print_section() {
 }
 
 # Check if we're in the right directory
-if [ ! -f "automated_test_pipeline.py" ]; then
+if [ ! -f "ci-cd/automated_test_pipeline.py" ]; then
     print_status $RED "❌ Error: automated_test_pipeline.py not found!"
     print_status $RED "Please run this hook from the project root directory."
     exit 1
@@ -45,7 +45,7 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 # Check if required files exist
-required_files=("script.js" "index.html" "requirements.txt")
+required_files=("src/script.js" "src/index.html" "ci-cd/requirements.txt")
 missing_files=()
 
 for file in "${required_files[@]}"; do
@@ -71,14 +71,14 @@ print_status $BLUE "Running enhanced pipeline with parallel execution and cachin
 # Set timeout for pipeline (8 minutes) - handle different systems
 if command -v gtimeout &> /dev/null; then
     # macOS with coreutils installed
-    gtimeout 480 python3 automated_test_pipeline.py --enhanced
+    gtimeout 480 python3 ci-cd/automated_test_pipeline.py --enhanced
 elif command -v timeout &> /dev/null; then
     # Linux systems
-    timeout 480 python3 automated_test_pipeline.py --enhanced
+    timeout 480 python3 ci-cd/automated_test_pipeline.py --enhanced
 else
     # macOS without coreutils - run without timeout
     print_status $YELLOW "⚠️  No timeout command available, running pipeline without timeout"
-    python3 automated_test_pipeline.py --enhanced
+    python3 ci-cd/automated_test_pipeline.py --enhanced
 fi
 
 # Check if pipeline completed successfully
@@ -86,12 +86,12 @@ if [ $? -eq 0 ]; then
     print_status $GREEN "✅ Enhanced pipeline completed successfully"
     
     # Check for performance report
-    if [ -f "performance_report.json" ]; then
+    if [ -f "reports/test_results/performance_report.json" ]; then
         print_status $PURPLE "📊 Performance report generated"
     fi
     
     # Check for cached results
-    if [ -f ".test_cache.pkl" ]; then
+    if [ -f "ci-cd/.test_cache.pkl" ]; then
         print_status $PURPLE "💾 Test cache updated for faster future runs"
     fi
 else

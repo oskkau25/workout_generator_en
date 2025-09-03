@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 class AutomatedTestPipeline:
     def __init__(self):
-        self.project_root = Path(__file__).parent
+        self.project_root = Path(__file__).parent.parent
         self.test_results = {
             'timestamp': datetime.now().isoformat(),
             'overall_status': 'PENDING',
@@ -97,7 +97,7 @@ class AutomatedTestPipeline:
         }
         
         # Initialize file hash tracking and cache
-        self.cache_file = self.project_root / '.test_cache.pkl'
+        self.cache_file = self.project_root / 'ci-cd' / '.test_cache.pkl'
         self.file_hashes = {}
         self.update_file_hashes()
     
@@ -157,9 +157,9 @@ class AutomatedTestPipeline:
         logger.info("🔍 Running Pre-flight Checks")
         
         required_files = [
-            'script.js',
-            'index.html',
-            'requirements.txt'
+            'src/script.js',
+            'src/index.html',
+            'ci-cd/requirements.txt'
         ]
         
         missing_files = []
@@ -179,7 +179,7 @@ class AutomatedTestPipeline:
         
         try:
             # Load centralized feature list
-            features_file = self.project_root / 'app_features.json'
+            features_file = self.project_root / 'ci-cd' / 'app_features.json'
             if not features_file.exists():
                 logger.warning("⚠️ app_features.json not found, falling back to hardcoded detection")
                 self._fallback_feature_detection()
@@ -188,8 +188,8 @@ class AutomatedTestPipeline:
             with open(features_file, 'r', encoding='utf-8') as f:
                 features_config = json.load(f)
             
-            js_path = self.project_root / 'script.js'
-            html_path = self.project_root / 'index.html'
+            js_path = self.project_root / 'src' / 'script.js'
+            html_path = self.project_root / 'src' / 'index.html'
             
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
@@ -247,8 +247,8 @@ class AutomatedTestPipeline:
     def _fallback_feature_detection(self):
         """Fallback feature detection when app_features.json is not available"""
         try:
-            js_path = self.project_root / 'script.js'
-            html_path = self.project_root / 'index.html'
+            js_path = self.project_root / 'src' / 'script.js'
+            html_path = self.project_root / 'src' / 'index.html'
             
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
@@ -291,7 +291,7 @@ class AutomatedTestPipeline:
     def save_pipeline_config(self, detected_features):
         """Save pipeline configuration to track feature evolution over time"""
         try:
-            config_file = self.project_root / 'pipeline_config.json'
+            config_file = self.project_root / 'config' / 'pipeline_config.json'
             
             # Load existing config if it exists
             existing_config = {}
@@ -331,7 +331,7 @@ class AutomatedTestPipeline:
         try:
             # Run the existing AI code review
             result = subprocess.run(
-                ['./run_ai_review.sh'],
+                ['./scripts/run_ai_review.sh'],
                 capture_output=True,
                 text=True,
                 cwd=self.project_root,
@@ -389,7 +389,7 @@ class AutomatedTestPipeline:
     def analyze_code_complexity(self):
         """Analyze code complexity and maintainability"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -423,7 +423,7 @@ class AutomatedTestPipeline:
     def analyze_security_patterns(self):
         """Analyze security patterns and vulnerabilities"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -448,7 +448,7 @@ class AutomatedTestPipeline:
     def analyze_performance_patterns(self):
         """Analyze performance patterns and optimization opportunities"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -467,7 +467,7 @@ class AutomatedTestPipeline:
     def analyze_accessibility(self):
         """Analyze accessibility patterns and ARIA usage"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
@@ -492,7 +492,7 @@ class AutomatedTestPipeline:
     def analyze_best_practices(self):
         """Analyze coding best practices and standards"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -519,7 +519,7 @@ class AutomatedTestPipeline:
         logger.info("🔍 Running Static Code Analysis")
         
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -717,7 +717,7 @@ class AutomatedTestPipeline:
     def test_html_structure(self):
         """Test basic HTML structure and accessibility"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
@@ -746,7 +746,7 @@ class AutomatedTestPipeline:
     def test_javascript_functionality(self):
         """Test JavaScript functionality and dependencies"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -775,7 +775,7 @@ class AutomatedTestPipeline:
     def test_form_interactions(self):
         """Test comprehensive form interaction logic"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -807,7 +807,7 @@ class AutomatedTestPipeline:
     def test_exercise_database(self):
         """Test exercise database completeness and structure"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -852,7 +852,7 @@ class AutomatedTestPipeline:
     def test_responsive_design(self):
         """Test responsive design implementation"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
@@ -883,16 +883,16 @@ class AutomatedTestPipeline:
         """Test analytics dashboard functionality and tracking"""
         try:
             # Check if dashboard files exist
-            dashboard_html = (self.project_root / 'dashboard.html').exists()
-            dashboard_js = (self.project_root / 'dashboard.js').exists()
+            dashboard_html = (self.project_root / 'src' / 'dashboard.html').exists()
+            dashboard_js = (self.project_root / 'src' / 'dashboard.js').exists()
             
             # Check main app for analytics integration
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
             # Check dashboard HTML for required elements
-            html_path = self.project_root / 'dashboard.html'
+            html_path = self.project_root / 'src' / 'dashboard.html'
             if dashboard_html:
                 with open(html_path, 'r', encoding='utf-8') as f:
                     html_content = f.read()
@@ -926,11 +926,11 @@ class AutomatedTestPipeline:
     def test_accessibility_features(self):
         """Test accessibility features and ARIA implementation"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -961,7 +961,7 @@ class AutomatedTestPipeline:
     def test_error_handling(self):
         """Test error handling and user feedback mechanisms"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -991,11 +991,11 @@ class AutomatedTestPipeline:
     def test_ui_performance(self):
         """Test UI performance and optimization"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
@@ -1032,11 +1032,11 @@ class AutomatedTestPipeline:
     def test_timing_functionality(self):
         """Test work and rest time slider functionality"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1070,11 +1070,11 @@ class AutomatedTestPipeline:
     def test_training_pattern_functionality(self):
         """Test training pattern selection and management functionality"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1109,7 +1109,7 @@ class AutomatedTestPipeline:
     def test_circuit_training_functionality(self):
         """Test circuit training workout generation and structure"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1138,7 +1138,7 @@ class AutomatedTestPipeline:
     def test_tabata_functionality(self):
         """Test Tabata interval workout generation and timing"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1167,7 +1167,7 @@ class AutomatedTestPipeline:
     def test_pyramid_training_functionality(self):
         """Test pyramid training workout generation and progression"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1197,7 +1197,7 @@ class AutomatedTestPipeline:
     def test_actual_functionality(self):
         """CRITICAL: Test actual application functionality and script dependencies"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
@@ -1226,7 +1226,7 @@ class AutomatedTestPipeline:
                 functionality_issues.append('Main script.js not included')
             
             # Check for form submission functionality and core functions
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             if js_path.exists():
                 with open(js_path, 'r', encoding='utf-8') as f:
                     js_content = f.read()
@@ -1262,7 +1262,7 @@ class AutomatedTestPipeline:
     def test_overview_and_player_ui(self):
         """Ensure overview and player containers and controls exist"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             tests = {
@@ -1289,7 +1289,7 @@ class AutomatedTestPipeline:
     def test_timer_and_pause_resume_presence(self):
         """Check that timers, phases, and pause logic exist in JS"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1315,10 +1315,10 @@ class AutomatedTestPipeline:
     def test_cues_and_preferences_presence(self):
         """Validate sound/vibration toggles and cue functions exist"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1343,10 +1343,10 @@ class AutomatedTestPipeline:
     def test_rest_overlay_presence(self):
         """Check for rest overlay markup and binding in JS"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1369,7 +1369,7 @@ class AutomatedTestPipeline:
     def test_keyboard_and_swipe_presence(self):
         """Validate keyboard shortcuts and swipe gesture hooks exist"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1393,10 +1393,10 @@ class AutomatedTestPipeline:
     def test_section_badge_presence(self):
         """Ensure section badge exists and is referenced in JS"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1416,10 +1416,10 @@ class AutomatedTestPipeline:
     def test_audio_init_and_sound_toggle(self):
         """Verify audio context init and sound toggle logic exist"""
         try:
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1441,7 +1441,7 @@ class AutomatedTestPipeline:
     def test_spoken_countdown_presence(self):
         """Check presence of spoken countdown and announcements"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             has_phase_check = ("appState.phase === 'work'" in js_content) or ("appState.phase === \"work\"" in js_content)
@@ -1466,7 +1466,7 @@ class AutomatedTestPipeline:
     def test_exhaustive_equipment_combinations(self):
         """Test that all equipment combinations can generate valid workout plans"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1567,7 +1567,7 @@ class AutomatedTestPipeline:
         
         try:
             # Load centralized feature list
-            features_file = self.project_root / 'app_features.json'
+            features_file = self.project_root / 'ci-cd' / 'app_features.json'
             if not features_file.exists():
                 logger.warning("⚠️ app_features.json not found, using fallback detection")
                 return self._fallback_dynamic_detection()
@@ -1575,8 +1575,8 @@ class AutomatedTestPipeline:
             with open(features_file, 'r', encoding='utf-8') as f:
                 features_config = json.load(f)
             
-            js_path = self.project_root / 'script.js'
-            html_path = self.project_root / 'index.html'
+            js_path = self.project_root / 'src' / 'script.js'
+            html_path = self.project_root / 'src' / 'index.html'
             
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
@@ -1628,8 +1628,8 @@ class AutomatedTestPipeline:
         logger.info("🔄 Using fallback dynamic feature detection")
         
         try:
-            js_path = self.project_root / 'script.js'
-            html_path = self.project_root / 'index.html'
+            js_path = self.project_root / 'src' / 'script.js'
+            html_path = self.project_root / 'src' / 'index.html'
             
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
@@ -1729,7 +1729,7 @@ class AutomatedTestPipeline:
     def test_exercise_swapping_functionality(self):
         """Test the new exercise swapping functionality"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1757,11 +1757,11 @@ class AutomatedTestPipeline:
     def test_smart_calculation_functionality(self):
         """Test smart calculation of training pattern settings based on workout duration"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
@@ -1814,11 +1814,11 @@ class AutomatedTestPipeline:
     def test_security_and_privacy_features(self):
         """Test comprehensive security and privacy features"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
@@ -1875,11 +1875,11 @@ class AutomatedTestPipeline:
     def test_user_account_system(self):
         """Test user account system functionality"""
         try:
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
-            html_path = self.project_root / 'index.html'
+            html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
@@ -1977,7 +1977,7 @@ class AutomatedTestPipeline:
             security_issues = []
             
             # Check for hardcoded API keys
-            js_path = self.project_root / 'script.js'
+            js_path = self.project_root / 'src' / 'script.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -2135,9 +2135,9 @@ class AutomatedTestPipeline:
         
         try:
             # Analyze bundle sizes
-            js_size = os.path.getsize(self.project_root / 'script.js')
-            html_size = os.path.getsize(self.project_root / 'index.html')
-            dashboard_size = os.path.getsize(self.project_root / 'dashboard.html')
+            js_size = os.path.getsize(self.project_root / 'src' / 'script.js')
+            html_size = os.path.getsize(self.project_root / 'src' / 'index.html')
+            dashboard_size = os.path.getsize(self.project_root / 'src' / 'dashboard.html')
             
             metrics['bundle_sizes'] = {
                 'javascript': {'size_kb': js_size / 1024, 'status': 'PASSED' if js_size < self.MAX_JS_SIZE else 'WARNING'},
@@ -2170,7 +2170,7 @@ class AutomatedTestPipeline:
         }
         
         try:
-            js_file = self.project_root / 'script.js'
+            js_file = self.project_root / 'src' / 'script.js'
             if js_file.exists():
                 with open(js_file, 'r', encoding='utf-8') as f:
                     content = f.read()
@@ -2208,7 +2208,7 @@ class AutomatedTestPipeline:
         
         try:
             # Check for security best practices
-            js_file = self.project_root / 'script.js'
+            js_file = self.project_root / 'src' / 'script.js'
             if js_file.exists():
                 with open(js_file, 'r', encoding='utf-8') as f:
                     content = f.read()
@@ -2243,7 +2243,7 @@ class AutomatedTestPipeline:
         score = 100
         
         try:
-            html_file = self.project_root / 'index.html'
+            html_file = self.project_root / 'src' / 'index.html'
             if html_file.exists():
                 with open(html_file, 'r', encoding='utf-8') as f:
                     content = f.read()
@@ -2302,7 +2302,7 @@ class AutomatedTestPipeline:
         """Save detailed test results with enhanced metrics"""
         try:
             # Save enhanced results
-            with open('automated_test_results.json', 'w') as f:
+            with open(self.project_root / 'reports' / 'test_results' / 'automated_test_results.json', 'w') as f:
                 json.dump(self.test_results, f, indent=2)
             
             # Save performance report
@@ -2315,10 +2315,10 @@ class AutomatedTestPipeline:
                 'recommendations': self.test_results['summary']['recommendations']
             }
             
-            with open('performance_report.json', 'w') as f:
+            with open(self.project_root / 'reports' / 'test_results' / 'performance_report.json', 'w') as f:
                 json.dump(performance_report, f, indent=2)
             
-            logger.info("💾 Detailed results saved to automated_test_results.json and performance_report.json")
+            logger.info("💾 Detailed results saved to reports/test_results/")
             
         except Exception as e:
             logger.error(f"Failed to save detailed results: {e}")
@@ -2552,7 +2552,7 @@ class AutomatedTestPipeline:
         key_files = ['script.js', 'index.html', 'dashboard.html', 'dashboard.js']
         
         for file in key_files:
-            file_path = self.project_root / file
+            file_path = self.project_root / 'src' / file
             if file_path.exists():
                 with open(file_path, 'rb') as f:
                     content = f.read()
@@ -2582,7 +2582,7 @@ class AutomatedTestPipeline:
     def save_results(self):
         """Save test results to file"""
         try:
-            results_file = self.project_root / 'automated_test_results.json'
+            results_file = self.project_root / 'reports' / 'test_results' / 'automated_test_results.json'
             with open(results_file, 'w', encoding='utf-8') as f:
                 json.dump(self.test_results, f, indent=2, ensure_ascii=False)
             
