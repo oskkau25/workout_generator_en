@@ -219,22 +219,43 @@
       },
       "test_function": "test_smart_calculation_functionality",
       "category": "workout_customization"
+    },
+    "smart_exercise_substitution": {
+      "name": "Smart Exercise Substitution",
+      "description": "AI-powered exercise alternatives based on fitness level, equipment, and workout goals",
+      "detection_patterns": {
+        "html": ["Smart Exercise Substitution", "🧠 Smart Alternative", "AI-POWERED"],
+        "js": ["findExerciseAlternatives", "suggestExerciseSubstitution", "enhanceWorkoutWithSubstitutions"]
+      },
+      "test_function": "test_smart_exercise_substitution",
+      "category": "workout_customization"
+    },
+    "modular_structure": {
+      "name": "Modular JavaScript Structure",
+      "description": "Modern ES6 module-based architecture for better maintainability and scalability",
+      "detection_patterns": {
+        "html": ["type=\"module\"", "js/main.js", "nomodule"],
+        "js": ["import", "export", "FitFlowApp"]
+      },
+      "test_function": "test_modular_structure",
+      "category": "architecture"
     }
   },
   "metadata": {
-    "version": "2.0",
-    "last_updated": "2025-09-03T15:00:00Z",
-    "total_features": 23,
+    "version": "2.1",
+    "last_updated": "2025-09-04T09:30:00Z",
+    "total_features": 25,
     "categories": {
       "core_workout": 4,
       "user_experience": 4,
       "ui_components": 2,
       "accessibility": 2,
-      "workout_customization": 6,
+      "workout_customization": 7,
       "robustness": 1,
       "performance": 1,
       "analytics": 1,
       "security": 1,
+      "architecture": 1,
       "other": 1
     },
     "pipeline_integration": {

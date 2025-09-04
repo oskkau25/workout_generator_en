@@ -569,6 +569,11 @@
                     </div>
                 </div>
 
+                <!-- Generated Workout -->
+                <div id="workout-section" class="hidden">
+                    <!-- Workout content will be dynamically generated here -->
+                </div>
+
                 <!-- No Results -->
                 <div id="no-results" class="hidden text-center py-12">
                     <div class="card max-w-md mx-auto">
@@ -992,6 +997,14 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Modular JavaScript Structure -->
+    <script type="module" src="js/main.js"></script>
+    
+    <!-- Fallback for browsers that don't support ES6 modules -->
+    <script nomodule>
+        console.warn('ES6 modules not supported. Please use a modern browser.');
+        // Fallback to original script.js for older browsers
+        document.write('<script src="script.js"><\/script>');
+    </script>
 </body>
 </html>

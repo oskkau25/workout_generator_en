@@ -1811,6 +1811,161 @@ class AutomatedTestPipeline:
         except Exception as e:
             return {'status': 'FAILED', 'details': str(e), 'feature': 'Smart Calculation'}
     
+    def test_smart_exercise_substitution(self):
+        """Test Smart Exercise Substitution functionality"""
+        try:
+            # Check both modular and original structure
+            smart_substitution_path = self.project_root / 'src' / 'js' / 'features' / 'smart-substitution.js'
+            js_path = self.project_root / 'src' / 'script.js'
+            
+            js_content = ""
+            if smart_substitution_path.exists():
+                with open(smart_substitution_path, 'r', encoding='utf-8') as f:
+                    js_content += f.read()
+            
+            if js_path.exists():
+                with open(js_path, 'r', encoding='utf-8') as f:
+                    js_content += f.read()
+            
+            html_path = self.project_root / 'src' / 'index.html'
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            tests = {
+                # Core Smart Substitution Functions
+                'has_find_alternatives_function': 'findExerciseAlternatives' in js_content,
+                'has_suggest_substitution_function': 'suggestExerciseSubstitution' in js_content,
+                'has_enhance_workout_function': 'enhanceWorkoutWithSubstitutions' in js_content,
+                'has_get_difficulty_function': 'getDifficultyLevel' in js_content,
+                
+                # Exercise Database Enhancement
+                'has_alternatives_property': 'alternatives:' in js_content,
+                'has_difficulty_property': 'difficulty:' in js_content,
+                'has_equipment_needed_property': 'equipment_needed:' in js_content,
+                'has_muscle_groups_property': 'muscle_groups:' in js_content,
+                'has_injury_safe_property': 'injury_safe:' in js_content,
+                
+                # UI Integration
+                'has_smart_alternative_buttons': '🧠 Smart Alternative' in html_content,
+                'has_ai_powered_indicator': 'AI-POWERED' in html_content,
+                'has_smart_substitution_section': 'Smart Exercise Substitution' in html_content,
+                'has_whats_new_section': 'What\'s New in FitFlow' in html_content,
+                
+                # Substitution Logic
+                'has_equipment_matching': 'equipment_needed' in js_content and 'includes' in js_content,
+                'has_difficulty_matching': 'difficulty' in js_content and 'level' in js_content,
+                'has_muscle_group_matching': 'muscle_groups' in js_content and 'some' in js_content,
+                'has_injury_safety_check': 'injury_safe' in js_content and 'true' in js_content,
+                
+                # Integration with Workout Generation
+                'has_workout_enhancement': 'enhanceWorkoutWithSubstitutions' in js_content and 'generateWorkout' in js_content,
+                'has_automatic_application': 'automatically applied' in html_content,
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests,
+                'feature': 'Smart Exercise Substitution'
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e), 'feature': 'Smart Exercise Substitution'}
+    
+    def test_modular_structure(self):
+        """Test the new modular JavaScript structure"""
+        try:
+            # Check modular structure exists
+            js_dir = self.project_root / 'src' / 'js'
+            core_dir = js_dir / 'core'
+            features_dir = js_dir / 'features'
+            utils_dir = js_dir / 'utils'
+            
+            # Check main files exist
+            main_js = js_dir / 'main.js'
+            exercise_db = core_dir / 'exercise-database.js'
+            workout_gen = core_dir / 'workout-generator.js'
+            smart_sub = features_dir / 'smart-substitution.js'
+            user_acc = features_dir / 'user-accounts.js'
+            constants = utils_dir / 'constants.js'
+            
+            tests = {
+                # Directory structure
+                'has_js_directory': js_dir.exists(),
+                'has_core_directory': core_dir.exists(),
+                'has_features_directory': features_dir.exists(),
+                'has_utils_directory': utils_dir.exists(),
+                
+                # Core modules
+                'has_main_js': main_js.exists(),
+                'has_exercise_database': exercise_db.exists(),
+                'has_workout_generator': workout_gen.exists(),
+                
+                # Feature modules
+                'has_smart_substitution': smart_sub.exists(),
+                'has_user_accounts': user_acc.exists(),
+                
+                # Utility modules
+                'has_constants': constants.exists(),
+            }
+            
+            # Check module content if files exist
+            if main_js.exists():
+                with open(main_js, 'r', encoding='utf-8') as f:
+                    main_content = f.read()
+                tests.update({
+                    'main_has_imports': 'import' in main_content,
+                    'main_has_exports': 'export' in main_content,
+                    'main_has_fitflow_app': 'FitFlowApp' in main_content,
+                    'main_has_global_exports': 'window.' in main_content,
+                })
+            
+            if exercise_db.exists():
+                with open(exercise_db, 'r', encoding='utf-8') as f:
+                    db_content = f.read()
+                tests.update({
+                    'db_has_export': 'export const exercises' in db_content,
+                    'db_has_exercise_data': 'Arm Circles' in db_content,
+                    'db_has_helpers': 'exerciseDatabase' in db_content,
+                })
+            
+            if workout_gen.exists():
+                with open(workout_gen, 'r', encoding='utf-8') as f:
+                    gen_content = f.read()
+                tests.update({
+                    'gen_has_generate_function': 'generateWorkout' in gen_content,
+                    'gen_has_form_handler': 'handleFormSubmission' in gen_content,
+                    'gen_has_validation': 'validateForm' in gen_content,
+                })
+            
+            # Check HTML integration
+            html_path = self.project_root / 'src' / 'index.html'
+            if html_path.exists():
+                with open(html_path, 'r', encoding='utf-8') as f:
+                    html_content = f.read()
+                tests.update({
+                    'html_has_module_import': 'type="module"' in html_content,
+                    'html_has_main_js': 'js/main.js' in html_content,
+                    'html_has_fallback': 'nomodule' in html_content,
+                    'html_has_workout_section': 'workout-section' in html_content,
+                })
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests,
+                'feature': 'Modular Structure'
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e), 'feature': 'Modular Structure'}
+    
     def test_security_and_privacy_features(self):
         """Test comprehensive security and privacy features"""
         try:
