@@ -239,12 +239,23 @@
       },
       "test_function": "test_modular_structure",
       "category": "architecture"
+    },
+    "dynamic_e2e_smoke": {
+      "name": "Dynamic E2E Smoke Tests",
+      "description": "End-to-end smoke tests using Playwright for critical user flows",
+      "detection_patterns": {
+        "html": ["workout-form", "generate-btn", "workout-section"],
+        "js": ["handleFormSubmission", "generateWorkout", "showSubstitutionChooser"]
+      },
+      "test_function": "test_dynamic_e2e_smoke",
+      "category": "testing",
+      "required_for_release": true
     }
   },
   "metadata": {
     "version": "2.1",
     "last_updated": "2025-09-04T09:30:00Z",
-    "total_features": 25,
+    "total_features": 26,
     "categories": {
       "core_workout": 4,
       "user_experience": 4,
@@ -256,6 +267,7 @@
       "analytics": 1,
       "security": 1,
       "architecture": 1,
+      "testing": 1,
       "other": 1
     },
     "pipeline_integration": {
