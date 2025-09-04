@@ -258,6 +258,119 @@ export function showSubstitutionDetails(originalName, alternativeName, reason) {
     document.body.appendChild(modal);
 }
 
+/**
+ * Open chooser modal with top alternatives and allow swapping in-place
+ * @param {number} exerciseIndex - Index in currentWorkout array
+ */
+export function showSubstitutionChooser(exerciseIndex) {
+    try {
+        const workout = window.currentWorkout || [];
+        const target = workout[exerciseIndex];
+        if (!target) return;
+
+        // brief description helper (match list view behavior)
+        const brief = (t='') => {
+            const warn = t.indexOf('⚠️');
+            const base = warn > -1 ? t.slice(0, warn).trim() : (t || '').trim();
+            const m = base.match(/^[^.!?]{20,200}[.!?]/);
+            if (m) return m[0].trim();
+            return base.length > 180 ? base.slice(0, 177).trim() + '…' : base;
+        };
+
+        const prefs = {
+            equipment: [target.equipment],
+            fitnessLevel: Array.isArray(target.level) ? (target.level.includes('Advanced') ? 'Advanced' : target.level[0] || 'Intermediate') : (target.level || 'Intermediate')
+        };
+        const alternatives = findExerciseAlternatives(target, prefs).slice(0, 6);
+
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-white rounded-lg p-6 max-w-xl w-full mx-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-fit-dark">Choose a Smart Alternative</h3>
+                    <button class="text-gray-500 hover:text-gray-700" data-action="close">✕</button>
+                </div>
+                <div class="mb-4">
+                    <div class="text-sm text-fit-secondary">Original: <span class="font-medium">${target.name}</span></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    ${alternatives.map((alt, i) => `
+                        <button class="p-3 text-left rounded border hover:border-fit-primary transition-colors" data-action="choose" data-idx="${i}">
+                            <div class="font-medium text-fit-dark">${alt.name}</div>
+                            <div class="text-xs text-fit-secondary">${brief(alt.description || '')}</div>
+                            <div class="mt-1 flex justify-between text-[11px] text-fit-secondary">
+                                <span>Eq: ${alt.equipment}</span>
+                                <span>Lvl: ${Array.isArray(alt.level) ? alt.level.join(', ') : alt.level}</span>
+                            </div>
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="mt-5 text-right">
+                    <button class="px-4 py-2 bg-gray-100 rounded" data-action="close">Cancel</button>
+                </div>
+            </div>
+        `;
+        
+        modal.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const action = btn.getAttribute('data-action');
+            if (action === 'close') {
+                modal.remove();
+            }
+            if (action === 'choose') {
+                const altIdx = parseInt(btn.getAttribute('data-idx'), 10);
+                const chosen = alternatives[altIdx];
+                if (chosen) {
+                    applyExerciseSwap(exerciseIndex, chosen);
+                }
+                modal.remove();
+            }
+        });
+
+        document.body.appendChild(modal);
+    } catch (e) {
+        console.error('Substitution chooser error', e);
+    }
+}
+
+/**
+ * Apply swap into currentWorkout and update DOM card
+ */
+function applyExerciseSwap(index, replacement) {
+    if (!window.currentWorkout || !window.currentWorkout[index]) return;
+    const old = window.currentWorkout[index];
+    window.currentWorkout[index] = {
+        ...replacement,
+        // preserve any runtime flags that UI expects
+        type: old.type || replacement.type || 'main'
+    };
+
+    const card = document.getElementById(`exercise-item-${index}`);
+    if (!card) return;
+    const setText = (selector, text) => {
+        const el = card.querySelector(selector);
+        if (el) el.textContent = text;
+    };
+    setText('[data-field="name"]', replacement.name);
+    // brief description similar to list rendering
+    const brief = (t='') => {
+        const warn = t.indexOf('⚠️');
+        const base = warn > -1 ? t.slice(0, warn).trim() : t.trim();
+        const m = base.match(/^[^.!?]{20,200}[.!?]/);
+        if (m) return m[0].trim();
+        return base.length > 180 ? base.slice(0, 177).trim() + '…' : base;
+    };
+    setText('[data-field="description"]', brief(replacement.description || ''));
+    setText('[data-field="level"]', Array.isArray(replacement.level) ? replacement.level.join(', ') : (replacement.level || ''));
+    setText('[data-field="equipment"]', `Equipment: ${replacement.equipment || ''}`);
+    setText('[data-field="muscle"]', `Muscle: ${replacement.muscle || ''}`);
+}
+
+// Expose chooser globally for onclick usage
+window.showSubstitutionChooser = showSubstitutionChooser;
+
 // Make functions available globally for backward compatibility
 window.findExerciseAlternatives = findExerciseAlternatives;
 window.suggestExerciseSubstitution = suggestExerciseSubstitution;

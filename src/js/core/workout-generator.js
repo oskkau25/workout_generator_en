@@ -333,6 +333,10 @@ export function handleFormSubmission(event) {
 function displayWorkout(workoutResult) {
     const { workout, duration, workTime, restTime, trainingPattern, metadata } = workoutResult;
     
+    // Persist current workout in memory for interactive operations (e.g., swapping)
+    window.currentWorkout = workout;
+    window.currentWorkoutMeta = metadata;
+
     // Hide form and show workout
     const form = document.getElementById('workout-form');
     const workoutSection = document.getElementById('workout-section');
@@ -345,6 +349,16 @@ function displayWorkout(workoutResult) {
     
     // Scroll to workout
     workoutSection?.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Create a brief description for list view (first sentence / before warnings)
+function brief(text = '') {
+    if (!text) return '';
+    const warn = text.indexOf('⚠️');
+    const base = warn > -1 ? text.slice(0, warn).trim() : text.trim();
+    const m = base.match(/^[^.!?]{20,200}[.!?]/);
+    if (m) return m[0].trim();
+    return base.length > 180 ? base.slice(0, 177).trim() + '…' : base;
 }
 
 /**
@@ -363,23 +377,23 @@ function generateWorkoutHTML(workout, metadata) {
         
         const hasSubstitution = exercise._hasSubstitution && exercise._substitution;
         const substitutionButton = hasSubstitution ? 
-            `<button onclick="showSubstitutionDetails('${exercise.name}', '${exercise._substitution.name}', '${exercise._substitutionReason}')" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
+            `<button onclick="showSubstitutionChooser(${index})" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
                 🧠 Smart Alternative
             </button>` : '';
         
         return `
-            <div class="exercise-item p-4 bg-white rounded-lg border border-gray-200 hover:border-fit-primary transition-colors">
+            <div id="exercise-item-${index}" class="exercise-item p-4 bg-white rounded-lg border border-gray-200 hover:border-fit-primary transition-colors" data-index="${index}">
                 <div class="flex justify-between items-start mb-2">
-                    <h4 class="font-semibold text-fit-dark">${exercise.name}</h4>
+                    <h4 class="font-semibold text-fit-dark" data-field="name">${exercise.name}</h4>
                     <div class="flex space-x-2">
                         ${substitutionButton}
-                        <span class="px-2 py-1 bg-fit-primary text-white text-xs rounded-full">${exercise.level}</span>
+                        <span class="px-2 py-1 bg-fit-primary text-white text-xs rounded-full" data-field="level">${exercise.level}</span>
                     </div>
                 </div>
-                <p class="text-fit-secondary text-sm mb-2">${exercise.description}</p>
+                <p class="text-fit-secondary text-sm mb-2" data-field="description">${brief(exercise.description)}</p>
                 <div class="flex justify-between items-center text-xs text-fit-secondary">
-                    <span>Equipment: ${exercise.equipment}</span>
-                    <span>Muscle: ${exercise.muscle}</span>
+                    <span data-field="equipment">Equipment: ${exercise.equipment}</span>
+                    <span data-field="muscle">Muscle: ${exercise.muscle}</span>
                 </div>
             </div>
         `;

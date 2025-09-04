@@ -146,11 +146,15 @@ class FitFlowApp {
      * Setup event listeners for modular functionality
      */
     setupEventListeners() {
-        // Form submission event listener
-        document.addEventListener('DOMContentLoaded', () => {
+        const attachAll = () => {
             this.setupFormListeners();
             this.setupUserAccountListeners();
-        });
+        };
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            attachAll();
+        } else {
+            document.addEventListener('DOMContentLoaded', attachAll);
+        }
     }
     
     /**
@@ -199,16 +203,26 @@ class FitFlowApp {
      * Show login modal
      */
     showLoginModal() {
-        // This will be implemented when we extract the UI modules
-        console.log('🔐 Show login modal');
+        const modal = document.getElementById('login-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.removeAttribute('aria-hidden');
+        } else {
+            console.log('🔐 Show login modal');
+        }
     }
     
     /**
      * Show register modal
      */
     showRegisterModal() {
-        // This will be implemented when we extract the UI modules
-        console.log('📝 Show register modal');
+        const modal = document.getElementById('register-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.removeAttribute('aria-hidden');
+        } else {
+            console.log('📝 Show register modal');
+        }
     }
     
     /**
