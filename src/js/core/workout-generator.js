@@ -5,6 +5,7 @@
 
 import { exercises } from './exercise-database.js';
 import { enhanceWorkoutWithSubstitutions } from '../features/smart-substitution.js';
+import { initializeWorkoutPlayer } from '../features/workout-player.js';
 
 /**
  * Main workout generation function
@@ -473,12 +474,23 @@ window.generateNewWorkout = function() {
 };
 
 /**
- * Start workout (placeholder for workout player)
+ * Start workout using the workout player
  */
 window.startWorkout = function() {
     console.log('🏃 Starting workout...');
-    // This will be implemented when we extract the workout player
-    alert('Workout player will be implemented in the next module extraction!');
+    
+    // Get current workout data from global state
+    if (window.currentWorkout && window.currentWorkout.length > 0) {
+        const workoutData = {
+            sequence: window.currentWorkout,
+            workTime: 45, // Default work time
+            restTime: 15  // Default rest time
+        };
+        
+        initializeWorkoutPlayer(workoutData);
+    } else {
+        alert('No workout available. Please generate a workout first.');
+    }
 };
 
 // Make functions available globally for backward compatibility

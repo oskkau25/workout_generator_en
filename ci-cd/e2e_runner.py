@@ -108,6 +108,52 @@ def run_dynamic_smoke() -> Dict[str, Any]:
                 # At least one exercise item
                 checks['has_exercise_items'] = page.locator('[id^="exercise-item-"]').count() > 0
 
+                # Test: Accessibility with axe-core
+                try:
+                    # Inject axe-core
+                    page.add_script_tag(url="https://cdn.jsdelivr.net/npm/axe-core@4.8.2/axe.min.js")
+                    
+                    # Run accessibility audit
+                    accessibility_results = page.evaluate("""
+                        () => {
+                            return new Promise((resolve) => {
+                                axe.run().then(results => {
+                                    resolve({
+                                        violations: results.violations.length,
+                                        passes: results.passes.length,
+                                        incomplete: results.incomplete.length,
+                                        details: results.violations.map(v => ({
+                                            id: v.id,
+                                            impact: v.impact,
+                                            description: v.description,
+                                            nodes: v.nodes.length
+                                        }))
+                                    });
+                                }).catch(err => {
+                                    resolve({error: err.message});
+                                });
+                            });
+                        }
+                    """)
+                    
+                    if accessibility_results.get('error'):
+                        checks['accessibility_audit'] = False
+                        logging.warning(f"⚠️ Accessibility audit failed: {accessibility_results['error']}")
+                    else:
+                        violations = accessibility_results.get('violations', 0)
+                        passes = accessibility_results.get('passes', 0)
+                        checks['accessibility_audit'] = violations == 0  # Pass if no violations
+                        logging.info(f"✅ Accessibility audit: {passes} passes, {violations} violations")
+                        
+                        if violations > 0:
+                            logging.warning(f"⚠️ Found {violations} accessibility violations")
+                            for violation in accessibility_results.get('details', [])[:3]:  # Show first 3
+                                logging.warning(f"   - {violation['id']}: {violation['description']} ({violation['impact']} impact)")
+                        
+                except Exception as e:
+                    checks['accessibility_audit'] = False
+                    logging.warning(f"⚠️ Accessibility audit skipped: {e}")
+
             browser.close()
     except Exception as e:
         return {"status": "FAILED", "details": f"E2E error: {e}", "checks": checks}

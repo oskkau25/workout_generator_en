@@ -25,6 +25,7 @@ import {
 } from './features/smart-substitution.js';
 
 import { UserAccount, userAccount } from './features/user-accounts.js';
+import { setupWorkoutPlayerListeners } from './features/workout-player.js';
 
 // Import UI modules (to be created)
 // import { WorkoutUI } from './ui/workout-ui.js';
@@ -147,8 +148,9 @@ class FitFlowApp {
      */
     setupEventListeners() {
         const attachAll = () => {
-            this.setupFormListeners();
-            this.setupUserAccountListeners();
+                    this.setupFormListeners();
+        this.setupUserAccountListeners();
+        this.setupWorkoutPlayerListeners();
         };
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
             attachAll();
@@ -240,6 +242,14 @@ class FitFlowApp {
         userAccount.logout();
         this.updateUserInterface();
         console.log('👋 User logged out');
+    }
+    
+    /**
+     * Setup workout player listeners
+     */
+    setupWorkoutPlayerListeners() {
+        setupWorkoutPlayerListeners();
+        console.log('🎮 Workout player listeners attached');
     }
     
     /**
