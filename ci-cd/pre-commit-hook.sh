@@ -148,13 +148,26 @@ if ! curl -s http://localhost:5173 >/dev/null; then
 fi
 
 print_status $GREEN "✅ Local server is running and responding"
-print_status $BLUE "🌐 Open http://localhost:5173 in your browser to review changes"
+print_status $BLUE "🌐 Opening http://localhost:5173 in your browser automatically..."
+# Auto-open browser (works on macOS, Linux, and Windows)
+if command -v open &> /dev/null; then
+    # macOS
+    open http://localhost:5173
+elif command -v xdg-open &> /dev/null; then
+    # Linux
+    xdg-open http://localhost:5173
+elif command -v start &> /dev/null; then
+    # Windows
+    start http://localhost:5173
+else
+    print_status $YELLOW "⚠️  Could not auto-open browser. Please manually open http://localhost:5173"
+fi
 
 # Enhanced user interaction with better UX
 print_section "👀 MANUAL INSPECTION REQUIRED"
 print_status $CYAN "Please complete the following steps:"
 echo ""
-print_status $YELLOW "1. 🌐 Open http://localhost:5173 in your browser"
+print_status $YELLOW "1. 🌐 Browser should have opened automatically (or open http://localhost:5173)"
 print_status $YELLOW "2. 🔍 Review all changes and functionality"
 print_status $YELLOW "3. 📱 Test responsive design on different screen sizes"
 print_status $YELLOW "4. ♿ Test accessibility features (keyboard navigation, screen readers)"
@@ -275,6 +288,8 @@ esac
 # Clean up server
 print_status $BLUE "🧹 Cleaning up local server..."
 kill $SERVER_PID 2>/dev/null
+# Ensure port 5173 is fully freed (in case of stray processes)
+lsof -ti:5173 | xargs kill -9 2>/dev/null || true
 
 # Step 3: Final confirmation
 print_section "🎯 FINAL CONFIRMATION"

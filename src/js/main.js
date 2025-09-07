@@ -111,33 +111,79 @@ class FitFlowApp {
     initializeUserAccount() {
         if (userAccount.isLoggedIn) {
             console.log('👤 User logged in:', userAccount.currentUser.profile.name);
-            this.updateUserInterface();
+            // Ensure DOM is ready before updating UI
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                this.updateUserInterface();
+            } else {
+                document.addEventListener('DOMContentLoaded', () => this.updateUserInterface());
+            }
         } else {
             console.log('👤 No user logged in');
         }
     }
     
     /**
+     * Setup click-outside-to-close functionality for modals
+     */
+    setupModalClickOutside() {
+        const modals = ['login-modal', 'register-modal', 'profile-modal', 'password-reset-modal'];
+        
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    // Close modal if clicking on the backdrop (not the modal content)
+                    if (e.target === modal) {
+                        this.hideModal(modalId);
+                    }
+                });
+            }
+        });
+    }
+
+    /**
      * Update user interface based on login status
      */
     updateUserInterface() {
+        console.log('🔄 Updating user interface...');
+        console.log('👤 User logged in:', userAccount.isLoggedIn);
+        console.log('👤 Current user:', userAccount.currentUser);
+        
         const userSection = document.getElementById('user-account-section');
         const guestSection = document.getElementById('guest-section');
         
+        console.log('🎯 User section found:', !!userSection);
+        console.log('🎯 Guest section found:', !!guestSection);
+        
         if (userAccount.isLoggedIn) {
+            console.log('✅ Showing user section, hiding guest section');
             if (userSection) userSection.classList.remove('hidden');
             if (guestSection) guestSection.classList.add('hidden');
             
             // Update user info
             const userName = document.getElementById('user-name');
             const userStreak = document.getElementById('user-streak');
+            const userAvatar = document.getElementById('user-avatar');
             
-            if (userName) userName.textContent = userAccount.currentUser.profile.name;
+            console.log('🎯 User name element found:', !!userName);
+            console.log('🎯 User streak element found:', !!userStreak);
+            console.log('🎯 User avatar element found:', !!userAvatar);
+            
+            if (userName) {
+                userName.textContent = userAccount.currentUser.profile.name;
+                console.log('✅ Updated user name to:', userAccount.currentUser.profile.name);
+            }
             if (userStreak) {
                 const streak = userAccount.getStats().currentStreak;
                 userStreak.textContent = `${streak} day streak`;
+                console.log('✅ Updated user streak to:', streak);
+            }
+            if (userAvatar) {
+                userAvatar.textContent = userAccount.currentUser.profile.avatar || '🏃‍♂️';
+                console.log('✅ Updated user avatar to:', userAccount.currentUser.profile.avatar);
             }
         } else {
+            console.log('❌ Hiding user section, showing guest section');
             if (userSection) userSection.classList.add('hidden');
             if (guestSection) guestSection.classList.remove('hidden');
         }
@@ -176,6 +222,7 @@ class FitFlowApp {
      * Setup user account event listeners
      */
     setupUserAccountListeners() {
+        console.log('🔧 Setting up user account event listeners...');
         // Login button
         const loginBtn = document.getElementById('login-btn');
         if (loginBtn) {
@@ -199,6 +246,93 @@ class FitFlowApp {
         if (profileBtn) {
             profileBtn.addEventListener('click', () => this.showProfileModal());
         }
+
+        // Forgot password button
+        const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+        if (forgotPasswordBtn) {
+            forgotPasswordBtn.addEventListener('click', () => this.showPasswordResetModal());
+        }
+
+        // Login modal close button
+        const closeLoginModal = document.getElementById('close-login-modal');
+        if (closeLoginModal) {
+            console.log('✅ Attaching close button listener to login modal');
+            closeLoginModal.addEventListener('click', () => this.hideModal('login-modal'));
+        } else {
+            console.warn('⚠️ Login modal close button not found');
+        }
+
+        // Register modal close button
+        const closeRegisterModal = document.getElementById('close-register-modal');
+        if (closeRegisterModal) {
+            closeRegisterModal.addEventListener('click', () => this.hideModal('register-modal'));
+        }
+
+        // Profile modal close button
+        const closeProfileModal = document.getElementById('close-profile-modal');
+        if (closeProfileModal) {
+            closeProfileModal.addEventListener('click', () => this.hideModal('profile-modal'));
+        }
+
+        // Switch to register button (in login modal)
+        const switchToRegister = document.getElementById('switch-to-register');
+        if (switchToRegister) {
+            console.log('✅ Attaching register button listener');
+            switchToRegister.addEventListener('click', () => {
+                this.hideModal('login-modal');
+                this.showRegisterModal();
+            });
+        } else {
+            console.warn('⚠️ Switch to register button not found');
+        }
+
+        // Switch to login button (in register modal)
+        const switchToLogin = document.getElementById('switch-to-login');
+        if (switchToLogin) {
+            switchToLogin.addEventListener('click', () => {
+                this.hideModal('register-modal');
+                this.showLoginModal();
+            });
+        }
+
+        // Add click-outside-to-close functionality for all modals
+        this.setupModalClickOutside();
+
+        // Password reset modal close button
+        const closePasswordResetModal = document.getElementById('close-password-reset-modal');
+        if (closePasswordResetModal) {
+            closePasswordResetModal.addEventListener('click', () => this.hideModal('password-reset-modal'));
+        }
+
+        // Back to login from reset
+        const backToLoginFromReset = document.getElementById('back-to-login-from-reset');
+        if (backToLoginFromReset) {
+            backToLoginFromReset.addEventListener('click', () => {
+                this.hideModal('password-reset-modal');
+                this.showLoginModal();
+            });
+        }
+
+        // Password reset form submission
+        const passwordResetForm = document.getElementById('password-reset-form');
+        if (passwordResetForm) {
+            passwordResetForm.addEventListener('submit', (e) => this.handlePasswordReset(e));
+        }
+
+        // Registration form submission
+        const registerForm = document.getElementById('register-form');
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => this.handleRegister(e));
+        }
+
+        // Login form submission
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
+
+        // Avatar selection
+        this.setupAvatarSelection();
     }
     
     /**
@@ -234,6 +368,19 @@ class FitFlowApp {
         // This will be implemented when we extract the UI modules
         console.log('👤 Show profile modal');
     }
+
+    /**
+     * Show password reset modal
+     */
+    showPasswordResetModal() {
+        const modal = document.getElementById('password-reset-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.removeAttribute('aria-hidden');
+        } else {
+            console.log('🔑 Show password reset modal');
+        }
+    }
     
     /**
      * Handle user logout
@@ -242,6 +389,179 @@ class FitFlowApp {
         userAccount.logout();
         this.updateUserInterface();
         console.log('👋 User logged out');
+    }
+
+    /**
+     * Hide modal
+     */
+    hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    /**
+     * Handle password reset form submission
+     */
+    async handlePasswordReset(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('reset-username').value;
+        const securityQuestion = document.getElementById('reset-security-question').value;
+        const securityAnswer = document.getElementById('reset-security-answer').value;
+        const newPassword = document.getElementById('reset-new-password').value;
+        
+        const result = await userAccount.resetPassword(username, securityQuestion, securityAnswer, newPassword);
+        
+        const errorDiv = document.getElementById('password-reset-error');
+        if (result.success) {
+            errorDiv.className = 'bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded';
+            errorDiv.textContent = result.message;
+            errorDiv.classList.remove('hidden');
+            
+            // Clear form
+            document.getElementById('password-reset-form').reset();
+            
+            // Close modal after 2 seconds
+            setTimeout(() => {
+                this.hideModal('password-reset-modal');
+                this.showLoginModal();
+            }, 2000);
+        } else {
+            errorDiv.className = 'bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded';
+            errorDiv.textContent = result.error;
+            errorDiv.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Handle registration form submission
+     */
+    async handleRegister(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('register-name').value;
+        const username = document.getElementById('register-username').value;
+        const password = document.getElementById('register-password').value;
+        const experience = document.getElementById('register-experience').value;
+        const goal = document.getElementById('register-goal').value;
+        const avatar = document.querySelector('input[name="avatar"]:checked')?.value || '🏃‍♂️';
+        const securityQuestion = document.getElementById('register-security-question').value;
+        const securityAnswer = document.getElementById('register-security-answer').value;
+        const errorDiv = document.getElementById('register-error');
+        
+        // Validate required fields
+        if (!username.trim()) {
+            if (errorDiv) {
+                errorDiv.textContent = 'Please enter a username.';
+                errorDiv.classList.remove('hidden');
+            }
+            return;
+        }
+        
+        if (username.length < 3) {
+            if (errorDiv) {
+                errorDiv.textContent = 'Username must be at least 3 characters long.';
+                errorDiv.classList.remove('hidden');
+            }
+            return;
+        }
+        
+        if (!securityQuestion || !securityAnswer.trim()) {
+            if (errorDiv) {
+                errorDiv.textContent = 'Please select a security question and provide an answer for password reset.';
+                errorDiv.classList.remove('hidden');
+            }
+            return;
+        }
+        
+        try {
+            const profile = {
+                name: name,
+                experience: experience,
+                goals: [goal],
+                avatar: avatar,
+                securityQuestion: securityQuestion,
+                securityAnswer: securityAnswer
+            };
+            
+            const result = await userAccount.register(username, password, profile);
+            
+            if (result.success) {
+                this.hideModal('register-modal');
+                // Small delay to ensure modal is closed before updating UI
+                setTimeout(() => {
+                    this.updateUserInterface();
+                }, 100);
+                console.log('✅ Account created successfully!');
+            } else {
+                if (errorDiv) {
+                    errorDiv.textContent = result.error;
+                    errorDiv.classList.remove('hidden');
+                }
+            }
+        } catch (error) {
+            if (errorDiv) {
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+    }
+
+    /**
+     * Handle login form submission
+     */
+    async handleLogin(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const errorDiv = document.getElementById('login-error');
+        
+        try {
+            const result = await userAccount.login(username, password);
+            
+            if (result.success) {
+                this.hideModal('login-modal');
+                // Small delay to ensure modal is closed before updating UI
+                setTimeout(() => {
+                    this.updateUserInterface();
+                }, 100);
+                console.log('✅ Login successful!');
+            } else {
+                if (errorDiv) {
+                    errorDiv.textContent = result.error;
+                    errorDiv.classList.remove('hidden');
+                }
+            }
+        } catch (error) {
+            if (errorDiv) {
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+    }
+
+    /**
+     * Setup avatar selection functionality
+     */
+    setupAvatarSelection() {
+        const avatarOptions = document.querySelectorAll('input[name="avatar"]');
+        avatarOptions.forEach(option => {
+            option.addEventListener('change', (e) => {
+                // Update visual selection
+                avatarOptions.forEach(opt => {
+                    const div = opt.nextElementSibling;
+                    if (opt.checked) {
+                        div.classList.add('border-fit-primary', 'bg-blue-50');
+                    } else {
+                        div.classList.remove('border-fit-primary', 'bg-blue-50');
+                    }
+                });
+            });
+        });
     }
     
     /**
@@ -271,9 +591,16 @@ class FitFlowApp {
 }
 
 // Initialize the application when the DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('📄 DOM Content Loaded - Initializing FitFlow App...');
+        window.fitFlowApp = new FitFlowApp();
+    });
+} else {
+    // DOM is already loaded
+    console.log('📄 DOM Already Loaded - Initializing FitFlow App...');
     window.fitFlowApp = new FitFlowApp();
-});
+}
 
 // Export for module usage
 export default FitFlowApp;

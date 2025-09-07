@@ -49,6 +49,10 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .avatar-option input:checked + div {
+            border-color: #0ea5e9;
+            background-color: #f0f9ff;
+        }
         .btn-primary {
             @apply bg-fit-primary hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg;
         }
@@ -75,7 +79,7 @@
                     <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                         <span class="text-fit-primary font-bold text-xl">F</span>
                     </div>
-                    <h1 class="text-2xl font-display font-bold">FitFlow</h1>
+                    <h1 class="text-2xl font-display font-bold">FitFlow 🚀</h1>
                     <div class="ml-3 flex items-center space-x-2" role="status" aria-label="Security indicators">
                         <div class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-xs font-medium border border-green-400/30">
                             🔒 Privacy-First
@@ -97,6 +101,9 @@
                     <!-- User Account Section -->
                     <div id="user-account-section" class="hidden">
                         <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-2xl" id="user-avatar">
+                                🏃‍♂️
+                            </div>
                             <div class="text-right">
                                 <div class="text-sm font-medium text-white" id="user-name">User</div>
                                 <div class="text-xs text-blue-100" id="user-streak">0 day streak</div>
@@ -754,8 +761,8 @@
             <div class="px-6 py-4">
                 <form id="login-form" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-fit-dark mb-2">Email</label>
-                        <input type="email" id="login-email" required class="input-field w-full" placeholder="Enter your email">
+                        <label class="block text-sm font-medium text-fit-dark mb-2">Username</label>
+                        <input type="text" id="login-username" required class="input-field w-full" placeholder="Enter your username">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Password</label>
@@ -782,15 +789,18 @@
                     <p class="text-sm text-fit-secondary">Don't have an account? 
                         <button id="switch-to-register" class="text-fit-primary hover:underline">Register here</button>
                     </p>
+                    <p class="text-sm text-fit-secondary mt-2">
+                        <button id="forgot-password-btn" class="text-fit-primary hover:underline">Forgot your password?</button>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Register Modal -->
-    <div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div class="px-6 py-4 border-b border-gray-200">
+    <div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-200 flex-shrink-0">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-fit-dark">Create Account</h3>
                     <button id="close-register-modal" class="text-gray-400 hover:text-gray-600">
@@ -800,15 +810,16 @@
                     </button>
                 </div>
             </div>
-            <div class="px-6 py-4">
+            <div class="px-6 py-4 overflow-y-auto flex-1">
                 <form id="register-form" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Name</label>
                         <input type="text" id="register-name" required class="input-field w-full" placeholder="Enter your name">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-fit-dark mb-2">Email</label>
-                        <input type="email" id="register-email" required class="input-field w-full" placeholder="Enter your email">
+                        <label class="block text-sm font-medium text-fit-dark mb-2">Username</label>
+                        <input type="text" id="register-username" required class="input-field w-full" placeholder="Choose a username">
+                        <p class="text-xs text-gray-500 mt-1">This will be your login username</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Password</label>
@@ -823,6 +834,59 @@
                         </select>
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-fit-dark mb-2">Choose Your Avatar</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="avatar" value="🏃‍♂️" class="sr-only">
+                                <div class="w-12 h-12 text-2xl flex items-center justify-center border-2 border-gray-200 rounded-lg hover:border-fit-primary transition-colors avatar-option">
+                                    🏃‍♂️
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="avatar" value="💪" class="sr-only">
+                                <div class="w-12 h-12 text-2xl flex items-center justify-center border-2 border-gray-200 rounded-lg hover:border-fit-primary transition-colors avatar-option">
+                                    💪
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="avatar" value="🧘‍♀️" class="sr-only">
+                                <div class="w-12 h-12 text-2xl flex items-center justify-center border-2 border-gray-200 rounded-lg hover:border-fit-primary transition-colors avatar-option">
+                                    🧘‍♀️
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="avatar" value="🏋️‍♀️" class="sr-only">
+                                <div class="w-12 h-12 text-2xl flex items-center justify-center border-2 border-gray-200 rounded-lg hover:border-fit-primary transition-colors avatar-option">
+                                    🏋️‍♀️
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="avatar" value="🚴‍♂️" class="sr-only">
+                                <div class="w-12 h-12 text-2xl flex items-center justify-center border-2 border-gray-200 rounded-lg hover:border-fit-primary transition-colors avatar-option">
+                                    🚴‍♂️
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="avatar" value="🏊‍♀️" class="sr-only">
+                                <div class="w-12 h-12 text-2xl flex items-center justify-center border-2 border-gray-200 rounded-lg hover:border-fit-primary transition-colors avatar-option">
+                                    🏊‍♀️
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="avatar" value="🤸‍♂️" class="sr-only">
+                                <div class="w-12 h-12 text-2xl flex items-center justify-center border-2 border-gray-200 rounded-lg hover:border-fit-primary transition-colors avatar-option">
+                                    🤸‍♂️
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="avatar" value="🎯" class="sr-only">
+                                <div class="w-12 h-12 text-2xl flex items-center justify-center border-2 border-gray-200 rounded-lg hover:border-fit-primary transition-colors avatar-option">
+                                    🎯
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Primary Goal</label>
                         <select id="register-goal" class="input-field w-full">
                             <option value="Strength">Strength</option>
@@ -832,6 +896,31 @@
                             <option value="General Fitness">General Fitness</option>
                         </select>
                     </div>
+                    
+                    <!-- Security Question for Password Reset -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <h4 class="text-sm font-medium text-fit-dark mb-3">Security Question (for password reset)</h4>
+                        <div>
+                            <label class="block text-sm font-medium text-fit-dark mb-2">Security Question</label>
+                            <select id="register-security-question" class="input-field w-full">
+                                <option value="">Select a security question</option>
+                                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                                <option value="What city were you born in?">What city were you born in?</option>
+                                <option value="What was your mother's maiden name?">What was your mother's maiden name?</option>
+                                <option value="What was the name of your elementary school?">What was the name of your elementary school?</option>
+                                <option value="What was your favorite childhood toy?">What was your favorite childhood toy?</option>
+                                <option value="What is the name of your favorite teacher?">What is the name of your favorite teacher?</option>
+                                <option value="What was your first car?">What was your first car?</option>
+                                <option value="What is your favorite movie?">What is your favorite movie?</option>
+                            </select>
+                        </div>
+                        <div class="mt-3">
+                            <label class="block text-sm font-medium text-fit-dark mb-2">Security Answer</label>
+                            <input type="text" id="register-security-answer" class="input-field w-full" placeholder="Enter your answer">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">This will be used to verify your identity if you need to reset your password.</p>
+                    </div>
+                    
                     <div id="register-error" class="text-red-600 text-sm hidden"></div>
                     
                     <!-- Security Notice -->
@@ -888,6 +977,59 @@
             <div class="px-6 py-4">
                 <div id="profile-content">
                     <!-- Profile content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="password-reset-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-fit-dark">Reset Password</h3>
+                    <button id="close-password-reset-modal" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="px-6 py-4">
+                <form id="password-reset-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-fit-dark mb-2">Username</label>
+                        <input type="text" id="reset-username" required class="input-field w-full" placeholder="Enter your username">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-fit-dark mb-2">Security Question</label>
+                        <select id="reset-security-question" class="input-field w-full">
+                            <option value="">Select a security question</option>
+                            <option value="pet">What was the name of your first pet?</option>
+                            <option value="school">What was the name of your elementary school?</option>
+                            <option value="city">In what city were you born?</option>
+                            <option value="mother">What is your mother's maiden name?</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-fit-dark mb-2">Security Answer</label>
+                        <input type="text" id="reset-security-answer" required class="input-field w-full" placeholder="Enter your answer">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-fit-dark mb-2">New Password</label>
+                        <input type="password" id="reset-new-password" required class="input-field w-full" placeholder="Enter new password">
+                    </div>
+                    
+                    <div id="password-reset-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                        <!-- Error message will be displayed here -->
+                    </div>
+                    
+                    <button type="submit" class="btn-primary w-full mt-4">Reset Password</button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-fit-secondary">
+                        <button id="back-to-login-from-reset" class="text-fit-primary hover:underline">Back to Login</button>
+                    </p>
                 </div>
             </div>
         </div>
@@ -998,7 +1140,8 @@
     </footer>
 
     <!-- Modular JavaScript Structure -->
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/main.js?v=2"></script>
+    
     
     <!-- Fallback for browsers that don't support ES6 modules -->
     <script nomodule>

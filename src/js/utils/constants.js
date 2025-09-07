@@ -105,10 +105,10 @@ export const ANALYTICS_EVENTS = {
 
 // Error Messages
 export const ERROR_MESSAGES = {
-    INVALID_EMAIL: 'Please enter a valid email address',
+    INVALID_USERNAME: 'Please enter a valid username',
     PASSWORD_TOO_SHORT: 'Password must be at least 6 characters',
-    EMAIL_EXISTS: 'Email already registered',
-    INVALID_CREDENTIALS: 'Invalid email or password',
+    USERNAME_EXISTS: 'Username already taken',
+    INVALID_CREDENTIALS: 'Invalid username or password',
     NETWORK_ERROR: 'Network error. Please try again.',
     GENERIC_ERROR: 'Something went wrong. Please try again.'
 };

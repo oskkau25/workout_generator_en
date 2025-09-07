@@ -93,16 +93,16 @@ function generateStandardWorkout(availableExercises, duration) {
     const workout = [];
     
     // Add warmup (3-5 exercises)
-    const selectedWarmup = selectRandomExercises(warmupExercises, 4);
+    const selectedWarmup = selectRandomExercises(warmupExercises, 4).map(ex => ({...ex, _section: 'Warm-up'}));
     workout.push(...selectedWarmup);
     
     // Add main exercises based on duration
     const mainCount = Math.max(6, Math.floor(duration / 3));
-    const selectedMain = selectRandomExercises(mainExercises, mainCount);
+    const selectedMain = selectRandomExercises(mainExercises, mainCount).map(ex => ({...ex, _section: 'Main'}));
     workout.push(...selectedMain);
     
     // Add cooldown (2-3 exercises)
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 3);
+    const selectedCooldown = selectRandomExercises(cooldownExercises, 3).map(ex => ({...ex, _section: 'Cool-down'}));
     workout.push(...selectedCooldown);
     
     return workout;
@@ -120,7 +120,7 @@ function generateCircuitWorkout(availableExercises, duration, settings) {
     
     // Add warmup
     const warmupExercises = availableExercises.filter(ex => ex.type === 'warmup');
-    const selectedWarmup = selectRandomExercises(warmupExercises, 3);
+    const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
     workout.push(...selectedWarmup);
     
     // Add circuit rounds
@@ -133,13 +133,13 @@ function generateCircuitWorkout(availableExercises, duration, settings) {
             totalRounds: rounds
         });
         
-        const roundExercises = selectRandomExercises(mainExercises, exercisesPerRound);
+        const roundExercises = selectRandomExercises(mainExercises, exercisesPerRound).map(ex => ({...ex, _section: 'Main'}));
         workout.push(...roundExercises);
     }
     
     // Add cooldown
     const cooldownExercises = availableExercises.filter(ex => ex.type === 'cooldown');
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 2);
+    const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
     workout.push(...selectedCooldown);
     
     return workout;
@@ -156,7 +156,7 @@ function generateTabataWorkout(availableExercises, duration, settings) {
     
     // Add warmup
     const warmupExercises = availableExercises.filter(ex => ex.type === 'warmup');
-    const selectedWarmup = selectRandomExercises(warmupExercises, 3);
+    const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
     workout.push(...selectedWarmup);
     
     // Add Tabata sets
@@ -170,12 +170,12 @@ function generateTabataWorkout(availableExercises, duration, settings) {
         });
         
         const setExercise = selectRandomExercises(mainExercises, 1)[0];
-        workout.push(setExercise);
+        if (setExercise) workout.push({...setExercise, _section: 'Main'});
     }
     
     // Add cooldown
     const cooldownExercises = availableExercises.filter(ex => ex.type === 'cooldown');
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 2);
+    const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
     workout.push(...selectedCooldown);
     
     return workout;
@@ -192,7 +192,7 @@ function generatePyramidWorkout(availableExercises, duration, settings) {
     
     // Add warmup
     const warmupExercises = availableExercises.filter(ex => ex.type === 'warmup');
-    const selectedWarmup = selectRandomExercises(warmupExercises, 3);
+    const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
     workout.push(...selectedWarmup);
     
     // Add pyramid levels
@@ -205,13 +205,13 @@ function generatePyramidWorkout(availableExercises, duration, settings) {
             totalLevels: levels
         });
         
-        const levelExercises = selectRandomExercises(mainExercises, 2);
+        const levelExercises = selectRandomExercises(mainExercises, 2).map(ex => ({...ex, _section: 'Main'}));
         workout.push(...levelExercises);
     }
     
     // Add cooldown
     const cooldownExercises = availableExercises.filter(ex => ex.type === 'cooldown');
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 2);
+    const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
     workout.push(...selectedCooldown);
     
     return workout;
@@ -366,9 +366,22 @@ function brief(text = '') {
  * Generate workout HTML
  */
 function generateWorkoutHTML(workout, metadata) {
+    let currentSection = '';
     const exerciseHTML = workout.map((exercise, index) => {
+        // Insert section headers when section changes
+        let header = '';
+        if (exercise._section && exercise._section !== currentSection) {
+            currentSection = exercise._section;
+            const badgeColor = currentSection === 'Warm-up' ? 'bg-amber-100 text-amber-700' : currentSection === 'Cool-down' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700';
+            header = `
+                <div class="mt-6 mb-2">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}">${currentSection}</span>
+                </div>
+            `;
+        }
         if (['circuit_round', 'tabata_set', 'pyramid_set'].includes(exercise.type)) {
             return `
+                ${header}
                 <div class="section-header ${exercise.type}">
                     <h3 class="text-lg font-bold text-fit-primary">${exercise.name}</h3>
                     <p class="text-fit-secondary text-sm">${exercise.description}</p>
@@ -383,6 +396,7 @@ function generateWorkoutHTML(workout, metadata) {
             </button>` : '';
         
         return `
+            ${header}
             <div id="exercise-item-${index}" class="exercise-item p-4 bg-white rounded-lg border border-gray-200 hover:border-fit-primary transition-colors" data-index="${index}">
                 <div class="flex justify-between items-start mb-2">
                     <h4 class="font-semibold text-fit-dark" data-field="name">${exercise.name}</h4>

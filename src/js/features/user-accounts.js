@@ -39,17 +39,17 @@ export class UserAccount {
     
     /**
      * Register a new user
-     * @param {string} email - User email
+     * @param {string} username - User username
      * @param {string} password - User password
      * @param {Object} profile - User profile data
      * @returns {Promise<Object>} Registration result
      */
-    async register(email, password, profile = {}) {
+    async register(username, password, profile = {}) {
         try {
-            // Check if email already exists
+            // Check if username already exists
             const existingUsers = JSON.parse(localStorage.getItem('fitflow_users') || '[]');
-            if (existingUsers.find(u => u.email === email)) {
-                throw new Error('Email already registered');
+            if (existingUsers.find(u => u.username === username)) {
+                throw new Error('Username already taken');
             }
             
             // Create new user
@@ -58,12 +58,15 @@ export class UserAccount {
             
             const newUser = {
                 id: userId,
-                email: email,
+                username: username,
                 password: hashedPassword,
                 profile: {
                     name: profile.name || 'Fitness Enthusiast',
+                    avatar: profile.avatar || '🏃‍♂️',
                     goals: profile.goals || ['Strength', 'Endurance'],
                     experience: profile.experience || 'Beginner',
+                    securityQuestion: profile.securityQuestion || '',
+                    securityAnswer: profile.securityAnswer || '',
                     preferences: {
                         workoutDuration: profile.workoutDuration || 30,
                         preferredEquipment: profile.preferredEquipment || ['Bodyweight'],
@@ -102,14 +105,14 @@ export class UserAccount {
     
     /**
      * Login user
-     * @param {string} email - User email
+     * @param {string} username - User username
      * @param {string} password - User password
      * @returns {Promise<Object>} Login result
      */
-    async login(email, password) {
+    async login(username, password) {
         try {
             const users = JSON.parse(localStorage.getItem('fitflow_users') || '[]');
-            const user = users.find(u => u.email === email);
+            const user = users.find(u => u.username === username);
             
             if (!user) {
                 throw new Error('User not found');
@@ -383,6 +386,48 @@ export class UserAccount {
         }
     }
     
+    /**
+     * Reset user password using security question
+     * @param {string} email - User email
+     * @param {string} securityQuestion - Security question type
+     * @param {string} securityAnswer - Security answer
+     * @param {string} newPassword - New password
+     * @returns {Promise<Object>} Reset result
+     */
+    async resetPassword(username, securityQuestion, securityAnswer, newPassword) {
+        try {
+            const users = JSON.parse(localStorage.getItem('fitflow_users') || '[]');
+            const user = users.find(u => u.username === username);
+            
+            if (!user) {
+                throw new Error('User not found');
+            }
+            
+            if (user.profile.securityQuestion !== securityQuestion) {
+                throw new Error('Invalid security question');
+            }
+            
+            // Hash the security answer for comparison
+            const hashedAnswer = await this.hashPassword(securityAnswer.toLowerCase().trim());
+            if (user.profile.securityAnswer !== hashedAnswer) {
+                throw new Error('Invalid security answer');
+            }
+            
+            // Update password
+            const newHashedPassword = await this.hashPassword(newPassword);
+            user.password = newHashedPassword;
+            
+            // Save updated user
+            const userIndex = users.findIndex(u => u.username === username);
+            users[userIndex] = user;
+            localStorage.setItem('fitflow_users', JSON.stringify(users));
+            
+            return { success: true, message: 'Password reset successfully' };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
     /**
      * Save user data to storage
      */
