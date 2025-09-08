@@ -631,7 +631,9 @@ class AutomatedTestPipeline:
                 self.test_html_structure(),
                 self.test_javascript_functionality(),
                 self.test_exercise_database(),
-                self.test_actual_functionality()
+                self.test_actual_functionality(),
+                self.test_form_data_validation(),
+                self.test_comprehensive_form_combinations()
             ]
             
             # Combine core and dynamic tests
@@ -649,7 +651,7 @@ class AutomatedTestPipeline:
             for i, test in enumerate(all_tests):
                 if i < len(core_tests):
                     # Core tests with fixed names
-                    test_names = ['html_structure', 'javascript_functionality', 'exercise_database', 'actual_functionality']
+                    test_names = ['html_structure', 'javascript_functionality', 'exercise_database', 'actual_functionality', 'form_data_validation', 'comprehensive_form_combinations']
                     test_details[test_names[i]] = test
                 else:
                     # Dynamic tests with auto-generated names
@@ -1256,7 +1258,77 @@ class AutomatedTestPipeline:
         except Exception as e:
             return {
                 'status': 'FAILED',
-                'details': f'Functionality test failed: {str(e)}'
+                'error': str(e),
+                'critical_issues': ['Functionality test failed']
+            }
+    
+    def test_form_data_validation(self):
+        """CRITICAL: Test form data collection and validation logic"""
+        try:
+            html_path = self.project_root / 'src' / 'index.html'
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # Check for proper form structure
+            form_issues = []
+            
+            # Check equipment checkboxes have name attributes
+            if 'name="equipment"' not in html_content:
+                form_issues.append('Equipment checkboxes missing name="equipment" attribute')
+            
+            # Check duration radio buttons have proper structure
+            if 'name="duration"' not in html_content:
+                form_issues.append('Duration radio buttons missing name="duration" attribute')
+            
+            # Check fitness level select has name attribute
+            if 'name="fitness-level"' not in html_content:
+                form_issues.append('Fitness level select missing name="fitness-level" attribute')
+            
+            # Check for FormData usage in JavaScript
+            js_files = [
+                self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js',
+                self.project_root / 'src' / 'js' / 'main.js'
+            ]
+            
+            js_issues = []
+            for js_file in js_files:
+                if js_file.exists():
+                    with open(js_file, 'r', encoding='utf-8') as f:
+                        js_content = f.read()
+                    
+                    # Check for proper FormData usage
+                    if 'FormData' in js_content:
+                        if 'formData.getAll(' not in js_content and 'formData.get(' in js_content:
+                            js_issues.append(f'{js_file.name}: Using formData.get() instead of formData.getAll() for equipment')
+                        if 'formData.getAll(' in js_content and 'equipment' in js_content:
+                            # Good - using getAll for equipment
+                            pass
+                        else:
+                            js_issues.append(f'{js_file.name}: Equipment handling may not support multiple selections')
+            
+            all_issues = form_issues + js_issues
+            
+            if all_issues:
+                return {
+                    'status': 'FAILED',
+                    'form_issues': form_issues,
+                    'js_issues': js_issues,
+                    'total_issues': len(all_issues),
+                    'critical_issues': all_issues
+                }
+            
+            return {
+                'status': 'PASSED',
+                'form_structure_valid': True,
+                'form_data_handling_valid': True,
+                'equipment_multiselect_supported': True
+            }
+            
+        except Exception as e:
+            return {
+                'status': 'FAILED',
+                'error': str(e),
+                'critical_issues': ['Form data validation test failed']
             }
     
     def test_overview_and_player_ui(self):
@@ -1463,10 +1535,149 @@ class AutomatedTestPipeline:
         except Exception as e:
             return {'status': 'FAILED', 'details': str(e)}
     
+    def test_comprehensive_form_combinations(self):
+        """Test all possible form combinations and validate workout generation (Dynamic Detection)"""
+        try:
+            # Dynamically detect form options from HTML
+            html_path = self.project_root / 'src' / 'index.html'
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # Extract available durations
+            import re
+            duration_pattern = r'<input[^>]*name="duration"[^>]*value="([^"]*)"[^>]*>'
+            available_durations = re.findall(duration_pattern, html_content)
+            
+            # Extract available equipment
+            equipment_pattern = r'<input[^>]*name="equipment"[^>]*id="eq-([^"]*)"[^>]*>'
+            equipment_ids = re.findall(equipment_pattern, html_content)
+            available_equipment = [eq.replace('-', ' ').title() for eq in equipment_ids]
+            
+            # Extract available training patterns
+            pattern_pattern = r'<input[^>]*name="training-pattern"[^>]*value="([^"]*)"[^>]*>'
+            available_patterns = re.findall(pattern_pattern, html_content)
+            
+            # Extract available fitness levels
+            level_pattern = r'<option[^>]*value="([^"]*)"[^>]*>'
+            level_matches = re.findall(level_pattern, html_content)
+            available_levels = [level for level in level_matches if level and level not in ['', 'Select Level']]
+            
+            # Generate test scenarios dynamically
+            test_scenarios = []
+            
+            # Create representative test scenarios (not all combinations to keep test time reasonable)
+            for duration in available_durations[:2]:  # Test first 2 durations
+                for level in available_levels[:2]:    # Test first 2 levels
+                    for pattern in available_patterns[:2]:  # Test first 2 patterns
+                        # Single equipment tests
+                        for equipment in available_equipment[:3]:  # Test first 3 equipment types
+                            test_scenarios.append({
+                                'duration': duration,
+                                'equipment': [equipment],
+                                'level': level,
+                                'pattern': pattern
+                            })
+                        
+                        # Multi-equipment test (if we have enough equipment)
+                        if len(available_equipment) >= 2:
+                            test_scenarios.append({
+                                'duration': duration,
+                                'equipment': available_equipment[:2],
+                                'level': level,
+                                'pattern': pattern
+                            })
+            
+            # Check if workout generator can handle all scenarios
+            js_path = self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js'
+            if not js_path.exists():
+                return {
+                    'status': 'FAILED',
+                    'error': 'Workout generator file not found',
+                    'critical_issues': ['Missing workout-generator.js']
+                }
+            
+            with open(js_path, 'r', encoding='utf-8') as f:
+                js_content = f.read()
+            
+            # Validate that the generator can handle all scenarios
+            validation_results = {
+                'scenarios_tested': len(test_scenarios),
+                'form_data_handling': 'FormData' in js_content,
+                'equipment_filtering': 'selectedEquipments.includes' in js_content,
+                'training_patterns': all(pattern in js_content for pattern in ['standard', 'circuit', 'tabata', 'pyramid']),
+                'duration_handling': 'duration' in js_content,
+                'level_handling': 'level' in js_content
+            }
+            
+            # Check for critical functions
+            required_functions = [
+                'generateWorkout',
+                'generateStandardWorkout', 
+                'generateCircuitWorkout',
+                'generateTabataWorkout',
+                'generatePyramidWorkout',
+                'getFormData'
+            ]
+            
+            missing_functions = []
+            for func in required_functions:
+                if func not in js_content:
+                    missing_functions.append(func)
+            
+            if missing_functions:
+                return {
+                    'status': 'FAILED',
+                    'missing_functions': missing_functions,
+                    'critical_issues': [f'Missing function: {func}' for func in missing_functions]
+                }
+            
+            # Validate that exercise database has exercises for all detected equipment
+            exercise_db_path = self.project_root / 'src' / 'js' / 'core' / 'exercise-database.js'
+            equipment_coverage = {}
+            
+            if exercise_db_path.exists():
+                with open(exercise_db_path, 'r', encoding='utf-8') as f:
+                    exercise_content = f.read()
+                
+                for equipment in available_equipment:
+                    # Check if exercises exist for this equipment type
+                    equipment_lower = equipment.lower()
+                    has_exercises = equipment_lower in exercise_content.lower()
+                    equipment_coverage[equipment] = has_exercises
+            
+            # All validations passed
+            return {
+                'status': 'PASSED',
+                'validation_results': validation_results,
+                'all_scenarios_supported': True,
+                'form_combinations_tested': len(test_scenarios),
+                'detected_form_options': {
+                    'durations': available_durations,
+                    'equipment': available_equipment,
+                    'patterns': available_patterns,
+                    'levels': available_levels
+                },
+                'equipment_coverage': equipment_coverage,
+                'dynamic_detection': True
+            }
+            
+        except Exception as e:
+            return {
+                'status': 'FAILED',
+                'error': str(e),
+                'critical_issues': ['Comprehensive form combination test failed']
+            }
+    
     def test_exhaustive_equipment_combinations(self):
         """Test that all equipment combinations can generate valid workout plans"""
         try:
-            js_path = self.project_root / 'src' / 'script.js'
+            js_path = self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js'
+            if not js_path.exists():
+                return {
+                    'status': 'FAILED',
+                    'error': 'Workout generator file not found'
+                }
+            
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             

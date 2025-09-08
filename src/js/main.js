@@ -6,6 +6,8 @@
  * and ensures all modules are loaded in the correct order
  */
 
+console.log('🔧 MAIN.JS LOADED - v3');
+
 // Import core modules
 import { exercises, exerciseDatabase } from './core/exercise-database.js';
 import { 

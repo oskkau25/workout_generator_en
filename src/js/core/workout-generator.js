@@ -4,8 +4,8 @@
  */
 
 import { exercises } from './exercise-database.js';
-import { enhanceWorkoutWithSubstitutions } from '../features/smart-substitution.js';
 import { initializeWorkoutPlayer } from '../features/workout-player.js';
+import { enhanceWorkoutWithSubstitutions } from '../features/smart-substitution.js';
 
 /**
  * Main workout generation function
@@ -22,51 +22,43 @@ export function generateWorkout(formData) {
         patternSettings = {}
     } = formData;
 
-    console.log('🏋️ Generating workout with:', formData);
+    // Normalize equipment to an array (supports multiple selections)
+    const selectedEquipments = Array.isArray(equipment) ? equipment : [equipment];
 
-    // Filter exercises based on user preferences
-    const availableExercises = exercises.filter(ex => {
-        // Check equipment compatibility
-        const equipmentMatch = ex.equipment === equipment || ex.equipment === 'Bodyweight';
-        
-        // Check fitness level compatibility
-        const levelMatch = ex.level === level || 
-            (Array.isArray(ex.level) && ex.level.includes(level));
-        
+    // Filter MAIN exercises based on user preferences (equipment + level)
+    const availableMainExercises = exercises.filter(ex => {
+        if (ex.type !== 'main') return false;
+        const equipmentMatch = selectedEquipments.includes(ex.equipment);
+        const levelMatch = ex.level === level || (Array.isArray(ex.level) && ex.level.includes(level));
         return equipmentMatch && levelMatch;
     });
-
-    console.log(`📊 Found ${availableExercises.length} compatible exercises`);
 
     // Generate workout based on training pattern
     let workout = [];
     
     switch (trainingPattern.toLowerCase()) {
         case 'circuit':
-            workout = generateCircuitWorkout(availableExercises, duration, patternSettings);
+            workout = generateCircuitWorkout(availableMainExercises, duration, patternSettings);
             break;
         case 'tabata':
-            workout = generateTabataWorkout(availableExercises, duration, patternSettings);
+            workout = generateTabataWorkout(availableMainExercises, duration, patternSettings);
             break;
         case 'pyramid':
-            workout = generatePyramidWorkout(availableExercises, duration, patternSettings);
+            workout = generatePyramidWorkout(availableMainExercises, duration, patternSettings);
             break;
         default:
-            workout = generateStandardWorkout(availableExercises, duration);
+            workout = generateStandardWorkout(availableMainExercises, duration);
     }
 
-    console.log(`✅ Generated ${workout.length} exercise workout`);
-
-    // Enhance with smart substitutions
+    // Enhance workout with smart substitutions
     const userPreferences = {
-        equipment: [equipment],
+        equipment: selectedEquipments,
         fitnessLevel: level,
-        avoidInjuries: [],
-        targetMuscleGroups: []
+        targetMuscleGroups: [] // Could be enhanced to track user preferences
     };
     
     const enhancedWorkout = enhanceWorkoutWithSubstitutions(workout, userPreferences);
-    
+
     return {
         workout: enhancedWorkout,
         duration,
@@ -75,9 +67,9 @@ export function generateWorkout(formData) {
         trainingPattern,
         metadata: {
             totalExercises: enhancedWorkout.length,
-            estimatedTime: calculateWorkoutTime(enhancedWorkout, workTime, restTime),
+            estimatedTime: duration, // Use user's selected duration
             level,
-            equipment
+            equipment: Array.isArray(equipment) ? equipment.join(', ') : equipment
         }
     };
 }
@@ -86,9 +78,10 @@ export function generateWorkout(formData) {
  * Generate standard workout
  */
 function generateStandardWorkout(availableExercises, duration) {
-    const warmupExercises = availableExercises.filter(ex => ex.type === 'warmup');
-    const mainExercises = availableExercises.filter(ex => ex.type === 'main');
-    const cooldownExercises = availableExercises.filter(ex => ex.type === 'cooldown');
+    // Warm-up and Cool-down always from full catalog (typically Bodyweight)
+    const warmupExercises = exercises.filter(ex => ex.type === 'warmup');
+    const mainExercises = availableExercises; // already filtered for equipment
+    const cooldownExercises = exercises.filter(ex => ex.type === 'cooldown');
 
     const workout = [];
     
@@ -115,30 +108,39 @@ function generateCircuitWorkout(availableExercises, duration, settings) {
     const rounds = settings.rounds || Math.max(2, Math.min(6, Math.floor(duration / 10)));
     const exercisesPerRound = settings.exercisesPerRound || 6;
     
-    const mainExercises = availableExercises.filter(ex => ex.type === 'main');
+    const mainExercises = availableExercises; // already filtered for equipment
     const workout = [];
     
-    // Add warmup
-    const warmupExercises = availableExercises.filter(ex => ex.type === 'warmup');
+    // Add warmup (from full catalog)
+    const warmupExercises = exercises.filter(ex => ex.type === 'warmup');
     const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
     workout.push(...selectedWarmup);
     
-    // Add circuit rounds
+    // Select exercises for the circuit ONCE
+    const circuitExercises = selectRandomExercises(mainExercises, exercisesPerRound);
+    
+    // Add circuit rounds - each round uses the SAME exercises
     for (let round = 1; round <= rounds; round++) {
         workout.push({
             type: 'circuit_round',
             name: `Circuit Round ${round}`,
-            description: `Complete all exercises in this round before moving to the next`,
+            description: `Complete all ${exercisesPerRound} exercises in this circuit, then repeat for next round`,
             round: round,
             totalRounds: rounds
         });
         
-        const roundExercises = selectRandomExercises(mainExercises, exercisesPerRound).map(ex => ({...ex, _section: 'Main'}));
+        // Add the SAME exercises for each round
+        const roundExercises = circuitExercises.map((ex, index) => ({
+            ...ex, 
+            _section: 'Main',
+            _circuitPosition: index + 1,
+            _totalInCircuit: exercisesPerRound
+        }));
         workout.push(...roundExercises);
     }
     
-    // Add cooldown
-    const cooldownExercises = availableExercises.filter(ex => ex.type === 'cooldown');
+    // Add cooldown (from full catalog)
+    const cooldownExercises = exercises.filter(ex => ex.type === 'cooldown');
     const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
     workout.push(...selectedCooldown);
     
@@ -151,13 +153,16 @@ function generateCircuitWorkout(availableExercises, duration, settings) {
 function generateTabataWorkout(availableExercises, duration, settings) {
     const rounds = settings.rounds || Math.max(4, Math.min(12, Math.floor(duration / 5)));
     
-    const mainExercises = availableExercises.filter(ex => ex.type === 'main');
+    const mainExercises = availableExercises; // already filtered for equipment
     const workout = [];
     
-    // Add warmup
-    const warmupExercises = availableExercises.filter(ex => ex.type === 'warmup');
+    // Add warmup (from full catalog)
+    const warmupExercises = exercises.filter(ex => ex.type === 'warmup');
     const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
     workout.push(...selectedWarmup);
+    
+    // Select one exercise for all Tabata sets
+    const tabataExercise = selectRandomExercises(mainExercises, 1)[0];
     
     // Add Tabata sets
     for (let set = 1; set <= rounds; set++) {
@@ -169,12 +174,11 @@ function generateTabataWorkout(availableExercises, duration, settings) {
             totalSets: rounds
         });
         
-        const setExercise = selectRandomExercises(mainExercises, 1)[0];
-        if (setExercise) workout.push({...setExercise, _section: 'Main'});
+        if (tabataExercise) workout.push({...tabataExercise, _section: 'Main'});
     }
     
-    // Add cooldown
-    const cooldownExercises = availableExercises.filter(ex => ex.type === 'cooldown');
+    // Add cooldown (from full catalog)
+    const cooldownExercises = exercises.filter(ex => ex.type === 'cooldown');
     const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
     workout.push(...selectedCooldown);
     
@@ -187,13 +191,16 @@ function generateTabataWorkout(availableExercises, duration, settings) {
 function generatePyramidWorkout(availableExercises, duration, settings) {
     const levels = settings.levels || Math.max(3, Math.min(7, Math.floor(duration / 8)));
     
-    const mainExercises = availableExercises.filter(ex => ex.type === 'main');
+    const mainExercises = availableExercises; // already filtered for equipment
     const workout = [];
     
-    // Add warmup
-    const warmupExercises = availableExercises.filter(ex => ex.type === 'warmup');
+    // Add warmup (from full catalog)
+    const warmupExercises = exercises.filter(ex => ex.type === 'warmup');
     const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
     workout.push(...selectedWarmup);
+    
+    // Select exercises for the pyramid (same exercises for all levels)
+    const pyramidExercises = selectRandomExercises(mainExercises, 2);
     
     // Add pyramid levels
     for (let level = 1; level <= levels; level++) {
@@ -205,12 +212,13 @@ function generatePyramidWorkout(availableExercises, duration, settings) {
             totalLevels: levels
         });
         
-        const levelExercises = selectRandomExercises(mainExercises, 2).map(ex => ({...ex, _section: 'Main'}));
+        // Use the same exercises for each level
+        const levelExercises = pyramidExercises.map(ex => ({...ex, _section: 'Main'}));
         workout.push(...levelExercises);
     }
     
-    // Add cooldown
-    const cooldownExercises = availableExercises.filter(ex => ex.type === 'cooldown');
+    // Add cooldown (from full catalog)
+    const cooldownExercises = exercises.filter(ex => ex.type === 'cooldown');
     const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
     workout.push(...selectedCooldown);
     
@@ -224,6 +232,7 @@ function selectRandomExercises(exercises, count) {
     const shuffled = [...exercises].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, Math.min(count, exercises.length));
 }
+
 
 /**
  * Calculate estimated workout time
@@ -269,7 +278,9 @@ export function getFormData() {
     // Get basic form data
     data.level = formData.get('fitness-level') || 'Intermediate';
     data.duration = parseInt(formData.get('duration')) || 30;
-    data.equipment = formData.get('equipment') || 'Bodyweight';
+    // Get selected equipment (checkboxes) - use FormData to get all selected equipment
+    const selectedEquipment = formData.getAll('equipment');
+    data.equipment = selectedEquipment.length > 0 ? selectedEquipment : ['Bodyweight'];
     data.workTime = parseInt(document.getElementById('work-time')?.value) || 45;
     data.restTime = parseInt(document.getElementById('rest-time')?.value) || 15;
     data.trainingPattern = formData.get('training-pattern') || 'Standard';
