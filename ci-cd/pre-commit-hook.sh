@@ -45,6 +45,27 @@ print_section() {
     echo -e "${CYAN}$(printf '=%.0s' {1..${#title}})${NC}"
 }
 
+# Optional: run Prettier and ESLint if available
+print_section "🧹 OPTIONAL FORMAT/LINT"
+if command -v npx &> /dev/null; then
+    if [ -f ".prettierrc.json" ]; then
+        print_status $BLUE "Running Prettier (staged JS/HTML/CSS)"
+        git diff --cached --name-only --diff-filter=ACM | \
+          grep -E '\.(js|jsx|ts|tsx|css|scss|html)$' | \
+          xargs -r npx prettier --write 2>/dev/null
+        git add -A
+    fi
+    if [ -f ".eslintrc.json" ]; then
+        print_status $BLUE "Running ESLint (staged JS)"
+        git diff --cached --name-only --diff-filter=ACM | \
+          grep -E '\.(js|jsx|ts|tsx)$' | \
+          xargs -r npx eslint --fix 2>/dev/null || true
+        git add -A
+    fi
+else
+    print_status $YELLOW "npx not available - skipping Prettier/ESLint"
+fi
+
 # Check if we're in the right directory
 if [ ! -f "ci-cd/automated_test_pipeline.py" ]; then
     print_status $RED "❌ Error: automated_test_pipeline.py not found!"
@@ -59,7 +80,7 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 # Check if required files exist
-required_files=("src/script.js" "src/index.html" "ci-cd/requirements.txt")
+required_files=("src/index.html" "ci-cd/requirements.txt")
 missing_files=()
 
 for file in "${required_files[@]}"; do
@@ -231,6 +252,7 @@ while [ $attempt_count -lt $max_attempts ]; do
     
     print_status $YELLOW "⏰ No response received, please try again... (Attempt $attempt_count/$max_attempts)"
     echo ""
+
 done
 
 # Process the response
@@ -283,7 +305,7 @@ case $response in
         kill $SERVER_PID 2>/dev/null
         exit 1
         ;;
-esac
+ esac
 
 # Clean up server
 print_status $BLUE "🧹 Cleaning up local server..."

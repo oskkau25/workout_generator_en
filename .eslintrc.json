@@ -1,0 +1,42 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "no-undef": "error",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "all"],
+    "semi": ["error", "always"],
+    "quotes": ["error", "single", { "avoidEscape": true }]
+  },
+  "overrides": [
+    {
+      "files": ["src/js/**/*.js"],
+      "env": { "browser": true, "es2022": true },
+      "parserOptions": { "sourceType": "module" }
+    },
+    {
+      "files": ["ci-cd/**/*.py"],
+      "excludedFiles": ["**/*"],
+      "rules": {}
+    }
+  ],
+  "ignorePatterns": [
+    "reports/",
+    "node_modules/",
+    "**/*.min.js",
+    "**/*.bundle.js",
+    "**/*.map"
+  ]
+}

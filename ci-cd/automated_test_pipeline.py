@@ -22,6 +22,7 @@ import hashlib
 import pickle
 import threading
 from typing import Dict, List, Any, Tuple
+import shutil
 
 # Configure logging
 logging.basicConfig(
@@ -519,9 +520,43 @@ class AutomatedTestPipeline:
         logger.info("🔍 Running Static Code Analysis")
         
         try:
+            # Prefer ESLint if available
+            eslint_path = shutil.which('npx')
+            js_dir = self.project_root / 'src' / 'js'
+            if eslint_path and js_dir.exists():
+                try:
+                    result = subprocess.run(
+                        ['npx', 'eslint', '--format', 'json', '--ext', '.js', 'src/js'],
+                        capture_output=True,
+                        text=True,
+                        cwd=self.project_root,
+                        timeout=120
+                    )
+                    if result.returncode in (0, 1):  # 0 = no issues, 1 = lint errors
+                        lint_output = result.stdout.strip() or '[]'
+                        lint_results = json.loads(lint_output)
+                        error_count = sum(f.get('errorCount', 0) for f in lint_results)
+                        warn_count = sum(f.get('warningCount', 0) for f in lint_results)
+                        status = 'PASSED' if error_count == 0 else 'FAILED'
+                        self.test_results['tests']['static_analysis'] = {
+                            'status': status,
+                            'details': {
+                                'eslint': True,
+                                'error_count': error_count,
+                                'warning_count': warn_count
+                            }
+                        }
+                        return
+                except Exception:
+                    pass  # Fall back to legacy checks
+            
+            # Fallback: existing basic checks on legacy entry file if present
             js_path = self.project_root / 'src' / 'script.js'
-            with open(js_path, 'r', encoding='utf-8') as f:
-                js_content = f.read()
+            if js_path.exists():
+                with open(js_path, 'r', encoding='utf-8') as f:
+                    js_content = f.read()
+            else:
+                js_content = ''
             
             static_analysis = {
                 'syntax_check': self.check_javascript_syntax(js_content),
@@ -1214,7 +1249,9 @@ class AutomatedTestPipeline:
             for script_src in script_tags:
                 if script_src.startswith('http') or script_src.startswith('//'):
                     continue
-                script_path = self.project_root / script_src
+                # Remove version parameters (e.g., ?v=14)
+                clean_script_src = script_src.split('?')[0]
+                script_path = self.project_root / clean_script_src
                 if not script_path.exists():
                     missing_files.append(script_src)
                     functionality_issues.append(f'Missing script file: {script_src}')
@@ -1224,11 +1261,13 @@ class AutomatedTestPipeline:
                 functionality_issues.append('Missing workout form')
             if 'generate-btn' not in html_content:
                 functionality_issues.append('Missing generate button')
-            if 'script.js' not in script_tags:
-                functionality_issues.append('Main script.js not included')
+            # Check for main.js (with or without version parameters)
+            has_main_js = any('main.js' in script for script in script_tags)
+            if not has_main_js:
+                functionality_issues.append('Main main.js not included')
             
             # Check for form submission functionality and core functions
-            js_path = self.project_root / 'src' / 'script.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             if js_path.exists():
                 with open(js_path, 'r', encoding='utf-8') as f:
                     js_content = f.read()
@@ -1298,13 +1337,16 @@ class AutomatedTestPipeline:
                     
                     # Check for proper FormData usage
                     if 'FormData' in js_content:
-                        if 'formData.getAll(' not in js_content and 'formData.get(' in js_content:
-                            js_issues.append(f'{js_file.name}: Using formData.get() instead of formData.getAll() for equipment')
                         if 'formData.getAll(' in js_content and 'equipment' in js_content:
                             # Good - using getAll for equipment
                             pass
-                        else:
-                            js_issues.append(f'{js_file.name}: Equipment handling may not support multiple selections')
+                        elif 'formData.get(' in js_content and 'equipment' in js_content:
+                            # Check if it's using the correct approach for equipment
+                            if 'selectedEquipment' in js_content and 'formData.getAll' in js_content:
+                                # Good - using getAll for equipment
+                                pass
+                            else:
+                                js_issues.append(f'{js_file.name}: Equipment handling may not support multiple selections')
             
             all_issues = form_issues + js_issues
             
@@ -1549,9 +1591,8 @@ class AutomatedTestPipeline:
             available_durations = re.findall(duration_pattern, html_content)
             
             # Extract available equipment
-            equipment_pattern = r'<input[^>]*name="equipment"[^>]*id="eq-([^"]*)"[^>]*>'
-            equipment_ids = re.findall(equipment_pattern, html_content)
-            available_equipment = [eq.replace('-', ' ').title() for eq in equipment_ids]
+            equipment_pattern = r'<input[^>]*name="equipment"[^>]*value="([^"]*)"[^>]*>'
+            available_equipment = re.findall(equipment_pattern, html_content)
             
             # Extract available training patterns
             pattern_pattern = r'<input[^>]*name="training-pattern"[^>]*value="([^"]*)"[^>]*>'

@@ -1,0 +1,10 @@
+reports/
+ci-cd/.test_cache.pkl
+node_modules/
+.dist/
+build/
+coverage/
+*.min.js
+**/*.min.js
+**/*.bundle.js
+**/*.map
