@@ -348,6 +348,14 @@ function displayWorkout(workoutResult) {
     // Persist current workout in memory for interactive operations (e.g., swapping)
     window.currentWorkout = workout;
     window.currentWorkoutMeta = metadata;
+    window.currentWorkoutData = {
+        sequence: workout,
+        workTime: workTime,
+        restTime: restTime,
+        duration: duration,
+        trainingPattern: trainingPattern,
+        metadata: metadata
+    };
 
     // Hide form and show workout
     const form = document.getElementById('workout-form');

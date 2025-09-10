@@ -540,7 +540,11 @@ window.startWorkout = function() {
     console.log('🏃 Starting workout...');
     
     // Get current workout data from global state
-    if (window.currentWorkout && window.currentWorkout.length > 0) {
+    if (window.currentWorkoutData) {
+        // Use the complete workout data with actual timing
+        initializeWorkoutPlayer(window.currentWorkoutData);
+    } else if (window.currentWorkout && window.currentWorkout.length > 0) {
+        // Fallback to legacy format with defaults
         const workoutData = {
             sequence: window.currentWorkout,
             workTime: 45, // Default work time
