@@ -215,11 +215,58 @@ function setTimerDisplays() {
         if (restOverlay) {
             restOverlay.classList.remove('hidden');
             if (restOverlayTimer) restOverlayTimer.textContent = workoutState.remainingSeconds.toString().padStart(2, '0');
+            
+            // Update exercise progress
+            const currentExerciseNumber = document.getElementById('current-exercise-number');
+            const totalExercises = document.getElementById('total-exercises');
+            if (currentExerciseNumber) currentExerciseNumber.textContent = workoutState.currentIndex + 1;
+            if (totalExercises) totalExercises.textContent = workoutState.sequence.length;
+            
             if (nextName) {
                 const nextIdx = Math.min(workoutState.currentIndex + 1, workoutState.sequence.length - 1);
-                nextName.textContent = workoutState.sequence[nextIdx]?.name || '';
+                const nextExercise = workoutState.sequence[nextIdx];
+                if (nextExercise) {
+                    nextName.textContent = nextExercise.name || '';
+                    // Update detailed preview
+                    updateNextExercisePreview(nextExercise);
+                }
             }
         }
+    }
+}
+
+/**
+ * Update the next exercise preview with detailed information
+ */
+function updateNextExercisePreview(exercise) {
+    const nextExerciseName = document.getElementById('next-exercise-name');
+    const nextExerciseDescription = document.getElementById('next-exercise-description');
+    const nextExerciseEquipment = document.getElementById('next-exercise-equipment');
+    const nextExerciseMuscle = document.getElementById('next-exercise-muscle');
+    const nextExerciseLevel = document.getElementById('next-exercise-level');
+    
+    if (nextExerciseName) {
+        nextExerciseName.textContent = exercise.name || '';
+    }
+    
+    if (nextExerciseDescription) {
+        // Show brief description during rest, full description will be available in the main player
+        const description = exercise.description || '';
+        const briefDescription = description.length > 150 ? description.substring(0, 150) + '...' : description;
+        nextExerciseDescription.textContent = briefDescription;
+    }
+    
+    if (nextExerciseEquipment) {
+        nextExerciseEquipment.textContent = exercise.equipment || 'Bodyweight';
+    }
+    
+    if (nextExerciseMuscle) {
+        nextExerciseMuscle.textContent = exercise.muscle || 'Full Body';
+    }
+    
+    if (nextExerciseLevel) {
+        const level = Array.isArray(exercise.level) ? exercise.level[0] : exercise.level;
+        nextExerciseLevel.textContent = level || 'Beginner';
     }
 }
 
@@ -447,6 +494,17 @@ export function setupWorkoutPlayerListeners() {
     if (vibrationToggle) {
         vibrationToggle.addEventListener('change', (e) => {
             workoutState.enableVibration = e.target.checked;
+        });
+    }
+    
+    // Rest overlay close button
+    const overlayExitBtn = document.getElementById('overlay-exit-btn');
+    if (overlayExitBtn) {
+        overlayExitBtn.addEventListener('click', () => {
+            const restOverlay = document.getElementById('rest-overlay');
+            if (restOverlay) {
+                restOverlay.classList.add('hidden');
+            }
         });
     }
     

@@ -731,13 +731,48 @@
         </div>
 
         <!-- Rest Overlay -->
-        <div id="rest-overlay" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div class="card max-w-md mx-auto text-center">
+        <div id="rest-overlay" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300">
+            <div class="card max-w-2xl mx-auto text-center overflow-y-auto max-h-[90vh]">
                 <div class="text-6xl mb-4">😴</div>
                 <h3 class="text-2xl font-bold text-fit-dark mb-2">Rest Time</h3>
-                <div id="rest-overlay-timer" class="text-6xl font-bold text-fit-primary mb-4"></div>
-                <p class="text-fit-secondary mb-2">Next up:</p>
-                <p id="next-exercise-name" class="text-lg font-semibold text-fit-dark"></p>
+                <div id="rest-overlay-timer" class="text-6xl font-bold text-fit-primary mb-2"></div>
+                <p class="text-fit-secondary text-sm mb-4">Exercise <span id="current-exercise-number">1</span> of <span id="total-exercises">10</span> completed</p>
+                
+                <!-- Next Exercise Preview -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-fit-secondary mb-3 text-sm">Next up:</p>
+                    <h4 id="next-exercise-name" class="text-xl font-bold text-fit-dark mb-3"></h4>
+                    <p class="text-fit-primary text-sm font-medium mb-3">💪 Get ready and prepare your equipment!</p>
+                    
+                    <!-- Exercise Details -->
+                    <div class="grid grid-cols-2 gap-3 mb-3 text-sm">
+                        <div class="flex items-center justify-center space-x-2">
+                            <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
+                            <span id="next-exercise-equipment" class="text-fit-secondary"></span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <span id="next-exercise-muscle" class="text-fit-secondary"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Exercise Level -->
+                    <div class="mb-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-fit-primary/10 text-fit-primary">
+                            <span id="next-exercise-level" class="text-fit-primary"></span>
+                        </span>
+                    </div>
+                    
+                    <!-- Exercise Description -->
+                    <div class="text-left">
+                        <p id="next-exercise-description" class="text-sm text-fit-secondary leading-relaxed"></p>
+                    </div>
+                </div>
+                
                 <div class="mt-4">
                     <button id="overlay-exit-btn" class="btn-secondary px-4 py-2 rounded" aria-label="Close rest overlay" role="button">Close</button>
                 </div>
