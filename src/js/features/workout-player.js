@@ -22,9 +22,11 @@ let workoutState = {
  * Initialize workout player with workout data
  */
 export function initializeWorkoutPlayer(workoutData) {
+    console.log('🎮 Initializing workout player with data:', workoutData);
     workoutState.sequence = workoutData.sequence || [];
     workoutState.workTime = workoutData.workTime || 45;
     workoutState.restTime = workoutData.restTime || 15;
+    console.log('⏱️ Set workTime:', workoutState.workTime, 'restTime:', workoutState.restTime);
     workoutState.currentIndex = 0;
     workoutState.phase = 'work';
     workoutState.remainingSeconds = workoutState.workTime;
@@ -82,9 +84,16 @@ export function startPhase(phase) {
         if (workoutState.remainingSeconds <= 0) {
             clearRunningTimer();
             if (workoutState.phase === 'work') {
-                // Speak transition
-                speak('Rest');
-                startPhase('rest');
+                // Check if current exercise should skip rest (warm-up or cool-down)
+                const currentExercise = workoutState.sequence[workoutState.currentIndex];
+                if (currentExercise && currentExercise._noRest) {
+                    // Skip rest phase for warm-up and cool-down exercises
+                    advanceExercise();
+                } else {
+                    // Speak transition
+                    speak('Rest');
+                    startPhase('rest');
+                }
             } else {
                 advanceExercise();
             }
@@ -193,6 +202,16 @@ function renderWorkoutPlayer() {
         `;
         exerciseSafety.classList.remove('hidden');
     }
+    
+    // Hide rest timer for warm-up and cool-down exercises
+    const restTimer = document.getElementById('rest-timer');
+    if (restTimer) {
+        if (currentExercise._noRest) {
+            restTimer.style.display = 'none';
+        } else {
+            restTimer.style.display = 'block';
+        }
+    }
 }
 
 /**
@@ -205,9 +224,23 @@ function setTimerDisplays() {
     const restOverlayTimer = document.getElementById('rest-overlay-timer');
     const nextName = document.getElementById('next-exercise-name');
     
+    // Check if current exercise should skip rest (warm-up or cool-down)
+    const currentExercise = workoutState.sequence[workoutState.currentIndex];
+    const isNoRestExercise = currentExercise && currentExercise._noRest;
+    
     if (workoutState.phase === 'work') {
         if (workTimer) workTimer.textContent = formatSeconds(workoutState.remainingSeconds);
-        if (restTimer) restTimer.textContent = formatSeconds(workoutState.restTime);
+        
+        // Hide rest timer for warm-up and cool-down exercises
+        if (restTimer) {
+            if (isNoRestExercise) {
+                restTimer.style.display = 'none';
+            } else {
+                restTimer.style.display = 'block';
+                restTimer.textContent = formatSeconds(workoutState.restTime);
+            }
+        }
+        
         if (restOverlay) restOverlay.classList.add('hidden');
     } else {
         if (workTimer) workTimer.textContent = formatSeconds(workoutState.workTime);
@@ -538,19 +571,51 @@ export function setupWorkoutPlayerListeners() {
 // Make functions available globally for backward compatibility
 window.startWorkout = function() {
     console.log('🏃 Starting workout...');
+    console.log('🔍 Debug - window.currentWorkoutData:', window.currentWorkoutData);
+    console.log('🔍 Debug - window.currentWorkout:', window.currentWorkout);
+    
+    // Always try to get timing from the form first (most reliable)
+    let workTime = 45; // Default work time
+    let restTime = 15; // Default rest time
+    
+    try {
+        const workTimeInput = document.getElementById('work-time');
+        const restTimeInput = document.getElementById('rest-time');
+        
+        if (workTimeInput && workTimeInput.value) {
+            workTime = parseInt(workTimeInput.value);
+            console.log('🔍 Found work time from form:', workTime);
+        }
+        
+        if (restTimeInput && restTimeInput.value) {
+            restTime = parseInt(restTimeInput.value);
+            console.log('🔍 Found rest time from form:', restTime);
+        }
+    } catch (error) {
+        console.log('⚠️ Could not extract timing from form, using defaults:', error);
+    }
     
     // Get current workout data from global state
     if (window.currentWorkoutData) {
-        // Use the complete workout data with actual timing
-        initializeWorkoutPlayer(window.currentWorkoutData);
+        console.log('📊 Using currentWorkoutData with form timing override');
+        // Use the complete workout data but override timing with form values
+        const workoutData = {
+            ...window.currentWorkoutData,
+            workTime: workTime,
+            restTime: restTime
+        };
+        console.log('📊 Final workoutData:', workoutData);
+        initializeWorkoutPlayer(workoutData);
     } else if (window.currentWorkout && window.currentWorkout.length > 0) {
-        // Fallback to legacy format with defaults
+        console.log('⚠️ Using legacy format with form timing');
+        
         const workoutData = {
             sequence: window.currentWorkout,
-            workTime: 45, // Default work time
-            restTime: 15  // Default rest time
+            workTime: workTime,
+            restTime: restTime
         };
         
+        console.log('⚠️ Using fallback workoutData with form timing:', workoutData);
         initializeWorkoutPlayer(workoutData);
     } else {
         alert('No workout available. Please generate a workout first.');

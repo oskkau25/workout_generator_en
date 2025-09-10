@@ -6,7 +6,7 @@
  * and ensures all modules are loaded in the correct order
  */
 
-console.log('🔧 MAIN.JS LOADED - v3');
+console.log('🔧 MAIN.JS LOADED - v4 - CACHE BUSTED');
 
 // Import core modules
 import { exercises, exerciseDatabase } from './core/exercise-database.js';
@@ -15,7 +15,7 @@ import {
     validateForm, 
     getFormData, 
     handleFormSubmission 
-} from './core/workout-generator.js';
+} from './core/workout-generator.js?v=24';
 import { CONSTANTS } from './utils/constants.js';
 
 // Import feature modules
@@ -27,7 +27,7 @@ import {
 } from './features/smart-substitution.js';
 
 import { UserAccount, userAccount } from './features/user-accounts.js';
-import { setupWorkoutPlayerListeners } from './features/workout-player.js';
+import { setupWorkoutPlayerListeners } from './features/workout-player.js?v=24';
 
 // Import UI modules (to be created)
 // import { WorkoutUI } from './ui/workout-ui.js';

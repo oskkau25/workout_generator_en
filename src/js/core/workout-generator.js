@@ -85,8 +85,8 @@ function generateStandardWorkout(availableExercises, duration) {
 
     const workout = [];
     
-    // Add warmup (3-5 exercises)
-    const selectedWarmup = selectRandomExercises(warmupExercises, 4).map(ex => ({...ex, _section: 'Warm-up'}));
+    // Add warmup (8-10 exercises for ~5 minutes)
+    const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
     workout.push(...selectedWarmup);
     
     // Add main exercises based on duration
@@ -94,8 +94,8 @@ function generateStandardWorkout(availableExercises, duration) {
     const selectedMain = selectRandomExercises(mainExercises, mainCount).map(ex => ({...ex, _section: 'Main'}));
     workout.push(...selectedMain);
     
-    // Add cooldown (2-3 exercises)
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 3).map(ex => ({...ex, _section: 'Cool-down'}));
+    // Add cooldown (8-10 exercises for ~5 minutes)
+    const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map(ex => ({...ex, _section: 'Cool-down', _noRest: true}));
     workout.push(...selectedCooldown);
     
     return workout;
@@ -111,9 +111,9 @@ function generateCircuitWorkout(availableExercises, duration, settings) {
     const mainExercises = availableExercises; // already filtered for equipment
     const workout = [];
     
-    // Add warmup (from full catalog)
+    // Add warmup (from full catalog) - 8 exercises for ~5 minutes
     const warmupExercises = exercises.filter(ex => ex.type === 'warmup');
-    const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
+    const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
     workout.push(...selectedWarmup);
     
     // Select exercises for the circuit ONCE
@@ -139,9 +139,9 @@ function generateCircuitWorkout(availableExercises, duration, settings) {
         workout.push(...roundExercises);
     }
     
-    // Add cooldown (from full catalog)
+    // Add cooldown (from full catalog) - 8 exercises for ~5 minutes
     const cooldownExercises = exercises.filter(ex => ex.type === 'cooldown');
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
+    const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map(ex => ({...ex, _section: 'Cool-down', _noRest: true}));
     workout.push(...selectedCooldown);
     
     return workout;
@@ -156,9 +156,9 @@ function generateTabataWorkout(availableExercises, duration, settings) {
     const mainExercises = availableExercises; // already filtered for equipment
     const workout = [];
     
-    // Add warmup (from full catalog)
+    // Add warmup (from full catalog) - 8 exercises for ~5 minutes
     const warmupExercises = exercises.filter(ex => ex.type === 'warmup');
-    const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
+    const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
     workout.push(...selectedWarmup);
     
     // Select one exercise for all Tabata sets
@@ -177,9 +177,9 @@ function generateTabataWorkout(availableExercises, duration, settings) {
         if (tabataExercise) workout.push({...tabataExercise, _section: 'Main'});
     }
     
-    // Add cooldown (from full catalog)
+    // Add cooldown (from full catalog) - 8 exercises for ~5 minutes
     const cooldownExercises = exercises.filter(ex => ex.type === 'cooldown');
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
+    const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map(ex => ({...ex, _section: 'Cool-down', _noRest: true}));
     workout.push(...selectedCooldown);
     
     return workout;
@@ -194,9 +194,9 @@ function generatePyramidWorkout(availableExercises, duration, settings) {
     const mainExercises = availableExercises; // already filtered for equipment
     const workout = [];
     
-    // Add warmup (from full catalog)
+    // Add warmup (from full catalog) - 8 exercises for ~5 minutes
     const warmupExercises = exercises.filter(ex => ex.type === 'warmup');
-    const selectedWarmup = selectRandomExercises(warmupExercises, 3).map(ex => ({...ex, _section: 'Warm-up'}));
+    const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
     workout.push(...selectedWarmup);
     
     // Select exercises for the pyramid (same exercises for all levels)
@@ -217,9 +217,9 @@ function generatePyramidWorkout(availableExercises, duration, settings) {
         workout.push(...levelExercises);
     }
     
-    // Add cooldown (from full catalog)
+    // Add cooldown (from full catalog) - 8 exercises for ~5 minutes
     const cooldownExercises = exercises.filter(ex => ex.type === 'cooldown');
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 2).map(ex => ({...ex, _section: 'Cool-down'}));
+    const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map(ex => ({...ex, _section: 'Cool-down', _noRest: true}));
     workout.push(...selectedCooldown);
     
     return workout;
@@ -310,18 +310,30 @@ export function handleFormSubmission(event) {
         console.log('🚀 Form submitted, generating workout...');
         
         // Validate form
+        console.log('🔍 About to validate form...');
         validateForm();
+        console.log('✅ Form validation passed');
         
         // Get form data
+        console.log('🔍 About to get form data...');
         const formData = getFormData();
         console.log('📋 Form data:', formData);
         
         // Generate workout
+        console.log('🔍 About to generate workout...');
         const workoutResult = generateWorkout(formData);
         console.log('✅ Workout generated:', workoutResult);
+        console.log('🚨 ABOUT TO CALL displayWorkout with workTime:', workoutResult.workTime, 'restTime:', workoutResult.restTime);
         
         // Display workout
-        displayWorkout(workoutResult);
+        console.log('🚨 CALLING displayWorkout NOW...');
+        try {
+            displayWorkout(workoutResult);
+            console.log('🚨 AFTER displayWorkout call - window.currentWorkoutData:', window.currentWorkoutData);
+        } catch (error) {
+            console.error('❌ Error in displayWorkout:', error);
+        }
+        console.log('🚨 CONTINUING AFTER displayWorkout...');
         
         // Track analytics
         if (window.analytics) {
@@ -343,7 +355,10 @@ export function handleFormSubmission(event) {
  * Display generated workout
  */
 function displayWorkout(workoutResult) {
+    console.log('🚨🚨🚨 displayWorkout FUNCTION CALLED! 🚨🚨🚨');
     const { workout, duration, workTime, restTime, trainingPattern, metadata } = workoutResult;
+    
+    console.log('📋 displayWorkout called with:', { workTime, restTime, duration });
     
     // Persist current workout in memory for interactive operations (e.g., swapping)
     window.currentWorkout = workout;
@@ -356,6 +371,8 @@ function displayWorkout(workoutResult) {
         trainingPattern: trainingPattern,
         metadata: metadata
     };
+    
+    console.log('💾 Stored window.currentWorkoutData:', window.currentWorkoutData);
 
     // Hide form and show workout
     const form = document.getElementById('workout-form');
@@ -506,25 +523,7 @@ window.generateNewWorkout = function() {
     form?.scrollIntoView({ behavior: 'smooth' });
 };
 
-/**
- * Start workout using the workout player
- */
-window.startWorkout = function() {
-    console.log('🏃 Starting workout...');
-    
-    // Get current workout data from global state
-    if (window.currentWorkout && window.currentWorkout.length > 0) {
-        const workoutData = {
-            sequence: window.currentWorkout,
-            workTime: 45, // Default work time
-            restTime: 15  // Default rest time
-        };
-        
-        initializeWorkoutPlayer(workoutData);
-    } else {
-        alert('No workout available. Please generate a workout first.');
-    }
-};
+// Note: window.startWorkout is defined in workout-player.js
 
 // Make functions available globally for backward compatibility
 window.generateWorkout = generateWorkout;

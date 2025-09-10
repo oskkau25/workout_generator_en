@@ -668,7 +668,8 @@ class AutomatedTestPipeline:
                 self.test_exercise_database(),
                 self.test_actual_functionality(),
                 self.test_form_data_validation(),
-                self.test_comprehensive_form_combinations()
+                self.test_comprehensive_form_combinations(),
+                self.test_workout_timing_data_flow()
             ]
             
             # Combine core and dynamic tests
@@ -686,7 +687,7 @@ class AutomatedTestPipeline:
             for i, test in enumerate(all_tests):
                 if i < len(core_tests):
                     # Core tests with fixed names
-                    test_names = ['html_structure', 'javascript_functionality', 'exercise_database', 'actual_functionality', 'form_data_validation', 'comprehensive_form_combinations']
+                    test_names = ['html_structure', 'javascript_functionality', 'exercise_database', 'actual_functionality', 'form_data_validation', 'comprehensive_form_combinations', 'workout_timing_data_flow']
                     test_details[test_names[i]] = test
                 else:
                     # Dynamic tests with auto-generated names
@@ -1707,6 +1708,132 @@ class AutomatedTestPipeline:
                 'status': 'FAILED',
                 'error': str(e),
                 'critical_issues': ['Comprehensive form combination test failed']
+            }
+    
+    def test_workout_timing_data_flow(self):
+        """Test that workout timing values flow correctly from form to workout player"""
+        try:
+            # Check HTML form structure for timing inputs
+            html_path = self.project_root / 'src' / 'index.html'
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # Check for timing input elements
+            timing_checks = {
+                'work_time_input': 'id="work-time"' in html_content,
+                'rest_time_input': 'id="rest-time"' in html_content,
+                'work_time_name': 'name="workTime"' in html_content,
+                'rest_time_name': 'name="restTime"' in html_content
+            }
+            
+            # Check JavaScript files for timing data flow
+            js_files = [
+                'src/js/core/workout-generator.js',
+                'src/js/features/workout-player.js'
+            ]
+            
+            timing_data_flow = {}
+            
+            for js_file in js_files:
+                js_path = self.project_root / js_file
+                if not js_path.exists():
+                    timing_data_flow[js_file] = {'status': 'MISSING', 'error': 'File not found'}
+                    continue
+                
+                with open(js_path, 'r', encoding='utf-8') as f:
+                    js_content = f.read()
+                
+                # Check for timing-related code patterns
+                timing_patterns = {
+                    'form_data_extraction': 'workTime' in js_content and 'restTime' in js_content,
+                    'workout_data_storage': 'window.currentWorkoutData' in js_content,
+                    'timing_initialization': 'workTime:' in js_content and 'restTime:' in js_content,
+                    'form_timing_extraction': 'getElementById(\'work-time\')' in js_content or 'getElementById("work-time")' in js_content,
+                    'timing_override': 'workTime: workTime' in js_content or 'workTime: workTime' in js_content
+                }
+                
+                timing_data_flow[js_file] = {
+                    'status': 'FOUND',
+                    'patterns': timing_patterns,
+                    'has_timing_logic': any(timing_patterns.values())
+                }
+            
+            # Check for critical timing functions
+            workout_generator_path = self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js'
+            workout_player_path = self.project_root / 'src' / 'js' / 'features' / 'workout-player.js'
+            
+            critical_functions = {
+                'displayWorkout': False,
+                'window.startWorkout': False,
+                'initializeWorkoutPlayer': False
+            }
+            
+            if workout_generator_path.exists():
+                with open(workout_generator_path, 'r', encoding='utf-8') as f:
+                    generator_content = f.read()
+                critical_functions['displayWorkout'] = 'function displayWorkout' in generator_content or 'displayWorkout(' in generator_content
+            
+            if workout_player_path.exists():
+                with open(workout_player_path, 'r', encoding='utf-8') as f:
+                    player_content = f.read()
+                critical_functions['window.startWorkout'] = 'window.startWorkout' in player_content
+                critical_functions['initializeWorkoutPlayer'] = 'initializeWorkoutPlayer' in player_content
+            
+            # Check for timing value extraction from form
+            form_timing_extraction = False
+            if workout_player_path.exists():
+                with open(workout_player_path, 'r', encoding='utf-8') as f:
+                    player_content = f.read()
+                form_timing_extraction = (
+                    'getElementById(\'work-time\')' in player_content or 
+                    'getElementById("work-time")' in player_content
+                ) and (
+                    'getElementById(\'rest-time\')' in player_content or 
+                    'getElementById("rest-time")' in player_content
+                )
+            
+            # Overall validation
+            all_timing_checks_passed = (
+                all(timing_checks.values()) and
+                all(critical_functions.values()) and
+                form_timing_extraction and
+                all(flow.get('has_timing_logic', False) for flow in timing_data_flow.values() if flow.get('status') == 'FOUND')
+            )
+            
+            if all_timing_checks_passed:
+                return {
+                    'status': 'PASSED',
+                    'html_timing_inputs': timing_checks,
+                    'js_timing_data_flow': timing_data_flow,
+                    'critical_functions': critical_functions,
+                    'form_timing_extraction': form_timing_extraction,
+                    'timing_data_flow_complete': True
+                }
+            else:
+                issues = []
+                if not all(timing_checks.values()):
+                    issues.append('Missing timing input elements in HTML')
+                if not all(critical_functions.values()):
+                    missing_funcs = [func for func, exists in critical_functions.items() if not exists]
+                    issues.append(f'Missing critical functions: {missing_funcs}')
+                if not form_timing_extraction:
+                    issues.append('Missing form timing extraction logic')
+                
+                return {
+                    'status': 'FAILED',
+                    'html_timing_inputs': timing_checks,
+                    'js_timing_data_flow': timing_data_flow,
+                    'critical_functions': critical_functions,
+                    'form_timing_extraction': form_timing_extraction,
+                    'issues': issues,
+                    'critical_issues': issues
+                }
+            
+        except Exception as e:
+            return {
+                'status': 'FAILED',
+                'error': str(e),
+                'critical_issues': ['Workout timing data flow test failed']
             }
     
     def test_exhaustive_equipment_combinations(self):

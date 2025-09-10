@@ -727,6 +727,171 @@ export const exercises = [
         muscle: "Full Body", 
         type: "cooldown" 
     },
+    
+    // Additional Warm-up Exercises (5-minute warm-up)
+    { 
+        name: "Arm Circles", 
+        description: "Stand with arms extended to sides. Make small circles forward for 10 reps, then backward for 10 reps. Gradually increase circle size. ⚠️ DO: Keep movements controlled, start small and increase range. DON'T: Force large circles if shoulders are tight, or continue if you feel shoulder pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Shoulders", 
+        type: "warmup" 
+    },
+    { 
+        name: "Leg Swings", 
+        description: "Hold onto a wall or sturdy surface for balance. Swing one leg forward and backward, then side to side. Do 10 swings each direction per leg. ⚠️ DO: Keep standing leg stable, swing from hip, control the movement. DON'T: Let momentum take over, swing too hard, or lose balance.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Scapular Pulls", 
+        description: "Hang from a bar with straight arms and pull shoulder blades down and back. Hold for 2 seconds, then release. Do 10-15 reps. ⚠️ DO: Keep arms straight and control the movement. DON'T: Swing or bend elbows.", 
+        equipment: "Pull-up Bar", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "warmup" 
+    },
+    { 
+        name: "Hip Openers (Lunge + Circle)", 
+        description: "Step into a forward lunge, gently circle the front hip in both directions. Do 5 circles each direction, then switch legs. ⚠️ DO: Keep movements gentle and controlled, feel hip mobility. DON'T: Force deep angles or twist the knee.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Walking Lunges", 
+        description: "Step forward into a lunge, then bring back leg forward into next lunge. Continue walking forward with controlled lunges. Do 10-15 lunges total. ⚠️ DO: Keep chest up, control the movement, land softly. DON'T: Let knee go past toes, round back, or rush the movement.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Bear Crawl", 
+        description: "Start on hands and knees, lift knees 1-2 inches off ground. Crawl forward by moving opposite hand and foot together. Keep core tight and back flat. ⚠️ DO: Keep core engaged, maintain flat back, move slowly. DON'T: Pike hips or let knees drag.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "Mountain Climbers", 
+        description: "Start in plank position. Alternate bringing knees toward chest in running motion. Keep core tight and maintain plank position. ⚠️ DO: Keep hips level, maintain plank form, control the movement. DON'T: Let hips lift, move too fast, or sacrifice form for speed.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "Jumping Jacks", 
+        description: "Start standing with feet together and arms at sides. Jump feet apart while raising arms overhead, then jump back to start. ⚠️ DO: Land softly, maintain rhythm, breathe normally. DON'T: Land hard, hold breath, or jump too high if you have joint issues.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    { 
+        name: "Reverse Lunges", 
+        description: "Step one leg back and lower until both knees hit ~90 degrees. Push back to start and repeat. Do 10-15 reps per leg. ⚠️ DO: Keep chest up, control the movement, land softly. DON'T: Let front knee cave or slam the back knee.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "warmup" 
+    },
+    { 
+        name: "Plank to Downward Dog", 
+        description: "Start in plank position. Push hips up and back into downward dog, then return to plank. Move slowly and controlled. ⚠️ DO: Keep core engaged, move with control, feel the stretch. DON'T: Rush the movement, let hips sag, or lose form.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "warmup" 
+    },
+    
+    // Additional Cool-down Exercises (5-minute cool-down)
+    { 
+        name: "Seated Forward Fold", 
+        description: "Sit tall with legs extended; hinge forward from hips, reaching for feet or shins. Hold 30-60 seconds, breathing deeply. ⚠️ DO: Hinge from hips, keep back straight, breathe deeply. DON'T: Bounce or round aggressively.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Quad Stretch", 
+        description: "Stand on one leg, bend other knee and grab foot behind you. Pull heel toward glutes gently. Hold 30 seconds per side. ⚠️ DO: Keep standing leg soft, pull gently, maintain balance. DON'T: Force the stretch, hold breath, or lose balance.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Wall Chest Stretch", 
+        description: "Stand facing wall, place forearm against wall at shoulder height. Gently turn body away from wall to feel chest stretch. Hold 30 seconds per side. ⚠️ DO: Keep shoulder relaxed, breathe deeply, feel gentle stretch. DON'T: Force the stretch or continue if you feel shoulder pain.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Chest", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Seated Spinal Twist", 
+        description: "Sit with legs extended, bend one knee and place foot outside opposite thigh. Twist torso toward bent knee, placing opposite elbow outside knee. Hold 30 seconds per side. ⚠️ DO: Keep spine tall, breathe deeply, feel gentle twist. DON'T: Force the twist or round back.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Standing Forward Fold", 
+        description: "Stand with feet hip-width apart, hinge forward from hips and let arms hang. Hold 30-60 seconds, breathing deeply. ⚠️ DO: Hinge from hips, keep knees soft, breathe deeply. DON'T: Bounce or force the stretch.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Reclined Butterfly", 
+        description: "Lie on back, bring soles of feet together and let knees fall open. Place hands on belly and breathe deeply. Hold 60-90 seconds. ⚠️ DO: Relax into the stretch, breathe deeply, let gravity work. DON'T: Force knees down or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Supine Twist", 
+        description: "Lie on back, bring knees to chest, then let them fall to one side while keeping shoulders on floor. Hold 30 seconds per side. ⚠️ DO: Keep shoulders down, breathe deeply, feel gentle twist. DON'T: Force the twist or lift shoulders.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Happy Baby", 
+        description: "Lie on back, bring knees to chest and grab outside of feet. Gently rock side to side while holding feet. Hold 30-60 seconds. ⚠️ DO: Keep lower back on floor, breathe deeply, rock gently. DON'T: Force the stretch or lift lower back.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Back", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Legs Up the Wall", 
+        description: "Sit close to wall, swing legs up wall and lie back. Let arms rest at sides and breathe deeply. Hold 2-5 minutes. ⚠️ DO: Relax completely, breathe deeply, let legs rest against wall. DON'T: Force legs against wall or hold breath.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Legs", 
+        type: "cooldown" 
+    },
+    { 
+        name: "Corpse Pose", 
+        description: "Lie on back with arms at sides, palms up. Close eyes and focus on deep breathing. Let body completely relax. Hold 3-5 minutes. ⚠️ DO: Relax completely, breathe deeply, let go of tension. DON'T: Fall asleep or hold any tension.", 
+        equipment: "Bodyweight", 
+        level: ["Beginner", "Intermediate", "Advanced"], 
+        muscle: "Full Body", 
+        type: "cooldown" 
+    },
+    
     // Additional TRX exercises
     { 
         name: "TRX Push-ups", 

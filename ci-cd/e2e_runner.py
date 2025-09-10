@@ -383,6 +383,152 @@ def run_dynamic_smoke() -> Dict[str, Any]:
                 
                 checks['fitness_level_tests'] = level_results
 
+                # Test 7: Dynamic Workout Timing Validation (Auto-detected)
+                # Test that workout timing values from form are correctly used in workout player
+                try:
+                    logging.info("🧪 Testing workout timing validation...")
+                    
+                    # Test different timing combinations
+                    timing_tests = [
+                        {"workTime": 30, "restTime": 10},
+                        {"workTime": 45, "restTime": 15},
+                        {"workTime": 60, "restTime": 20}
+                    ]
+                    
+                    timing_results = {}
+                    
+                    for i, timing in enumerate(timing_tests):
+                        try:
+                            # Set form values
+                            page.evaluate(f"""
+                                () => {{
+                                    // Reset form
+                                    const form = document.getElementById('workout-form');
+                                    if (form) form.reset();
+                                    
+                                    // Set timing values
+                                    const workTimeInput = document.getElementById('work-time');
+                                    const restTimeInput = document.getElementById('rest-time');
+                                    
+                                    if (workTimeInput) workTimeInput.value = {timing['workTime']};
+                                    if (restTimeInput) restTimeInput.value = {timing['restTime']};
+                                    
+                                    // Set other required values
+                                    const durationInput = document.querySelector('input[name="duration"]:checked');
+                                    if (durationInput) durationInput.checked = true;
+                                    
+                                    const equipmentInput = document.querySelector('input[name="equipment"]');
+                                    if (equipmentInput) equipmentInput.checked = true;
+                                    
+                                    const levelSelect = document.getElementById('fitness-level');
+                                    if (levelSelect) levelSelect.value = 'Intermediate';
+                                    
+                                    const patternInput = document.querySelector('input[name="training-pattern"]:checked');
+                                    if (patternInput) patternInput.checked = true;
+                                }}
+                            """)
+                            
+                            # Generate workout
+                            page.click('#generate-workout-btn')
+                            page.wait_for_timeout(2000)  # Wait for workout generation
+                            
+                            # Check if workout was generated
+                            workout_section = page.query_selector('#workout-section')
+                            if not workout_section or workout_section.is_hidden():
+                                timing_results[f'test_{i+1}'] = False
+                                continue
+                            
+                            # Start workout and check timing values
+                            timing_validation = page.evaluate(f"""
+                                () => {{
+                                    try {{
+                                        // Start the workout
+                                        if (typeof window.startWorkout === 'function') {{
+                                            window.startWorkout();
+                                        }}
+                                        
+                                        // Wait a moment for initialization
+                                        return new Promise((resolve) => {{
+                                            setTimeout(() => {{
+                                                // Check if workout player is visible
+                                                const player = document.querySelector('#workout-player');
+                                                if (!player || player.style.display === 'none') {{
+                                                    resolve({{error: 'Workout player not visible'}});
+                                                    return;
+                                                }}
+                                                
+                                                // Check timing values in workout state
+                                                const workTimeDisplay = document.querySelector('#work-time-display');
+                                                const restTimeDisplay = document.querySelector('#rest-time-display');
+                                                
+                                                const workTimeValue = workTimeDisplay ? workTimeDisplay.textContent : '';
+                                                const restTimeValue = restTimeDisplay ? restTimeDisplay.textContent : '';
+                                                
+                                                // Check if timing values match form input
+                                                const expectedWorkTime = {timing['workTime']};
+                                                const expectedRestTime = {timing['restTime']};
+                                                
+                                                const workTimeMatch = workTimeValue.includes(expectedWorkTime.toString());
+                                                const restTimeMatch = restTimeValue.includes(expectedRestTime.toString());
+                                                
+                                                resolve({{
+                                                    workTimeMatch: workTimeMatch,
+                                                    restTimeMatch: restTimeMatch,
+                                                    workTimeValue: workTimeValue,
+                                                    restTimeValue: restTimeValue,
+                                                    expectedWorkTime: expectedWorkTime,
+                                                    expectedRestTime: expectedRestTime
+                                                }});
+                                            }}, 1000);
+                                        }});
+                                    }} catch (error) {{
+                                        return {{error: error.message}};
+                                    }}
+                                }}
+                            """)
+                            
+                            if timing_validation.get('error'):
+                                timing_results[f'test_{i+1}'] = False
+                                logging.warning(f"⚠️ Timing test {i+1} failed: {timing_validation['error']}")
+                            else:
+                                workTimeMatch = timing_validation.get('workTimeMatch', False)
+                                restTimeMatch = timing_validation.get('restTimeMatch', False)
+                                timing_results[f'test_{i+1}'] = workTimeMatch and restTimeMatch
+                                
+                                if not (workTimeMatch and restTimeMatch):
+                                    logging.warning(f"⚠️ Timing test {i+1} failed:")
+                                    logging.warning(f"   Expected work time: {timing_validation.get('expectedWorkTime')}s, got: {timing_validation.get('workTimeValue')}")
+                                    logging.warning(f"   Expected rest time: {timing_validation.get('expectedRestTime')}s, got: {timing_validation.get('restTimeValue')}")
+                                else:
+                                    logging.info(f"✅ Timing test {i+1} passed: {timing_validation.get('expectedWorkTime')}s work, {timing_validation.get('expectedRestTime')}s rest")
+                            
+                            # Go back to form for next test
+                            page.evaluate("""
+                                () => {
+                                    const form = document.getElementById('workout-form');
+                                    const workoutSection = document.getElementById('workout-section');
+                                    if (form) form.style.display = 'block';
+                                    if (workoutSection) workoutSection.style.display = 'none';
+                                }
+                            """)
+                            
+                        except Exception as e:
+                            timing_results[f'test_{i+1}'] = False
+                            logging.warning(f"⚠️ Timing test {i+1} failed: {e}")
+                    
+                    # Overall timing validation result
+                    timing_passed = all(timing_results.values())
+                    checks['workout_timing_validation'] = timing_passed
+                    
+                    if timing_passed:
+                        logging.info("✅ Workout timing validation passed")
+                    else:
+                        logging.warning("⚠️ Workout timing validation failed")
+                        
+                except Exception as e:
+                    checks['workout_timing_validation'] = False
+                    logging.warning(f"⚠️ Workout timing validation failed: {e}")
+
                 # Test: Accessibility with axe-core
                 try:
                     # Inject axe-core
