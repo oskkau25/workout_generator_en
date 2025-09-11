@@ -210,6 +210,11 @@ export function enhanceWorkoutWithSubstitutions(workout, userPreferences = {}) {
         }
     });
     
+    // Preserve circuit data if it exists
+    if (workout._circuitData) {
+        enhancedWorkout._circuitData = workout._circuitData;
+    }
+    
     return enhancedWorkout;
 }
 

@@ -218,6 +218,62 @@ class FitFlowApp {
         } else {
             console.warn('⚠️ Workout form not found');
         }
+        
+        // Setup training pattern listeners
+        this.setupTrainingPatternListeners();
+    }
+    
+    /**
+     * Setup training pattern event listeners
+     */
+    setupTrainingPatternListeners() {
+        const patternInputs = document.querySelectorAll('input[name="training-pattern"]');
+        
+        patternInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                const pattern = e.target.value;
+                this.showPatternSettings(pattern);
+                console.log('🔄 Training pattern changed to:', pattern);
+            });
+        });
+        
+        console.log('🔄 Training pattern listeners attached');
+    }
+    
+    /**
+     * Show pattern-specific settings
+     */
+    showPatternSettings(pattern) {
+        const patternSettings = document.getElementById('pattern-settings');
+        const circuitSettings = document.getElementById('circuit-settings');
+        const tabataSettings = document.getElementById('tabata-settings');
+        const pyramidSettings = document.getElementById('pyramid-settings');
+        
+        // Hide all settings first
+        if (circuitSettings) circuitSettings.classList.add('hidden');
+        if (tabataSettings) tabataSettings.classList.add('hidden');
+        if (pyramidSettings) pyramidSettings.classList.add('hidden');
+        
+        // Show pattern settings container
+        if (patternSettings) {
+            patternSettings.classList.remove('hidden');
+        }
+        
+        // Show specific settings based on pattern
+        switch(pattern) {
+            case 'circuit':
+                if (circuitSettings) circuitSettings.classList.remove('hidden');
+                break;
+            case 'tabata':
+                if (tabataSettings) tabataSettings.classList.remove('hidden');
+                break;
+            case 'pyramid':
+                if (pyramidSettings) pyramidSettings.classList.remove('hidden');
+                break;
+            default:
+                if (patternSettings) patternSettings.classList.add('hidden');
+                break;
+        }
     }
     
     /**

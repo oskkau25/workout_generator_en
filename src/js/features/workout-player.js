@@ -19,14 +19,83 @@ let workoutState = {
 };
 
 /**
+ * Expand circuit workout to include all rounds
+ */
+function expandCircuitWorkout(workoutData) {
+    const circuitData = workoutData._circuitData;
+    if (!circuitData) {
+        console.log('❌ No circuit data found, returning original sequence');
+        return workoutData.sequence;
+    }
+    
+    console.log('🔄 Circuit data found:', circuitData);
+    const workout = workoutData.sequence;
+    const expandedWorkout = [];
+    
+    for (let i = 0; i < workout.length; i++) {
+        const exercise = workout[i];
+        
+        if (exercise._isCircuitExercise && exercise._isPreviewOnly) {
+            // Skip preview-only circuit exercises, we'll add all rounds below
+            continue;
+        } else if (exercise.type === 'circuit_header') {
+            // Keep the circuit header
+            expandedWorkout.push(exercise);
+        } else {
+            // Keep non-circuit exercises (warm-up, cool-down, etc.)
+            expandedWorkout.push(exercise);
+        }
+    }
+    
+    // Find the position where circuit exercises should be inserted
+    const circuitHeaderIndex = expandedWorkout.findIndex(ex => ex.type === 'circuit_header');
+    const insertIndex = circuitHeaderIndex + 1;
+    
+    // Create all circuit rounds first
+    const allCircuitExercises = [];
+    for (let round = 1; round <= circuitData.rounds; round++) {
+        const roundExercises = circuitData.exercises.map((ex, index) => ({
+            ...ex, 
+            _section: 'Main',
+            _circuitPosition: index + 1,
+            _totalInCircuit: circuitData.exercisesPerRound,
+            _circuitRounds: circuitData.rounds,
+            _currentRound: round,
+            _isCircuitExercise: true
+        }));
+        allCircuitExercises.push(...roundExercises);
+    }
+    
+    // Insert all circuit exercises at once
+    expandedWorkout.splice(insertIndex, 0, ...allCircuitExercises);
+    
+    console.log('✅ Circuit expansion complete:');
+    console.log('  - Original sequence length:', workout.length);
+    console.log('  - Expanded sequence length:', expandedWorkout.length);
+    console.log('  - Circuit exercises added:', allCircuitExercises.length);
+    console.log('  - Rounds:', circuitData.rounds, 'Exercises per round:', circuitData.exercisesPerRound);
+    
+    return expandedWorkout;
+}
+
+/**
  * Initialize workout player with workout data
  */
 export function initializeWorkoutPlayer(workoutData) {
     console.log('🎮 Initializing workout player with data:', workoutData);
-    workoutState.sequence = workoutData.sequence || [];
+    
+    // Check if this is a circuit workout and expand the sequence
+    let sequence = workoutData.sequence || [];
+    if (workoutData._circuitData) {
+        console.log('🔄 Expanding circuit workout for all rounds');
+        sequence = expandCircuitWorkout(workoutData);
+    }
+    
+    workoutState.sequence = sequence;
     workoutState.workTime = workoutData.workTime || 45;
     workoutState.restTime = workoutData.restTime || 15;
     console.log('⏱️ Set workTime:', workoutState.workTime, 'restTime:', workoutState.restTime);
+    console.log('📋 Final workout sequence length:', sequence.length);
     workoutState.currentIndex = 0;
     workoutState.phase = 'work';
     workoutState.remainingSeconds = workoutState.workTime;
@@ -151,6 +220,18 @@ function completeWorkout() {
 }
 
 /**
+ * Get the starting index of circuit exercises
+ */
+function getCircuitStartIndex() {
+    for (let i = 0; i < workoutState.sequence.length; i++) {
+        if (workoutState.sequence[i]._isCircuitExercise) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+/**
  * Render the workout player interface
  */
 function renderWorkoutPlayer() {
@@ -164,8 +245,32 @@ function renderWorkoutPlayer() {
     const sectionBadge = document.getElementById('section-badge');
     
     if (progressBar) progressBar.style.width = `${progress}%`;
-    if (exerciseProgress) exerciseProgress.textContent = `Exercise ${workoutState.currentIndex + 1} of ${workoutState.sequence.length}`;
+    
+    // Enhanced progress display for circuit exercises
+    if (exerciseProgress) {
+        if (currentExercise._isCircuitExercise) {
+            const currentRound = currentExercise._currentRound || Math.ceil((workoutState.currentIndex - getCircuitStartIndex()) / currentExercise._totalInCircuit) + 1;
+            exerciseProgress.textContent = `Round ${currentRound}/${currentExercise._circuitRounds} - Exercise ${currentExercise._circuitPosition}/${currentExercise._totalInCircuit}`;
+        } else {
+            exerciseProgress.textContent = `Exercise ${workoutState.currentIndex + 1} of ${workoutState.sequence.length}`;
+        }
+    }
+    
     if (sectionBadge) sectionBadge.textContent = currentExercise._section || 'Exercise';
+    
+    // Show/hide circuit round counter
+    const circuitRoundCounter = document.getElementById('circuit-round-counter');
+    const circuitRoundDisplay = document.getElementById('circuit-round-display');
+    
+    if (currentExercise._isCircuitExercise) {
+        if (circuitRoundCounter) circuitRoundCounter.classList.remove('hidden');
+        if (circuitRoundDisplay) {
+            const currentRound = currentExercise._currentRound || Math.ceil((workoutState.currentIndex - getCircuitStartIndex()) / currentExercise._totalInCircuit) + 1;
+            circuitRoundDisplay.textContent = `Round ${currentRound} of ${currentExercise._circuitRounds}`;
+        }
+    } else {
+        if (circuitRoundCounter) circuitRoundCounter.classList.add('hidden');
+    }
     
     // Update exercise display
     const exerciseTitle = document.getElementById('exercise-title');
@@ -173,12 +278,28 @@ function renderWorkoutPlayer() {
     const exerciseInstructions = document.getElementById('exercise-instructions');
     const exerciseSafety = document.getElementById('exercise-safety');
     
-    if (exerciseTitle) exerciseTitle.textContent = currentExercise.name;
+    // Enhanced title for circuit exercises
+    if (exerciseTitle) {
+        if (currentExercise._isCircuitExercise) {
+            exerciseTitle.innerHTML = `<span class="text-fit-accent">#${currentExercise._circuitPosition}</span> ${currentExercise.name}`;
+        } else {
+            exerciseTitle.textContent = currentExercise.name;
+        }
+    }
+    
     if (exerciseMeta) {
-        exerciseMeta.innerHTML = `
+        let metaHTML = `
             <span class="inline-block px-3 py-1 bg-fit-primary/10 text-fit-primary rounded-full text-sm font-medium mr-2">${currentExercise.muscle}</span>
             <span class="inline-block px-3 py-1 bg-fit-secondary/10 text-fit-secondary rounded-full text-sm font-medium">${currentExercise.equipment}</span>
         `;
+        
+        // Add circuit round info if it's a circuit exercise
+        if (currentExercise._isCircuitExercise) {
+            const currentRound = currentExercise._currentRound || Math.ceil((workoutState.currentIndex - getCircuitStartIndex()) / currentExercise._totalInCircuit) + 1;
+            metaHTML += `<span class="inline-block px-3 py-1 bg-fit-accent text-white rounded-full text-sm font-medium ml-2">Round ${currentRound}/${currentExercise._circuitRounds}</span>`;
+        }
+        
+        exerciseMeta.innerHTML = metaHTML;
     }
     
     // Parse instructions and safety

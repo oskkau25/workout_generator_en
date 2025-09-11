@@ -12,6 +12,7 @@ import { enhanceWorkoutWithSubstitutions } from '../features/smart-substitution.
  * This is the core function that creates workouts based on user preferences
  */
 export function generateWorkout(formData) {
+    console.log('🚀 generateWorkout called with formData:', formData);
     const {
         level = 'Intermediate',
         duration = 30,
@@ -21,6 +22,7 @@ export function generateWorkout(formData) {
         trainingPattern = 'Standard',
         patternSettings = {}
     } = formData;
+    console.log('🚀 Extracted values - trainingPattern:', trainingPattern, 'patternSettings:', patternSettings);
 
     // Normalize equipment to an array (supports multiple selections)
     const selectedEquipments = Array.isArray(equipment) ? equipment : [equipment];
@@ -70,7 +72,8 @@ export function generateWorkout(formData) {
             estimatedTime: duration, // Use user's selected duration
             level,
             equipment: Array.isArray(equipment) ? equipment.join(', ') : equipment
-        }
+        },
+        _circuitData: enhancedWorkout._circuitData // Include circuit data in result
     };
 }
 
@@ -105,8 +108,10 @@ function generateStandardWorkout(availableExercises, duration) {
  * Generate circuit training workout
  */
 function generateCircuitWorkout(availableExercises, duration, settings) {
+    console.log('🔄 generateCircuitWorkout called with settings:', settings);
     const rounds = settings.rounds || Math.max(2, Math.min(6, Math.floor(duration / 10)));
     const exercisesPerRound = settings.exercisesPerRound || 6;
+    console.log('🔄 Using rounds:', rounds, 'exercisesPerRound:', exercisesPerRound);
     
     const mainExercises = availableExercises; // already filtered for equipment
     const workout = [];
@@ -116,28 +121,38 @@ function generateCircuitWorkout(availableExercises, duration, settings) {
     const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
     workout.push(...selectedWarmup);
     
+    // Add circuit header with exercise count and rounds info
+    workout.push({
+        type: 'circuit_header',
+        name: `Circuit Training`,
+        description: `Complete all ${exercisesPerRound} exercises, then repeat for ${rounds} total rounds`,
+        rounds: rounds,
+        exercisesPerRound: exercisesPerRound,
+        _section: 'Main'
+    });
+    
     // Select exercises for the circuit ONCE
     const circuitExercises = selectRandomExercises(mainExercises, exercisesPerRound);
     
-    // Add circuit rounds - each round uses the SAME exercises
-    for (let round = 1; round <= rounds; round++) {
-        workout.push({
-            type: 'circuit_round',
-            name: `Circuit Round ${round}`,
-            description: `Complete all ${exercisesPerRound} exercises in this circuit, then repeat for next round`,
-            round: round,
-            totalRounds: rounds
-        });
-        
-        // Add the SAME exercises for each round
-        const roundExercises = circuitExercises.map((ex, index) => ({
-            ...ex, 
-            _section: 'Main',
-            _circuitPosition: index + 1,
-            _totalInCircuit: exercisesPerRound
-        }));
-        workout.push(...roundExercises);
-    }
+    // Add circuit exercises with metadata for preview (shows only once)
+    const circuitExercisesWithMeta = circuitExercises.map((ex, index) => ({
+        ...ex, 
+        _section: 'Main',
+        _circuitPosition: index + 1,
+        _totalInCircuit: exercisesPerRound,
+        _circuitRounds: rounds,
+        _isCircuitExercise: true,
+        _isPreviewOnly: true // Mark as preview only
+    }));
+    workout.push(...circuitExercisesWithMeta);
+    
+    // Store the circuit exercises for the actual workout (all rounds)
+    // This will be used by the workout player to generate the full sequence
+    workout._circuitData = {
+        exercises: circuitExercises,
+        rounds: rounds,
+        exercisesPerRound: exercisesPerRound
+    };
     
     // Add cooldown (from full catalog) - 8 exercises for ~5 minutes
     const cooldownExercises = exercises.filter(ex => ex.type === 'cooldown');
@@ -239,7 +254,7 @@ function selectRandomExercises(exercises, count) {
  */
 function calculateWorkoutTime(workout, workTime, restTime) {
     const exerciseCount = workout.filter(ex => 
-        !['circuit_round', 'tabata_set', 'pyramid_set'].includes(ex.type)
+        !['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(ex.type)
     ).length;
     
     return Math.round((exerciseCount * workTime + (exerciseCount - 1) * restTime) / 60);
@@ -288,12 +303,13 @@ export function getFormData() {
     // Get pattern-specific settings
     data.patternSettings = {};
     
-    if (data.trainingPattern === 'Circuit') {
+    if (data.trainingPattern === 'circuit') {
         data.patternSettings.rounds = parseInt(document.getElementById('circuit-rounds')?.value) || 3;
         data.patternSettings.exercisesPerRound = parseInt(document.getElementById('circuit-exercises')?.value) || 6;
-    } else if (data.trainingPattern === 'Tabata') {
+        data.patternSettings.circuitRest = parseInt(document.getElementById('circuit-rest')?.value) || 60;
+    } else if (data.trainingPattern === 'tabata') {
         data.patternSettings.rounds = parseInt(document.getElementById('tabata-rounds')?.value) || 8;
-    } else if (data.trainingPattern === 'Pyramid') {
+    } else if (data.trainingPattern === 'pyramid') {
         data.patternSettings.levels = parseInt(document.getElementById('pyramid-levels')?.value) || 5;
     }
     
@@ -369,7 +385,8 @@ function displayWorkout(workoutResult) {
         restTime: restTime,
         duration: duration,
         trainingPattern: trainingPattern,
-        metadata: metadata
+        metadata: metadata,
+        _circuitData: workoutResult._circuitData // Preserve circuit data from result
     };
     
     console.log('💾 Stored window.currentWorkoutData:', window.currentWorkoutData);
@@ -415,14 +432,28 @@ function generateWorkoutHTML(workout, metadata) {
                 </div>
             `;
         }
-        if (['circuit_round', 'tabata_set', 'pyramid_set'].includes(exercise.type)) {
-            return `
-                ${header}
-                <div class="section-header ${exercise.type}">
-                    <h3 class="text-lg font-bold text-fit-primary">${exercise.name}</h3>
-                    <p class="text-fit-secondary text-sm">${exercise.description}</p>
-                </div>
-            `;
+        if (['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(exercise.type)) {
+            if (exercise.type === 'circuit_header') {
+                return `
+                    ${header}
+                    <div class="section-header ${exercise.type} bg-gradient-to-r from-fit-primary/10 to-fit-accent/10 p-4 rounded-lg border-2 border-fit-primary/20">
+                        <h3 class="text-xl font-bold text-fit-primary mb-2">${exercise.name}</h3>
+                        <p class="text-fit-secondary text-sm mb-3">${exercise.description}</p>
+                        <div class="flex gap-4 text-sm">
+                            <span class="px-3 py-1 bg-fit-primary text-white rounded-full">${exercise.rounds} Rounds</span>
+                            <span class="px-3 py-1 bg-fit-accent text-white rounded-full">${exercise.exercisesPerRound} Exercises</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    ${header}
+                    <div class="section-header ${exercise.type}">
+                        <h3 class="text-lg font-bold text-fit-primary">${exercise.name}</h3>
+                        <p class="text-fit-secondary text-sm">${exercise.description}</p>
+                    </div>
+                `;
+            }
         }
         
         const hasSubstitution = exercise._hasSubstitution && exercise._substitution;
@@ -431,11 +462,17 @@ function generateWorkoutHTML(workout, metadata) {
                 🧠 Smart Alternative
             </button>` : '';
         
+        // Add circuit exercise numbering if it's a circuit exercise
+        const circuitNumber = exercise._isCircuitExercise ? 
+            `<span class="inline-block px-2 py-1 bg-fit-accent text-white text-xs rounded-full mr-2">#${exercise._circuitPosition}</span>` : '';
+        
         return `
             ${header}
             <div id="exercise-item-${index}" class="exercise-item p-4 bg-white rounded-lg border border-gray-200 hover:border-fit-primary transition-colors" data-index="${index}">
                 <div class="flex justify-between items-start mb-2">
-                    <h4 class="font-semibold text-fit-dark" data-field="name">${exercise.name}</h4>
+                    <h4 class="font-semibold text-fit-dark" data-field="name">
+                        ${circuitNumber}${exercise.name}
+                    </h4>
                     <div class="flex space-x-2">
                         ${substitutionButton}
                         <span class="px-2 py-1 bg-fit-primary text-white text-xs rounded-full" data-field="level">${exercise.level}</span>

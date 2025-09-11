@@ -377,13 +377,18 @@
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label class="block text-sm text-fit-secondary mb-2">Circuit Rounds</label>
-                                                <input type="number" id="circuit-rounds" value="3" min="2" max="6" class="input-field">
+                                                <input type="number" id="circuit-rounds" value="3" min="2" max="8" class="input-field">
                                                 <p class="text-xs text-fit-secondary mt-1">15min: 2-3, 30min: 3-4, 45min: 4-5, 60min: 5-6</p>
                                             </div>
                                             <div>
-                                                <label class="block text-sm text-fit-secondary mb-2">Rest Between Circuits (sec)</label>
-                                                <input type="number" id="circuit-rest" value="60" min="30" max="180" class="input-field">
+                                                <label class="block text-sm text-fit-secondary mb-2">Exercises per Circuit</label>
+                                                <input type="number" id="circuit-exercises" value="6" min="4" max="10" class="input-field">
+                                                <p class="text-xs text-fit-secondary mt-1">More exercises = longer circuits</p>
                                             </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <label class="block text-sm text-fit-secondary mb-2">Rest Between Circuits (sec)</label>
+                                            <input type="number" id="circuit-rest" value="60" min="30" max="180" class="input-field">
                                         </div>
                                     </div>
                                     
@@ -605,6 +610,14 @@
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
                         <div id="progress-bar" class="bg-fit-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Circuit Round Counter (only visible for circuit exercises) -->
+                <div id="circuit-round-counter" class="hidden card mb-6 bg-gradient-to-r from-fit-accent/10 to-fit-primary/10 border-2 border-fit-accent/20">
+                    <div class="text-center">
+                        <div class="text-sm text-fit-secondary mb-2">Circuit Progress</div>
+                        <div id="circuit-round-display" class="text-2xl font-bold text-fit-accent"></div>
                     </div>
                 </div>
 
@@ -1148,7 +1161,7 @@
     </footer>
 
     <!-- Modular JavaScript Structure -->
-    <script type="module" src="js/main.js?v=24&t=1736540000"></script>
+    <script type="module" src="js/main.js?v=25&t=1736540000"></script>
     
     
     <!-- Fallback for browsers that don't support ES6 modules -->

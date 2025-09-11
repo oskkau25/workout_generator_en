@@ -669,7 +669,8 @@ class AutomatedTestPipeline:
                 self.test_actual_functionality(),
                 self.test_form_data_validation(),
                 self.test_comprehensive_form_combinations(),
-                self.test_workout_timing_data_flow()
+                self.test_workout_timing_data_flow(),
+                self.test_circuit_data_preservation()
             ]
             
             # Combine core and dynamic tests
@@ -687,7 +688,7 @@ class AutomatedTestPipeline:
             for i, test in enumerate(all_tests):
                 if i < len(core_tests):
                     # Core tests with fixed names
-                    test_names = ['html_structure', 'javascript_functionality', 'exercise_database', 'actual_functionality', 'form_data_validation', 'comprehensive_form_combinations', 'workout_timing_data_flow']
+                    test_names = ['html_structure', 'javascript_functionality', 'exercise_database', 'actual_functionality', 'form_data_validation', 'comprehensive_form_combinations', 'workout_timing_data_flow', 'circuit_data_preservation']
                     test_details[test_names[i]] = test
                 else:
                     # Dynamic tests with auto-generated names
@@ -1147,18 +1148,29 @@ class AutomatedTestPipeline:
     def test_circuit_training_functionality(self):
         """Test circuit training workout generation and structure"""
         try:
-            js_path = self.project_root / 'src' / 'script.js'
-            with open(js_path, 'r', encoding='utf-8') as f:
-                js_content = f.read()
+            # Test the modular circuit training implementation
+            generator_path = self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js'
+            player_path = self.project_root / 'src' / 'js' / 'features' / 'workout-player.js'
+            substitution_path = self.project_root / 'src' / 'js' / 'features' / 'smart-substitution.js'
+            
+            with open(generator_path, 'r', encoding='utf-8') as f:
+                generator_content = f.read()
+            with open(player_path, 'r', encoding='utf-8') as f:
+                player_content = f.read()
+            with open(substitution_path, 'r', encoding='utf-8') as f:
+                substitution_content = f.read()
             
             tests = {
-                'has_circuit_generation': 'generateCircuitWorkout' in js_content,
-                'has_round_headers': 'circuit_round' in js_content,
-                'has_round_tracking': '_round' in js_content,
-                'has_circuit_rest': 'circuitRest' in js_content,
-                'has_round_progression': 'Round ${round}' in js_content,
-                'has_exercise_repetition': 'Round ${round})' in js_content,
-                'has_circuit_structure': 'type: "circuit_round"' in js_content
+                'has_circuit_generation': 'generateCircuitWorkout' in generator_content,
+                'has_circuit_header': 'circuit_header' in generator_content,
+                'has_circuit_data_storage': '_circuitData' in generator_content,
+                'has_circuit_expansion': 'expandCircuitWorkout' in player_content,
+                'has_circuit_data_preservation': 'workout._circuitData' in substitution_content,
+                'has_circuit_rounds_tracking': 'rounds:' in generator_content,
+                'has_exercises_per_round': 'exercisesPerRound' in generator_content,
+                'has_circuit_preview_only': '_isPreviewOnly' in generator_content,
+                'has_circuit_exercise_metadata': '_isCircuitExercise' in generator_content,
+                'has_circuit_progress_display': 'circuit-round-counter' in player_content
             }
             
             passed = sum(tests.values())
@@ -1176,18 +1188,18 @@ class AutomatedTestPipeline:
     def test_tabata_functionality(self):
         """Test Tabata interval workout generation and timing"""
         try:
-            js_path = self.project_root / 'src' / 'script.js'
-            with open(js_path, 'r', encoding='utf-8') as f:
-                js_content = f.read()
+            generator_path = self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js'
+            with open(generator_path, 'r', encoding='utf-8') as f:
+                generator_content = f.read()
             
             tests = {
-                'has_tabata_generation': 'generateTabataWorkout' in js_content,
-                'has_tabata_set_headers': 'tabata_set' in js_content,
-                'has_work_rest_timing': '_workTime' in js_content and '_restTime' in js_content,
-                'has_tabata_rounds': 'Tabata Set' in js_content,
-                'has_interval_structure': '20 seconds work, 10 seconds rest' in js_content,
-                'has_round_tracking': '_isLastRound' in js_content,
-                'has_set_rest': 'setRest' in js_content
+                'has_tabata_generation': 'generateTabataWorkout' in generator_content,
+                'has_tabata_set_headers': 'tabata_set' in generator_content,
+                'has_work_rest_timing': '_workTime' in generator_content and '_restTime' in generator_content,
+                'has_tabata_rounds': 'Tabata Set' in generator_content,
+                'has_interval_structure': '20 seconds work, 10 seconds rest' in generator_content,
+                'has_round_tracking': '_isLastRound' in generator_content,
+                'has_set_rest': 'setRest' in generator_content
             }
             
             passed = sum(tests.values())
@@ -1205,19 +1217,19 @@ class AutomatedTestPipeline:
     def test_pyramid_training_functionality(self):
         """Test pyramid training workout generation and progression"""
         try:
-            js_path = self.project_root / 'src' / 'script.js'
-            with open(js_path, 'r', encoding='utf-8') as f:
-                js_content = f.read()
+            generator_path = self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js'
+            with open(generator_path, 'r', encoding='utf-8') as f:
+                generator_content = f.read()
             
             tests = {
-                'has_pyramid_generation': 'generatePyramidWorkout' in js_content,
-                'has_pyramid_set_headers': 'pyramid_set' in js_content,
-                'has_level_tracking': '_level' in js_content,
-                'has_intensity_tracking': '_intensity' in js_content,
-                'has_ascending_direction': '_isAscending' in js_content,
-                'has_level_rest': 'levelRest' in js_content,
-                'has_pyramid_structure': 'type: "pyramid_set"' in js_content,
-                'has_level_progression': 'Level ${level}' in js_content
+                'has_pyramid_generation': 'generatePyramidWorkout' in generator_content,
+                'has_pyramid_set_headers': 'pyramid_set' in generator_content,
+                'has_level_tracking': '_level' in generator_content,
+                'has_intensity_tracking': '_intensity' in generator_content,
+                'has_ascending_direction': '_isAscending' in generator_content,
+                'has_level_rest': 'levelRest' in generator_content,
+                'has_pyramid_structure': 'type: "pyramid_set"' in generator_content,
+                'has_level_progression': 'Level ${level}' in generator_content
             }
             
             passed = sum(tests.values())
@@ -1709,6 +1721,43 @@ class AutomatedTestPipeline:
                 'error': str(e),
                 'critical_issues': ['Comprehensive form combination test failed']
             }
+    
+    def test_circuit_data_preservation(self):
+        """Test that circuit data is properly preserved through the enhancement process"""
+        try:
+            # Check that circuit data flows correctly through the system
+            generator_path = self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js'
+            substitution_path = self.project_root / 'src' / 'js' / 'features' / 'smart-substitution.js'
+            player_path = self.project_root / 'src' / 'js' / 'features' / 'workout-player.js'
+            
+            with open(generator_path, 'r', encoding='utf-8') as f:
+                generator_content = f.read()
+            with open(substitution_path, 'r', encoding='utf-8') as f:
+                substitution_content = f.read()
+            with open(player_path, 'r', encoding='utf-8') as f:
+                player_content = f.read()
+            
+            tests = {
+                'circuit_data_creation': 'workout._circuitData = {' in generator_content,
+                'circuit_data_return': '_circuitData: enhancedWorkout._circuitData' in generator_content,
+                'circuit_data_preservation': 'enhancedWorkout._circuitData = workout._circuitData' in substitution_content,
+                'circuit_data_check': 'if (workout._circuitData)' in substitution_content,
+                'circuit_expansion_detection': 'if (workoutData._circuitData)' in player_content,
+                'circuit_expansion_function': 'function expandCircuitWorkout' in player_content,
+                'circuit_data_usage': 'workoutData._circuitData' in player_content
+            }
+            
+            passed = sum(tests.values())
+            total = len(tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': tests
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
     
     def test_workout_timing_data_flow(self):
         """Test that workout timing values flow correctly from form to workout player"""
