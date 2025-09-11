@@ -39,8 +39,8 @@ function expandCircuitWorkout(workoutData) {
             // Skip preview-only circuit exercises, we'll add all rounds below
             continue;
         } else if (exercise.type === 'circuit_header') {
-            // Keep the circuit header
-            expandedWorkout.push(exercise);
+            // Skip the circuit header - we'll go directly to the first circuit exercise
+            continue;
         } else {
             // Keep non-circuit exercises (warm-up, cool-down, etc.)
             expandedWorkout.push(exercise);
@@ -48,8 +48,9 @@ function expandCircuitWorkout(workoutData) {
     }
     
     // Find the position where circuit exercises should be inserted
-    const circuitHeaderIndex = expandedWorkout.findIndex(ex => ex.type === 'circuit_header');
-    const insertIndex = circuitHeaderIndex + 1;
+    // Since we skip the circuit header, insert after the last warm-up exercise
+    const lastWarmupIndex = expandedWorkout.findLastIndex(ex => ex._section === 'Warm-up');
+    const insertIndex = lastWarmupIndex + 1;
     
     // Create all circuit rounds first
     const allCircuitExercises = [];
@@ -249,8 +250,7 @@ function renderWorkoutPlayer() {
     // Enhanced progress display for circuit exercises
     if (exerciseProgress) {
         if (currentExercise._isCircuitExercise) {
-            const currentRound = currentExercise._currentRound || Math.ceil((workoutState.currentIndex - getCircuitStartIndex()) / currentExercise._totalInCircuit) + 1;
-            exerciseProgress.textContent = `Round ${currentRound}/${currentExercise._circuitRounds} - Exercise ${currentExercise._circuitPosition}/${currentExercise._totalInCircuit}`;
+            exerciseProgress.textContent = `Exercise ${currentExercise._circuitPosition} of ${currentExercise._totalInCircuit}`;
         } else {
             exerciseProgress.textContent = `Exercise ${workoutState.currentIndex + 1} of ${workoutState.sequence.length}`;
         }
@@ -278,13 +278,9 @@ function renderWorkoutPlayer() {
     const exerciseInstructions = document.getElementById('exercise-instructions');
     const exerciseSafety = document.getElementById('exercise-safety');
     
-    // Enhanced title for circuit exercises
+    // Exercise title
     if (exerciseTitle) {
-        if (currentExercise._isCircuitExercise) {
-            exerciseTitle.innerHTML = `<span class="text-fit-accent">#${currentExercise._circuitPosition}</span> ${currentExercise.name}`;
-        } else {
-            exerciseTitle.textContent = currentExercise.name;
-        }
+        exerciseTitle.textContent = currentExercise.name;
     }
     
     if (exerciseMeta) {
@@ -292,12 +288,6 @@ function renderWorkoutPlayer() {
             <span class="inline-block px-3 py-1 bg-fit-primary/10 text-fit-primary rounded-full text-sm font-medium mr-2">${currentExercise.muscle}</span>
             <span class="inline-block px-3 py-1 bg-fit-secondary/10 text-fit-secondary rounded-full text-sm font-medium">${currentExercise.equipment}</span>
         `;
-        
-        // Add circuit round info if it's a circuit exercise
-        if (currentExercise._isCircuitExercise) {
-            const currentRound = currentExercise._currentRound || Math.ceil((workoutState.currentIndex - getCircuitStartIndex()) / currentExercise._totalInCircuit) + 1;
-            metaHTML += `<span class="inline-block px-3 py-1 bg-fit-accent text-white rounded-full text-sm font-medium ml-2">Round ${currentRound}/${currentExercise._circuitRounds}</span>`;
-        }
         
         exerciseMeta.innerHTML = metaHTML;
     }
@@ -490,7 +480,17 @@ export function nextExercise() {
  */
 export function exitWorkout() {
     clearRunningTimer();
-    toggleScreens({ overview: true, player: false, plan: false });
+    
+    // Show the workout overview (which has the "Create New Workout" button)
+    const workoutOverview = document.getElementById('workout-overview');
+    const workoutPlayer = document.getElementById('workout-player');
+    
+    // Show workout overview and hide player
+    if (workoutOverview) workoutOverview.classList.remove('hidden');
+    if (workoutPlayer) workoutPlayer.classList.add('hidden');
+    
+    // Scroll to workout overview
+    workoutOverview?.scrollIntoView({ behavior: 'smooth' });
 }
 
 /**
@@ -633,6 +633,80 @@ export function setupWorkoutPlayerListeners() {
     const exitBtn = document.getElementById('exit-workout-btn');
     if (exitBtn) {
         exitBtn.addEventListener('click', exitWorkout);
+    }
+    
+    // Create new workout button (from workout overview)
+    const newWorkoutBtn = document.getElementById('new-workout-btn');
+    if (newWorkoutBtn) {
+        newWorkoutBtn.addEventListener('click', () => {
+            // Reset workout state
+            window.currentWorkout = null;
+            window.currentWorkoutData = null;
+            
+            // Show the form and hide workout sections
+            const form = document.getElementById('workout-form');
+            const workoutPlan = document.getElementById('workout-plan');
+            const workoutSection = document.getElementById('workout-section');
+            const workoutOverview = document.getElementById('workout-overview');
+            const workoutPlayer = document.getElementById('workout-player');
+            const noResults = document.getElementById('no-results');
+            
+            // Show form container and form (ensure they're visible)
+            if (workoutPlan) {
+                workoutPlan.classList.remove('hidden');
+                workoutPlan.style.display = 'block';
+            }
+            if (form) {
+                form.classList.remove('hidden');
+                form.style.display = 'block';
+            }
+            
+            // Hide all workout-related sections
+            if (workoutSection) workoutSection.classList.add('hidden');
+            if (workoutOverview) workoutOverview.classList.add('hidden');
+            if (workoutPlayer) workoutPlayer.classList.add('hidden');
+            if (noResults) noResults.classList.add('hidden');
+            
+            // Scroll back to form
+            form?.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+    
+    // Create new workout button (from workout player)
+    const newWorkoutFromPlayerBtn = document.getElementById('new-workout-from-player-btn');
+    if (newWorkoutFromPlayerBtn) {
+        newWorkoutFromPlayerBtn.addEventListener('click', () => {
+            // Reset workout state
+            window.currentWorkout = null;
+            window.currentWorkoutData = null;
+            
+            // Show the form and hide workout sections
+            const form = document.getElementById('workout-form');
+            const workoutPlan = document.getElementById('workout-plan');
+            const workoutSection = document.getElementById('workout-section');
+            const workoutOverview = document.getElementById('workout-overview');
+            const workoutPlayer = document.getElementById('workout-player');
+            const noResults = document.getElementById('no-results');
+            
+            // Show form container and form (ensure they're visible)
+            if (workoutPlan) {
+                workoutPlan.classList.remove('hidden');
+                workoutPlan.style.display = 'block';
+            }
+            if (form) {
+                form.classList.remove('hidden');
+                form.style.display = 'block';
+            }
+            
+            // Hide all workout-related sections
+            if (workoutSection) workoutSection.classList.add('hidden');
+            if (workoutOverview) workoutOverview.classList.add('hidden');
+            if (workoutPlayer) workoutPlayer.classList.add('hidden');
+            if (noResults) noResults.classList.add('hidden');
+            
+            // Scroll back to form
+            form?.scrollIntoView({ behavior: 'smooth' });
+        });
     }
     
     // Sound toggle

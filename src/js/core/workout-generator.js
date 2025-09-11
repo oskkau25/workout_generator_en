@@ -550,11 +550,33 @@ function showError(message) {
  * Generate new workout (reload form)
  */
 window.generateNewWorkout = function() {
-    const form = document.getElementById('workout-form');
-    const workoutSection = document.getElementById('workout-section');
+    // Reset workout state
+    window.currentWorkout = null;
+    window.currentWorkoutData = null;
     
-    if (form) form.style.display = 'block';
-    if (workoutSection) workoutSection.style.display = 'none';
+    // Show the form and hide workout sections
+    const form = document.getElementById('workout-form');
+    const workoutPlan = document.getElementById('workout-plan');
+    const workoutSection = document.getElementById('workout-section');
+    const workoutOverview = document.getElementById('workout-overview');
+    const workoutPlayer = document.getElementById('workout-player');
+    const noResults = document.getElementById('no-results');
+    
+    // Show form container and form (ensure they're visible)
+    if (workoutPlan) {
+        workoutPlan.classList.remove('hidden');
+        workoutPlan.style.display = 'block';
+    }
+    if (form) {
+        form.classList.remove('hidden');
+        form.style.display = 'block';
+    }
+    
+    // Hide all workout-related sections
+    if (workoutSection) workoutSection.classList.add('hidden');
+    if (workoutOverview) workoutOverview.classList.add('hidden');
+    if (workoutPlayer) workoutPlayer.classList.add('hidden');
+    if (noResults) noResults.classList.add('hidden');
     
     // Scroll back to form
     form?.scrollIntoView({ behavior: 'smooth' });

@@ -11,6 +11,7 @@ If Playwright isn't available, returns a SKIPPED result (no failure).
 from __future__ import annotations
 
 import json
+import logging
 import os
 import socket
 import threading

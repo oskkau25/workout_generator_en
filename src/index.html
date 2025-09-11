@@ -302,7 +302,7 @@
                                             </svg>
                                             Work (seconds)
                                         </label>
-                                        <input type="number" id="work-time" value="45" min="20" max="120" class="input-field" aria-label="Work time seconds">
+                                        <input type="number" id="work-time" name="work-time" value="45" min="20" max="120" class="input-field" aria-label="Work time seconds">
                                         <span id="work-time-value" class="text-xs text-fit-secondary ml-2" aria-live="polite">45s</span>
                                     </div>
                                     <div>
@@ -312,7 +312,7 @@
                                             </svg>
                                             Rest (seconds)
                                         </label>
-                                        <input type="number" id="rest-time" value="15" min="10" max="60" class="input-field" aria-label="Rest time seconds">
+                                        <input type="number" id="rest-time" name="rest-time" value="15" min="10" max="60" class="input-field" aria-label="Rest time seconds">
                                         <span id="rest-time-value" class="text-xs text-fit-secondary ml-2" aria-live="polite">15s</span>
                                     </div>
                                 </div>
@@ -1161,14 +1161,12 @@
     </footer>
 
     <!-- Modular JavaScript Structure -->
-    <script type="module" src="js/main.js?v=25&t=1736540000"></script>
+    <script type="module" src="js/main.js?v=31&t=1736540000"></script>
     
     
     <!-- Fallback for browsers that don't support ES6 modules -->
     <script nomodule>
         console.warn('ES6 modules not supported. Please use a modern browser.');
-        // Fallback to original script.js for older browsers
-        document.write('<script src="script.js"><\/script>');
     </script>
 </body>
 </html>
