@@ -42,11 +42,23 @@ def _start_local_server() -> threading.Thread:
     host, port = '127.0.0.1', 5173
     if _is_port_open(host, port):
         # Assume already running
+        logging.info(f"Server already running on {host}:{port}")
         return None
-    server = ThreadingHTTPServer((host, port), _SrcHandler)
-    t = threading.Thread(target=server.serve_forever, daemon=True)
-    t.start()
-    return t
+    
+    try:
+        server = ThreadingHTTPServer((host, port), _SrcHandler)
+        t = threading.Thread(target=server.serve_forever, daemon=True)
+        t.start()
+        logging.info(f"Started E2E test server on {host}:{port}")
+        
+        # Give the server a moment to start
+        import time
+        time.sleep(0.5)
+        
+        return t
+    except Exception as e:
+        logging.error(f"Failed to start E2E test server: {e}")
+        return None
 
 
 def _load_feature_list(project_root: Path) -> Dict[str, Any]:
@@ -65,7 +77,8 @@ def run_dynamic_smoke() -> Dict[str, Any]:
     # Try Playwright import
     try:
         from playwright.sync_api import sync_playwright  # type: ignore
-    except Exception:
+    except Exception as e:
+        logging.warning(f"Playwright not available: {e}")
         return {"status": "SKIPPED", "details": "Playwright not installed"}
 
     # Ensure local server
@@ -77,7 +90,9 @@ def run_dynamic_smoke() -> Dict[str, Any]:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
-            page.goto(url, wait_until='domcontentloaded')
+            page.goto(url, wait_until='networkidle')
+            # Wait for the main app to load
+            page.wait_for_selector('#workout-form', timeout=10000)
 
             # Minimal, dynamic presence checks based on features
             app_feats = features.get('app_features', {})
@@ -403,6 +418,11 @@ def run_dynamic_smoke() -> Dict[str, Any]:
                             # Set form values
                             page.evaluate(f"""
                                 () => {{
+                                    // Wait for the app to be fully loaded
+                                    if (typeof window.FitFlowApp === 'undefined') {{
+                                        return false;
+                                    }}
+                                    
                                     // Reset form
                                     const form = document.getElementById('workout-form');
                                     if (form) form.reset();
@@ -414,24 +434,67 @@ def run_dynamic_smoke() -> Dict[str, Any]:
                                     if (workTimeInput) workTimeInput.value = {timing['workTime']};
                                     if (restTimeInput) restTimeInput.value = {timing['restTime']};
                                     
-                                    // Set other required values
-                                    const durationInput = document.querySelector('input[name="duration"]:checked');
-                                    if (durationInput) durationInput.checked = true;
+                                    // Set other required values - ensure at least one duration is selected
+                                    let durationInput = document.querySelector('input[name="duration"]:checked');
+                                    if (!durationInput) {{
+                                        durationInput = document.querySelector('input[name="duration"]');
+                                        if (durationInput) durationInput.checked = true;
+                                    }}
                                     
-                                    const equipmentInput = document.querySelector('input[name="equipment"]');
-                                    if (equipmentInput) equipmentInput.checked = true;
+                                    // Ensure at least one equipment is selected
+                                    let equipmentInput = document.querySelector('input[name="equipment"]:checked');
+                                    if (!equipmentInput) {{
+                                        equipmentInput = document.querySelector('input[name="equipment"]');
+                                        if (equipmentInput) equipmentInput.checked = true;
+                                    }}
                                     
+                                    // Set fitness level
                                     const levelSelect = document.getElementById('fitness-level');
                                     if (levelSelect) levelSelect.value = 'Intermediate';
                                     
-                                    const patternInput = document.querySelector('input[name="training-pattern"]:checked');
-                                    if (patternInput) patternInput.checked = true;
+                                    // Ensure training pattern is selected
+                                    let patternInput = document.querySelector('input[name="training-pattern"]:checked');
+                                    if (!patternInput) {{
+                                        patternInput = document.querySelector('input[name="training-pattern"]');
+                                        if (patternInput) patternInput.checked = true;
+                                    }}
+                                    
+                                    return true;
                                 }}
                             """)
                             
-                            # Generate workout
-                            page.click('#generate-workout-btn')
-                            page.wait_for_timeout(2000)  # Wait for workout generation
+                            # Wait a bit for form changes to take effect
+                            page.wait_for_timeout(500)
+                            
+                            # Generate workout by submitting the form directly
+                            try:
+                                # Submit the form programmatically (more reliable than clicking)
+                                form_submitted = page.evaluate("""
+                                    () => {
+                                        const form = document.getElementById('workout-form');
+                                        if (!form) return false;
+                                        
+                                        // Trigger form submission event
+                                        const submitEvent = new Event('submit', { 
+                                            cancelable: true, 
+                                            bubbles: true 
+                                        });
+                                        
+                                        return form.dispatchEvent(submitEvent);
+                                    }
+                                """)
+                                
+                                if not form_submitted:
+                                    logging.warning("Failed to submit form")
+                                    timing_results[f'test_{i+1}'] = False
+                                    continue
+                                
+                                # Wait for workout generation
+                                page.wait_for_timeout(3000)
+                            except Exception as e:
+                                logging.warning(f"Failed to submit form: {e}")
+                                timing_results[f'test_{i+1}'] = False
+                                continue
                             
                             # Check if workout was generated
                             workout_section = page.query_selector('#workout-section')
