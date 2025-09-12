@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-11T22:43:02.047837",
+  "timestamp": "2025-09-11T23:37:58.584437",
   "performance_metrics": {
     "bundle_sizes": {
       "javascript": {
@@ -7,7 +7,7 @@
         "status": "PASSED"
       },
       "html": {
-        "size_kb": 81.4794921875,
+        "size_kb": 81.392578125,
         "status": "PASSED"
       },
       "dashboard": {
