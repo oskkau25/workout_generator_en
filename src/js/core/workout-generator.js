@@ -584,8 +584,4 @@ window.generateNewWorkout = function() {
 
 // Note: window.startWorkout is defined in workout-player.js
 
-// Make functions available globally for backward compatibility
-window.generateWorkout = generateWorkout;
-window.validateForm = validateForm;
-window.getFormData = getFormData;
-window.handleFormSubmission = handleFormSubmission;
+// Note: Functions are made available globally in main.js for backward compatibility

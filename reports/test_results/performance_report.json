@@ -1,36 +1,22 @@
 {
-  "timestamp": "2025-09-11T23:37:58.584437",
+  "timestamp": "2025-09-13T02:00:07.006679",
   "performance_metrics": {
-    "bundle_sizes": {
-      "javascript": {
-        "size_kb": 166.75390625,
-        "status": "PASSED"
-      },
-      "html": {
-        "size_kb": 81.392578125,
-        "status": "PASSED"
-      },
-      "dashboard": {
-        "size_kb": 11.6455078125,
-        "status": "PASSED"
-      }
-    },
+    "bundle_sizes": {},
     "load_times": {},
     "memory_usage": {},
-    "performance_score": 100
+    "performance_score": 0
   },
   "bundle_analysis": {
-    "total_lines": 4161,
-    "function_count": 62,
-    "class_count": 2,
+    "total_lines": 0,
+    "function_count": 0,
+    "class_count": 0,
     "import_count": 0,
-    "optimization_opportunities": [
-      "Consider code splitting for large JavaScript bundle"
-    ]
+    "optimization_opportunities": []
   },
   "security_score": 100,
   "accessibility_score": 100,
   "recommendations": [
-    "Excellent! All tests are passing and best practices are followed"
+    "Optimize bundle size by removing unused code and dependencies",
+    "Address failing tests to improve overall code quality"
   ]
 }

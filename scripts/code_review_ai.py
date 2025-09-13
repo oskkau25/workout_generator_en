@@ -22,7 +22,18 @@ class AICodeReviewer:
         directory_path = Path(directory)
         
         # Files to analyze
-        target_files = ['script.js', 'index.html', 'exercise_images.js']
+        target_files = [
+            'src/index.html',
+            'src/js/main.js',
+            'src/js/core/workout-generator.js',
+            'src/js/core/exercise-database.js',
+            'src/js/features/workout-player.js',
+            'src/js/features/smart-substitution.js',
+            'src/js/features/user-accounts.js',
+            'src/js/utils/constants.js',
+            'src/dashboard.html',
+            'src/dashboard.js'
+        ]
         
         for file_name in target_files:
             file_path = directory_path / file_name

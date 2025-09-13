@@ -151,5 +151,4 @@ export const CONSTANTS = {
     COLORS
 };
 
-// Make available globally for backward compatibility
-window.CONSTANTS = CONSTANTS;
+// Note: CONSTANTS is made available globally in main.js for backward compatibility

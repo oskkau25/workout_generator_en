@@ -73,6 +73,7 @@ class FitFlowApp {
         // Setup event listeners
         this.setupEventListeners();
         
+        
         console.log('✅ FitFlow App Initialized Successfully!');
     }
     
@@ -629,6 +630,7 @@ class FitFlowApp {
         setupWorkoutPlayerListeners();
         console.log('🎮 Workout player listeners attached');
     }
+    
     
     /**
      * Get module by name

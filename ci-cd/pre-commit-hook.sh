@@ -99,7 +99,23 @@ fi
 
 print_status $GREEN "✅ Pre-flight checks passed"
 
-# Step 1: Enhanced Automated Test Pipeline
+# Step 1: AI Code Review
+print_section "🤖 AI CODE REVIEW"
+print_status $BLUE "Running comprehensive AI code review..."
+
+# Run AI code review
+if [ -f "scripts/code_review_ai.py" ]; then
+    python3 scripts/code_review_ai.py
+    if [ $? -eq 0 ]; then
+        print_status $GREEN "✅ AI code review completed successfully"
+    else
+        print_status $YELLOW "⚠️  AI code review completed with warnings"
+    fi
+else
+    print_status $YELLOW "⚠️  AI code review tool not found, skipping..."
+fi
+
+# Step 2: Enhanced Automated Test Pipeline
 print_section "🚀 ENHANCED AUTOMATED TEST PIPELINE"
 print_status $BLUE "Running enhanced pipeline with parallel execution and caching..."
 
@@ -135,7 +151,7 @@ else
     exit 1
 fi
 
-# Step 2: Local Page Preview (MANDATORY)
+# Step 3: Local Page Preview (MANDATORY)
 print_section "🌐 LOCAL PAGE PREVIEW (MANDATORY STEP)"
 print_status $YELLOW "⚠️  This step is MANDATORY - you must review the changes locally before committing"
 print_status $BLUE "======================================"
@@ -313,7 +329,7 @@ kill $SERVER_PID 2>/dev/null
 # Ensure port 5173 is fully freed (in case of stray processes)
 lsof -ti:5173 | xargs kill -9 2>/dev/null || true
 
-# Step 3: Final confirmation
+# Step 4: Final confirmation
 print_section "🎯 FINAL CONFIRMATION"
 print_status $GREEN "✅ All pre-commit checks passed!"
 print_status $GREEN "✅ Manual inspection completed!"
@@ -323,6 +339,7 @@ print_status $CYAN "🚀 You can now proceed with your commit!"
 print_status $CYAN "The enhanced pipeline has ensured code quality and security."
 echo ""
 print_status $PURPLE "💡 Tip: The enhanced pipeline now includes:"
+print_status $PURPLE "   • AI-powered code review for quality assurance"
 print_status $PURPLE "   • Parallel test execution for faster feedback"
 print_status $PURPLE "   • Smart caching to avoid redundant tests"
 print_status $PURPLE "   • Enhanced performance metrics and bundle analysis"
