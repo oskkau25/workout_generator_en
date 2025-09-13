@@ -108,13 +108,6 @@ export function initializeWorkoutPlayer(workoutData) {
     // Render the player
     renderWorkoutPlayer();
     
-    // Hide the "What's New" banner when starting workout
-    const whatsNewBanner = document.getElementById('whats-new-banner');
-    if (whatsNewBanner) {
-        whatsNewBanner.style.display = 'none';
-        console.log('🎯 Hidden "What\'s New" banner for focused workout experience');
-    }
-    
     // Show player screen
     toggleScreens({ overview: false, player: true, plan: false });
     
@@ -496,13 +489,6 @@ export function exitWorkout() {
     if (workoutOverview) workoutOverview.classList.remove('hidden');
     if (workoutPlayer) workoutPlayer.classList.add('hidden');
     
-    // Show the "What's New" banner again
-    const whatsNewBanner = document.getElementById('whats-new-banner');
-    if (whatsNewBanner) {
-        whatsNewBanner.style.display = 'block';
-        console.log('🎯 Showed "What\'s New" banner again');
-    }
-    
     // Scroll to workout overview
     workoutOverview?.scrollIntoView({ behavior: 'smooth' });
 }
@@ -831,84 +817,7 @@ window.startWorkout = function() {
     }
 };
 
-
-// Display current exercise
-function displayCurrentExercise() {
-    if (workoutState.sequence.length === 0) return;
-    
-    const exercise = workoutState.sequence[workoutState.currentIndex];
-    if (!exercise) return;
-    
-    // Update exercise display
-    const exerciseTitle = document.getElementById('exercise-title');
-    const exerciseMeta = document.getElementById('exercise-instructions');
-    const exerciseProgress = document.getElementById('exercise-progress');
-    const sectionBadge = document.getElementById('section-badge');
-    
-    if (exerciseTitle) exerciseTitle.textContent = exercise.name;
-    if (exerciseMeta) exerciseMeta.textContent = exercise.description;
-    if (exerciseProgress) {
-        exerciseProgress.textContent = `Exercise ${workoutState.currentIndex + 1} of ${workoutState.sequence.length}`;
-    }
-    if (sectionBadge) {
-        sectionBadge.textContent = exercise._section || 'Exercise';
-    }
-    
-    console.log(`📋 Displaying exercise: ${exercise.name}`);
-}
-
-// Start timer
-function startTimer() {
-    if (workoutState.timerId) {
-        clearInterval(workoutState.timerId);
-    }
-    
-    workoutState.timerId = setInterval(() => {
-        if (!workoutState.isPaused) {
-            workoutState.remainingSeconds--;
-            
-            // Update timer display
-            const workTimer = document.getElementById('work-timer');
-            const restTimer = document.getElementById('rest-timer');
-            
-            if (workoutState.phase === 'work' && workTimer) {
-                workTimer.textContent = formatTime(workoutState.remainingSeconds);
-            } else if (workoutState.phase === 'rest' && restTimer) {
-                restTimer.textContent = formatTime(workoutState.remainingSeconds);
-            }
-            
-            if (workoutState.remainingSeconds <= 0) {
-                // Timer finished, switch phase or move to next exercise
-                if (workoutState.phase === 'work') {
-                    // Switch to rest phase
-                    workoutState.phase = 'rest';
-                    workoutState.remainingSeconds = workoutState.restTime;
-                    console.log('⏰ Work phase complete, starting rest');
-                } else {
-                    // Rest phase complete, move to next exercise
-                    nextExercise();
-                }
-            }
-        }
-    }, 1000);
-    
-    console.log('⏰ Timer started');
-}
-
-// Format time in MM:SS format
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-}
-
-
-
-
-
-
 window.togglePause = togglePause;
 window.previousExercise = previousExercise;
 window.nextExercise = nextExercise;
 window.exitWorkout = exitWorkout;
-window.setupWorkoutPlayerListeners = setupWorkoutPlayerListeners;

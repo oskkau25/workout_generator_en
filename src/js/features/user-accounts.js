@@ -452,4 +452,5 @@ export class UserAccount {
 export const userAccount = new UserAccount();
 
 // Make available globally
-// Note: Functions are made available globally in main.js for backward compatibility
+window.UserAccount = UserAccount;
+window.userAccount = userAccount;

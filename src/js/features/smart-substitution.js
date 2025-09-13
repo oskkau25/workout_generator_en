@@ -377,4 +377,7 @@ function applyExerciseSwap(index, replacement) {
 window.showSubstitutionChooser = showSubstitutionChooser;
 
 // Make functions available globally for backward compatibility
-// Note: Functions are made available globally in main.js for backward compatibility
+window.findExerciseAlternatives = findExerciseAlternatives;
+window.suggestExerciseSubstitution = suggestExerciseSubstitution;
+window.enhanceWorkoutWithSubstitutions = enhanceWorkoutWithSubstitutions;
+window.showSubstitutionDetails = showSubstitutionDetails;

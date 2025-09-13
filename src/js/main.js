@@ -12,13 +12,7 @@ console.log('🔧 MAIN.JS LOADED - v4 - CACHE BUSTED');
 import { exercises, exerciseDatabase } from './core/exercise-database.js';
 import { 
     generateWorkout, 
-    displayWorkout,
-    setupFormHandler,
     validateForm, 
-    showError,
-    showSuccess,
-    setLoading,
-    generateRandomSet,
     getFormData, 
     handleFormSubmission 
 } from './core/workout-generator.js?v=24';
@@ -79,19 +73,6 @@ class FitFlowApp {
         // Setup event listeners
         this.setupEventListeners();
         
-        // Setup form handler after DOM is ready
-        console.log('🔧 Calling setupFormHandler...');
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                console.log('🔧 DOM ready, setting up form handler');
-                setupFormHandler();
-            });
-        } else {
-            console.log('🔧 DOM already ready, setting up form handler');
-            setupFormHandler();
-        }
-        console.log('🔧 setupFormHandler called');
-        
         console.log('✅ FitFlow App Initialized Successfully!');
     }
     
@@ -105,12 +86,7 @@ class FitFlowApp {
         
         // Workout generator
         window.generateWorkout = generateWorkout;
-        window.displayWorkout = displayWorkout;
         window.validateForm = validateForm;
-        window.showError = showError;
-        window.showSuccess = showSuccess;
-        window.setLoading = setLoading;
-        window.generateRandomSet = generateRandomSet;
         window.getFormData = getFormData;
         window.handleFormSubmission = handleFormSubmission;
         
@@ -653,7 +629,6 @@ class FitFlowApp {
         setupWorkoutPlayerListeners();
         console.log('🎮 Workout player listeners attached');
     }
-    
     
     /**
      * Get module by name
