@@ -7,7 +7,9 @@
  * Generate search links for exercise resources
  */
 function generateExerciseResources(exercise) {
-    if (!exercise.resources) return '';
+    if (!exercise.resources) {
+        return '';
+    }
     
     const { googleSearch, youtubeSearch, modifications, timing, progression } = exercise.resources;
     
@@ -395,17 +397,17 @@ function renderWorkoutPlayer() {
         exerciseSafety.classList.remove('hidden');
     }
     
-    // Add exercise resources if available
-    const exerciseResources = document.getElementById('exercise-resources');
-    if (exerciseResources) {
-        const resourcesHTML = generateExerciseResources(currentExercise);
-        if (resourcesHTML) {
-            exerciseResources.innerHTML = resourcesHTML;
-            exerciseResources.classList.remove('hidden');
-        } else {
-            exerciseResources.classList.add('hidden');
+        // Add exercise resources if available
+        const exerciseResources = document.getElementById('exercise-resources');
+        if (exerciseResources) {
+            const resourcesHTML = generateExerciseResources(currentExercise);
+            if (resourcesHTML) {
+                exerciseResources.innerHTML = resourcesHTML;
+                exerciseResources.classList.remove('hidden');
+            } else {
+                exerciseResources.classList.add('hidden');
+            }
         }
-    }
     
     // Hide rest timer for warm-up and cool-down exercises
     const restTimer = document.getElementById('rest-timer');
@@ -424,6 +426,8 @@ function renderWorkoutPlayer() {
 function setTimerDisplays() {
     const workTimer = document.getElementById('work-timer');
     const restTimer = document.getElementById('rest-timer');
+    const workProgressRing = document.getElementById('work-progress-ring');
+    const restProgressRing = document.getElementById('rest-progress-ring');
     const restOverlay = document.getElementById('rest-overlay');
     const restOverlayTimer = document.getElementById('rest-overlay-timer');
     const nextName = document.getElementById('next-exercise-name');
@@ -435,6 +439,20 @@ function setTimerDisplays() {
     if (workoutState.phase === 'work') {
         if (workTimer) workTimer.textContent = formatSeconds(workoutState.remainingSeconds);
         
+        // Update work progress ring
+        if (workProgressRing) {
+            const workProgress = ((workoutState.workTime - workoutState.remainingSeconds) / workoutState.workTime) * 100;
+            const workDashArray = `${workProgress}, 100`;
+            workProgressRing.style.strokeDasharray = workDashArray;
+            
+            // Add pulsing animation when work time is low
+            if (workoutState.remainingSeconds <= 5) {
+                workProgressRing.classList.add('animate-pulse');
+            } else {
+                workProgressRing.classList.remove('animate-pulse');
+            }
+        }
+        
         // Hide rest timer for warm-up and cool-down exercises
         if (restTimer) {
             if (isNoRestExercise) {
@@ -445,13 +463,63 @@ function setTimerDisplays() {
             }
         }
         
+        // Reset rest progress ring
+        if (restProgressRing) {
+            restProgressRing.style.strokeDasharray = '0, 100';
+        }
+        
         if (restOverlay) restOverlay.classList.add('hidden');
     } else {
         if (workTimer) workTimer.textContent = formatSeconds(workoutState.workTime);
         if (restTimer) restTimer.textContent = formatSeconds(workoutState.remainingSeconds);
+        
+        // Update rest progress ring
+        if (restProgressRing) {
+            const restProgress = ((workoutState.restTime - workoutState.remainingSeconds) / workoutState.restTime) * 100;
+            const restDashArray = `${restProgress}, 100`;
+            restProgressRing.style.strokeDasharray = restDashArray;
+            
+            // Add pulsing animation when rest time is low
+            if (workoutState.remainingSeconds <= 5) {
+                restProgressRing.classList.add('animate-pulse');
+            } else {
+                restProgressRing.classList.remove('animate-pulse');
+            }
+        }
+        
+        // Reset work progress ring
+        if (workProgressRing) {
+            workProgressRing.style.strokeDasharray = '100, 100';
+        }
+        
         if (restOverlay) {
             restOverlay.classList.remove('hidden');
             if (restOverlayTimer) restOverlayTimer.textContent = workoutState.remainingSeconds.toString().padStart(2, '0');
+            
+            // Update rest overlay progress ring
+            const restOverlayProgressRing = document.getElementById('rest-overlay-progress-ring');
+            if (restOverlayProgressRing) {
+                const restProgress = ((workoutState.restTime - workoutState.remainingSeconds) / workoutState.restTime) * 100;
+                const restDashArray = `${restProgress}, 100`;
+                restOverlayProgressRing.style.strokeDasharray = restDashArray;
+            }
+            
+            // Update motivational message
+            const motivationalMessage = document.getElementById('motivational-message');
+            if (motivationalMessage) {
+                const messages = [
+                    "💪 Great job! You're crushing this workout!",
+                    "🔥 You're on fire! Keep it up!",
+                    "⭐ Amazing progress! You've got this!",
+                    "🚀 You're unstoppable! Keep pushing!",
+                    "💎 You're doing fantastic! Stay strong!",
+                    "🌟 Incredible work! You're a champion!",
+                    "⚡ You're absolutely killing it!",
+                    "🏆 Outstanding effort! Keep going!"
+                ];
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                motivationalMessage.textContent = randomMessage;
+            }
             
             // Update exercise progress
             const currentExerciseNumber = document.getElementById('current-exercise-number');

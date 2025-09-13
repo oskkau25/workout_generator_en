@@ -6,7 +6,7 @@
  * and ensures all modules are loaded in the correct order
  */
 
-console.log('🔧 MAIN.JS LOADED - v4 - CACHE BUSTED');
+console.log('🔧 MAIN.JS LOADED - v5 - CACHE BUSTED');
 
 // Import core modules
 import { exercises, exerciseDatabase } from './core/exercise-database.js';

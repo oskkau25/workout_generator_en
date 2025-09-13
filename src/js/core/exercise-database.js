@@ -14,40 +14,27 @@
 export const exercises = [
     // Warm-up exercises
     { 
-        name: "Arm Circles", 
-        description: "Stand with feet shoulder-width apart. Start with small circles, gradually increasing size. Circle forward for 10 reps, then backward for 10 reps. Keep shoulders relaxed and avoid shrugging. ⚠️ DO: Start small and controlled. DON'T: Force large circles or shrug shoulders. Stop if you feel shoulder pain.", 
-        equipment: "Bodyweight", 
-        level: "Beginner", 
-        muscle: "Shoulders", 
-        type: "warmup",
-        alternatives: ["Shoulder Rolls", "Arm Swings", "Shoulder Shrugs"],
-        difficulty: 1,
-        equipment_needed: ["none"],
-        muscle_groups: ["deltoids", "trapezius"],
-        injury_safe: ["shoulder_pain", "neck_pain"],
-        // Enhanced exercise information
-        resources: {
-            googleSearch: "arm circles exercise proper form technique",
-            youtubeSearch: "arm circles warm up exercise demonstration",
-            modifications: {
-                beginner: "Start with smaller circles, 5 reps each direction",
-                intermediate: "Standard 10 reps each direction",
-                advanced: "Add resistance bands or increase circle size"
-            },
-            timing: {
-                warmup: "30-60 seconds",
-                main: "Not recommended for main workout"
-            },
-            progression: ["Small circles → Large circles → With resistance bands"]
-        }
-    },
-    { 
         name: "Leg Swings", 
         description: "Hold onto a wall or sturdy surface for balance. Swing one leg forward and back in a controlled motion, keeping the movement smooth. Do 10-15 swings per leg, then switch. ⚠️ DO: Keep upper body stable, swing from hip joint. DON'T: Swing too fast or let momentum take over. Stop if you feel hip or knee pain.", 
         equipment: "Bodyweight", 
         level: "Beginner", 
         muscle: "Legs", 
         type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "leg swings warm up exercise proper form technique",
+            youtubeSearch: "leg swings dynamic warm up exercise tutorial",
+            modifications: {
+                beginner: "Hold onto wall for support, small swings",
+                intermediate: "Standard leg swings with minimal support",
+                advanced: "Larger range of motion, no support needed"
+            },
+            timing: {
+                warmup: "30-60 seconds per leg",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Small swings → Large swings → No support → Multi-directional"]
+        },
         alternatives: ["Hip Circles", "Ankle Rotations", "Marching in Place"],
         difficulty: 1,
         equipment_needed: ["none"],
@@ -83,7 +70,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jumping rope (slow) exercise proper form technique",
+            youtubeSearch: "jumping rope (slow) warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jumping rope (slow)",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Torso Twists", 
@@ -91,7 +93,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "torso twists exercise proper form technique",
+            youtubeSearch: "torso twists warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard torso twists",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "High Knees", 
@@ -99,7 +116,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "high knees exercise proper form technique",
+            youtubeSearch: "high knees warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard high knees",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Butt Kicks", 
@@ -107,7 +139,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "butt kicks exercise proper form technique",
+            youtubeSearch: "butt kicks warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard butt kicks",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Cat-Cow Stretch", 
@@ -115,7 +162,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "cat-cow stretch exercise proper form technique",
+            youtubeSearch: "cat-cow stretch warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard cat-cow stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Hip Circles", 
@@ -123,7 +185,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "hip circles exercise proper form technique",
+            youtubeSearch: "hip circles warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard hip circles",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Ankle Rotations", 
@@ -131,7 +208,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "ankle rotations warm up exercise proper form",
+            youtubeSearch: "ankle rotations warm up exercise tutorial",
+            modifications: {
+                beginner: "Small circles, hold onto wall for support",
+                intermediate: "Standard ankle rotations",
+                advanced: "Large circles, no support needed"
+            },
+            timing: {
+                warmup: "30-60 seconds per ankle",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Small circles → Large circles → Multi-directional"]
+        } 
     },
     { 
         name: "Inchworm", 
@@ -139,7 +231,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "inchworm exercise proper form technique warm up",
+            youtubeSearch: "inchworm warm up exercise tutorial",
+            modifications: {
+                beginner: "Bend knees slightly, shorter range",
+                intermediate: "Standard inchworm with straight legs",
+                advanced: "Add push-up at plank position"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Bent knees → Straight legs → With push-up → Single-leg inchworm"]
+        } 
     },
     { 
         name: "World's Greatest Stretch", 
@@ -147,7 +254,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "world's greatest stretch exercise proper form technique",
+            youtubeSearch: "world's greatest stretch warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard world's greatest stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Light Rowing", 
@@ -155,7 +277,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "light rowing exercise proper form technique",
+            youtubeSearch: "light rowing warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard light rowing",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Dynamic Chest Stretch", 
@@ -163,7 +300,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Chest", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "dynamic chest stretch exercise proper form technique",
+            youtubeSearch: "dynamic chest stretch warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard dynamic chest stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Side Lunges", 
@@ -171,7 +323,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "side lunges exercise proper form technique",
+            youtubeSearch: "side lunges warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard side lunges",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Frankenstein Kicks", 
@@ -179,7 +346,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "frankenstein kicks exercise proper form technique",
+            youtubeSearch: "frankenstein kicks warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard frankenstein kicks",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Glute Bridges (Warm-up)", 
@@ -187,7 +369,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "glute bridges (warm-up) exercise proper form technique",
+            youtubeSearch: "glute bridges (warm-up) warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard glute bridges (warm-up)",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Shoulder Taps", 
@@ -195,7 +392,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "shoulder taps exercise proper form technique",
+            youtubeSearch: "shoulder taps warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard shoulder taps",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Wrist Circles", 
@@ -203,7 +415,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "wrist circles warm up exercise proper form",
+            youtubeSearch: "wrist circles warm up exercise tutorial",
+            modifications: {
+                beginner: "Small circles, arms at sides",
+                intermediate: "Standard wrist circles",
+                advanced: "Large circles, arms extended"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Small circles → Large circles → Extended arms → Multi-directional"]
+        } 
     },
     { 
         name: "Neck Rolls", 
@@ -211,7 +438,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "neck rolls exercise proper form technique",
+            youtubeSearch: "neck rolls warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard neck rolls",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
 
     // Main exercises - Bodyweight
@@ -222,6 +464,21 @@ export const exercises = [
         level: "Intermediate", 
         muscle: "Legs", 
         type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "squats exercise proper form technique legs",
+            youtubeSearch: "squats correct form tutorial beginner",
+            modifications: {
+                beginner: "Chair-assisted squats or wall squats",
+                intermediate: "Standard bodyweight squats",
+                advanced: "Jump squats, single-leg squats, or weighted squats"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Chair squats → Bodyweight squats → Jump squats → Single-leg squats"]
+        },
         alternatives: ["Wall Sits", "Chair Squats", "Glute Bridges"],
         difficulty: 2,
         equipment_needed: ["none"],
@@ -285,7 +542,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "plank exercise proper form technique core",
+            youtubeSearch: "plank correct form tutorial beginner",
+            modifications: {
+                beginner: "Knee plank or wall plank",
+                intermediate: "Standard forearm plank",
+                advanced: "Single-arm plank, side plank, or plank variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "30-60 seconds hold, 15-30 seconds rest"
+            },
+            progression: ["Knee plank → Forearm plank → Single-arm plank → Side plank"]
+        } 
     },
     { 
         name: "Glute Bridge", 
@@ -293,7 +565,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "glute bridge exercise proper form technique",
+            youtubeSearch: "glute bridge main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard glute bridge",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Wall Sit", 
@@ -301,7 +588,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "wall sit exercise proper form technique",
+            youtubeSearch: "wall sit main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard wall sit",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Step-ups", 
@@ -309,7 +611,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "step-ups exercise proper form technique",
+            youtubeSearch: "step-ups main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard step-ups",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Calf Raises", 
@@ -317,7 +634,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "calf raises exercise proper form technique",
+            youtubeSearch: "calf raises main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard calf raises",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Bird Dog", 
@@ -325,7 +657,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "bird dog exercise proper form technique",
+            youtubeSearch: "bird dog main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard bird dog",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Dead Bug", 
@@ -333,7 +680,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "dead bug exercise proper form technique",
+            youtubeSearch: "dead bug main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard dead bug",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Burpees", 
@@ -341,7 +703,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "burpees exercise proper form technique full body",
+            youtubeSearch: "burpees correct form tutorial beginner",
+            modifications: {
+                beginner: "Step-back burpees or no-push-up burpees",
+                intermediate: "Standard burpees with push-up",
+                advanced: "Burpee variations with tuck jumps or single-leg burpees"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "30-45 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Step burpees → Standard burpees → Burpee variations → Single-leg burpees"]
+        } 
     },
     { 
         name: "Diamond Push-ups", 
@@ -349,7 +726,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "diamond push-ups exercise proper form technique",
+            youtubeSearch: "diamond push-ups main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard diamond push-ups",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pike Push-ups", 
@@ -357,7 +749,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pike push-ups exercise proper form technique",
+            youtubeSearch: "pike push-ups main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pike push-ups",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Superman", 
@@ -365,7 +772,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "superman exercise proper form technique",
+            youtubeSearch: "superman main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard superman",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Russian Twists", 
@@ -373,7 +795,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "russian twists exercise proper form technique",
+            youtubeSearch: "russian twists main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard russian twists",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Bicycle Crunches", 
@@ -381,7 +818,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "bicycle crunches exercise proper form technique",
+            youtubeSearch: "bicycle crunches main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard bicycle crunches",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Mountain Climbers", 
@@ -389,7 +841,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "mountain climbers exercise proper form technique cardio",
+            youtubeSearch: "mountain climbers correct form tutorial beginner",
+            modifications: {
+                beginner: "Slow mountain climbers or knee-to-chest in plank",
+                intermediate: "Standard mountain climbers",
+                advanced: "Fast mountain climbers or cross-body mountain climbers"
+            },
+            timing: {
+                warmup: "30-45 seconds",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Slow climbers → Standard climbers → Fast climbers → Cross-body climbers"]
+        } 
     },
     { 
         name: "Jump Squats", 
@@ -397,7 +864,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump squats exercise proper form technique",
+            youtubeSearch: "jump squats main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump squats",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Split Squats", 
@@ -405,7 +887,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "split squats exercise proper form technique",
+            youtubeSearch: "split squats main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard split squats",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Single-leg Glute Bridge", 
@@ -413,7 +910,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "single-leg glute bridge exercise proper form technique",
+            youtubeSearch: "single-leg glute bridge main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard single-leg glute bridge",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
 
     // Main exercises - Dumbbells
@@ -423,7 +935,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "dumbbell bicep curls exercise proper form technique",
+            youtubeSearch: "dumbbell bicep curls main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard dumbbell bicep curls",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Dumbbell Shoulder Press", 
@@ -431,7 +958,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "dumbbell shoulder press exercise proper form technique",
+            youtubeSearch: "dumbbell shoulder press main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard dumbbell shoulder press",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Bent-over Dumbbell Rows", 
@@ -439,7 +981,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "bent-over dumbbell rows exercise proper form technique",
+            youtubeSearch: "bent-over dumbbell rows main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard bent-over dumbbell rows",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Goblet Squat", 
@@ -447,7 +1004,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "goblet squat exercise proper form technique",
+            youtubeSearch: "goblet squat main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard goblet squat",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Dumbbell Flys", 
@@ -455,7 +1027,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Chest", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "dumbbell flys exercise proper form technique",
+            youtubeSearch: "dumbbell flys main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard dumbbell flys",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Tricep Kickbacks", 
@@ -463,7 +1050,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "tricep kickbacks exercise proper form technique",
+            youtubeSearch: "tricep kickbacks main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard tricep kickbacks",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Overhead Tricep Extension", 
@@ -471,7 +1073,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "overhead tricep extension exercise proper form technique",
+            youtubeSearch: "overhead tricep extension main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard overhead tricep extension",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Dumbbell Lunges", 
@@ -479,7 +1096,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "dumbbell lunges exercise proper form technique",
+            youtubeSearch: "dumbbell lunges main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard dumbbell lunges",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Romanian Deadlifts (RDLs)", 
@@ -487,7 +1119,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "romanian deadlifts (rdls) exercise proper form technique",
+            youtubeSearch: "romanian deadlifts (rdls) main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard romanian deadlifts (rdls)",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Lateral Raises", 
@@ -495,7 +1142,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "lateral raises exercise proper form technique",
+            youtubeSearch: "lateral raises main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard lateral raises",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Front Raises", 
@@ -503,7 +1165,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "front raises exercise proper form technique",
+            youtubeSearch: "front raises main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard front raises",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Dumbbell Deadlift", 
@@ -511,7 +1188,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "dumbbell deadlift exercise proper form technique",
+            youtubeSearch: "dumbbell deadlift main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard dumbbell deadlift",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Dumbbell Chest Press", 
@@ -519,7 +1211,22 @@ export const exercises = [
         equipment: "Dumbbells", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Chest", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "dumbbell chest press exercise proper form technique",
+            youtubeSearch: "dumbbell chest press main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard dumbbell chest press",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
 
     // Cool-down exercises
@@ -529,7 +1236,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "quad stretch exercise proper form technique",
+            youtubeSearch: "quad stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard quad stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Chest Stretch", 
@@ -537,7 +1259,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Chest", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "chest stretch exercise proper form technique",
+            youtubeSearch: "chest stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard chest stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Child's Pose", 
@@ -545,7 +1282,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "child's pose exercise proper form technique",
+            youtubeSearch: "child's pose cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard child's pose",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Hamstring Stretch", 
@@ -553,7 +1305,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "hamstring stretch exercise proper form technique",
+            youtubeSearch: "hamstring stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard hamstring stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pigeon Pose", 
@@ -561,7 +1328,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pigeon pose exercise proper form technique",
+            youtubeSearch: "pigeon pose cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pigeon pose",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Triceps Stretch", 
@@ -569,7 +1351,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "triceps stretch exercise proper form technique",
+            youtubeSearch: "triceps stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard triceps stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Shoulder Stretch", 
@@ -577,7 +1374,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "shoulder stretch exercise proper form technique",
+            youtubeSearch: "shoulder stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard shoulder stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Calf Stretch", 
@@ -585,7 +1397,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "calf stretch exercise proper form technique",
+            youtubeSearch: "calf stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard calf stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Hip Flexor Stretch", 
@@ -593,7 +1420,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "hip flexor stretch exercise proper form technique",
+            youtubeSearch: "hip flexor stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard hip flexor stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Knees to Chest", 
@@ -601,7 +1443,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "knees to chest exercise proper form technique",
+            youtubeSearch: "knees to chest cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard knees to chest",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Cobra Pose", 
@@ -609,7 +1466,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "cobra pose exercise proper form technique",
+            youtubeSearch: "cobra pose cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard cobra pose",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Butterfly Stretch", 
@@ -617,7 +1489,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "butterfly stretch exercise proper form technique",
+            youtubeSearch: "butterfly stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard butterfly stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Spinal Twist", 
@@ -625,7 +1512,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "spinal twist exercise proper form technique",
+            youtubeSearch: "spinal twist cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard spinal twist",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Lat Stretch", 
@@ -633,7 +1535,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "lat stretch exercise proper form technique",
+            youtubeSearch: "lat stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard lat stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Ankle Hops", 
@@ -641,7 +1558,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "ankle hops exercise proper form technique",
+            youtubeSearch: "ankle hops warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard ankle hops",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Hip Openers (Lunge + Circle)", 
@@ -649,7 +1581,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "hip openers (lunge + circle) exercise proper form technique",
+            youtubeSearch: "hip openers (lunge + circle) warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard hip openers (lunge + circle)",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Scapular Pulls", 
@@ -657,7 +1604,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "scapular pulls exercise proper form technique",
+            youtubeSearch: "scapular pulls warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard scapular pulls",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Reverse Lunges", 
@@ -665,7 +1627,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "reverse lunges exercise proper form technique",
+            youtubeSearch: "reverse lunges main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard reverse lunges",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Side Plank", 
@@ -673,7 +1650,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "side plank exercise proper form technique",
+            youtubeSearch: "side plank main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard side plank",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Bear Crawl", 
@@ -681,7 +1673,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "bear crawl exercise proper form technique",
+            youtubeSearch: "bear crawl main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard bear crawl",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Hollow Body Hold", 
@@ -689,7 +1696,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "hollow body hold exercise proper form technique",
+            youtubeSearch: "hollow body hold main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard hollow body hold",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Sumo Squats", 
@@ -697,7 +1719,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "sumo squats exercise proper form technique",
+            youtubeSearch: "sumo squats main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard sumo squats",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Incline Push-ups", 
@@ -705,7 +1742,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Chest", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "incline push-ups exercise proper form technique",
+            youtubeSearch: "incline push-ups main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard incline push-ups",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Chair Dips", 
@@ -713,7 +1765,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "chair dips exercise proper form technique",
+            youtubeSearch: "chair dips main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard chair dips",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Swings", 
@@ -721,7 +1788,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell swings exercise proper form technique",
+            youtubeSearch: "kettlebell swings main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell swings",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Rows", 
@@ -729,7 +1811,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx rows exercise proper form technique",
+            youtubeSearch: "trx rows main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx rows",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Band Pull-Aparts", 
@@ -737,7 +1834,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "band pull-aparts exercise proper form technique",
+            youtubeSearch: "band pull-aparts main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard band pull-aparts",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope High Knees", 
@@ -745,7 +1857,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope high knees exercise proper form technique",
+            youtubeSearch: "jump rope high knees main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope high knees",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Rowing Sprints", 
@@ -753,7 +1880,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rowing sprints exercise proper form technique",
+            youtubeSearch: "rowing sprints main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rowing sprints",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Seated Forward Fold", 
@@ -761,7 +1903,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "seated forward fold exercise proper form technique",
+            youtubeSearch: "seated forward fold cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard seated forward fold",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Figure Four Stretch", 
@@ -769,7 +1926,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "figure four stretch exercise proper form technique",
+            youtubeSearch: "figure four stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard figure four stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Upper Trap Stretch", 
@@ -777,7 +1949,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "upper trap stretch exercise proper form technique",
+            youtubeSearch: "upper trap stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard upper trap stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Deep Breathing Stretch", 
@@ -785,7 +1972,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "deep breathing stretch exercise proper form technique",
+            youtubeSearch: "deep breathing stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard deep breathing stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     
     // Additional Warm-up Exercises (5-minute warm-up)
@@ -795,15 +1997,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "warmup" 
-    },
-    { 
-        name: "Leg Swings", 
-        description: "Hold onto a wall or sturdy surface for balance. Swing one leg forward and backward, then side to side. Do 10 swings each direction per leg. ⚠️ DO: Keep standing leg stable, swing from hip, control the movement. DON'T: Let momentum take over, swing too hard, or lose balance.", 
-        equipment: "Bodyweight", 
-        level: ["Beginner", "Intermediate", "Advanced"], 
-        muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "arm circles exercise proper form technique",
+            youtubeSearch: "arm circles warm up exercise demonstration",
+            modifications: {
+                beginner: "Start with smaller circles, 5 reps each direction",
+                intermediate: "Standard 10 reps each direction",
+                advanced: "Add resistance bands or increase circle size"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Small circles → Large circles → With resistance bands"]
+        }
     },
     { 
         name: "Scapular Pulls", 
@@ -811,7 +2020,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "scapular pulls exercise proper form technique",
+            youtubeSearch: "scapular pulls warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard scapular pulls",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Hip Openers (Lunge + Circle)", 
@@ -819,7 +2043,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "hip openers (lunge + circle) exercise proper form technique",
+            youtubeSearch: "hip openers (lunge + circle) warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard hip openers (lunge + circle)",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Walking Lunges", 
@@ -827,7 +2066,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "walking lunges exercise proper form technique",
+            youtubeSearch: "walking lunges warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard walking lunges",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Bear Crawl", 
@@ -835,7 +2089,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "bear crawl exercise proper form technique",
+            youtubeSearch: "bear crawl warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard bear crawl",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Mountain Climbers", 
@@ -843,15 +2112,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
-    },
-    { 
-        name: "Jumping Jacks", 
-        description: "Start standing with feet together and arms at sides. Jump feet apart while raising arms overhead, then jump back to start. ⚠️ DO: Land softly, maintain rhythm, breathe normally. DON'T: Land hard, hold breath, or jump too high if you have joint issues.", 
-        equipment: "Bodyweight", 
-        level: ["Beginner", "Intermediate", "Advanced"], 
-        muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "mountain climbers exercise proper form technique",
+            youtubeSearch: "mountain climbers warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard mountain climbers",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Reverse Lunges", 
@@ -859,7 +2135,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "reverse lunges exercise proper form technique",
+            youtubeSearch: "reverse lunges warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard reverse lunges",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Plank to Downward Dog", 
@@ -867,7 +2158,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "plank to downward dog exercise proper form technique",
+            youtubeSearch: "plank to downward dog warmup exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard plank to downward dog",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     
     // Additional Cool-down Exercises (5-minute cool-down)
@@ -877,7 +2183,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "seated forward fold exercise proper form technique",
+            youtubeSearch: "seated forward fold cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard seated forward fold",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Quad Stretch", 
@@ -885,7 +2206,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "quad stretch exercise proper form technique",
+            youtubeSearch: "quad stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard quad stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Wall Chest Stretch", 
@@ -893,7 +2229,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Chest", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "wall chest stretch exercise proper form technique",
+            youtubeSearch: "wall chest stretch cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard wall chest stretch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Seated Spinal Twist", 
@@ -901,7 +2252,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "seated spinal twist exercise proper form technique",
+            youtubeSearch: "seated spinal twist cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard seated spinal twist",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Standing Forward Fold", 
@@ -909,7 +2275,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "standing forward fold exercise proper form technique",
+            youtubeSearch: "standing forward fold cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard standing forward fold",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Reclined Butterfly", 
@@ -917,7 +2298,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "reclined butterfly exercise proper form technique",
+            youtubeSearch: "reclined butterfly cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard reclined butterfly",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Supine Twist", 
@@ -925,7 +2321,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "supine twist exercise proper form technique",
+            youtubeSearch: "supine twist cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard supine twist",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Happy Baby", 
@@ -933,7 +2344,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "happy baby exercise proper form technique",
+            youtubeSearch: "happy baby cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard happy baby",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Legs Up the Wall", 
@@ -941,7 +2367,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "legs up the wall exercise proper form technique",
+            youtubeSearch: "legs up the wall cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard legs up the wall",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Corpse Pose", 
@@ -949,7 +2390,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "cooldown" 
+        type: "cooldown",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "corpse pose exercise proper form technique",
+            youtubeSearch: "corpse pose cooldown exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard corpse pose",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     
     // Additional TRX exercises
@@ -959,7 +2415,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx push-ups exercise proper form technique",
+            youtubeSearch: "trx push-ups main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx push-ups",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Squats", 
@@ -967,7 +2438,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx squats exercise proper form technique",
+            youtubeSearch: "trx squats main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx squats",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Lunges", 
@@ -975,7 +2461,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx lunges exercise proper form technique",
+            youtubeSearch: "trx lunges main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx lunges",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Chest Press", 
@@ -983,7 +2484,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx chest press exercise proper form technique",
+            youtubeSearch: "trx chest press main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx chest press",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Tricep Extensions", 
@@ -991,7 +2507,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx tricep extensions exercise proper form technique",
+            youtubeSearch: "trx tricep extensions main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx tricep extensions",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Bicep Curls", 
@@ -999,7 +2530,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx bicep curls exercise proper form technique",
+            youtubeSearch: "trx bicep curls main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx bicep curls",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Core Crunches", 
@@ -1007,7 +2553,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx core crunches exercise proper form technique",
+            youtubeSearch: "trx core crunches main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx core crunches",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Pike", 
@@ -1015,7 +2576,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx pike exercise proper form technique",
+            youtubeSearch: "trx pike main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx pike",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Hamstring Curls", 
@@ -1023,7 +2599,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx hamstring curls exercise proper form technique",
+            youtubeSearch: "trx hamstring curls main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx hamstring curls",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Single Arm Row", 
@@ -1031,7 +2622,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx single arm row exercise proper form technique",
+            youtubeSearch: "trx single arm row main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx single arm row",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Y-Fly", 
@@ -1039,7 +2645,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx y-fly exercise proper form technique",
+            youtubeSearch: "trx y-fly main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx y-fly",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX T-Fly", 
@@ -1047,7 +2668,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx t-fly exercise proper form technique",
+            youtubeSearch: "trx t-fly main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx t-fly",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Atomic Push-ups", 
@@ -1055,7 +2691,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx atomic push-ups exercise proper form technique",
+            youtubeSearch: "trx atomic push-ups main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx atomic push-ups",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Fallout", 
@@ -1063,7 +2714,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx fallout exercise proper form technique",
+            youtubeSearch: "trx fallout main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx fallout",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "TRX Suspended Lunge", 
@@ -1071,7 +2737,22 @@ export const exercises = [
         equipment: "TRX Bands", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "trx suspended lunge exercise proper form technique",
+            youtubeSearch: "trx suspended lunge main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard trx suspended lunge",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     // Additional Kettlebell exercises
     { 
@@ -1080,7 +2761,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell deadlift exercise proper form technique",
+            youtubeSearch: "kettlebell deadlift main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell deadlift",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Squat", 
@@ -1088,7 +2784,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell squat exercise proper form technique",
+            youtubeSearch: "kettlebell squat main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell squat",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Lunge", 
@@ -1096,7 +2807,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell lunge exercise proper form technique",
+            youtubeSearch: "kettlebell lunge main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell lunge",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Press", 
@@ -1104,7 +2830,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell press exercise proper form technique",
+            youtubeSearch: "kettlebell press main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell press",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Row", 
@@ -1112,7 +2853,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell row exercise proper form technique",
+            youtubeSearch: "kettlebell row main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell row",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Clean", 
@@ -1120,7 +2876,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell clean exercise proper form technique",
+            youtubeSearch: "kettlebell clean main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell clean",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Snatch", 
@@ -1128,7 +2899,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell snatch exercise proper form technique",
+            youtubeSearch: "kettlebell snatch main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell snatch",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Turkish Get-up", 
@@ -1136,7 +2922,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell turkish get-up exercise proper form technique",
+            youtubeSearch: "kettlebell turkish get-up main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell turkish get-up",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Windmill", 
@@ -1144,7 +2945,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell windmill exercise proper form technique",
+            youtubeSearch: "kettlebell windmill main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell windmill",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Figure-8", 
@@ -1152,7 +2968,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell figure-8 exercise proper form technique",
+            youtubeSearch: "kettlebell figure-8 main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell figure-8",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Halo", 
@@ -1160,7 +2991,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell halo exercise proper form technique",
+            youtubeSearch: "kettlebell halo main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell halo",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Thruster", 
@@ -1168,7 +3014,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell thruster exercise proper form technique",
+            youtubeSearch: "kettlebell thruster main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell thruster",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Sumo Deadlift", 
@@ -1176,7 +3037,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell sumo deadlift exercise proper form technique",
+            youtubeSearch: "kettlebell sumo deadlift main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell sumo deadlift",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Single Leg Deadlift", 
@@ -1184,7 +3060,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell single leg deadlift exercise proper form technique",
+            youtubeSearch: "kettlebell single leg deadlift main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell single leg deadlift",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Side Lunge", 
@@ -1192,7 +3083,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell side lunge exercise proper form technique",
+            youtubeSearch: "kettlebell side lunge main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell side lunge",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Kettlebell Step-up", 
@@ -1200,7 +3106,22 @@ export const exercises = [
         equipment: "Kettlebell", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "kettlebell step-up exercise proper form technique",
+            youtubeSearch: "kettlebell step-up main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard kettlebell step-up",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     // Additional Resistance Band exercises
     { 
@@ -1209,7 +3130,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band squats exercise proper form technique",
+            youtubeSearch: "resistance band squats main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band squats",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Rows", 
@@ -1217,7 +3153,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band rows exercise proper form technique",
+            youtubeSearch: "resistance band rows main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band rows",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Chest Press", 
@@ -1225,7 +3176,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band chest press exercise proper form technique",
+            youtubeSearch: "resistance band chest press main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band chest press",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Bicep Curls", 
@@ -1233,7 +3199,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band bicep curls exercise proper form technique",
+            youtubeSearch: "resistance band bicep curls main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band bicep curls",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Tricep Extensions", 
@@ -1241,7 +3222,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Arms", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band tricep extensions exercise proper form technique",
+            youtubeSearch: "resistance band tricep extensions main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band tricep extensions",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Lateral Raises", 
@@ -1249,7 +3245,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band lateral raises exercise proper form technique",
+            youtubeSearch: "resistance band lateral raises main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band lateral raises",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Front Raises", 
@@ -1257,7 +3268,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band front raises exercise proper form technique",
+            youtubeSearch: "resistance band front raises main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band front raises",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Deadlift", 
@@ -1265,7 +3291,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band deadlift exercise proper form technique",
+            youtubeSearch: "resistance band deadlift main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band deadlift",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Lunges", 
@@ -1273,7 +3314,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band lunges exercise proper form technique",
+            youtubeSearch: "resistance band lunges main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band lunges",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Glute Bridge", 
@@ -1281,7 +3337,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band glute bridge exercise proper form technique",
+            youtubeSearch: "resistance band glute bridge main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band glute bridge",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Clamshells", 
@@ -1289,7 +3360,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band clamshells exercise proper form technique",
+            youtubeSearch: "resistance band clamshells main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band clamshells",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Side Steps", 
@@ -1297,7 +3383,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band side steps exercise proper form technique",
+            youtubeSearch: "resistance band side steps main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band side steps",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Woodchoppers", 
@@ -1305,7 +3406,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band woodchoppers exercise proper form technique",
+            youtubeSearch: "resistance band woodchoppers main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band woodchoppers",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Pallof Press", 
@@ -1313,7 +3429,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band pallof press exercise proper form technique",
+            youtubeSearch: "resistance band pallof press main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band pallof press",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Face Pulls", 
@@ -1321,7 +3452,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band face pulls exercise proper form technique",
+            youtubeSearch: "resistance band face pulls main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band face pulls",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Reverse Fly", 
@@ -1329,7 +3475,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band reverse fly exercise proper form technique",
+            youtubeSearch: "resistance band reverse fly main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band reverse fly",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Upright Rows", 
@@ -1337,7 +3498,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Shoulders", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band upright rows exercise proper form technique",
+            youtubeSearch: "resistance band upright rows main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band upright rows",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Resistance Band Shrugs", 
@@ -1345,7 +3521,22 @@ export const exercises = [
         equipment: "Resistance Band", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Back", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "resistance band shrugs exercise proper form technique",
+            youtubeSearch: "resistance band shrugs main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard resistance band shrugs",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     // Additional Pull-up Bar exercises
     { 
@@ -1354,7 +3545,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging leg raises exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging leg raises main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging leg raises",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Knee Tucks", 
@@ -1362,7 +3568,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar knee tucks exercise proper form technique",
+            youtubeSearch: "pull-up bar knee tucks main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar knee tucks",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar L-Sit", 
@@ -1370,7 +3591,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar l-sit exercise proper form technique",
+            youtubeSearch: "pull-up bar l-sit main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar l-sit",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Windshield Wipers", 
@@ -1378,7 +3614,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar windshield wipers exercise proper form technique",
+            youtubeSearch: "pull-up bar windshield wipers main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar windshield wipers",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Toes to Bar", 
@@ -1386,7 +3637,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar toes to bar exercise proper form technique",
+            youtubeSearch: "pull-up bar toes to bar main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar toes to bar",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Scissors", 
@@ -1394,7 +3660,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging scissors exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging scissors main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging scissors",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Bicycles", 
@@ -1402,7 +3683,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging bicycles exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging bicycles main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging bicycles",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Side Crunches", 
@@ -1410,7 +3706,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging side crunches exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging side crunches main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging side crunches",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Oblique Twists", 
@@ -1418,7 +3729,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging oblique twists exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging oblique twists main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging oblique twists",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Pike", 
@@ -1426,7 +3752,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging pike exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging pike main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging pike",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Knee Circles", 
@@ -1434,7 +3775,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging knee circles exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging knee circles main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging knee circles",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Figure-8", 
@@ -1442,7 +3798,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging figure-8 exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging figure-8 main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging figure-8",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Side Leg Raises", 
@@ -1450,7 +3821,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging side leg raises exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging side leg raises main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging side leg raises",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Knee Tucks with Twist", 
@@ -1458,7 +3844,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging knee tucks with twist exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging knee tucks with twist main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging knee tucks with twist",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Leg Extensions", 
@@ -1466,7 +3867,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging leg extensions exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging leg extensions main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging leg extensions",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Pull-up Bar Hanging Knee Raises with Hold", 
@@ -1474,7 +3890,22 @@ export const exercises = [
         equipment: "Pull-up Bar", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Core", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "pull-up bar hanging knee raises with hold exercise proper form technique",
+            youtubeSearch: "pull-up bar hanging knee raises with hold main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard pull-up bar hanging knee raises with hold",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     // Additional Jump Rope exercises
     { 
@@ -1483,7 +3914,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope high knees exercise proper form technique",
+            youtubeSearch: "jump rope high knees main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope high knees",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Butt Kicks", 
@@ -1491,7 +3937,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope butt kicks exercise proper form technique",
+            youtubeSearch: "jump rope butt kicks main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope butt kicks",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Side to Side", 
@@ -1499,7 +3960,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope side to side exercise proper form technique",
+            youtubeSearch: "jump rope side to side main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope side to side",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Forward Backward", 
@@ -1507,7 +3983,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope forward backward exercise proper form technique",
+            youtubeSearch: "jump rope forward backward main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope forward backward",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Double Unders", 
@@ -1515,7 +4006,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope double unders exercise proper form technique",
+            youtubeSearch: "jump rope double unders main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope double unders",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Crossovers", 
@@ -1523,7 +4029,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope crossovers exercise proper form technique",
+            youtubeSearch: "jump rope crossovers main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope crossovers",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Single Leg", 
@@ -1531,7 +4052,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope single leg exercise proper form technique",
+            youtubeSearch: "jump rope single leg main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope single leg",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Criss Cross", 
@@ -1539,7 +4075,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope criss cross exercise proper form technique",
+            youtubeSearch: "jump rope criss cross main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope criss cross",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Boxer Skip", 
@@ -1547,7 +4098,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope boxer skip exercise proper form technique",
+            youtubeSearch: "jump rope boxer skip main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope boxer skip",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Heel Toe", 
@@ -1555,7 +4121,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope heel toe exercise proper form technique",
+            youtubeSearch: "jump rope heel toe main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope heel toe",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Jumping Jacks", 
@@ -1563,7 +4144,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope jumping jacks exercise proper form technique",
+            youtubeSearch: "jump rope jumping jacks main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope jumping jacks",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Skier", 
@@ -1571,7 +4167,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope skier exercise proper form technique",
+            youtubeSearch: "jump rope skier main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope skier",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Mummy Kicks", 
@@ -1579,7 +4190,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope mummy kicks exercise proper form technique",
+            youtubeSearch: "jump rope mummy kicks main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope mummy kicks",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Bell", 
@@ -1587,7 +4213,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope bell exercise proper form technique",
+            youtubeSearch: "jump rope bell main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope bell",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Scissors", 
@@ -1595,7 +4236,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope scissors exercise proper form technique",
+            youtubeSearch: "jump rope scissors main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope scissors",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Can Can", 
@@ -1603,7 +4259,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope can can exercise proper form technique",
+            youtubeSearch: "jump rope can can main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope can can",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Jump Rope Russian", 
@@ -1611,7 +4282,22 @@ export const exercises = [
         equipment: "Jump Rope", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jump rope russian exercise proper form technique",
+            youtubeSearch: "jump rope russian main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard jump rope russian",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     // Additional Rower exercises
     { 
@@ -1620,7 +4306,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rower intervals exercise proper form technique",
+            youtubeSearch: "rower intervals main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rower intervals",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Rower Pyramid", 
@@ -1628,7 +4329,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rower pyramid exercise proper form technique",
+            youtubeSearch: "rower pyramid main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rower pyramid",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Rower Tabata", 
@@ -1636,7 +4352,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rower tabata exercise proper form technique",
+            youtubeSearch: "rower tabata main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rower tabata",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Rower Distance Challenge", 
@@ -1644,7 +4375,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rower distance challenge exercise proper form technique",
+            youtubeSearch: "rower distance challenge main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rower distance challenge",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Rower Power Strokes", 
@@ -1652,7 +4398,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rower power strokes exercise proper form technique",
+            youtubeSearch: "rower power strokes main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rower power strokes",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Rower Technique Focus", 
@@ -1660,7 +4421,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rower technique focus exercise proper form technique",
+            youtubeSearch: "rower technique focus main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rower technique focus",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Rower Endurance", 
@@ -1668,7 +4444,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rower endurance exercise proper form technique",
+            youtubeSearch: "rower endurance main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rower endurance",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     },
     { 
         name: "Rower Sprint Finish", 
@@ -1676,7 +4467,22 @@ export const exercises = [
         equipment: "Rower", 
         level: ["Advanced"], 
         muscle: "Full Body", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "rower sprint finish exercise proper form technique",
+            youtubeSearch: "rower sprint finish main exercise tutorial",
+            modifications: {
+                beginner: "Start with easier variation or reduced range",
+                intermediate: "Standard rower sprint finish",
+                advanced: "Add intensity or advanced variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Beginner variation → Standard → Advanced → Expert level"]
+        } 
     }
 ];
 

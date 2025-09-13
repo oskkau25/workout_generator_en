@@ -398,7 +398,7 @@ function displayWorkout(workoutResult) {
     if (form) form.style.display = 'none';
     if (workoutSection) {
         workoutSection.style.display = 'block';
-        workoutSection.innerHTML = generateWorkoutHTML(workout, metadata);
+        workoutSection.innerHTML = generateWorkoutHTML(workout, metadata, workTime, restTime);
     }
     
     // Scroll to workout
@@ -418,7 +418,7 @@ function brief(text = '') {
 /**
  * Generate workout HTML
  */
-function generateWorkoutHTML(workout, metadata) {
+function generateWorkoutHTML(workout, metadata, workTime, restTime) {
     let currentSection = '';
     const exerciseHTML = workout.map((exercise, index) => {
         // Insert section headers when section changes
@@ -466,22 +466,103 @@ function generateWorkoutHTML(workout, metadata) {
         const circuitNumber = exercise._isCircuitExercise ? 
             `<span class="inline-block px-2 py-1 bg-fit-accent text-white text-xs rounded-full mr-2">#${exercise._circuitPosition}</span>` : '';
         
+        // Get equipment icon
+        const getEquipmentIcon = (equipment) => {
+            const icons = {
+                'Bodyweight': '🏃',
+                'Dumbbells': '🏋️',
+                'Kettlebell': '⚡',
+                'TRX Bands': '🎯',
+                'Resistance Band': '🔄',
+                'Pull-up Bar': '🆙',
+                'Jump Rope': '🦘',
+                'Rower': '🚣'
+            };
+            return icons[equipment] || '💪';
+        };
+
+        // Get muscle group color
+        const getMuscleColor = (muscle) => {
+            const colors = {
+                'Chest': 'bg-red-100 text-red-700',
+                'Back': 'bg-blue-100 text-blue-700',
+                'Legs': 'bg-green-100 text-green-700',
+                'Arms': 'bg-purple-100 text-purple-700',
+                'Shoulders': 'bg-orange-100 text-orange-700',
+                'Core': 'bg-yellow-100 text-yellow-700',
+                'Full Body': 'bg-indigo-100 text-indigo-700'
+            };
+            return colors[muscle] || 'bg-gray-100 text-gray-700';
+        };
+
+        // Get level color
+        const getLevelColor = (level) => {
+            const colors = {
+                'Beginner': 'bg-green-100 text-green-700',
+                'Intermediate': 'bg-yellow-100 text-yellow-700',
+                'Advanced': 'bg-red-100 text-red-700'
+            };
+            return colors[level] || 'bg-gray-100 text-gray-700';
+        };
+
         return `
             ${header}
-            <div id="exercise-item-${index}" class="exercise-item p-4 bg-white rounded-lg border border-gray-200 hover:border-fit-primary transition-colors" data-index="${index}">
-                <div class="flex justify-between items-start mb-2">
-                    <h4 class="font-semibold text-fit-dark" data-field="name">
-                        ${circuitNumber}${exercise.name}
-                    </h4>
-                    <div class="flex space-x-2">
-                        ${substitutionButton}
-                        <span class="px-2 py-1 bg-fit-primary text-white text-xs rounded-full" data-field="level">${exercise.level}</span>
+            <div id="exercise-item-${index}" class="exercise-item group p-6 bg-white rounded-xl border border-gray-200 hover:border-fit-primary hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-index="${index}">
+                <div class="flex items-start space-x-4">
+                    <!-- Equipment Icon -->
+                    <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-fit-primary/10 to-fit-accent/10 rounded-full flex items-center justify-center text-2xl">
+                        ${getEquipmentIcon(exercise.equipment)}
                     </div>
-                </div>
-                <p class="text-fit-secondary text-sm mb-2" data-field="description">${brief(exercise.description)}</p>
-                <div class="flex justify-between items-center text-xs text-fit-secondary">
-                    <span data-field="equipment">Equipment: ${exercise.equipment}</span>
-                    <span data-field="muscle">Muscle: ${exercise.muscle}</span>
+                    
+                    <!-- Exercise Content -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center space-x-2">
+                                ${circuitNumber}
+                                <h4 class="font-bold text-lg text-fit-dark group-hover:text-fit-primary transition-colors" data-field="name">
+                                    ${exercise.name}
+                                </h4>
+                            </div>
+                            <div class="flex space-x-2">
+                                ${substitutionButton}
+                                <span class="px-3 py-1 ${getLevelColor(exercise.level)} text-xs font-semibold rounded-full" data-field="level">
+                                    ${exercise.level}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-fit-secondary text-sm mb-4 leading-relaxed" data-field="description">
+                            ${brief(exercise.description)}
+                        </p>
+                        
+                        <div class="flex flex-wrap items-center gap-3">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                </svg>
+                                <span class="text-xs text-fit-secondary" data-field="equipment">${exercise.equipment}</span>
+                            </div>
+                            
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                                <span class="px-2 py-1 ${getMuscleColor(exercise.muscle)} text-xs font-medium rounded-full" data-field="muscle">
+                                    ${exercise.muscle}
+                                </span>
+                            </div>
+                            
+                            <!-- Timing Info -->
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-xs text-fit-secondary">
+                                    ${exercise._noRest ? 'No rest' : `${workTime}s work, ${restTime}s rest`}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
