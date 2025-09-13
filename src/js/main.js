@@ -6,7 +6,7 @@
  * and ensures all modules are loaded in the correct order
  */
 
-console.log('🔧 MAIN.JS LOADED - v5 - CACHE BUSTED');
+console.log('🔧 MAIN.JS LOADED - v23 - CACHE BUSTED');
 
 // Import core modules
 import { exercises, exerciseDatabase } from './core/exercise-database.js';
@@ -17,6 +17,10 @@ import {
     handleFormSubmission 
 } from './core/workout-generator.js?v=24';
 import { CONSTANTS } from './utils/constants.js';
+import { initializeEnhancedForm, getValidatedFormData } from './features/enhanced-form.js';
+import { initializeEnhancedTimer } from './features/enhanced-timer.js';
+import { initializeAccessibility } from './features/accessibility.js';
+import { initializeVisualEnhancements } from './features/visual-enhancements.js';
 
 // Import feature modules
 import { 
@@ -70,8 +74,20 @@ class FitFlowApp {
         // Initialize user account system
         this.initializeUserAccount();
         
+        // Initialize enhanced form features
+        initializeEnhancedForm();
+        
+        // Initialize accessibility features
+        initializeAccessibility();
+        
+        // Initialize visual enhancements
+        initializeVisualEnhancements();
+        
         // Setup event listeners
         this.setupEventListeners();
+        
+        // Setup dashboard functionality
+        this.setupDashboard();
         
         console.log('✅ FitFlow App Initialized Successfully!');
     }
@@ -89,6 +105,15 @@ class FitFlowApp {
         window.validateForm = validateForm;
         window.getFormData = getFormData;
         window.handleFormSubmission = handleFormSubmission;
+        
+        // Enhanced form features
+        window.getValidatedFormData = getValidatedFormData;
+        
+        // Accessibility features
+        window.initializeAccessibility = initializeAccessibility;
+        
+        // Visual enhancements
+        window.initializeVisualEnhancements = initializeVisualEnhancements;
         
         // Smart substitution
         window.findExerciseAlternatives = findExerciseAlternatives;
@@ -199,6 +224,7 @@ class FitFlowApp {
                     this.setupFormListeners();
         this.setupUserAccountListeners();
         this.setupWorkoutPlayerListeners();
+        this.setupDashboardListeners();
         };
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
             attachAll();
@@ -645,6 +671,185 @@ class FitFlowApp {
      */
     getAllModules() {
         return this.modules;
+    }
+    
+    /**
+     * Setup dashboard functionality
+     */
+    setupDashboard() {
+        // Load personal analytics data
+        this.loadPersonalAnalytics();
+    }
+    
+    /**
+     * Setup dashboard event listeners
+     */
+    setupDashboardListeners() {
+        // Add event listener for Analytics button
+        const analyticsBtn = document.querySelector('a[href="dashboard.html"]');
+        if (analyticsBtn) {
+            analyticsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showDashboard();
+            });
+        }
+        
+        // Add event listener for close dashboard button
+        const closeDashboardBtn = document.getElementById('close-dashboard');
+        if (closeDashboardBtn) {
+            closeDashboardBtn.addEventListener('click', () => {
+                this.hideDashboard();
+            });
+        }
+    }
+    
+    /**
+     * Show dashboard section
+     */
+    showDashboard() {
+        const dashboardSection = document.getElementById('dashboard-section');
+        const workoutPlan = document.getElementById('workout-plan');
+        
+        if (dashboardSection && workoutPlan) {
+            workoutPlan.classList.add('hidden');
+            dashboardSection.classList.remove('hidden');
+            this.loadPersonalAnalytics();
+        }
+    }
+    
+    /**
+     * Hide dashboard section
+     */
+    hideDashboard() {
+        const dashboardSection = document.getElementById('dashboard-section');
+        const workoutPlan = document.getElementById('workout-plan');
+        
+        if (dashboardSection && workoutPlan) {
+            dashboardSection.classList.add('hidden');
+            workoutPlan.classList.remove('hidden');
+        }
+    }
+    
+    /**
+     * Load personal analytics data
+     */
+    loadPersonalAnalytics() {
+        try {
+            // Load personal workout data from localStorage
+            const personalWorkouts = localStorage.getItem('fitflow_personal_workouts');
+            let workouts = [];
+            
+            if (personalWorkouts) {
+                workouts = JSON.parse(personalWorkouts);
+            }
+            
+            // Calculate metrics
+            const totalWorkouts = workouts.length;
+            const totalDuration = workouts.reduce((sum, w) => sum + (w.duration || 0), 0);
+            const avgDuration = totalWorkouts > 0 ? Math.round(totalDuration / totalWorkouts) : 0;
+            const streak = this.calculateStreak(workouts);
+            
+            // Update display
+            document.getElementById('personal-total-workouts').textContent = totalWorkouts;
+            document.getElementById('personal-total-duration').textContent = this.formatDuration(totalDuration);
+            document.getElementById('personal-avg-duration').textContent = `${avgDuration}m`;
+            document.getElementById('personal-streak').textContent = streak;
+            
+            // Update workouts table
+            this.updatePersonalWorkoutsTable(workouts);
+            
+        } catch (error) {
+            console.warn('Failed to load personal analytics:', error);
+        }
+    }
+    
+    /**
+     * Calculate workout streak
+     */
+    calculateStreak(workouts) {
+        if (workouts.length === 0) return 0;
+        
+        // Sort workouts by date (most recent first)
+        const sortedWorkouts = workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        let streak = 0;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        for (let i = 0; i < sortedWorkouts.length; i++) {
+            const workoutDate = new Date(sortedWorkouts[i].date);
+            workoutDate.setHours(0, 0, 0, 0);
+            
+            const daysDiff = Math.floor((today - workoutDate) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff === streak) {
+                streak++;
+            } else if (daysDiff === streak + 1) {
+                // Check if there's a workout on the next day
+                continue;
+            } else {
+                break;
+            }
+        }
+        
+        return streak;
+    }
+    
+    /**
+     * Format duration in hours and minutes
+     */
+    formatDuration(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (hours > 0) {
+            return `${hours}h ${mins}m`;
+        }
+        return `${mins}m`;
+    }
+    
+    /**
+     * Update personal workouts table
+     */
+    updatePersonalWorkoutsTable(workouts) {
+        const tableBody = document.getElementById('personal-workouts-table');
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        // Show last 10 personal workouts
+        const recentWorkouts = workouts.slice(0, 10);
+        
+        recentWorkouts.forEach(workout => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+                    ${this.formatPersonalDate(workout.date)}
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                    ${workout.duration || 0}m
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+                    ${workout.exerciseCount || 'N/A'}
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+                    ${Array.isArray(workout.equipment) ? workout.equipment.join(', ') : workout.equipment || 'N/A'}
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+    
+    /**
+     * Format personal date for display
+     */
+    formatPersonalDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 }
 

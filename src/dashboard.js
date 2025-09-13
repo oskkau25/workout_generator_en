@@ -58,6 +58,32 @@ class AnalyticsDashboard {
             // Process events to create users, workouts, and sessions
             this.processRealAnalyticsData(events);
         }
+        
+        // Load personal workout data
+        this.loadPersonalWorkoutData();
+    }
+    
+    loadPersonalWorkoutData() {
+        // Load personal workout history from localStorage
+        const personalWorkouts = localStorage.getItem('fitflow_personal_workouts');
+        if (personalWorkouts) {
+            const workouts = JSON.parse(personalWorkouts);
+            
+            // Add personal workouts to the analytics data
+            workouts.forEach(workout => {
+                this.analyticsData.workouts.push({
+                    id: `personal_${workout.id}`,
+                    userId: 'current_user',
+                    pattern: workout.type || 'Standard',
+                    duration: workout.duration || 30,
+                    equipment: workout.equipment || ['Bodyweight'],
+                    fitnessLevel: 'Personal',
+                    timestamp: new Date(workout.date),
+                    completed: true,
+                    personal: true
+                });
+            });
+        }
     }
     
     processRealAnalyticsData(events) {
@@ -253,6 +279,9 @@ class AnalyticsDashboard {
         // Update insights
         this.updateInsights();
         
+        // Update personal analytics
+        this.updatePersonalAnalytics();
+        
         // Update activity table
         this.updateActivityTable();
         
@@ -302,6 +331,103 @@ class AnalyticsDashboard {
         });
         
         return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+    }
+
+    updatePersonalAnalytics() {
+        // Get personal workouts
+        const personalWorkouts = this.analyticsData.workouts.filter(w => w.personal);
+        
+        // Calculate personal metrics
+        const totalWorkouts = personalWorkouts.length;
+        const totalDuration = personalWorkouts.reduce((sum, w) => sum + w.duration, 0);
+        const avgDuration = totalWorkouts > 0 ? Math.round(totalDuration / totalWorkouts) : 0;
+        const streak = this.calculatePersonalStreak(personalWorkouts);
+        
+        // Update personal metrics display
+        document.getElementById('personal-total-workouts').textContent = totalWorkouts;
+        document.getElementById('personal-total-duration').textContent = this.formatDuration(totalDuration);
+        document.getElementById('personal-avg-duration').textContent = `${avgDuration}m`;
+        document.getElementById('personal-streak').textContent = streak;
+        
+        // Update personal workouts table
+        this.updatePersonalWorkoutsTable(personalWorkouts);
+    }
+    
+    calculatePersonalStreak(workouts) {
+        if (workouts.length === 0) return 0;
+        
+        // Sort workouts by date (most recent first)
+        const sortedWorkouts = workouts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        let streak = 0;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        for (let i = 0; i < sortedWorkouts.length; i++) {
+            const workoutDate = new Date(sortedWorkouts[i].timestamp);
+            workoutDate.setHours(0, 0, 0, 0);
+            
+            const daysDiff = Math.floor((today - workoutDate) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff === streak) {
+                streak++;
+            } else if (daysDiff === streak + 1) {
+                // Check if there's a workout on the next day
+                continue;
+            } else {
+                break;
+            }
+        }
+        
+        return streak;
+    }
+    
+    formatDuration(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (hours > 0) {
+            return `${hours}h ${mins}m`;
+        }
+        return `${mins}m`;
+    }
+    
+    updatePersonalWorkoutsTable(workouts) {
+        const tableBody = document.getElementById('personal-workouts-table');
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        // Show last 10 personal workouts
+        const recentWorkouts = workouts.slice(0, 10);
+        
+        recentWorkouts.forEach(workout => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-fit-secondary">
+                    ${this.formatPersonalDate(workout.timestamp)}
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-fit-dark">
+                    ${workout.duration}m
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-fit-secondary">
+                    ${workout.exerciseCount || 'N/A'}
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-fit-secondary">
+                    ${Array.isArray(workout.equipment) ? workout.equipment.join(', ') : workout.equipment}
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+    
+    formatPersonalDate(timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 
     updateActivityTable() {

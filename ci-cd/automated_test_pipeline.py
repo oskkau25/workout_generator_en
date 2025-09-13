@@ -675,7 +675,11 @@ class AutomatedTestPipeline:
                 self.test_workout_timing_data_flow(),
                 self.test_circuit_data_preservation(),
                 self.test_circuit_ui_cleanup(),
-                self.test_workout_flow_navigation()
+                self.test_workout_flow_navigation(),
+                self.test_visual_enhancement_features(),
+                self.test_video_system_functionality(),
+                self.test_guide_slider_functionality(),
+                self.test_visual_enhancement_integration()
             ]
             
             # Combine core and dynamic tests
@@ -728,39 +732,6 @@ class AutomatedTestPipeline:
                 'details': str(e)
             }
             
-            ui_status = 'PASSED'
-            if any(test['status'] == 'FAILED' for test in all_tests):
-                ui_status = 'FAILED'
-            elif any(test['status'] == 'WARNING' for test in all_tests):
-                ui_status = 'WARNING'
-            
-            self.test_results['tests']['ui_functionality'] = {
-                'status': ui_status,
-                'details': {
-                    'html_structure': html_tests,
-                    'javascript_functionality': js_tests,
-                    'form_interactions': form_tests,
-                    'exercise_database': exercise_tests,
-                    # 'image_functionality': image_tests,  # REMOVED - images no longer used
-                    'responsive_design': responsive_tests,
-                    'accessibility_features': accessibility_tests,
-                    'error_handling': error_tests,
-                    'ui_performance': performance_tests,
-                    'timing_functionality': timing_tests,
-                    'overview_player_ui': overview_player_tests,
-                    'timers_pause_presence': timers_pause_tests,
-                    'cues_preferences_presence': cues_pref_tests,
-                    'rest_overlay_presence': rest_overlay_tests,
-                    'navigation_shortcuts_swipe': navigation_tests,
-                    'section_badge_presence': section_badge_tests,
-                    'audio_init_and_sound': audio_init_tests,
-                    'speech_presence': speech_tests,
-                    'exhaustive_equipment_validation': equipment_validation_tests,
-                    'actual_functionality': functionality_tests
-                }
-            }
-            
-            logger.info(f"✅ UI functionality tests completed: {ui_status}")
             
         except Exception as e:
             logger.error(f"❌ UI functionality tests failed: {str(e)}")
@@ -3323,6 +3294,298 @@ class AutomatedTestPipeline:
                 'status': 'PASSED' if passed == total else 'WARNING',
                 'score': f'{passed}/{total}',
                 'details': tests
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+
+    def test_visual_enhancement_features(self):
+        """Test visual enhancement system functionality"""
+        try:
+            logger.info("🎬 Testing visual enhancement features...")
+            
+            # Check visual enhancements file exists and has required functionality
+            visual_enhancements_path = self.project_root / 'src' / 'js' / 'features' / 'visual-enhancements.js'
+            
+            if not visual_enhancements_path.exists():
+                return {'status': 'FAILED', 'details': 'Visual enhancements file not found'}
+            
+            with open(visual_enhancements_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Test visual enhancement state management
+            tests = {
+                'visual_enhancement_state_exists': 'visualEnhancementState' in content,
+                'show_videos_property': 'showVideos:' in content,
+                'show_guides_property': 'showGuides:' in content,
+                'auto_play_property': 'autoPlay:' in content,
+                'quality_property': 'quality:' in content,
+                'video_system_exists': 'VIDEO_SYSTEM' in content,
+                'fallback_videos_defined': 'fallbackVideos:' in content,
+                'generic_video_defined': 'genericVideo:' in content
+            }
+            
+            # Test visual enhancement functions
+            function_tests = {
+                'initialize_visual_enhancements': 'initializeVisualEnhancements' in content,
+                'create_visual_controls_panel': 'createVisualControlsPanel' in content,
+                'save_visual_settings': 'saveVisualSettings' in content,
+                'apply_settings_to_workout_player': 'applySettingsToWorkoutPlayer' in content,
+                'show_exercise_video': 'showExerciseVideo' in content,
+                'show_generic_exercise_video': 'showGenericExerciseVideo' in content,
+                'setup_visual_enhancement_button': 'setupVisualEnhancementButton' in content
+            }
+            
+            # Test UI elements
+            ui_tests = {
+                'visual_enhancement_button': 'visual-enhancement-btn' in content,
+                'visual_controls_panel': 'visual-controls-panel' in content,
+                'show_videos_toggle': 'show-videos-toggle' in content,
+                'show_guides_toggle': 'show-guides-toggle' in content,
+                'autoplay_toggle': 'autoplay-toggle' in content,
+                'quality_selector': 'quality-selector' in content,
+                'save_settings_button': 'save-settings-btn' in content,
+                'video_modal': 'video-modal' in content,
+                'video_container': 'video-container' in content
+            }
+            
+            # Test video system functionality
+            video_tests = {
+                'video_url_generation': 'youtube.com/embed' in content,
+                'autoplay_parameter': 'autoplay=1' in content,
+                'video_controls': 'controls=1' in content,
+                'fullscreen_support': 'fs=1' in content,
+                'iframe_creation': 'createElement(\'iframe\')' in content,
+                'video_allow_attributes': 'allow=' in content,
+                'video_fullscreen_allow': 'allowFullscreen' in content
+            }
+            
+            # Test localStorage integration
+            storage_tests = {
+                'save_visual_preferences': 'saveVisualPreferences' in content,
+                'load_visual_preferences': 'loadVisualPreferences' in content,
+                'localStorage_usage': 'localStorage' in content
+            }
+            
+            all_tests = {**tests, **function_tests, **ui_tests, **video_tests, **storage_tests}
+            passed = sum(all_tests.values())
+            total = len(all_tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': {
+                    'state_management': tests,
+                    'functions': function_tests,
+                    'ui_elements': ui_tests,
+                    'video_system': video_tests,
+                    'storage': storage_tests
+                }
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+
+    def test_video_system_functionality(self):
+        """Test video system and YouTube integration"""
+        try:
+            logger.info("🎥 Testing video system functionality...")
+            
+            visual_enhancements_path = self.project_root / 'src' / 'js' / 'features' / 'visual-enhancements.js'
+            
+            with open(visual_enhancements_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Test video ID mappings
+            video_tests = {
+                'push_ups_video_id': "'push-ups': 'Eh00_rniF8E'" in content,
+                'squats_video_id': "'squats': 'Dy28eq2PjcM'" in content,
+                'plank_video_id': "'plank': 'pSHjTRCQxIw'" in content,
+                'lunges_video_id': "'lunges': '3XDriUnwlud4'" in content,
+                'burpees_video_id': "'burpees': 'TU8QYVW0gDU'" in content,
+                'generic_video_id': "'YaXPRqUwItQ'" in content,
+                'hip_openers_mapping': "'hip-openers'" in content,
+                'wrist_circles_mapping': "'wrist-circles'" in content
+            }
+            
+            # Test URL generation
+            url_tests = {
+                'youtube_embed_url': 'youtube.com/embed' in content,
+                'rel_parameter': 'rel=0' in content,
+                'modest_branding': 'modestbranding=1' in content,
+                'controls_parameter': 'controls=1' in content,
+                'fullscreen_parameter': 'fs=1' in content,
+                'autoplay_conditional': 'autoplayParam' in content,
+                'url_template': 'videoUrl = `' in content
+            }
+            
+            # Test video modal functionality
+            modal_tests = {
+                'modal_creation': 'getElementById(\'video-modal\')' in content,
+                'title_update': 'video-modal-title' in content,
+                'container_clear': 'innerHTML = \'\'' in content,
+                'video_append': 'appendChild(video)' in content,
+                'modal_show': 'classList.remove(\'hidden\')' in content,
+                'iframe_attributes': 'frameBorder = \'0\'' in content,
+                'video_dimensions': 'width = \'100%\'' in content
+            }
+            
+            # Test fallback system
+            fallback_tests = {
+                'fallback_video_check': 'VIDEO_SYSTEM.fallbackVideos' in content,
+                'generic_video_fallback': 'showGenericExerciseVideo' in content,
+                'exercise_name_handling': 'exerciseName.toLowerCase()' in content,
+                'video_id_lookup': 'fallbackVideos[exerciseName]' in content
+            }
+            
+            all_tests = {**video_tests, **url_tests, **modal_tests, **fallback_tests}
+            passed = sum(all_tests.values())
+            total = len(all_tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': {
+                    'video_mappings': video_tests,
+                    'url_generation': url_tests,
+                    'modal_functionality': modal_tests,
+                    'fallback_system': fallback_tests
+                }
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+
+    def test_guide_slider_functionality(self):
+        """Test guide slider and instruction visibility controls"""
+        try:
+            logger.info("📋 Testing guide slider functionality...")
+            
+            visual_enhancements_path = self.project_root / 'src' / 'js' / 'features' / 'visual-enhancements.js'
+            
+            with open(visual_enhancements_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Test guide toggle functionality
+            guide_tests = {
+                'show_guides_toggle_exists': 'show-guides-toggle' in content,
+                'show_guides_property': 'showGuides:' in content,
+                'guide_toggle_setup': 'setupToggleButton(\'show-guides-toggle\'' in content,
+                'guide_toggle_save': 'showGuidesToggle' in content,
+                'guide_toggle_reset': 'show-guides-toggle' in content and 'resetVisualSettings' in content
+            }
+            
+            # Test instruction and safety visibility
+            visibility_tests = {
+                'exercise_instructions_element': 'exercise-instructions' in content,
+                'exercise_safety_element': 'exercise-safety' in content,
+                'instructions_show_logic': 'exerciseInstructions.style.display = \'block\'' in content,
+                'instructions_hide_logic': 'exerciseInstructions.style.display = \'none\'' in content,
+                'safety_show_logic': 'exerciseSafety.style.display = \'block\'' in content,
+                'safety_hide_logic': 'exerciseSafety.style.display = \'none\'' in content,
+                'guide_conditional_logic': 'visualEnhancementState.showGuides' in content
+            }
+            
+            # Test UI integration
+            ui_tests = {
+                'guide_toggle_label': 'Show Instructions & Safety' in content,
+                'guide_toggle_description': 'Display exercise instructions and safety guidelines' in content,
+                'guide_toggle_in_panel': 'show-guides-toggle' in content and 'visual-controls-option' in content,
+                'guide_toggle_checked_state': 'showGuidesToggle.checked' in content
+            }
+            
+            # Test settings application
+            settings_tests = {
+                'guide_settings_application': 'applySettingsToExistingElements' in content,
+                'guide_workout_player_application': 'applySettingsToWorkoutPlayer' in content,
+                'guide_exercise_resources_logic': 'showVideos || visualEnhancementState.showGuides' in content,
+                'guide_preferences_save': 'showGuides' in content and 'saveVisualPreferences' in content
+            }
+            
+            all_tests = {**guide_tests, **visibility_tests, **ui_tests, **settings_tests}
+            passed = sum(all_tests.values())
+            total = len(all_tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': {
+                    'guide_toggle': guide_tests,
+                    'visibility_control': visibility_tests,
+                    'ui_integration': ui_tests,
+                    'settings_application': settings_tests
+                }
+            }
+            
+        except Exception as e:
+            return {'status': 'FAILED', 'details': str(e)}
+
+    def test_visual_enhancement_integration(self):
+        """Test integration between visual enhancements and workout player"""
+        try:
+            logger.info("🔗 Testing visual enhancement integration...")
+            
+            # Check workout player integration
+            workout_player_path = self.project_root / 'src' / 'js' / 'features' / 'workout-player.js'
+            visual_enhancements_path = self.project_root / 'src' / 'js' / 'features' / 'visual-enhancements.js'
+            
+            with open(workout_player_path, 'r', encoding='utf-8') as f:
+                player_content = f.read()
+            
+            with open(visual_enhancements_path, 'r', encoding='utf-8') as f:
+                visual_content = f.read()
+            
+            # Test workout player integration
+            integration_tests = {
+                'exercise_resources_generation': 'generateExerciseResources' in player_content,
+                'video_button_generation': 'data-action="video"' in player_content,
+                'video_button_onclick': 'showExerciseVideo' in player_content,
+                'exercise_resources_container': 'exercise-resources' in player_content,
+                'video_button_styling': 'video-btn' in player_content,
+                'video_button_icon': 'play-circle' in player_content
+            }
+            
+            # Test visual enhancement application
+            application_tests = {
+                'apply_settings_call': 'applySettingsToWorkoutPlayer' in visual_content,
+                'render_workout_player_integration': 'renderWorkoutPlayer' in visual_content,
+                'exercise_resources_visibility': 'exercise-resources' in visual_content,
+                'video_button_visibility': 'video-btn' in visual_content,
+                'settings_application_timing': 'applySettingsToExistingElements' in visual_content
+            }
+            
+            # Test global function exports
+            export_tests = {
+                'show_exercise_video_export': 'window.showExerciseVideo' in visual_content,
+                'apply_settings_export': 'window.applySettingsToWorkoutPlayer' in visual_content,
+                'get_visual_state_export': 'window.getVisualEnhancementState' in visual_content,
+                'set_visual_state_export': 'window.setVisualEnhancementState' in visual_content
+            }
+            
+            # Test cache busting
+            main_js_path = self.project_root / 'src' / 'js' / 'main.js'
+            with open(main_js_path, 'r', encoding='utf-8') as f:
+                main_content = f.read()
+            
+            cache_tests = {
+                'cache_busting_version': 'CACHE BUSTED' in main_content,
+                'version_number_present': 'v23' in main_content,
+                'visual_enhancements_import': 'visual-enhancements.js' in main_content
+            }
+            
+            all_tests = {**integration_tests, **application_tests, **export_tests, **cache_tests}
+            passed = sum(all_tests.values())
+            total = len(all_tests)
+            
+            return {
+                'status': 'PASSED' if passed == total else 'WARNING',
+                'score': f'{passed}/{total}',
+                'details': {
+                    'workout_player_integration': integration_tests,
+                    'settings_application': application_tests,
+                    'global_exports': export_tests,
+                    'cache_busting': cache_tests
+                }
             }
             
         except Exception as e:

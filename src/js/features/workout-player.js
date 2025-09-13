@@ -3,6 +3,21 @@
  * Handles the workout execution, timers, and player interface
  */
 
+// Import enhanced timer features
+import { 
+    initializeEnhancedTimer, 
+    playAudioCue, 
+    triggerVibration, 
+    enhancedCountdown, 
+    enhancedPhaseStart, 
+    enhancedWorkoutComplete,
+    updateRestOverlayWithSuggestions,
+    getCurrentTimerMode,
+    getCustomTimerSettings,
+    TIMER_MODES,
+    AUDIO_CUES
+} from './enhanced-timer.js';
+
 /**
  * Generate search links for exercise resources
  */
@@ -23,6 +38,21 @@ function generateExerciseResources(exercise) {
             </h4>
             
             <div class="grid md:grid-cols-2 gap-4">
+                <!-- Visual Enhancement Buttons -->
+                <div class="space-y-2">
+                    <h5 class="font-medium text-blue-700">Visual Aids:</h5>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="video-btn inline-flex items-center px-3 py-1 bg-red-600 text-white text-sm rounded-full hover:bg-red-700 transition-colors" 
+                                data-action="video" 
+                                onclick="if(window.showExerciseVideo) window.showExerciseVideo('${exercise.name.toLowerCase().replace(/\s+/g, '-')}')">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                            Video
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Search Links -->
                 <div class="space-y-2">
                     <h5 class="font-medium text-blue-700">Learn More:</h5>
@@ -161,6 +191,9 @@ function expandCircuitWorkout(workoutData) {
 export function initializeWorkoutPlayer(workoutData) {
     console.log('🎮 Initializing workout player with data:', workoutData);
     
+    // Initialize enhanced timer features
+    initializeEnhancedTimer();
+    
     // Hide the "What's New" banner during workout
     const banner = document.getElementById('whats-new-banner');
     if (banner) {
@@ -184,6 +217,9 @@ export function initializeWorkoutPlayer(workoutData) {
     workoutState.phase = 'work';
     workoutState.remainingSeconds = workoutState.workTime;
     workoutState.isPaused = false;
+    
+    // Make workout state globally accessible for enhanced timer
+    window.workoutState = workoutState;
     
     // Clear any existing timer
     clearRunningTimer();
@@ -216,6 +252,10 @@ export function startPhase(phase) {
     workoutState.remainingSeconds = phase === 'work' ? workTime : restTime;
     setTimerDisplays();
     cuePhase(phase);
+    
+    // Enhanced phase start with audio cues
+    enhancedPhaseStart(phase);
+    
     clearRunningTimer();
     workoutState.isPaused = false;
     updatePauseButton();
@@ -224,7 +264,10 @@ export function startPhase(phase) {
         if (workoutState.isPaused) return;
         workoutState.remainingSeconds -= 1;
         
-        // 3-2-1 chime at end of rest
+        // Enhanced countdown with audio cues and vibration
+        enhancedCountdown(workoutState.remainingSeconds, workoutState.phase);
+        
+        // Legacy countdown for compatibility
         if (workoutState.phase === 'rest' && workoutState.remainingSeconds > 0 && workoutState.remainingSeconds <= 3) {
             beep(120, 750);
         }
@@ -243,7 +286,8 @@ export function startPhase(phase) {
                     // Skip rest phase for warm-up and cool-down exercises
                     advanceExercise();
                 } else {
-                    // Speak transition
+                    // Enhanced phase transition
+                    enhancedPhaseStart('rest');
                     speak('Rest');
                     startPhase('rest');
                 }
@@ -278,7 +322,14 @@ function advanceExercise() {
  */
 function completeWorkout() {
     clearRunningTimer();
+    
+    // Enhanced workout complete with audio and vibration
+    enhancedWorkoutComplete();
+    
     speak('Workout complete! Great job!');
+    
+    // Record personal workout
+    recordPersonalWorkout();
     
     // Show completion message
     const playerDiv = document.getElementById('workout-player');
@@ -418,6 +469,11 @@ function renderWorkoutPlayer() {
             restTimer.style.display = 'block';
         }
     }
+    
+    // Apply visual enhancement settings to the current exercise display
+    if (window.applySettingsToWorkoutPlayer) {
+        window.applySettingsToWorkoutPlayer();
+    }
 }
 
 /**
@@ -503,6 +559,9 @@ function setTimerDisplays() {
                 const restDashArray = `${restProgress}, 100`;
                 restOverlayProgressRing.style.strokeDasharray = restDashArray;
             }
+            
+            // Update rest overlay with smart suggestions
+            updateRestOverlayWithSuggestions();
             
             // Update motivational message
             const motivationalMessage = document.getElementById('motivational-message');
@@ -691,6 +750,69 @@ function formatSeconds(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Calculate total workout duration
+ */
+function calculateWorkoutDuration() {
+    if (!workoutState.sequence || workoutState.sequence.length === 0) return 0;
+    
+    const totalExercises = workoutState.sequence.length;
+    const workTime = workoutState.workTime || 45;
+    const restTime = workoutState.restTime || 15;
+    
+    // Calculate total time (work + rest for each exercise, minus last rest)
+    return (totalExercises * (workTime + restTime)) - restTime;
+}
+
+/**
+ * Get equipment used in current workout
+ */
+function getUsedEquipment() {
+    // This would need to be enhanced to track actual equipment used
+    // For now, return a default set
+    return ['Bodyweight']; // Could be enhanced to track from form data
+}
+
+/**
+ * Record personal workout completion
+ */
+function recordPersonalWorkout() {
+    try {
+        const workoutData = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            duration: calculateWorkoutDuration(),
+            type: 'Standard', // Could be enhanced to track actual pattern
+            equipment: getUsedEquipment(),
+            exerciseCount: workoutState.sequence?.length || 0,
+            workTime: workoutState.workTime || 45,
+            restTime: workoutState.restTime || 15
+        };
+        
+        // Load existing personal workouts
+        let personalWorkouts = [];
+        const stored = localStorage.getItem('fitflow_personal_workouts');
+        if (stored) {
+            personalWorkouts = JSON.parse(stored);
+        }
+        
+        // Add new workout
+        personalWorkouts.unshift(workoutData);
+        
+        // Keep only last 50 workouts to prevent localStorage bloat
+        if (personalWorkouts.length > 50) {
+            personalWorkouts = personalWorkouts.slice(0, 50);
+        }
+        
+        // Save back to localStorage
+        localStorage.setItem('fitflow_personal_workouts', JSON.stringify(personalWorkouts));
+        
+        console.log('📊 Personal workout recorded:', workoutData);
+    } catch (error) {
+        console.warn('Failed to record personal workout:', error);
+    }
 }
 
 /**
