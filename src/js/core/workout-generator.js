@@ -582,6 +582,201 @@ window.generateNewWorkout = function() {
     form?.scrollIntoView({ behavior: 'smooth' });
 };
 
+// Generate random set of exercises
+export function generateRandomSet(exerciseList, count) {
+    if (exerciseList.length === 0) return [];
+    const shuffled = [...exerciseList].sort(() => 0.5 - Math.random());
+    const numToReturn = Math.min(count, shuffled.length);
+    return shuffled.slice(0, numToReturn);
+}
+
+// Form validation function
+export function validateForm() {
+    const level = document.getElementById('fitness-level').value;
+    const mainDuration = parseInt(document.querySelector('input[name="duration"]:checked').value);
+    const workTime = parseInt(document.getElementById('work-time').value);
+    const restTime = parseInt(document.getElementById('rest-time').value);
+    const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    
+    if (!level) {
+        showError('Please select a fitness level');
+        return false;
+    }
+    
+    if (!mainDuration) {
+        showError('Please select a workout duration');
+        return false;
+    }
+    
+    if (workTime < 15) {
+        showError('Work time must be at least 15 seconds');
+        return false;
+    }
+    
+    if (restTime < 15) {
+        showError('Rest time must be at least 15 seconds');
+        return false;
+    }
+    
+    if (equipmentCheckboxes.length === 0) {
+        showError('Please select at least one equipment type');
+        return false;
+    }
+    
+    return true;
+}
+
+// Error display function
+export function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-xl shadow-lg z-50 animate-fade-in';
+    errorDiv.innerHTML = `
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(errorDiv);
+    
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 5000);
+}
+
+// Success display function
+export function showSuccess(message) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-xl shadow-lg z-50 animate-fade-in';
+    successDiv.innerHTML = `
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(successDiv);
+    
+    setTimeout(() => {
+        successDiv.remove();
+    }, 3000);
+}
+
+// Loading state function
+export function setLoading(isLoading) {
+    const loadingDiv = document.getElementById('loading');
+    const generateBtn = document.getElementById('generate-btn');
+    
+    if (isLoading) {
+        if (loadingDiv) loadingDiv.classList.remove('hidden');
+        if (generateBtn) {
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = `
+                <span class="flex items-center justify-center space-x-2 relative z-10">
+                    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Generating...</span>
+                </span>
+            `;
+        }
+    } else {
+        if (loadingDiv) loadingDiv.classList.add('hidden');
+        if (generateBtn) {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = `
+                <span class="flex items-center justify-center space-x-2 relative z-10">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <span>Generate Workout</span>
+                </span>
+            `;
+        }
+    }
+}
+
+// Form submission handler
+export function setupFormHandler() {
+    console.log('🔧 Setting up form handler...');
+    
+    // Add a small delay to ensure DOM is ready
+    setTimeout(() => {
+        const form = document.getElementById('workout-form');
+        console.log('🔧 Form element found after delay:', form);
+        if (form) {
+        console.log('🔧 Adding submit event listener to form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('🔥 FORM SUBMITTED! Event prevented.');
+            
+            try {
+                // Validate form input
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // Hide previous results
+                const workoutPlanDiv = document.getElementById('workout-plan');
+                const noResultsDiv = document.getElementById('no-results');
+                if (workoutPlanDiv) workoutPlanDiv.classList.add('hidden');
+                if (noResultsDiv) noResultsDiv.classList.add('hidden');
+                
+                setLoading(true);
+
+                const level = document.getElementById('fitness-level').value;
+                const mainDuration = parseInt(document.querySelector('input[name="duration"]:checked').value);
+                const workTime = parseInt(document.getElementById('work-time').value);
+                const restTime = parseInt(document.getElementById('rest-time').value);
+                const equipmentCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                let selectedEquipment = Array.from(equipmentCheckboxes).map(cb => cb.value);
+                
+                if (selectedEquipment.length === 0) {
+                    selectedEquipment = ['Bodyweight'];
+                }
+                
+                const trainingPattern = document.querySelector('input[name="training-pattern"]:checked')?.value || 'standard';
+                
+                const formData = {
+                    level,
+                    duration: mainDuration,
+                    equipment: selectedEquipment,
+                    workTime,
+                    restTime,
+                    trainingPattern
+                };
+                
+                console.log('🚀 Form submitted with data:', formData);
+                
+                // Generate workout using the existing generateWorkout function
+                const workout = generateWorkout(formData);
+                console.log('🚀 Generated workout:', workout);
+                
+                if (workout && workout.exercises && workout.exercises.length > 0) {
+                    displayWorkout(workout);
+                    showSuccess('Workout generated successfully!');
+                } else {
+                    showError('Failed to generate workout. Please try again.');
+                }
+                
+            } catch (error) {
+                console.error('Error generating workout:', error);
+                showError('An error occurred while generating the workout. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        });
+        } else {
+            console.log('🔧 Form element not found after delay!');
+        }
+    }, 100);
+}
+
 // Note: window.startWorkout is defined in workout-player.js
 
 // Note: Functions are made available globally in main.js for backward compatibility
