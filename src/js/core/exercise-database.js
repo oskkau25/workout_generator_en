@@ -24,7 +24,22 @@ export const exercises = [
         difficulty: 1,
         equipment_needed: ["none"],
         muscle_groups: ["deltoids", "trapezius"],
-        injury_safe: ["shoulder_pain", "neck_pain"]
+        injury_safe: ["shoulder_pain", "neck_pain"],
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "arm circles exercise proper form technique",
+            youtubeSearch: "arm circles warm up exercise demonstration",
+            modifications: {
+                beginner: "Start with smaller circles, 5 reps each direction",
+                intermediate: "Standard 10 reps each direction",
+                advanced: "Add resistance bands or increase circle size"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "Not recommended for main workout"
+            },
+            progression: ["Small circles → Large circles → With resistance bands"]
+        }
     },
     { 
         name: "Leg Swings", 
@@ -45,7 +60,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate", "Advanced"], 
         muscle: "Full Body", 
-        type: "warmup" 
+        type: "warmup",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "jumping jacks exercise proper form technique",
+            youtubeSearch: "jumping jacks warm up exercise tutorial",
+            modifications: {
+                beginner: "Step jacks (no jumping) or half jacks",
+                intermediate: "Standard jumping jacks",
+                advanced: "Add arm variations or increase speed"
+            },
+            timing: {
+                warmup: "30-60 seconds",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Step jacks → Half jacks → Full jumping jacks → Speed variations"]
+        }
     },
     { 
         name: "Jumping Rope (slow)", 
@@ -209,7 +239,22 @@ export const exercises = [
         difficulty: 2,
         equipment_needed: ["none"],
         muscle_groups: ["chest", "triceps", "shoulders"],
-        injury_safe: ["shoulder_pain", "wrist_pain"]
+        injury_safe: ["shoulder_pain", "wrist_pain"],
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "push ups proper form technique chest exercise",
+            youtubeSearch: "push ups correct form tutorial beginner",
+            modifications: {
+                beginner: "Knee push-ups or wall push-ups",
+                intermediate: "Standard push-ups on floor",
+                advanced: "Diamond push-ups, decline push-ups, or one-arm variations"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Wall push-ups → Knee push-ups → Standard push-ups → Diamond push-ups"]
+        }
     },
     { 
         name: "Lunges", 
@@ -217,7 +262,22 @@ export const exercises = [
         equipment: "Bodyweight", 
         level: ["Beginner", "Intermediate"], 
         muscle: "Legs", 
-        type: "main" 
+        type: "main",
+        // Enhanced exercise information
+        resources: {
+            googleSearch: "lunges exercise proper form technique legs",
+            youtubeSearch: "lunges correct form tutorial beginner",
+            modifications: {
+                beginner: "Static lunges or reverse lunges with support",
+                intermediate: "Walking lunges or alternating lunges",
+                advanced: "Jumping lunges or weighted lunges"
+            },
+            timing: {
+                warmup: "Not recommended for warm-up",
+                main: "45-60 seconds work, 15-30 seconds rest"
+            },
+            progression: ["Static lunges → Walking lunges → Jumping lunges → Weighted lunges"]
+        }
     },
     { 
         name: "Plank", 

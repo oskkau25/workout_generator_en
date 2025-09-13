@@ -3,6 +3,80 @@
  * Handles the workout execution, timers, and player interface
  */
 
+/**
+ * Generate search links for exercise resources
+ */
+function generateExerciseResources(exercise) {
+    if (!exercise.resources) return '';
+    
+    const { googleSearch, youtubeSearch, modifications, timing, progression } = exercise.resources;
+    
+    return `
+        <div class="exercise-resources mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h4 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Exercise Resources
+            </h4>
+            
+            <div class="grid md:grid-cols-2 gap-4">
+                <!-- Search Links -->
+                <div class="space-y-2">
+                    <h5 class="font-medium text-blue-700">Learn More:</h5>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="https://www.google.com/search?q=${encodeURIComponent(googleSearch)}" 
+                           target="_blank" 
+                           class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition-colors">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Google Search
+                        </a>
+                        <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeSearch)}" 
+                           target="_blank" 
+                           class="inline-flex items-center px-3 py-1 bg-red-600 text-white text-sm rounded-full hover:bg-red-700 transition-colors">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                            YouTube
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Modifications -->
+                <div class="space-y-2">
+                    <h5 class="font-medium text-blue-700">Modifications:</h5>
+                    <div class="text-sm text-blue-600 space-y-1">
+                        ${modifications ? Object.entries(modifications).map(([level, desc]) => 
+                            `<div><span class="font-medium capitalize">${level}:</span> ${desc}</div>`
+                        ).join('') : 'No specific modifications available'}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timing & Progression -->
+            <div class="mt-4 grid md:grid-cols-2 gap-4">
+                <div>
+                    <h5 class="font-medium text-blue-700 mb-2">Timing Guidelines:</h5>
+                    <div class="text-sm text-blue-600 space-y-1">
+                        ${timing ? Object.entries(timing).map(([phase, time]) => 
+                            `<div><span class="font-medium capitalize">${phase}:</span> ${time}</div>`
+                        ).join('') : 'Follow standard workout timing'}
+                    </div>
+                </div>
+                
+                <div>
+                    <h5 class="font-medium text-blue-700 mb-2">Progression Path:</h5>
+                    <div class="text-sm text-blue-600">
+                        ${progression ? progression.join(' → ') : 'Standard progression recommended'}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 // Workout player state
 let workoutState = {
     sequence: [],
@@ -319,6 +393,18 @@ function renderWorkoutPlayer() {
             </div>
         `;
         exerciseSafety.classList.remove('hidden');
+    }
+    
+    // Add exercise resources if available
+    const exerciseResources = document.getElementById('exercise-resources');
+    if (exerciseResources) {
+        const resourcesHTML = generateExerciseResources(currentExercise);
+        if (resourcesHTML) {
+            exerciseResources.innerHTML = resourcesHTML;
+            exerciseResources.classList.remove('hidden');
+        } else {
+            exerciseResources.classList.add('hidden');
+        }
     }
     
     // Hide rest timer for warm-up and cool-down exercises
