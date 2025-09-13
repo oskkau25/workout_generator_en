@@ -85,6 +85,13 @@ function expandCircuitWorkout(workoutData) {
 export function initializeWorkoutPlayer(workoutData) {
     console.log('🎮 Initializing workout player with data:', workoutData);
     
+    // Hide the "What's New" banner during workout
+    const banner = document.getElementById('whats-new-banner');
+    if (banner) {
+        banner.style.display = 'none';
+        console.log('🎯 Hidden "What\'s New" banner during workout');
+    }
+    
     // Check if this is a circuit workout and expand the sequence
     let sequence = workoutData.sequence || [];
     if (workoutData._circuitData) {
@@ -480,6 +487,13 @@ export function nextExercise() {
  */
 export function exitWorkout() {
     clearRunningTimer();
+    
+    // Show the "What's New" banner again when exiting workout
+    const banner = document.getElementById('whats-new-banner');
+    if (banner) {
+        banner.style.display = 'block';
+        console.log('🎯 Shown "What\'s New" banner after exiting workout');
+    }
     
     // Show the workout overview (which has the "Create New Workout" button)
     const workoutOverview = document.getElementById('workout-overview');
