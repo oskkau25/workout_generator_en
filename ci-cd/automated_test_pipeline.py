@@ -393,7 +393,7 @@ class AutomatedTestPipeline:
     def analyze_code_complexity(self):
         """Analyze code complexity and maintainability"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -427,7 +427,7 @@ class AutomatedTestPipeline:
     def analyze_security_patterns(self):
         """Analyze security patterns and vulnerabilities"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -452,7 +452,7 @@ class AutomatedTestPipeline:
     def analyze_performance_patterns(self):
         """Analyze performance patterns and optimization opportunities"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -496,7 +496,7 @@ class AutomatedTestPipeline:
     def analyze_best_practices(self):
         """Analyze coding best practices and standards"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -554,7 +554,7 @@ class AutomatedTestPipeline:
                     pass  # Fall back to legacy checks
             
             # Fallback: existing basic checks on legacy entry file if present
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             if js_path.exists():
                 with open(js_path, 'r', encoding='utf-8') as f:
                     js_content = f.read()
@@ -801,12 +801,12 @@ class AutomatedTestPipeline:
     def test_javascript_functionality(self):
         """Test JavaScript functionality and dependencies"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
             tests = {
-                'has_exercises_array': 'const exercises = [' in js_content,
+                'has_exercises_array': ('const exercises = [' in js_content) or ('import { exercises }' in js_content) or ('exerciseDatabase' in js_content),
                 'has_form_handler': 'addEventListener' in js_content,
                 'has_validation': 'validateForm' in js_content,
                 'has_error_handling': 'showError' in js_content,
@@ -830,7 +830,7 @@ class AutomatedTestPipeline:
     def test_form_interactions(self):
         """Test comprehensive form interaction logic"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -862,17 +862,31 @@ class AutomatedTestPipeline:
     def test_exercise_database(self):
         """Test exercise database completeness and structure"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
-            with open(js_path, 'r', encoding='utf-8') as f:
-                js_content = f.read()
+            # Check if exercise database is imported in main.js
+            main_js_path = self.project_root / 'src' / 'js' / 'main.js'
+            with open(main_js_path, 'r', encoding='utf-8') as f:
+                main_js_content = f.read()
             
-            # Extract exercise data
-            exercises_start = js_content.find('const exercises = [')
+            # Check if exercise database file exists and is imported
+            exercise_db_path = self.project_root / 'src' / 'js' / 'core' / 'exercise-database.js'
+            if not exercise_db_path.exists():
+                return {'status': 'FAILED', 'details': 'Exercise database file not found'}
+            
+            # Check if main.js imports the exercise database
+            if 'exerciseDatabase' not in main_js_content and 'import { exercises }' not in main_js_content:
+                return {'status': 'FAILED', 'details': 'Exercise database not imported in main.js'}
+            
+            # Read the exercise database file
+            with open(exercise_db_path, 'r', encoding='utf-8') as f:
+                exercise_db_content = f.read()
+            
+            # Extract exercise data from the database file
+            exercises_start = exercise_db_content.find('const exercises = [')
             if exercises_start == -1:
-                return {'status': 'FAILED', 'details': 'Exercise database not found'}
+                return {'status': 'FAILED', 'details': 'Exercise database not found in exercise-database.js'}
             
-            exercises_end = js_content.find('];', exercises_start)
-            exercises_section = js_content[exercises_start:exercises_end]
+            exercises_end = exercise_db_content.find('];', exercises_start)
+            exercises_section = exercise_db_content[exercises_start:exercises_end]
             
             tests = {
                 'has_warmup_exercises': 'type: "warmup"' in exercises_section,
@@ -942,7 +956,7 @@ class AutomatedTestPipeline:
             dashboard_js = (self.project_root / 'src' / 'dashboard.js').exists()
             
             # Check main app for analytics integration
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -985,7 +999,7 @@ class AutomatedTestPipeline:
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1016,7 +1030,7 @@ class AutomatedTestPipeline:
     def test_error_handling(self):
         """Test error handling and user feedback mechanisms"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1046,7 +1060,7 @@ class AutomatedTestPipeline:
     def test_ui_performance(self):
         """Test UI performance and optimization"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1091,7 +1105,7 @@ class AutomatedTestPipeline:
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1129,7 +1143,7 @@ class AutomatedTestPipeline:
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -1438,7 +1452,7 @@ class AutomatedTestPipeline:
     def test_timer_and_pause_resume_presence(self):
         """Check that timers, phases, and pause logic exist in JS"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1467,7 +1481,7 @@ class AutomatedTestPipeline:
             html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1495,7 +1509,7 @@ class AutomatedTestPipeline:
             html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1518,7 +1532,7 @@ class AutomatedTestPipeline:
     def test_keyboard_and_swipe_presence(self):
         """Validate keyboard shortcuts and swipe gesture hooks exist"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1545,7 +1559,7 @@ class AutomatedTestPipeline:
             html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1568,7 +1582,7 @@ class AutomatedTestPipeline:
             html_path = self.project_root / 'src' / 'index.html'
             with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             tests = {
@@ -1590,7 +1604,7 @@ class AutomatedTestPipeline:
     def test_spoken_countdown_presence(self):
         """Check presence of spoken countdown and announcements"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             has_phase_check = ("appState.phase === 'work'" in js_content) or ("appState.phase === \"work\"" in js_content)
@@ -2028,7 +2042,7 @@ class AutomatedTestPipeline:
             # Check for modular structure first, fallback to original
             js_path = self.project_root / 'src' / 'js' / 'main.js'
             if not js_path.exists():
-                js_path = self.project_root / 'src' / 'main.js'
+                js_path = self.project_root / 'src' / 'js' / 'main.js'
             
             html_path = self.project_root / 'src' / 'index.html'
             
@@ -2093,7 +2107,7 @@ class AutomatedTestPipeline:
         logger.info("🔄 Using fallback dynamic feature detection")
         
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             html_path = self.project_root / 'src' / 'index.html'
             
             with open(js_path, 'r', encoding='utf-8') as f:
@@ -2194,7 +2208,7 @@ class AutomatedTestPipeline:
     def test_exercise_swapping_functionality(self):
         """Test the new exercise swapping functionality"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -2222,7 +2236,7 @@ class AutomatedTestPipeline:
     def test_smart_calculation_functionality(self):
         """Test smart calculation of training pattern settings based on workout duration"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -2309,7 +2323,7 @@ class AutomatedTestPipeline:
         try:
             # Check both modular and original structure
             smart_substitution_path = self.project_root / 'src' / 'js' / 'features' / 'smart-substitution.js'
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             
             js_content = ""
             if smart_substitution_path.exists():
@@ -2462,7 +2476,7 @@ class AutomatedTestPipeline:
     def test_security_and_privacy_features(self):
         """Test comprehensive security and privacy features"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -2523,7 +2537,7 @@ class AutomatedTestPipeline:
     def test_user_account_system(self):
         """Test user account system functionality"""
         try:
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
@@ -2625,7 +2639,7 @@ class AutomatedTestPipeline:
             security_issues = []
             
             # Check for hardcoded API keys
-            js_path = self.project_root / 'src' / 'main.js'
+            js_path = self.project_root / 'src' / 'js' / 'main.js'
             with open(js_path, 'r', encoding='utf-8') as f:
                 js_content = f.read()
             
