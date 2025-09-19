@@ -111,8 +111,9 @@ class SecurityValidationTests:
                     pass
                 
                 # Check if payload appears in DOM
+                escaped_payload = payload.replace("'", "\\'")
                 dom_contains_payload = self.driver.execute_script(f"""
-                    return document.documentElement.innerHTML.includes('{payload.replace("'", "\\'")}');
+                    return document.documentElement.innerHTML.includes('{escaped_payload}');
                 """)
                 
                 xss_tests[f"payload_{i+1}"] = {
