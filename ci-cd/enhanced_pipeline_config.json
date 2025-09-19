@@ -1,0 +1,109 @@
+{
+  "pipeline": {
+    "version": "2.0_enhanced",
+    "max_execution_time": 300,
+    "parallel_workers": 4,
+    "retry_attempts": 2,
+    "enable_smart_selection": true,
+    "enable_caching": true,
+    "cache_ttl": 3600
+  },
+  "test_categories": {
+    "critical": {
+      "threshold": 0.95,
+      "description": "Must pass - core functionality, security",
+      "tests": [
+        "app_loading",
+        "core_workout_flow", 
+        "security_scan"
+      ]
+    },
+    "important": {
+      "threshold": 0.80,
+      "description": "Should pass - UI, performance",
+      "tests": [
+        "ui_functionality",
+        "performance_benchmarks",
+        "accessibility_audit",
+        "selenium_e2e"
+      ]
+    },
+    "nice_to_have": {
+      "threshold": 0.50,
+      "description": "Can fail - visual enhancements, edge cases",
+      "tests": [
+        "visual_regression",
+        "edge_case_handling"
+      ]
+    }
+  },
+  "browsers": {
+    "selenium": {
+      "enabled": true,
+      "browsers": ["chrome", "firefox"],
+      "headless": true,
+      "timeout": 120
+    },
+    "playwright": {
+      "enabled": true,
+      "browsers": ["chromium", "firefox", "webkit"],
+      "headless": true,
+      "timeout": 60
+    }
+  },
+  "notifications": {
+    "slack": {
+      "enabled": false,
+      "webhook_url": "",
+      "channel": "#ci-cd"
+    },
+    "email": {
+      "enabled": false,
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "username": "",
+      "password": "",
+      "from_email": "",
+      "to_emails": []
+    },
+    "webhook": {
+      "enabled": false,
+      "url": "",
+      "headers": {}
+    }
+  },
+  "performance": {
+    "max_load_time": 3.0,
+    "max_js_size": 500000,
+    "max_css_size": 100000,
+    "max_html_size": 200000
+  },
+  "security": {
+    "check_eval": true,
+    "check_innerHTML": true,
+    "check_console_logs": true,
+    "check_hardcoded_secrets": true
+  },
+  "accessibility": {
+    "check_alt_text": true,
+    "check_aria_labels": true,
+    "check_form_roles": true,
+    "check_heading_structure": true
+  },
+  "smart_selection": {
+    "enabled": true,
+    "file_patterns": {
+      "ui_tests": ["src/**/*.html", "src/**/*.css", "src/**/*.js"],
+      "security_tests": ["**/*security*", "**/*auth*", "**/*login*"],
+      "performance_tests": ["**/*performance*", "**/*optimization*"],
+      "accessibility_tests": ["**/*accessibility*", "**/*a11y*"]
+    }
+  },
+  "reporting": {
+    "generate_html": true,
+    "generate_json": true,
+    "include_screenshots": true,
+    "include_performance_metrics": true,
+    "output_directory": "reports/enhanced_pipeline"
+  }
+}
