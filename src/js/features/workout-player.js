@@ -109,7 +109,7 @@ function generateExerciseResources(exercise) {
     `;
 }
 
-// Workout player state
+// Workout player state - ensure proper initialization
 let workoutState = {
     sequence: [],
     currentIndex: 0,
@@ -123,6 +123,11 @@ let workoutState = {
     enableVibration: true,
     audioContext: null
 };
+
+// Sync with main app state if available
+if (window.appState) {
+    Object.assign(workoutState, window.appState);
+}
 
 /**
  * Expand circuit workout to include all rounds
@@ -191,6 +196,12 @@ function expandCircuitWorkout(workoutData) {
 export function initializeWorkoutPlayer(workoutData) {
     console.log('🎮 Initializing workout player with data:', workoutData);
     
+    // Use main app state if available, otherwise create new state
+    if (window.appState) {
+        workoutState = window.appState;
+        console.log('🔄 Using main app state for workout player');
+    }
+    
     // Initialize enhanced timer features
     initializeEnhancedTimer();
     
@@ -226,6 +237,9 @@ export function initializeWorkoutPlayer(workoutData) {
     
     // Render the player
     renderWorkoutPlayer();
+    
+    // Setup event listeners after rendering
+    setupWorkoutPlayerListeners();
     
     // Show player screen
     toggleScreens({ overview: false, player: true, plan: false });
@@ -889,6 +903,7 @@ function cuePhase(phase) {
  * Speak text (if speech synthesis is available)
  */
 function speak(text) {
+    if (!workoutState.enableSound) return;
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.8;
@@ -900,7 +915,151 @@ function speak(text) {
 /**
  * Setup workout player event listeners
  */
-export function setupWorkoutPlayerListeners() {
+
+/**
+ * Ensure elements are ready before setting up event listeners
+ */
+function ensureElementsReady() {
+    return new Promise((resolve) => {
+        const checkElements = () => {
+            const soundToggle = document.getElementById('sound-toggle');
+            const vibrationToggle = document.getElementById('vibration-toggle');
+            const exitBtn = document.getElementById('exit-workout-btn');
+            
+            if (soundToggle && vibrationToggle && exitBtn) {
+                resolve(true);
+            } else {
+                setTimeout(checkElements, 100);
+            }
+        };
+        checkElements();
+    });
+}
+
+
+/**
+ * Debug checkbox state and clickability
+ */
+
+/**
+ * Debug exit button state and clickability
+ */
+function debugExitButton() {
+    const exitBtn = document.getElementById('exit-workout-btn');
+    
+    if (exitBtn) {
+        console.log('🔍 Exit button debug:', {
+            element: exitBtn,
+            disabled: exitBtn.disabled,
+            style: exitBtn.style.cssText,
+            computedStyle: window.getComputedStyle(exitBtn),
+            pointerEvents: window.getComputedStyle(exitBtn).pointerEvents,
+            zIndex: window.getComputedStyle(exitBtn).zIndex,
+            position: window.getComputedStyle(exitBtn).position,
+            cursor: window.getComputedStyle(exitBtn).cursor,
+            opacity: window.getComputedStyle(exitBtn).opacity,
+            visibility: window.getComputedStyle(exitBtn).visibility,
+            display: window.getComputedStyle(exitBtn).display
+        });
+        
+        // Force clickable
+        exitBtn.style.pointerEvents = 'auto';
+        exitBtn.style.cursor = 'pointer';
+        exitBtn.style.zIndex = '1000';
+        exitBtn.style.position = 'relative';
+        exitBtn.style.opacity = '1';
+        exitBtn.style.visibility = 'visible';
+        exitBtn.style.display = 'inline-block';
+        exitBtn.disabled = false;
+        
+        // Add click event for debugging
+        exitBtn.addEventListener('click', (e) => {
+            console.log('🚪 Exit button clicked!', e);
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        
+        // Also add mousedown and mouseup events
+        exitBtn.addEventListener('mousedown', (e) => {
+            console.log('🚪 Exit button mousedown!', e);
+        });
+        
+        exitBtn.addEventListener('mouseup', (e) => {
+            console.log('🚪 Exit button mouseup!', e);
+        });
+        
+        console.log('✅ Exit button debugging setup complete');
+    } else {
+        console.error('❌ Exit button not found');
+    }
+}
+
+function debugCheckboxes() {
+    const soundToggle = document.getElementById('sound-toggle');
+    const vibrationToggle = document.getElementById('vibration-toggle');
+    
+    if (soundToggle) {
+        console.log('🔍 Sound toggle debug:', {
+            element: soundToggle,
+            checked: soundToggle.checked,
+            disabled: soundToggle.disabled,
+            style: soundToggle.style.cssText,
+            computedStyle: window.getComputedStyle(soundToggle),
+            pointerEvents: window.getComputedStyle(soundToggle).pointerEvents,
+            zIndex: window.getComputedStyle(soundToggle).zIndex,
+            position: window.getComputedStyle(soundToggle).position
+        });
+        
+        // Force clickable
+        soundToggle.style.pointerEvents = 'auto';
+        soundToggle.style.cursor = 'pointer';
+        soundToggle.style.zIndex = '1000';
+        soundToggle.style.position = 'relative';
+        soundToggle.disabled = false;
+        
+        // Add click event for debugging
+        soundToggle.addEventListener('click', (e) => {
+            console.log('🔊 Sound toggle clicked!', e.target.checked);
+        });
+    }
+    
+    if (vibrationToggle) {
+        console.log('🔍 Vibration toggle debug:', {
+            element: vibrationToggle,
+            checked: vibrationToggle.checked,
+            disabled: vibrationToggle.disabled,
+            style: vibrationToggle.style.cssText,
+            computedStyle: window.getComputedStyle(vibrationToggle),
+            pointerEvents: window.getComputedStyle(vibrationToggle).pointerEvents,
+            zIndex: window.getComputedStyle(vibrationToggle).zIndex,
+            position: window.getComputedStyle(vibrationToggle).position
+        });
+        
+        // Force clickable
+        vibrationToggle.style.pointerEvents = 'auto';
+        vibrationToggle.style.cursor = 'pointer';
+        vibrationToggle.style.zIndex = '1000';
+        vibrationToggle.style.position = 'relative';
+        vibrationToggle.disabled = false;
+        
+        // Add click event for debugging
+        vibrationToggle.addEventListener('click', (e) => {
+            console.log('📳 Vibration toggle clicked!', e.target.checked);
+        });
+    }
+}
+
+export async function setupWorkoutPlayerListeners() {
+    console.log('🎮 setupWorkoutPlayerListeners called');
+    console.log('🔍 window.appState:', window.appState);
+    console.log('🔍 workoutState:', workoutState);
+    // Wait for elements to be ready
+    await ensureElementsReady();
+    console.log('🎮 Setting up workout player event listeners...');
+    // Debug checkboxes
+    debugCheckboxes();
+    // Debug exit button
+    debugExitButton();
     // Pause/Resume button
     const pauseBtn = document.getElementById('pause-resume-btn');
     if (pauseBtn) {
@@ -922,7 +1081,15 @@ export function setupWorkoutPlayerListeners() {
     // Exit workout button
     const exitBtn = document.getElementById('exit-workout-btn');
     if (exitBtn) {
-        exitBtn.addEventListener('click', exitWorkout);
+        exitBtn.disabled = false; // Ensure it's not disabled
+        exitBtn.style.pointerEvents = 'auto'; // Ensure it's clickable
+        exitBtn.addEventListener('click', (e) => {
+            console.log('🚪 Exit workout button clicked');
+            exitWorkout();
+        });
+        console.log('✅ Exit workout button initialized');
+    } else {
+        console.error('❌ Exit workout button not found');
     }
     
     // Create new workout button (from workout overview)
@@ -962,57 +1129,57 @@ export function setupWorkoutPlayerListeners() {
         });
     }
     
-    // Create new workout button (from workout player)
-    const newWorkoutFromPlayerBtn = document.getElementById('new-workout-from-player-btn');
-    if (newWorkoutFromPlayerBtn) {
-        newWorkoutFromPlayerBtn.addEventListener('click', () => {
-            // Reset workout state
-            window.currentWorkout = null;
-            window.currentWorkoutData = null;
-            
-            // Show the form and hide workout sections
-            const form = document.getElementById('workout-form');
-            const workoutPlan = document.getElementById('workout-plan');
-            const workoutSection = document.getElementById('workout-section');
-            const workoutOverview = document.getElementById('workout-overview');
-            const workoutPlayer = document.getElementById('workout-player');
-            const noResults = document.getElementById('no-results');
-            
-            // Show form container and form (ensure they're visible)
-            if (workoutPlan) {
-                workoutPlan.classList.remove('hidden');
-                workoutPlan.style.display = 'block';
-            }
-            if (form) {
-                form.classList.remove('hidden');
-                form.style.display = 'block';
-            }
-            
-            // Hide all workout-related sections
-            if (workoutSection) workoutSection.classList.add('hidden');
-            if (workoutOverview) workoutOverview.classList.add('hidden');
-            if (workoutPlayer) workoutPlayer.classList.add('hidden');
-            if (noResults) noResults.classList.add('hidden');
-            
-            // Scroll back to form
-            form?.scrollIntoView({ behavior: 'smooth' });
-        });
-    }
     
     // Sound toggle
     const soundToggle = document.getElementById('sound-toggle');
     if (soundToggle) {
+        // Ensure we have a valid state
+        const currentState = window.appState || workoutState;
+        
+        // Initialize checkbox state
+        soundToggle.checked = currentState.enableSound !== false; // Default to true if undefined
+        soundToggle.disabled = false; // Ensure it's not disabled
+        soundToggle.style.pointerEvents = 'auto'; // Ensure it's clickable
+        
         soundToggle.addEventListener('change', (e) => {
-            workoutState.enableSound = e.target.checked;
+            const newValue = e.target.checked;
+            workoutState.enableSound = newValue;
+            // Also update main app state if it exists
+            if (window.appState) {
+                window.appState.enableSound = newValue;
+            }
+            console.log('🔊 Sound toggle changed to:', newValue);
         });
+        
+        console.log('✅ Sound toggle initialized:', soundToggle.checked);
+    } else {
+        console.error('❌ Sound toggle element not found');
     }
     
     // Vibration toggle
     const vibrationToggle = document.getElementById('vibration-toggle');
     if (vibrationToggle) {
+        // Ensure we have a valid state
+        const currentState = window.appState || workoutState;
+        
+        // Initialize checkbox state
+        vibrationToggle.checked = currentState.enableVibration !== false; // Default to true if undefined
+        vibrationToggle.disabled = false; // Ensure it's not disabled
+        vibrationToggle.style.pointerEvents = 'auto'; // Ensure it's clickable
+        
         vibrationToggle.addEventListener('change', (e) => {
-            workoutState.enableVibration = e.target.checked;
+            const newValue = e.target.checked;
+            workoutState.enableVibration = newValue;
+            // Also update main app state if it exists
+            if (window.appState) {
+                window.appState.enableVibration = newValue;
+            }
+            console.log('📳 Vibration toggle changed to:', newValue);
         });
+        
+        console.log('✅ Vibration toggle initialized:', vibrationToggle.checked);
+    } else {
+        console.error('❌ Vibration toggle element not found');
     }
     
     // Rest overlay close button
@@ -1111,3 +1278,4 @@ window.togglePause = togglePause;
 window.previousExercise = previousExercise;
 window.nextExercise = nextExercise;
 window.exitWorkout = exitWorkout;
+window.initializeWorkoutPlayer = initializeWorkoutPlayer;

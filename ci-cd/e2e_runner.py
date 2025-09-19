@@ -55,7 +55,7 @@ class _SrcHandler(SimpleHTTPRequestHandler):
 
 
 def _start_local_server() -> threading.Thread:
-    host, port = '127.0.0.1', 5173
+    host, port = '127.0.0.1', 8001
     if _is_port_open(host, port):
         # Assume already running
         logging.info(f"Server already running on {host}:{port}")
@@ -101,7 +101,7 @@ def run_dynamic_smoke() -> Dict[str, Any]:
     _start_local_server()
 
     checks = {}
-    url = 'http://127.0.0.1:5173/'
+    url = 'http://127.0.0.1:8001/'
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -984,6 +984,392 @@ def run_dynamic_smoke() -> Dict[str, Any]:
                 except Exception as e:
                     checks['smart_substitution_tests'] = False
                     logging.warning(f"⚠️ Smart substitution tests failed: {e}")
+
+                # Phase 3: Workout Player Controls Tests
+                try:
+                    logging.info("🧪 Testing workout player controls...")
+                    
+                    def test_workout_player_controls():
+                        # First, generate a workout to get to the workout player
+                        page.evaluate("""
+                            () => {
+                                const form = document.getElementById('workout-form');
+                                if (form) form.reset();
+                                
+                                // Set basic workout parameters
+                                const duration = document.getElementById('duration-30');
+                                if (duration) duration.checked = true;
+                                
+                                const equipment = document.getElementById('eq-bodyweight');
+                                if (equipment) equipment.checked = true;
+                                
+                                const level = document.getElementById('fitness-level');
+                                if (level) level.value = 'Intermediate';
+                                
+                                const pattern = document.querySelector('input[name="training-pattern"]');
+                                if (pattern) pattern.checked = true;
+                                
+                                // Submit form
+                                form.dispatchEvent(new Event('submit', {cancelable:true, bubbles:true}));
+                            }
+                        """)
+                        
+                        page.wait_for_timeout(2000)
+                        
+                        # Try to start the workout to get to the workout player
+                        start_workout_result = page.evaluate("""
+                            () => {
+                                // Look for the start workout button with onclick="startWorkout()"
+                                const startBtn = document.querySelector('button[onclick="startWorkout()"]');
+                                if (!startBtn) {
+                                    console.log('Start workout button not found');
+                                    return {success: false, reason: 'button_not_found'};
+                                }
+                                
+                                // Check if button is visible and clickable
+                                if (startBtn.offsetParent === null) {
+                                    console.log('Start workout button not visible');
+                                    return {success: false, reason: 'button_not_visible'};
+                                }
+                                
+                                // Click the button
+                                startBtn.click();
+                                console.log('Start workout button clicked');
+                                return {success: true, reason: 'clicked'};
+                            }
+                        """)
+                        
+                        if not start_workout_result.get('success', False):
+                            logging.warning(f"⚠️ Could not start workout: {start_workout_result}")
+                            return False
+                        
+                        page.wait_for_timeout(2000)
+                        
+                        # Test workout player controls
+                        controls_test = page.evaluate("""
+                            () => {
+                                const results = {
+                                    soundToggle: {exists: false, clickable: false, state: null},
+                                    vibrationToggle: {exists: false, clickable: false, state: null},
+                                    exitButton: {exists: false, clickable: false},
+                                    workoutPlayer: {exists: false, visible: false}
+                                };
+                                
+                                // Check if workout player exists and is visible
+                                const player = document.querySelector('#workout-player');
+                                results.workoutPlayer.exists = !!player;
+                                results.workoutPlayer.visible = player && !player.classList.contains('hidden');
+                                
+                                // Test sound toggle
+                                const soundToggle = document.getElementById('sound-toggle');
+                                if (soundToggle) {
+                                    results.soundToggle.exists = true;
+                                    results.soundToggle.state = soundToggle.checked;
+                                    results.soundToggle.clickable = !soundToggle.disabled && 
+                                                                   soundToggle.style.pointerEvents !== 'none' &&
+                                                                   soundToggle.offsetParent !== null;
+                                    
+                                    // Try to toggle it
+                                    if (results.soundToggle.clickable) {
+                                        const originalState = soundToggle.checked;
+                                        soundToggle.click();
+                                        results.soundToggle.toggled = soundToggle.checked !== originalState;
+                                    }
+                                }
+                                
+                                // Test vibration toggle
+                                const vibrationToggle = document.getElementById('vibration-toggle');
+                                if (vibrationToggle) {
+                                    results.vibrationToggle.exists = true;
+                                    results.vibrationToggle.state = vibrationToggle.checked;
+                                    results.vibrationToggle.clickable = !vibrationToggle.disabled && 
+                                                                       vibrationToggle.style.pointerEvents !== 'none' &&
+                                                                       vibrationToggle.offsetParent !== null;
+                                    
+                                    // Try to toggle it
+                                    if (results.vibrationToggle.clickable) {
+                                        const originalState = vibrationToggle.checked;
+                                        vibrationToggle.click();
+                                        results.vibrationToggle.toggled = vibrationToggle.checked !== originalState;
+                                    }
+                                }
+                                
+                                // Test exit workout button
+                                const exitBtn = document.getElementById('exit-workout-btn');
+                                if (exitBtn) {
+                                    results.exitButton.exists = true;
+                                    results.exitButton.clickable = !exitBtn.disabled && 
+                                                                  exitBtn.style.pointerEvents !== 'none' &&
+                                                                  exitBtn.offsetParent !== null;
+                                    
+                                    // Try to click it (but don't actually exit)
+                                    if (results.exitButton.clickable) {
+                                        // Just test that it's clickable, don't actually exit
+                                        results.exitButton.clickable = true;
+                                    }
+                                }
+                                
+                                return results;
+                            }
+                        """)
+                        
+                        # Evaluate the results
+                        player_visible = controls_test.get('workoutPlayer', {}).get('visible', False)
+                        sound_working = (controls_test.get('soundToggle', {}).get('exists', False) and 
+                                       controls_test.get('soundToggle', {}).get('clickable', False))
+                        vibration_working = (controls_test.get('vibrationToggle', {}).get('exists', False) and 
+                                           controls_test.get('vibrationToggle', {}).get('clickable', False))
+                        exit_working = (controls_test.get('exitButton', {}).get('exists', False) and 
+                                      controls_test.get('exitButton', {}).get('clickable', False))
+                        
+                        logging.info(f"🔧 Workout player controls test results: {controls_test}")
+                        
+                        return {
+                            'player_visible': player_visible,
+                            'sound_controls_working': sound_working,
+                            'vibration_controls_working': vibration_working,
+                            'exit_button_working': exit_working,
+                            'all_controls_working': sound_working and vibration_working and exit_working
+                        }
+                    
+                    controls_result = _retry_test(test_workout_player_controls, max_retries=2)
+                    checks['workout_player_controls'] = controls_result
+                    
+                    if controls_result and controls_result.get('all_controls_working', False):
+                        logging.info("✅ Workout player controls tests passed")
+                    else:
+                        logging.warning(f"⚠️ Workout player controls tests failed: {controls_result}")
+                        
+                except Exception as e:
+                    checks['workout_player_controls'] = False
+                    logging.warning(f"⚠️ Workout player controls tests failed: {e}")
+
+                # Phase 3: Button Styling and Functionality Tests
+                try:
+                    logging.info("🧪 Testing button styling and functionality...")
+                    
+                    def test_button_styling():
+                        # Test Generate Workout button
+                        generate_btn_test = page.evaluate("""
+                            () => {
+                                const generateBtn = document.getElementById('generate-btn');
+                                if (!generateBtn) {
+                                    return {exists: false, error: 'Generate button not found'};
+                                }
+                                
+                                const styles = window.getComputedStyle(generateBtn);
+                                const rect = generateBtn.getBoundingClientRect();
+                                
+                                return {
+                                    exists: true,
+                                    visible: generateBtn.offsetParent !== null,
+                                    clickable: !generateBtn.disabled && generateBtn.style.pointerEvents !== 'none',
+                                    hasGradient: styles.background.includes('gradient') || 
+                                               generateBtn.querySelector('::before') !== null,
+                                    hasHoverEffect: styles.transition.includes('opacity') || 
+                                                  styles.transition.includes('transform'),
+                                    position: styles.position,
+                                    zIndex: styles.zIndex,
+                                    width: rect.width,
+                                    height: rect.height
+                                };
+                            }
+                        """)
+                        
+                        # Test Start Workout button (dynamically generated)
+                        start_btn_test = page.evaluate("""
+                            () => {
+                                const startBtn = document.querySelector('button[onclick="startWorkout()"]');
+                                if (!startBtn) {
+                                    return {exists: false, error: 'Start workout button not found'};
+                                }
+                                
+                                const styles = window.getComputedStyle(startBtn);
+                                const rect = startBtn.getBoundingClientRect();
+                                
+                                return {
+                                    exists: true,
+                                    visible: startBtn.offsetParent !== null,
+                                    clickable: !startBtn.disabled && startBtn.style.pointerEvents !== 'none',
+                                    hasGradient: styles.background.includes('gradient') || 
+                                               startBtn.querySelector('::before') !== null,
+                                    hasHoverEffect: styles.transition.includes('opacity') || 
+                                                  styles.transition.includes('transform'),
+                                    position: styles.position,
+                                    zIndex: styles.zIndex,
+                                    width: rect.width,
+                                    height: rect.height,
+                                    classes: startBtn.className
+                                };
+                            }
+                        """)
+                        
+                        return {
+                            'generate_button': generate_btn_test,
+                            'start_button': start_btn_test
+                        }
+                    
+                    styling_result = _retry_test(test_button_styling, max_retries=2)
+                    checks['button_styling_tests'] = styling_result
+                    
+                    if styling_result:
+                        generate_btn = styling_result.get('generate_button', {})
+                        start_btn = styling_result.get('start_button', {})
+                        
+                        if generate_btn.get('exists', False) and start_btn.get('exists', False):
+                            logging.info("✅ Button styling tests passed - both buttons found and styled")
+                        else:
+                            logging.warning(f"⚠️ Button styling tests failed: Generate={generate_btn.get('exists', False)}, Start={start_btn.get('exists', False)}")
+                    else:
+                        logging.warning("⚠️ Button styling tests failed")
+                        
+                except Exception as e:
+                    checks['button_styling_tests'] = False
+                    logging.warning(f"⚠️ Button styling tests failed: {e}")
+
+                # Phase 3: Complete Workout Flow with Controls Test
+                try:
+                    logging.info("🧪 Testing complete workout flow with all controls...")
+                    
+                    def test_complete_workout_flow_with_controls():
+                        # Step 1: Generate workout
+                        form_setup = page.evaluate("""
+                            () => {
+                                const form = document.getElementById('workout-form');
+                                if (!form) return false;
+                                
+                                form.reset();
+                                
+                                // Set basic workout parameters
+                                const duration = document.getElementById('duration-30');
+                                if (duration) duration.checked = true;
+                                
+                                const equipment = document.getElementById('eq-bodyweight');
+                                if (equipment) equipment.checked = true;
+                                
+                                const level = document.getElementById('fitness-level');
+                                if (level) level.value = 'Intermediate';
+                                
+                                const pattern = document.querySelector('input[name="training-pattern"]');
+                                if (pattern) pattern.checked = true;
+                                
+                                return true;
+                            }
+                        """)
+                        
+                        if not form_setup:
+                            return False
+                        
+                        # Submit form
+                        form_submitted = page.evaluate("""
+                            () => {
+                                const form = document.getElementById('workout-form');
+                                if (!form) return false;
+                                form.dispatchEvent(new Event('submit', {cancelable:true, bubbles:true}));
+                                return true;
+                            }
+                        """)
+                        
+                        if not form_submitted:
+                            return False
+                        
+                        page.wait_for_timeout(2000)
+                        
+                        # Step 2: Start workout
+                        start_result = page.evaluate("""
+                            () => {
+                                const startBtn = document.querySelector('button[onclick="startWorkout()"]');
+                                if (!startBtn || startBtn.offsetParent === null) {
+                                    return false;
+                                }
+                                startBtn.click();
+                                return true;
+                            }
+                        """)
+                        
+                        if not start_result:
+                            return False
+                        
+                        page.wait_for_timeout(2000)
+                        
+                        # Step 3: Test all workout player controls
+                        controls_test = page.evaluate("""
+                            () => {
+                                const results = {
+                                    soundToggle: {exists: false, clickable: false, toggled: false},
+                                    vibrationToggle: {exists: false, clickable: false, toggled: false},
+                                    exitButton: {exists: false, clickable: false},
+                                    playerVisible: false
+                                };
+                                
+                                // Check if workout player is visible
+                                const player = document.querySelector('#workout-player');
+                                results.playerVisible = player && !player.classList.contains('hidden');
+                                
+                                // Test sound toggle
+                                const soundToggle = document.getElementById('sound-toggle');
+                                if (soundToggle) {
+                                    results.soundToggle.exists = true;
+                                    results.soundToggle.clickable = !soundToggle.disabled && 
+                                                                   soundToggle.style.pointerEvents !== 'none';
+                                    
+                                    if (results.soundToggle.clickable) {
+                                        const originalState = soundToggle.checked;
+                                        soundToggle.click();
+                                        results.soundToggle.toggled = soundToggle.checked !== originalState;
+                                    }
+                                }
+                                
+                                // Test vibration toggle
+                                const vibrationToggle = document.getElementById('vibration-toggle');
+                                if (vibrationToggle) {
+                                    results.vibrationToggle.exists = true;
+                                    results.vibrationToggle.clickable = !vibrationToggle.disabled && 
+                                                                       vibrationToggle.style.pointerEvents !== 'none';
+                                    
+                                    if (results.vibrationToggle.clickable) {
+                                        const originalState = vibrationToggle.checked;
+                                        vibrationToggle.click();
+                                        results.vibrationToggle.toggled = vibrationToggle.checked !== originalState;
+                                    }
+                                }
+                                
+                                // Test exit button
+                                const exitBtn = document.getElementById('exit-workout-btn');
+                                if (exitBtn) {
+                                    results.exitButton.exists = true;
+                                    results.exitButton.clickable = !exitBtn.disabled && 
+                                                                  exitBtn.style.pointerEvents !== 'none';
+                                }
+                                
+                                return results;
+                            }
+                        """)
+                        
+                        # Evaluate complete flow
+                        complete_flow_success = (
+                            controls_test.get('playerVisible', False) and
+                            controls_test.get('soundToggle', {}).get('clickable', False) and
+                            controls_test.get('vibrationToggle', {}).get('clickable', False) and
+                            controls_test.get('exitButton', {}).get('clickable', False)
+                        )
+                        
+                        return {
+                            'complete_flow_success': complete_flow_success,
+                            'controls_test': controls_test
+                        }
+                    
+                    complete_flow_result = _retry_test(test_complete_workout_flow_with_controls, max_retries=2)
+                    checks['complete_workout_flow_with_controls'] = complete_flow_result
+                    
+                    if complete_flow_result and complete_flow_result.get('complete_flow_success', False):
+                        logging.info("✅ Complete workout flow with controls test passed")
+                    else:
+                        logging.warning(f"⚠️ Complete workout flow with controls test failed: {complete_flow_result}")
+                        
+                except Exception as e:
+                    checks['complete_workout_flow_with_controls'] = False
+                    logging.warning(f"⚠️ Complete workout flow with controls test failed: {e}")
 
             browser.close()
     except Exception as e:

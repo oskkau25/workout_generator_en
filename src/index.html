@@ -72,6 +72,142 @@
             @apply bg-fit-card rounded-2xl p-6 card-shadow border border-fit-border;
         }
     </style>
+
+    <style>
+        
+        /* Ensure exit button is fully clickable */
+        #exit-workout-btn {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            z-index: 1000 !important;
+            position: relative !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: inline-block !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+        
+        #exit-workout-btn:hover {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+        
+        #exit-workout-btn:active {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+        
+        /* Ensure the container is also clickable */
+        .workout-player .mt-6.text-center.space-y-3 {
+            pointer-events: auto !important;
+            z-index: 1000 !important;
+        }
+        
+        /* Highlight Start Workout Button */
+        button[onclick="startWorkout()"] {
+            position: relative !important;
+            overflow: hidden !important;
+            background: #3b82f6 !important;
+            border: 2px solid #60a5fa !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        button[onclick="startWorkout()"]::before {
+            content: '' !important;
+            position: absolute !important;
+            inset: 0 !important;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+            opacity: 0 !important;
+            transition: opacity 0.3s ease !important;
+            z-index: 1 !important;
+        }
+        
+        button[onclick="startWorkout()"]:hover::before {
+            opacity: 1 !important;
+        }
+        
+        button[onclick="startWorkout()"]:hover {
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5) !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        button[onclick="startWorkout()"] > * {
+            position: relative !important;
+            z-index: 2 !important;
+        }
+        
+        /* Highlight Generate Workout Button */
+        #generate-btn {
+            position: relative !important;
+            overflow: hidden !important;
+            background: #3b82f6 !important;
+            border: 2px solid #60a5fa !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        #generate-btn::before {
+            content: '' !important;
+            position: absolute !important;
+            inset: 0 !important;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+            opacity: 0 !important;
+            transition: opacity 0.3s ease !important;
+            z-index: 1 !important;
+        }
+        
+        #generate-btn:hover::before {
+            opacity: 1 !important;
+        }
+        
+        #generate-btn:hover {
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5) !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        #generate-btn > * {
+            position: relative !important;
+            z-index: 2 !important;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4), 0 0 0 0 rgba(59, 130, 246, 0.7) !important;
+            }
+            50% {
+                box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4), 0 0 0 10px rgba(59, 130, 246, 0) !important;
+            }
+        }
+
+        /* Ensure checkboxes are fully clickable */
+        #sound-toggle, #vibration-toggle {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            z-index: 1000 !important;
+            position: relative !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: inline-block !important;
+        }
+        
+        /* Ensure labels are clickable too */
+        label[for="sound-toggle"], label[for="vibration-toggle"] {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            z-index: 1000 !important;
+        }
+        
+        /* Remove any potential overlay issues */
+        .workout-player .flex.items-center.justify-center.space-x-6 {
+            pointer-events: auto !important;
+            z-index: 1000 !important;
+        }
+    </style>
+
 </head>
 <body class="bg-gradient-to-br from-fit-light to-blue-50 min-h-screen font-sans">
     <!-- Header -->
@@ -892,25 +1028,17 @@
                                 <input type="checkbox" id="sound-toggle" checked class="w-5 h-5 text-fit-primary">
                                 <span class="text-fit-secondary">Sound</span>
                             </label>
-                            <div id="toggle-sound" class="hidden" aria-hidden="true"></div>
                             <label class="flex items-center space-x-3 cursor-pointer">
                                 <input type="checkbox" id="vibration-toggle" checked class="w-5 h-5 text-fit-primary">
                                 <span class="text-fit-secondary">Vibration</span>
                             </label>
-                            <div id="toggle-vibration" class="hidden" aria-hidden="true"></div>
                         </div>
                     </div>
 
-                    <div class="mt-6 text-center space-y-3">
+                    <div class="mt-6 text-center">
                         <button id="exit-workout-btn" class="text-fit-danger hover:text-red-700 font-medium transition-colors" role="button" aria-label="Exit workout">
                             Exit Workout
                         </button>
-                        
-                        <div>
-                            <button id="new-workout-from-player-btn" class="text-fit-secondary hover:text-fit-primary font-medium transition-colors">
-                                Create New Workout
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1423,7 +1551,7 @@
     </button>
 
         <!-- Modular JavaScript Structure -->
-        <script type="module" src="js/main.js?v=50&t=1736540000"></script>
+        <script type="module" src="js/main.js?v=59&t=1736540000"></script>
     
     
     <!-- Fallback for browsers that don't support ES6 modules -->

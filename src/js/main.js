@@ -6,7 +6,7 @@
  * and ensures all modules are loaded in the correct order
  */
 
-console.log('🔧 MAIN.JS LOADED - v23 - CACHE BUSTED');
+console.log('🔧 MAIN.JS LOADED - v24 - CACHE BUSTED');
 
 // Import core modules
 import { exercises, exerciseDatabase } from './core/exercise-database.js';
@@ -31,7 +31,7 @@ import {
 } from './features/smart-substitution.js';
 
 import { UserAccount, userAccount } from './features/user-accounts.js';
-import { setupWorkoutPlayerListeners } from './features/workout-player.js?v=24';
+import { setupWorkoutPlayerListeners } from './features/workout-player.js?v=32';
 
 // Import UI modules (to be created)
 // import { WorkoutUI } from './ui/workout-ui.js';
@@ -223,7 +223,7 @@ class FitFlowApp {
         const attachAll = () => {
                     this.setupFormListeners();
         this.setupUserAccountListeners();
-        this.setupWorkoutPlayerListeners();
+        // setupWorkoutPlayerListeners() is called when workout player is rendered
         this.setupDashboardListeners();
         };
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
@@ -648,13 +648,7 @@ class FitFlowApp {
         });
     }
     
-    /**
-     * Setup workout player listeners
-     */
-    setupWorkoutPlayerListeners() {
-        setupWorkoutPlayerListeners();
-        console.log('🎮 Workout player listeners attached');
-    }
+    // setupWorkoutPlayerListeners() is now called directly when workout player is rendered
     
     /**
      * Get module by name

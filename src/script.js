@@ -2548,8 +2548,8 @@ function generateRandomSet(exerciseList, count) {
 		const nextBtn = document.getElementById('next-exercise-btn');
 		const exitBtn = document.getElementById('exit-workout-btn');
 		const pauseBtn = document.getElementById('pause-resume-btn');
-		const toggleSound = document.getElementById('toggle-sound');
-		const toggleVibration = document.getElementById('toggle-vibration');
+		const toggleSound = document.getElementById('sound-toggle');
+		const toggleVibration = document.getElementById('vibration-toggle');
 		const overlayExitBtn = document.getElementById('overlay-exit-btn');
 		if (prevBtn) {
 			prevBtn.onclick = () => {
@@ -2650,8 +2650,19 @@ function generateRandomSet(exerciseList, count) {
 					appState.phase = 'work';
 					appState.remainingSeconds = appState.workTime;
 				}
-				renderExercisePlayer();
-				startPhase(appState.phase);
+				// Use new workout player system
+				if (window.initializeWorkoutPlayer) {
+					const workoutData = {
+						sequence: appState.sequence,
+						workTime: appState.workTime,
+						restTime: appState.restTime
+					};
+					window.initializeWorkoutPlayer(workoutData);
+				} else {
+					// Fallback to old system
+					renderExercisePlayer();
+					startPhase(appState.phase);
+				}
 				saveState();
 			};
 		}
@@ -2823,7 +2834,7 @@ function generateRandomSet(exerciseList, count) {
 				// Render overview screen
 				renderOverview();
 				attachOverviewHandlers();
-				attachPlayerHandlers();
+				// attachPlayerHandlers(); // Disabled - using new system
                 
                 showSuccess('Workout plan generated successfully!');
                 
@@ -3110,7 +3121,7 @@ function generateRandomSet(exerciseList, count) {
 		// Don't automatically show overview - keep form visible
 		// User can access saved workout via other means if needed
 		attachOverviewHandlers();
-		attachPlayerHandlers();
+		// attachPlayerHandlers(); // Disabled - using new system
 		
 		// Show resume button if there's a saved workout
 		const resumeSection = document.getElementById('resume-workout-section');
