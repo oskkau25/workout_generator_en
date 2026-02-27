@@ -122,17 +122,7 @@ function addTimerModeControls() {
                 </select>
             </div>
             
-            <div class="flex items-center space-x-4">
-                <label class="flex items-center space-x-2 cursor-pointer">
-                    <input type="checkbox" id="audio-toggle" class="rounded" ${enhancedTimerState.audioEnabled ? 'checked' : ''}>
-                    <span class="text-sm text-gray-700">🔊 Audio Cues</span>
-                </label>
-                
-                <label class="flex items-center space-x-2 cursor-pointer">
-                    <input type="checkbox" id="vibration-toggle" class="rounded" ${enhancedTimerState.vibrationEnabled ? 'checked' : ''}>
-                    <span class="text-sm text-gray-700">📳 Vibration</span>
-                </label>
-            </div>
+            <!-- Sound and vibration controls removed - using main workout player controls instead -->
         </div>
         
         <div id="custom-timer-settings" class="mt-4 hidden">
@@ -162,14 +152,11 @@ function setupTimerModeListeners() {
     console.log('🔧 Setting up timer mode listeners...');
     
     const modeSelect = document.getElementById('timer-mode-select');
-    const audioToggle = document.getElementById('audio-toggle');
-    const vibrationToggle = document.getElementById('vibration-toggle');
+    // Audio and vibration controls removed - using main workout player controls instead
     const customSettings = document.getElementById('custom-timer-settings');
     
     console.log('🔍 Found elements:', {
         modeSelect: !!modeSelect,
-        audioToggle: !!audioToggle,
-        vibrationToggle: !!vibrationToggle,
         customSettings: !!customSettings
     });
     
@@ -208,53 +195,7 @@ function setupTimerModeListeners() {
         modeSelect.style.zIndex = '1000';
     }
     
-    if (audioToggle) {
-        console.log('🔍 Testing audioToggle clickability...');
-        console.log('🔍 audioToggle disabled:', audioToggle.disabled);
-        console.log('🔍 audioToggle style pointer-events:', getComputedStyle(audioToggle).pointerEvents);
-        
-        audioToggle.addEventListener('change', (e) => {
-            console.log('🔊 Audio toggle changed to:', e.target.checked);
-            enhancedTimerState.audioEnabled = e.target.checked;
-        });
-        
-        // Also add click event for debugging
-        audioToggle.addEventListener('click', (e) => {
-            console.log('🖱️ audioToggle clicked!');
-        });
-        
-        // Set initial value
-        audioToggle.checked = enhancedTimerState.audioEnabled;
-        
-        // Force enable the element
-        audioToggle.disabled = false;
-        audioToggle.style.pointerEvents = 'auto';
-        audioToggle.style.zIndex = '1000';
-    }
-    
-    if (vibrationToggle) {
-        console.log('🔍 Testing vibrationToggle clickability...');
-        console.log('🔍 vibrationToggle disabled:', vibrationToggle.disabled);
-        console.log('🔍 vibrationToggle style pointer-events:', getComputedStyle(vibrationToggle).pointerEvents);
-        
-        vibrationToggle.addEventListener('change', (e) => {
-            console.log('📳 Vibration toggle changed to:', e.target.checked);
-            enhancedTimerState.vibrationEnabled = e.target.checked;
-        });
-        
-        // Also add click event for debugging
-        vibrationToggle.addEventListener('click', (e) => {
-            console.log('🖱️ vibrationToggle clicked!');
-        });
-        
-        // Set initial value
-        vibrationToggle.checked = enhancedTimerState.vibrationEnabled;
-        
-        // Force enable the element
-        vibrationToggle.disabled = false;
-        vibrationToggle.style.pointerEvents = 'auto';
-        vibrationToggle.style.zIndex = '1000';
-    }
+    // Audio and vibration controls removed - using main workout player controls instead
     
     // Add event listeners for custom timer settings
     const customWorkTime = document.getElementById('custom-work-time');
@@ -367,7 +308,9 @@ function initializeRestSuggestions() {
  * Play audio cue
  */
 export function playAudioCue(cueType, frequency = 800, duration = 200) {
-    if (!enhancedTimerState.audioEnabled || !enhancedTimerState.audioContext) return;
+    // Use main workout player's sound state
+    const workoutState = window.workoutState || window.appState;
+    if (!workoutState?.enableSound || !enhancedTimerState.audioContext) return;
     
     try {
         const oscillator = enhancedTimerState.audioContext.createOscillator();
@@ -395,7 +338,9 @@ export function playAudioCue(cueType, frequency = 800, duration = 200) {
  * Trigger vibration cue
  */
 export function triggerVibration(pattern = [100]) {
-    if (!enhancedTimerState.vibrationEnabled || !navigator.vibrate) return;
+    // Use main workout player's vibration state
+    const workoutState = window.workoutState || window.appState;
+    if (!workoutState?.enableVibration || !navigator.vibrate) return;
     
     try {
         navigator.vibrate(pattern);

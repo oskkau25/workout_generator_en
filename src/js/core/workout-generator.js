@@ -176,20 +176,23 @@ function generateTabataWorkout(availableExercises, duration, settings) {
     const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
     workout.push(...selectedWarmup);
     
-    // Select one exercise for all Tabata sets
-    const tabataExercise = selectRandomExercises(mainExercises, 1)[0];
+    // Select exercises for Tabata sets - use more variety (up to 4 different exercises)
+    const numTabataExercises = Math.min(4, mainExercises.length);
+    const tabataPool = selectRandomExercises(mainExercises, numTabataExercises);
     
     // Add Tabata sets
     for (let set = 1; set <= rounds; set++) {
         workout.push({
             type: 'tabata_set',
             name: `Tabata Set ${set}`,
-            description: `20 seconds work, 10 seconds rest, repeat 8 times`,
+            description: `Tabata round ${set} of ${rounds}: 20s work, 10s rest`,
             set: set,
             totalSets: rounds
         });
         
-        if (tabataExercise) workout.push({...tabataExercise, _section: 'Main'});
+        // Cycle through the selected exercises
+        const exercise = tabataPool[(set - 1) % tabataPool.length];
+        if (exercise) workout.push({...exercise, _section: 'Main'});
     }
     
     // Add cooldown (from full catalog) - 8 exercises for ~5 minutes
@@ -205,6 +208,7 @@ function generateTabataWorkout(availableExercises, duration, settings) {
  */
 function generatePyramidWorkout(availableExercises, duration, settings) {
     const levels = settings.levels || Math.max(3, Math.min(7, Math.floor(duration / 8)));
+    const exercisesPerLevel = 2;
     
     const mainExercises = availableExercises; // already filtered for equipment
     const workout = [];
@@ -214,8 +218,9 @@ function generatePyramidWorkout(availableExercises, duration, settings) {
     const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
     workout.push(...selectedWarmup);
     
-    // Select exercises for the pyramid (same exercises for all levels)
-    const pyramidExercises = selectRandomExercises(mainExercises, 2);
+    // Select pool of exercises for the pyramid - use enough for variety across levels
+    const totalNeeded = levels * exercisesPerLevel;
+    const pyramidPool = selectRandomExercises(mainExercises, Math.min(totalNeeded, mainExercises.length));
     
     // Add pyramid levels
     for (let level = 1; level <= levels; level++) {
@@ -227,9 +232,12 @@ function generatePyramidWorkout(availableExercises, duration, settings) {
             totalLevels: levels
         });
         
-        // Use the same exercises for each level
-        const levelExercises = pyramidExercises.map(ex => ({...ex, _section: 'Main'}));
-        workout.push(...levelExercises);
+        // Get different exercises for each level if available
+        const startIndex = ((level - 1) * exercisesPerLevel) % pyramidPool.length;
+        for (let i = 0; i < exercisesPerLevel; i++) {
+            const exercise = pyramidPool[(startIndex + i) % pyramidPool.length];
+            if (exercise) workout.push({...exercise, _section: 'Main'});
+        }
     }
     
     // Add cooldown (from full catalog) - 8 exercises for ~5 minutes
@@ -241,10 +249,14 @@ function generatePyramidWorkout(availableExercises, duration, settings) {
 }
 
 /**
- * Select random exercises from a list
+ * Select random exercises from a list using Fisher-Yates shuffle
  */
 function selectRandomExercises(exercises, count) {
-    const shuffled = [...exercises].sort(() => Math.random() - 0.5);
+    const shuffled = [...exercises];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
     return shuffled.slice(0, Math.min(count, exercises.length));
 }
 
