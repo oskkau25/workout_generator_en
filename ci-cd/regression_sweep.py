@@ -371,6 +371,13 @@ def run_auth_matrix(page: Any) -> Dict[str, Any]:
         }""",
         {"username": username, "password": new_password},
     )
+    page.evaluate("() => window.userAccount.logout()")
+    checks["login_old_password_after_reset"] = page.evaluate(
+        """async ({ username, password }) => {
+            return await window.userAccount.login(username, password);
+        }""",
+        {"username": username, "password": password},
+    )
 
     page.evaluate("() => window.userAccount.logout()")
     page.reload(wait_until="networkidle")
@@ -385,6 +392,7 @@ def run_auth_matrix(page: Any) -> Dict[str, Any]:
         and checks["session_after_reload"].get("isLoggedIn") is True
         and checks["reset_password"].get("success") is True
         and checks["login_new_password"].get("success") is True
+        and checks["login_old_password_after_reset"].get("success") is False
         and checks["logged_out_after_reload"].get("isLoggedIn") is False
     )
     return {"status": "PASSED" if passed else "WARNING", "checks": checks}

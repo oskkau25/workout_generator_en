@@ -58,3 +58,14 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Generated test artifacts
+**/*screenshots*/
+reports/test_results/*.json
+!reports/test_results/.gitkeep
+*_results.json
+**/*_results.json
+*.pkl
+*.cache
+.cache/
+**/__pycache__/

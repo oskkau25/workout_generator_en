@@ -103,11 +103,35 @@ class AutomatedTestPipeline:
         self.cache_file = self.project_root / 'ci-cd' / '.test_cache.pkl'
         self.file_hashes = {}
         self.update_file_hashes()
+
+        # Canonical release contract and explicit non-blocking legacy suites.
+        self.release_test_contract = {
+            'unit': 'python -m unittest discover -s ci-cd/tests -p "test_*.py" -v',
+            'e2e_smoke': 'python ci-cd/run_e2e_smoke.py',
+            'regression_sweep': 'python ci-cd/regression_sweep.py',
+            'quality_gate': (
+                'python ci-cd/quality_gate.py '
+                '--results reports/test_results/automated_test_results.json '
+                '--e2e reports/test_results/e2e_smoke_result.json '
+                '--min-success-rate 85 '
+                '--min-security-score 70 '
+                '--min-accessibility-score 80 '
+                '--strict-e2e '
+                '--fail-on-overall-warning'
+            ),
+        }
+        self.legacy_manual_suites = [
+            'python ci-cd/run_complete_test_suite.py --headless',
+            'python ci-cd/final_selenium_test.py',
+            'python ci-cd/comprehensive_selenium_tests.py',
+            'python ci-cd/advanced_selenium_tests.py',
+        ]
     
     def run_pipeline(self):
         """Main pipeline execution"""
         logger.info("🚀 Starting Automated Test Pipeline")
         logger.info("=" * 50)
+        self.register_release_contract_metadata()
         logger.info("📋 MANDATORY WORKFLOW SEQUENCE:")
         logger.info("   1. ✅ Automated Tests (this pipeline) - RUNNING NOW")
         logger.info("   2. 🔄 Local Manual Inspection (pre-commit hook) - NEXT STEP")
@@ -2985,27 +3009,20 @@ class AutomatedTestPipeline:
     def determine_release_readiness(self):
         """Determine if the code is ready for release"""
         logger.info("🚀 Determining Release Readiness")
-        
-        # Check for critical E2E test failures that block release
-        e2e_failed = False
-        for test_name, test_result in self.test_results.get('tests', {}).items():
-            if 'E2E' in test_name and test_result.get('status') == 'FAILED':
-                e2e_failed = True
-                logger.error(f"❌ E2E test failed: {test_name} - BLOCKING RELEASE")
-                break
-        
-        if e2e_failed:
-            logger.error("❌ Code is NOT READY FOR RELEASE - E2E tests failed")
+
+        e2e_status = self.resolve_e2e_release_status()
+        if e2e_status in {'FAILED', 'SKIPPED', 'MISSING', 'UNKNOWN'}:
+            logger.error(f"❌ Code is NOT READY FOR RELEASE - E2E status: {e2e_status}")
             self.test_results['release_ready'] = False
-            self.test_results['release_recommendation'] = 'BLOCKED - E2E tests failed (REQUIRED for release)'
+            self.test_results['release_recommendation'] = f'BLOCKED - E2E smoke is {e2e_status}'
         elif self.test_results['overall_status'] == 'PASSED':
             logger.info("🎉 Code is READY FOR RELEASE!")
             self.test_results['release_ready'] = True
             self.test_results['release_recommendation'] = 'APPROVED - All tests passed'
         elif self.test_results['overall_status'] == 'WARNING':
-            logger.warning("⚠️ Code has warnings but may be ready for release")
-            self.test_results['release_ready'] = True
-            self.test_results['release_recommendation'] = 'APPROVED WITH WARNINGS - Review warnings before release'
+            logger.warning("⚠️ Code has warnings - quality gate requires follow-up")
+            self.test_results['release_ready'] = False
+            self.test_results['release_recommendation'] = 'HOLD - Resolve warnings before release quality gate'
         else:
             logger.error("❌ Code is NOT READY FOR RELEASE")
             self.test_results['release_ready'] = False
@@ -3015,6 +3032,7 @@ class AutomatedTestPipeline:
         """Main pipeline execution with parallel test execution"""
         logger.info("🚀 Starting Enhanced Automated Test Pipeline (Parallel Execution)")
         logger.info("=" * 60)
+        self.register_release_contract_metadata()
         logger.info("📋 MANDATORY WORKFLOW SEQUENCE:")
         logger.info("   1. ✅ Automated Tests (this pipeline) - RUNNING NOW")
         logger.info("   2. 🔄 Local Manual Inspection (pre-commit hook) - NEXT STEP")
@@ -3238,6 +3256,65 @@ class AutomatedTestPipeline:
                 with open(file_path, 'rb') as f:
                     content = f.read()
                     self.file_hashes[file] = hashlib.md5(content).hexdigest()
+
+    def register_release_contract_metadata(self):
+        """Publish canonical release sequence and non-blocking legacy suites."""
+        self.test_results['release_test_contract'] = {
+            'blocking_sequence': [
+                'unit',
+                'e2e_smoke',
+                'regression_sweep',
+                'quality_gate',
+            ],
+            'commands': self.release_test_contract,
+        }
+        self.test_results['manual_non_blocking_suites'] = {
+            'status': 'MANUAL',
+            'details': 'Legacy Selenium-heavy suites are non-blocking and manual-only.',
+            'commands': self.legacy_manual_suites,
+        }
+
+        logger.info("📌 Canonical release contract registered (unit -> e2e_smoke -> regression_sweep -> quality_gate)")
+        logger.info("🧪 Legacy Selenium mega suites are MANUAL/NON-BLOCKING")
+
+    def resolve_e2e_release_status(self):
+        """Resolve E2E smoke status for release gating."""
+        e2e_file = self.project_root / 'reports' / 'test_results' / 'e2e_smoke_result.json'
+        if e2e_file.exists():
+            try:
+                with open(e2e_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                return str(data.get('status', 'UNKNOWN')).upper()
+            except Exception as exc:
+                logger.warning(f"⚠️ Could not parse dedicated e2e smoke result: {exc}")
+
+        discovered_statuses = []
+
+        def _walk(node, key_path=''):
+            if isinstance(node, dict):
+                lower_key_path = key_path.lower()
+                if 'status' in node and ('e2e' in lower_key_path or 'smoke' in lower_key_path):
+                    discovered_statuses.append(str(node.get('status', 'UNKNOWN')).upper())
+                for key, value in node.items():
+                    next_path = f"{key_path}.{key}" if key_path else str(key)
+                    _walk(value, next_path)
+            elif isinstance(node, list):
+                for idx, value in enumerate(node):
+                    _walk(value, f"{key_path}[{idx}]")
+
+        _walk(self.test_results.get('tests', {}))
+
+        if not discovered_statuses:
+            return 'MISSING'
+        if 'FAILED' in discovered_statuses:
+            return 'FAILED'
+        if 'WARNING' in discovered_statuses:
+            return 'WARNING'
+        if 'SKIPPED' in discovered_statuses:
+            return 'SKIPPED'
+        if all(status == 'PASSED' for status in discovered_statuses):
+            return 'PASSED'
+        return 'UNKNOWN'
     
     def enforce_workflow_sequence(self):
         """Enforce the mandatory workflow sequence for all commits"""

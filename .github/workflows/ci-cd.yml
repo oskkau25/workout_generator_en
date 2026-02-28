@@ -66,7 +66,9 @@ jobs:
             --e2e reports/test_results/e2e_smoke_result.json \
             --min-success-rate 85 \
             --min-security-score 70 \
-            --min-accessibility-score 80
+            --min-accessibility-score 80 \
+            --strict-e2e \
+            --fail-on-overall-warning
 
       - name: Upload test artifacts
         if: always()
@@ -76,3 +78,5 @@ jobs:
           path: |
             reports/test_results/*.json
             reports/logs/*.log
+            **/*screenshots*/*.png
+            *_results.json

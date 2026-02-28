@@ -24,7 +24,8 @@ def main() -> int:
     print(f"E2E smoke status: {status}")
     print(f"Saved: {output_file}")
 
-    return 1 if status == "FAILED" else 0
+    # Smoke is a required release gate: anything except PASSED fails.
+    return 0 if status == "PASSED" else 1
 
 
 if __name__ == "__main__":

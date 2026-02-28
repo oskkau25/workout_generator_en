@@ -21,6 +21,33 @@ python3 ci-cd/automated_test_pipeline.py --enhanced
 python3 ci-cd/automated_test_pipeline.py
 ```
 
+### **Release Test Contract (Canonical)**
+Run this exact blocking sequence for a release decision:
+
+```bash
+# 1) unit
+python -m unittest discover -s ci-cd/tests -p "test_*.py" -v
+
+# 2) e2e smoke
+python ci-cd/run_e2e_smoke.py
+
+# 3) regression sweep
+python ci-cd/regression_sweep.py
+
+# 4) quality gate
+python ci-cd/quality_gate.py \
+  --results reports/test_results/automated_test_results.json \
+  --e2e reports/test_results/e2e_smoke_result.json \
+  --min-success-rate 85 \
+  --min-security-score 70 \
+  --min-accessibility-score 80 \
+  --strict-e2e \
+  --fail-on-overall-warning
+```
+
+Legacy Selenium mega suites are available for manual diagnostics, but are **non-blocking** for CI release gates.  
+See `TEST_AUDIT.md` for KEEP / REWRITE / MANUAL / REMOVE classification.
+
 ## 📁 **Project Structure**
 
 ```

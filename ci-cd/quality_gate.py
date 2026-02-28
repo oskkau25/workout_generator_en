@@ -55,6 +55,8 @@ def evaluate_quality_gate(
     min_success_rate: float,
     min_security_score: float,
     min_accessibility_score: float,
+    strict_e2e: bool = False,
+    fail_on_overall_warning: bool = False,
 ) -> Tuple[bool, Dict[str, Any], List[str]]:
     summary = pipeline_results.get("summary", {})
     overall_status = str(pipeline_results.get("overall_status", "UNKNOWN")).upper()
@@ -83,11 +85,17 @@ def evaluate_quality_gate(
             "min_security_score": min_security_score,
             "min_accessibility_score": min_accessibility_score,
         },
+        "strict_mode": {
+            "strict_e2e": strict_e2e,
+            "fail_on_overall_warning": fail_on_overall_warning,
+        },
     }
 
     failures: List[str] = []
     if overall_status == "FAILED":
         failures.append("overall_status is FAILED")
+    if fail_on_overall_warning and overall_status == "WARNING":
+        failures.append("overall_status is WARNING (strict warning mode)")
     if success_rate < min_success_rate:
         failures.append(
             f"success_rate {success_rate:.1f}% is below {min_success_rate:.1f}%"
@@ -103,7 +111,9 @@ def evaluate_quality_gate(
         )
     if has_release_ready and not release_ready:
         failures.append("release_ready is false")
-    if e2e_status in {"FAILED", "MISSING", "UNKNOWN"}:
+    if strict_e2e and e2e_status == "WARNING":
+        failures.append("e2e smoke status is WARNING (strict e2e mode)")
+    if e2e_status in {"FAILED", "SKIPPED", "MISSING", "UNKNOWN"}:
         failures.append(f"e2e smoke status is {e2e_status}")
 
     return len(failures) == 0, checks, failures
@@ -124,6 +134,14 @@ def write_step_summary(passed: bool, checks: Dict[str, Any], failures: List[str]
         f"- Security score: {checks['security_score']:.1f}",
         f"- Accessibility score: {checks['accessibility_score']:.1f}",
         f"- E2E smoke: {checks['e2e_status']} ({checks['e2e_source']})",
+        (
+            "- Strict E2E warning mode: "
+            f"{'enabled' if checks['strict_mode']['strict_e2e'] else 'disabled'}"
+        ),
+        (
+            "- Fail on overall WARNING: "
+            f"{'enabled' if checks['strict_mode']['fail_on_overall_warning'] else 'disabled'}"
+        ),
         "",
     ]
 
@@ -152,6 +170,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-success-rate", type=float, default=85.0)
     parser.add_argument("--min-security-score", type=float, default=70.0)
     parser.add_argument("--min-accessibility-score", type=float, default=80.0)
+    parser.add_argument(
+        "--strict-e2e",
+        action="store_true",
+        help="Fail quality gate when e2e smoke status is WARNING",
+    )
+    parser.add_argument(
+        "--fail-on-overall-warning",
+        action="store_true",
+        help="Fail quality gate when overall pipeline status is WARNING",
+    )
     return parser.parse_args()
 
 
@@ -180,6 +208,8 @@ def main() -> int:
         min_success_rate=args.min_success_rate,
         min_security_score=args.min_security_score,
         min_accessibility_score=args.min_accessibility_score,
+        strict_e2e=args.strict_e2e,
+        fail_on_overall_warning=args.fail_on_overall_warning,
     )
 
     print("=== QUALITY GATE ===")
@@ -190,6 +220,14 @@ def main() -> int:
     print(f"Security score: {checks['security_score']:.1f}")
     print(f"Accessibility score: {checks['accessibility_score']:.1f}")
     print(f"E2E smoke: {checks['e2e_status']} ({checks['e2e_source']})")
+    print(
+        "Strict E2E warning mode: "
+        f"{'enabled' if checks['strict_mode']['strict_e2e'] else 'disabled'}"
+    )
+    print(
+        "Fail on overall WARNING: "
+        f"{'enabled' if checks['strict_mode']['fail_on_overall_warning'] else 'disabled'}"
+    )
 
     if failures:
         print("Failing checks:")

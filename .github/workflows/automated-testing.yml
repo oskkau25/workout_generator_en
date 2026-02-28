@@ -38,3 +38,5 @@ jobs:
             complete_test_suite_results.json
             *_results.json
             reports/test_results/*.json
+            **/*screenshots*/*.png
+            reports/logs/*.log
