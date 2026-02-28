@@ -46,17 +46,19 @@ print_section "🧹 OPTIONAL FORMAT/LINT"
 if command -v npx &> /dev/null; then
     if [ -f ".prettierrc.json" ]; then
         print_status $BLUE "Running Prettier (staged JS/HTML/CSS)"
-        git diff --cached --name-only --diff-filter=ACM | \
-          grep -E '\.(js|jsx|ts|tsx|css|scss|html)$' | \
-          xargs -r npx prettier --write 2>/dev/null
-        git add -A
+        prettier_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|css|scss|html)$' || true)
+        if [ -n "$prettier_files" ]; then
+            printf '%s\n' "$prettier_files" | xargs -r npx prettier --write 2>/dev/null
+            printf '%s\n' "$prettier_files" | xargs -r git add --
+        fi
     fi
     if [ -f ".eslintrc.json" ]; then
         print_status $BLUE "Running ESLint (staged JS)"
-        git diff --cached --name-only --diff-filter=ACM | \
-          grep -E '\.(js|jsx|ts|tsx)$' | \
-          xargs -r npx eslint --fix 2>/dev/null || true
-        git add -A
+        eslint_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' || true)
+        if [ -n "$eslint_files" ]; then
+            printf '%s\n' "$eslint_files" | xargs -r npx eslint --fix 2>/dev/null || true
+            printf '%s\n' "$eslint_files" | xargs -r git add --
+        fi
     fi
 else
     print_status $YELLOW "npx not available - skipping Prettier/ESLint"
