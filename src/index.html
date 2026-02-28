@@ -4,8 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitFlow - Smart Workout Generator</title>
+    <meta name="description" content="Generate personalized workouts in seconds with FitFlow. Choose training mode, equipment, and duration to create smart routines for home or gym.">
+    <meta name="keywords" content="workout generator, fitness app, circuit training, tabata workout, pyramid workout, home workout planner">
+    <meta name="author" content="FitFlow Team">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0ea5e9">
+    <link id="canonical-url" rel="canonical" href="index.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="FitFlow - Smart Workout Generator">
+    <meta property="og:description" content="Create personalized workouts with smart exercise selection, timer modes, and progress analytics.">
+    <meta id="og-url" property="og:url" content="">
+    <meta property="og:image" content="favicon.svg">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="FitFlow - Smart Workout Generator">
+    <meta name="twitter:description" content="Build custom workouts in seconds with FitFlow.">
+    <meta name="twitter:image" content="favicon.svg">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="shortcut icon" href="favicon.svg">
+    <link rel="manifest" href="manifest.webmanifest">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -57,6 +73,42 @@
                 window.console.info = noop;
                 window.console.debug = noop;
             }
+        })();
+    </script>
+    <script>
+        (function setupReleaseMetadata() {
+            const currentUrl = `${window.location.origin}${window.location.pathname}`;
+            const canonicalTag = document.getElementById('canonical-url');
+            const ogUrlTag = document.getElementById('og-url');
+
+            if (canonicalTag) canonicalTag.setAttribute('href', currentUrl);
+            if (ogUrlTag) ogUrlTag.setAttribute('content', currentUrl);
+        })();
+    </script>
+    <script>
+        (function setupNetworkStatusBanner() {
+            const bannerId = 'network-status-banner';
+
+            const updateBanner = () => {
+                let banner = document.getElementById(bannerId);
+                if (window.navigator.onLine) {
+                    if (banner) banner.remove();
+                    return;
+                }
+
+                if (!banner && document.body) {
+                    banner = document.createElement('div');
+                    banner.id = bannerId;
+                    banner.setAttribute('role', 'status');
+                    banner.className = 'fixed inset-x-0 top-0 z-[60] bg-amber-100 border-b border-amber-300 text-amber-800 text-sm font-medium px-4 py-2 text-center';
+                    banner.textContent = 'You are offline. Some cloud-loaded assets may be unavailable until your connection is restored.';
+                    document.body.prepend(banner);
+                }
+            };
+
+            window.addEventListener('online', updateBanner);
+            window.addEventListener('offline', updateBanner);
+            document.addEventListener('DOMContentLoaded', updateBanner);
         })();
     </script>
     
@@ -394,7 +446,7 @@
                         </svg>
                         🎉 What's New in FitFlow
                     </h2>
-                    <span class="px-3 py-1 bg-amber-600 text-white text-sm font-semibold rounded-full">v2.1</span>
+                    <span class="px-3 py-1 bg-amber-600 text-white text-sm font-semibold rounded-full">v2.2.0</span>
                 </div>
                 
                 <div class="grid md:grid-cols-2 gap-6">
@@ -1550,8 +1602,8 @@
                     
                     <div class="text-center pt-4 border-t border-gray-200">
                         <p class="text-gray-600">
-                            <strong>Last Updated:</strong> September 3, 2025<br>
-                            <strong>Version:</strong> 2.0 - Enhanced Security
+                            <strong>Last Updated:</strong> February 28, 2026<br>
+                            <strong>Version:</strong> 2.2.0 - Release Prep Update
                         </p>
                     </div>
                 </div>
@@ -1586,7 +1638,13 @@
     
     <!-- Fallback for browsers that don't support ES6 modules -->
     <script nomodule>
-        console.warn('ES6 modules not supported. Please use a modern browser.');
+        (function renderNoModuleFallback() {
+            const unsupportedBanner = document.createElement('div');
+            unsupportedBanner.setAttribute('role', 'alert');
+            unsupportedBanner.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#0f172a;color:#f8fafc;padding:24px;text-align:center;';
+            unsupportedBanner.innerHTML = '<div><h2 style="font-size:1.25rem;margin-bottom:0.5rem;">Unsupported Browser</h2><p style="max-width:520px;line-height:1.5;">FitFlow requires a modern browser with ES module support. Please update your browser to continue.</p></div>';
+            document.body.appendChild(unsupportedBanner);
+        })();
     </script>
 </body>
 </html>

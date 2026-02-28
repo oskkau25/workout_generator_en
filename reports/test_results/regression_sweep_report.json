@@ -1,0 +1,256 @@
+{
+  "timestamp": 1772265802.459949,
+  "base_url": "http://127.0.0.1:8002/index.html",
+  "status": "WARNING",
+  "execution_seconds": 11.68,
+  "sections": {
+    "generator_matrix": {
+      "status": "PASSED",
+      "checks": {
+        "standard": {
+          "setup": {
+            "ok": true
+          },
+          "result": {
+            "mode": "standard",
+            "generated": true,
+            "actualPattern": "standard",
+            "sequenceLength": 26,
+            "workTime": 45,
+            "restTime": 15
+          }
+        },
+        "circuit": {
+          "setup": {
+            "ok": true
+          },
+          "result": {
+            "mode": "circuit",
+            "generated": true,
+            "actualPattern": "circuit",
+            "sequenceLength": 7,
+            "workTime": 45,
+            "restTime": 15
+          }
+        },
+        "tabata": {
+          "setup": {
+            "ok": true
+          },
+          "result": {
+            "mode": "tabata",
+            "generated": true,
+            "actualPattern": "tabata",
+            "sequenceLength": 16,
+            "workTime": 20,
+            "restTime": 10
+          }
+        },
+        "pyramid": {
+          "setup": {
+            "ok": true
+          },
+          "result": {
+            "mode": "pyramid",
+            "generated": true,
+            "actualPattern": "pyramid",
+            "sequenceLength": 31,
+            "workTime": 45,
+            "restTime": 15
+          }
+        },
+        "invalid_input": {
+          "blocked": true,
+          "htmlValid": true,
+          "reason": "workout data unchanged on invalid submit"
+        },
+        "edge_case": {
+          "setup": {
+            "ok": true
+          },
+          "result": {
+            "generated": true,
+            "sequenceLength": 31,
+            "duration": 60,
+            "pattern": "pyramid"
+          }
+        }
+      }
+    },
+    "timer_matrix": {
+      "status": "PASSED",
+      "checks": {
+        "standard": {
+          "mode": "standard",
+          "state": {
+            "workTime": 45,
+            "restTime": 15,
+            "phase": "work",
+            "remainingSeconds": 45
+          },
+          "workoutData": {
+            "workTime": 45,
+            "restTime": 15
+          },
+          "matches_expected": true
+        },
+        "tabata": {
+          "mode": "tabata",
+          "state": {
+            "workTime": 20,
+            "restTime": 10,
+            "phase": "work",
+            "remainingSeconds": 20
+          },
+          "workoutData": {
+            "workTime": 20,
+            "restTime": 10
+          },
+          "matches_expected": true
+        },
+        "hiit": {
+          "mode": "hiit",
+          "state": {
+            "workTime": 30,
+            "restTime": 15,
+            "phase": "work",
+            "remainingSeconds": 30
+          },
+          "workoutData": {
+            "workTime": 30,
+            "restTime": 15
+          },
+          "matches_expected": true
+        },
+        "custom": {
+          "mode": "custom",
+          "state": {
+            "workTime": 55,
+            "restTime": 25,
+            "phase": "work",
+            "remainingSeconds": 54
+          },
+          "workoutData": {
+            "workTime": 55,
+            "restTime": 25
+          },
+          "matches_expected": true
+        }
+      },
+      "setup": {
+        "ok": true
+      }
+    },
+    "auth_matrix": {
+      "status": "WARNING",
+      "checks": {
+        "register": {
+          "success": true,
+          "user": {
+            "id": "user_1772265812432_l07wa2555",
+            "username": "regression_user_1772265812",
+            "password": "{\"hash\":[16,7,194,138,192,13,179,57,79,80,233,58,230,0,126,47,47,109,50,102,1,213,161,206,110,91,67,222,120,125,13,28],\"salt\":[49,167,10,163,77,64,59,40,224,190,131,213,253,203,162,208],\"iterations\":100000}",
+            "profile": {
+              "name": "Regression User",
+              "avatar": "\ud83c\udfc3\u200d\u2642\ufe0f",
+              "goals": [
+                "Strength",
+                "Endurance"
+              ],
+              "experience": "Beginner",
+              "securityQuestion": "pet_name",
+              "securityAnswer": "fluffy",
+              "preferences": {
+                "workoutDuration": 30,
+                "preferredEquipment": [
+                  "Bodyweight"
+                ],
+                "trainingPatterns": [
+                  "Standard"
+                ],
+                "restTime": 60
+              },
+              "stats": {
+                "totalWorkouts": 0,
+                "totalWorkoutTime": 0,
+                "currentStreak": 0,
+                "longestStreak": 0,
+                "lastWorkoutDate": null,
+                "favoriteExercises": [],
+                "achievements": []
+              }
+            },
+            "createdAt": "2026-02-28T08:03:32.455Z",
+            "lastLogin": "2026-02-28T08:03:32.455Z"
+          }
+        },
+        "login_original_password": {
+          "success": true,
+          "user": {
+            "id": "user_1772265812432_l07wa2555",
+            "username": "regression_user_1772265812",
+            "password": "{\"hash\":[16,7,194,138,192,13,179,57,79,80,233,58,230,0,126,47,47,109,50,102,1,213,161,206,110,91,67,222,120,125,13,28],\"salt\":[49,167,10,163,77,64,59,40,224,190,131,213,253,203,162,208],\"iterations\":100000}",
+            "profile": {
+              "name": "Regression User",
+              "avatar": "\ud83c\udfc3\u200d\u2642\ufe0f",
+              "goals": [
+                "Strength",
+                "Endurance"
+              ],
+              "experience": "Beginner",
+              "securityQuestion": "pet_name",
+              "securityAnswer": "fluffy",
+              "preferences": {
+                "workoutDuration": 30,
+                "preferredEquipment": [
+                  "Bodyweight"
+                ],
+                "trainingPatterns": [
+                  "Standard"
+                ],
+                "restTime": 60
+              },
+              "stats": {
+                "totalWorkouts": 0,
+                "totalWorkoutTime": 0,
+                "currentStreak": 0,
+                "longestStreak": 0,
+                "lastWorkoutDate": null,
+                "favoriteExercises": [],
+                "achievements": []
+              }
+            },
+            "createdAt": "2026-02-28T08:03:32.455Z",
+            "lastLogin": "2026-02-28T08:03:32.475Z"
+          }
+        },
+        "session_persists_after_reload": {
+          "isLoggedIn": true,
+          "user": "regression_user_1772265812"
+        },
+        "session_after_reload": {
+          "isLoggedIn": true,
+          "user": "regression_user_1772265812"
+        },
+        "reset_password": {
+          "success": false,
+          "error": "Invalid security answer"
+        },
+        "login_new_password": {
+          "success": false,
+          "error": "Invalid password"
+        },
+        "logged_out_after_reload": {
+          "isLoggedIn": false,
+          "user": null
+        }
+      }
+    }
+  },
+  "blockers": [
+    {
+      "section": "auth_matrix",
+      "status": "WARNING"
+    }
+  ]
+}

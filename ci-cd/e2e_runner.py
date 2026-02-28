@@ -18,7 +18,7 @@ import threading
 import time
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
-from typing import Dict, Any, Callable
+from typing import Dict, Any, Callable, Optional, Tuple
 from urllib.parse import unquote, urlsplit
 
 
@@ -56,13 +56,41 @@ class _SrcHandler(SimpleHTTPRequestHandler):
         return str(full)
 
 
-def _start_local_server() -> threading.Thread:
-    host, port = '127.0.0.1', 8001
-    if _is_port_open(host, port):
-        # Assume already running
-        logging.info(f"Server already running on {host}:{port}")
-        return None
-    
+def _find_open_port(host: str, starting_port: int) -> int:
+    """Find the first available port at or above starting_port."""
+    port = starting_port
+    while _is_port_open(host, port):
+        port += 1
+    return port
+
+
+def _is_http_service(host: str, port: int) -> bool:
+    """Best-effort check that a port is serving HTTP responses."""
+    try:
+        with socket.create_connection((host, port), timeout=0.5) as conn:
+            conn.sendall(b"GET / HTTP/1.0\r\nHost: localhost\r\n\r\n")
+            chunk = conn.recv(16)
+            return chunk.startswith(b"HTTP/")
+    except Exception:
+        return False
+
+
+def _start_local_server() -> Tuple[Optional[ThreadingHTTPServer], int]:
+    host, default_port = '127.0.0.1', 8001
+
+    # Reuse a running server only on the default E2E port.
+    if _is_port_open(host, default_port):
+        if _is_http_service(host, default_port):
+            logging.info(f"Server already running on {host}:{default_port}")
+            return None, default_port
+        logging.warning(
+            f"Port {default_port} is occupied by a non-HTTP service. "
+            "Selecting a fallback port."
+        )
+        port = _find_open_port(host, default_port + 1)
+    else:
+        port = default_port
+
     try:
         server = ThreadingHTTPServer((host, port), _SrcHandler)
         t = threading.Thread(target=server.serve_forever, daemon=True)
@@ -73,10 +101,10 @@ def _start_local_server() -> threading.Thread:
         import time
         time.sleep(0.5)
         
-        return t
+        return server, port
     except Exception as e:
         logging.error(f"Failed to start E2E test server: {e}")
-        return None
+        return None, port
 
 
 def _load_feature_list(project_root: Path) -> Dict[str, Any]:
@@ -99,11 +127,11 @@ def run_dynamic_smoke() -> Dict[str, Any]:
         logging.warning(f"Playwright not available: {e}")
         return {"status": "SKIPPED", "details": "Playwright not installed"}
 
-    # Ensure local server
-    _start_local_server()
+    # Ensure local server and dynamically select URL in case default port is busy.
+    local_server, port = _start_local_server()
 
     checks = {}
-    url = 'http://127.0.0.1:8001/'
+    url = f'http://127.0.0.1:{port}/'
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -1376,6 +1404,11 @@ def run_dynamic_smoke() -> Dict[str, Any]:
             browser.close()
     except Exception as e:
         return {"status": "FAILED", "details": f"E2E error: {e}", "checks": checks}
+    finally:
+        # Shut down only servers started by this run.
+        if local_server is not None:
+            local_server.shutdown()
+            local_server.server_close()
 
     passed = all(bool(v) for v in checks.values()) if checks else True
     return {

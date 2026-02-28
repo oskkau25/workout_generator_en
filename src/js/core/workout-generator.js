@@ -6,484 +6,569 @@
 import { exercises } from './exercise-database.js';
 import { initializeWorkoutPlayer } from '../features/workout-player.js';
 import { enhanceWorkoutWithSubstitutions } from '../features/smart-substitution.js';
+import {
+  trackModeSelected,
+  trackStepCompleted,
+  trackFlowAbandoned,
+} from '../features/analytics-tracker.js';
 
 /**
  * Main workout generation function
  * This is the core function that creates workouts based on user preferences
  */
 export function generateWorkout(formData) {
-    console.log('🚀 generateWorkout called with formData:', formData);
-    const {
-        level = 'Intermediate',
-        duration = 30,
-        equipment = 'Bodyweight',
-        workTime = 45,
-        restTime = 15,
-        trainingPattern = 'Standard',
-        patternSettings = {}
-    } = formData;
-    console.log('🚀 Extracted values - trainingPattern:', trainingPattern, 'patternSettings:', patternSettings);
-    
-    const requestedWorkTime = Number.isFinite(Number(workTime)) ? Number(workTime) : 45;
-    const requestedRestTime = Number.isFinite(Number(restTime)) ? Number(restTime) : 15;
-    const effectiveTiming = resolveEffectiveTiming(trainingPattern, requestedWorkTime, requestedRestTime);
+  console.log('🚀 generateWorkout called with formData:', formData);
+  const {
+    level = 'Intermediate',
+    duration = 30,
+    equipment = 'Bodyweight',
+    workTime = 45,
+    restTime = 15,
+    trainingPattern = 'Standard',
+    patternSettings = {},
+  } = formData;
+  console.log(
+    '🚀 Extracted values - trainingPattern:',
+    trainingPattern,
+    'patternSettings:',
+    patternSettings
+  );
 
-    // Normalize equipment to an array (supports multiple selections)
-    const selectedEquipments = normalizeEquipmentSelection(equipment);
+  const requestedWorkTime = Number.isFinite(Number(workTime)) ? Number(workTime) : 45;
+  const requestedRestTime = Number.isFinite(Number(restTime)) ? Number(restTime) : 15;
+  const effectiveTiming = resolveEffectiveTiming(
+    trainingPattern,
+    requestedWorkTime,
+    requestedRestTime
+  );
 
-    // Filter MAIN exercises based on user preferences (equipment + level)
-    const availableMainExercises = getFilteredExercisesByPhase('main', selectedEquipments, level);
+  // Normalize equipment to an array (supports multiple selections)
+  const selectedEquipments = normalizeEquipmentSelection(equipment);
 
-    // Generate workout based on training pattern
-    let workout = [];
-    
-    switch (trainingPattern.toLowerCase()) {
-        case 'circuit':
-            workout = generateCircuitWorkout(availableMainExercises, selectedEquipments, duration, patternSettings);
-            break;
-        case 'tabata':
-            workout = generateTabataWorkout(availableMainExercises, selectedEquipments, duration, patternSettings);
-            break;
-        case 'pyramid':
-            workout = generatePyramidWorkout(availableMainExercises, selectedEquipments, duration, patternSettings);
-            break;
-        default:
-            workout = generateStandardWorkout(availableMainExercises, selectedEquipments, duration);
-    }
+  // Filter MAIN exercises based on user preferences (equipment + level)
+  const availableMainExercises = getFilteredExercisesByPhase('main', selectedEquipments, level);
 
-    // Enhance workout with smart substitutions
-    const userPreferences = {
-        equipment: selectedEquipments,
-        fitnessLevel: level,
-        targetMuscleGroups: [] // Could be enhanced to track user preferences
-    };
-    
-    const enhancedWorkout = enhanceWorkoutWithSubstitutions(workout, userPreferences);
+  // Generate workout based on training pattern
+  let workout = [];
 
-    return {
-        workout: enhancedWorkout,
+  switch (trainingPattern.toLowerCase()) {
+    case 'circuit':
+      workout = generateCircuitWorkout(
+        availableMainExercises,
+        selectedEquipments,
         duration,
-        workTime: effectiveTiming.workTime,
-        restTime: effectiveTiming.restTime,
-        trainingPattern,
-        metadata: {
-            totalExercises: enhancedWorkout.length,
-            estimatedTime: duration, // Use user's selected duration
-            level,
-            equipment: Array.isArray(equipment) ? equipment.join(', ') : equipment
-        },
-        _circuitData: enhancedWorkout._circuitData // Include circuit data in result
-    };
+        patternSettings
+      );
+      break;
+    case 'tabata':
+      workout = generateTabataWorkout(
+        availableMainExercises,
+        selectedEquipments,
+        duration,
+        patternSettings
+      );
+      break;
+    case 'pyramid':
+      workout = generatePyramidWorkout(
+        availableMainExercises,
+        selectedEquipments,
+        duration,
+        patternSettings
+      );
+      break;
+    default:
+      workout = generateStandardWorkout(availableMainExercises, selectedEquipments, duration);
+  }
+
+  // Enhance workout with smart substitutions
+  const userPreferences = {
+    equipment: selectedEquipments,
+    fitnessLevel: level,
+    targetMuscleGroups: [], // Could be enhanced to track user preferences
+  };
+
+  const enhancedWorkout = enhanceWorkoutWithSubstitutions(workout, userPreferences);
+
+  return {
+    workout: enhancedWorkout,
+    duration,
+    workTime: effectiveTiming.workTime,
+    restTime: effectiveTiming.restTime,
+    trainingPattern,
+    metadata: {
+      totalExercises: enhancedWorkout.length,
+      estimatedTime: duration, // Use user's selected duration
+      level,
+      equipment: Array.isArray(equipment) ? equipment.join(', ') : equipment,
+    },
+    _circuitData: enhancedWorkout._circuitData, // Include circuit data in result
+  };
 }
 
 /**
  * Generate standard workout
  */
 function generateStandardWorkout(availableExercises, selectedEquipments, duration) {
-    // Warm-up and cool-down must follow the same equipment filter as main.
-    const warmupExercises = getFilteredExercisesByPhase('warmup', selectedEquipments);
-    const mainExercises = availableExercises; // already filtered for equipment
-    const cooldownExercises = getFilteredExercisesByPhase('cooldown', selectedEquipments);
+  // Warm-up and cool-down must follow the same equipment filter as main.
+  const warmupExercises = getFilteredExercisesByPhase('warmup', selectedEquipments);
+  const mainExercises = availableExercises; // already filtered for equipment
+  const cooldownExercises = getFilteredExercisesByPhase('cooldown', selectedEquipments);
 
-    const workout = [];
-    
-    // Add warmup (8-10 exercises for ~5 minutes)
-    const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
-    workout.push(...selectedWarmup);
-    
-    // Add main exercises based on duration
-    const mainCount = Math.max(6, Math.floor(duration / 3));
-    const selectedMain = selectRandomExercises(mainExercises, mainCount).map(ex => ({...ex, _section: 'Main'}));
-    workout.push(...selectedMain);
-    
-    // Add cooldown (8-10 exercises for ~5 minutes)
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map(ex => ({...ex, _section: 'Cool-down', _noRest: true}));
-    workout.push(...selectedCooldown);
-    
-    return workout;
+  const workout = [];
+
+  // Add warmup (8-10 exercises for ~5 minutes)
+  const selectedWarmup = selectRandomExercises(warmupExercises, 8).map((ex) => ({
+    ...ex,
+    _section: 'Warm-up',
+    _noRest: true,
+  }));
+  workout.push(...selectedWarmup);
+
+  // Add main exercises based on duration
+  const mainCount = Math.max(6, Math.floor(duration / 3));
+  const selectedMain = selectRandomExercises(mainExercises, mainCount).map((ex) => ({
+    ...ex,
+    _section: 'Main',
+  }));
+  workout.push(...selectedMain);
+
+  // Add cooldown (8-10 exercises for ~5 minutes)
+  const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map((ex) => ({
+    ...ex,
+    _section: 'Cool-down',
+    _noRest: true,
+  }));
+  workout.push(...selectedCooldown);
+
+  return workout;
 }
 
 /**
  * Generate circuit training workout
  */
 function generateCircuitWorkout(availableExercises, selectedEquipments, duration, settings) {
-    console.log('🔄 generateCircuitWorkout called with settings:', settings);
-    const rounds = settings.rounds || Math.max(2, Math.min(6, Math.floor(duration / 10)));
-    const exercisesPerRound = settings.exercisesPerRound || 6;
-    console.log('🔄 Using rounds:', rounds, 'exercisesPerRound:', exercisesPerRound);
-    
-    const mainExercises = availableExercises; // already filtered for equipment
-    const workout = [];
-    
-    // Add warmup (equipment-filtered) - 8 exercises for ~5 minutes
-    const warmupExercises = getFilteredExercisesByPhase('warmup', selectedEquipments);
-    const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
-    workout.push(...selectedWarmup);
-    
-    // Add circuit header with exercise count and rounds info
-    workout.push({
-        type: 'circuit_header',
-        name: `Circuit Training`,
-        description: `Complete all ${exercisesPerRound} exercises, then repeat for ${rounds} total rounds`,
-        rounds: rounds,
-        exercisesPerRound: exercisesPerRound,
-        _section: 'Main'
-    });
-    
-    // Select exercises for the circuit ONCE
-    const circuitExercises = selectRandomExercises(mainExercises, exercisesPerRound);
-    
-    // Add circuit exercises with metadata for preview (shows only once)
-    const circuitExercisesWithMeta = circuitExercises.map((ex, index) => ({
-        ...ex, 
-        _section: 'Main',
-        _circuitPosition: index + 1,
-        _totalInCircuit: exercisesPerRound,
-        _circuitRounds: rounds,
-        _isCircuitExercise: true,
-        _isPreviewOnly: true // Mark as preview only
-    }));
-    workout.push(...circuitExercisesWithMeta);
-    
-    // Store the circuit exercises for the actual workout (all rounds)
-    // This will be used by the workout player to generate the full sequence
-    workout._circuitData = {
-        exercises: circuitExercises,
-        rounds: rounds,
-        exercisesPerRound: exercisesPerRound
-    };
-    
-    // Add cooldown (equipment-filtered) - 8 exercises for ~5 minutes
-    const cooldownExercises = getFilteredExercisesByPhase('cooldown', selectedEquipments);
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map(ex => ({...ex, _section: 'Cool-down', _noRest: true}));
-    workout.push(...selectedCooldown);
-    
-    return workout;
+  console.log('🔄 generateCircuitWorkout called with settings:', settings);
+  const rounds = settings.rounds || Math.max(2, Math.min(6, Math.floor(duration / 10)));
+  const exercisesPerRound = settings.exercisesPerRound || 6;
+  console.log('🔄 Using rounds:', rounds, 'exercisesPerRound:', exercisesPerRound);
+
+  const mainExercises = availableExercises; // already filtered for equipment
+  const workout = [];
+
+  // Add warmup (equipment-filtered) - 8 exercises for ~5 minutes
+  const warmupExercises = getFilteredExercisesByPhase('warmup', selectedEquipments);
+  const selectedWarmup = selectRandomExercises(warmupExercises, 8).map((ex) => ({
+    ...ex,
+    _section: 'Warm-up',
+    _noRest: true,
+  }));
+  workout.push(...selectedWarmup);
+
+  // Add circuit header with exercise count and rounds info
+  workout.push({
+    type: 'circuit_header',
+    name: `Circuit Training`,
+    description: `Complete all ${exercisesPerRound} exercises, then repeat for ${rounds} total rounds`,
+    rounds: rounds,
+    exercisesPerRound: exercisesPerRound,
+    _section: 'Main',
+  });
+
+  // Select exercises for the circuit ONCE
+  const circuitExercises = selectRandomExercises(mainExercises, exercisesPerRound);
+
+  // Add circuit exercises with metadata for preview (shows only once)
+  const circuitExercisesWithMeta = circuitExercises.map((ex, index) => ({
+    ...ex,
+    _section: 'Main',
+    _circuitPosition: index + 1,
+    _totalInCircuit: exercisesPerRound,
+    _circuitRounds: rounds,
+    _isCircuitExercise: true,
+    _isPreviewOnly: true, // Mark as preview only
+  }));
+  workout.push(...circuitExercisesWithMeta);
+
+  // Store the circuit exercises for the actual workout (all rounds)
+  // This will be used by the workout player to generate the full sequence
+  workout._circuitData = {
+    exercises: circuitExercises,
+    rounds: rounds,
+    exercisesPerRound: exercisesPerRound,
+  };
+
+  // Add cooldown (equipment-filtered) - 8 exercises for ~5 minutes
+  const cooldownExercises = getFilteredExercisesByPhase('cooldown', selectedEquipments);
+  const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map((ex) => ({
+    ...ex,
+    _section: 'Cool-down',
+    _noRest: true,
+  }));
+  workout.push(...selectedCooldown);
+
+  return workout;
 }
 
 /**
  * Generate Tabata workout
  */
 function generateTabataWorkout(availableExercises, selectedEquipments, duration, settings) {
-    const rounds = settings.rounds || Math.max(4, Math.min(12, Math.floor(duration / 5)));
-    
-    const mainExercises = availableExercises; // already filtered for equipment
-    const workout = [];
-    
-    // Add warmup (equipment-filtered) - 8 exercises for ~5 minutes
-    const warmupExercises = getFilteredExercisesByPhase('warmup', selectedEquipments);
-    const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
-    workout.push(...selectedWarmup);
-    
-    // Select exercises for Tabata sets - use more variety (up to 4 different exercises)
-    const numTabataExercises = Math.min(4, mainExercises.length);
-    const tabataPool = selectRandomExercises(mainExercises, numTabataExercises);
-    
-    // Add Tabata sets
-    for (let set = 1; set <= rounds; set++) {
-        workout.push({
-            type: 'tabata_set',
-            name: `Tabata Set ${set}`,
-            description: `Tabata round ${set} of ${rounds}: 20s work, 10s rest`,
-            set: set,
-            totalSets: rounds
-        });
-        
-        // Cycle through the selected exercises
-        const exercise = tabataPool[(set - 1) % tabataPool.length];
-        if (exercise) workout.push({...exercise, _section: 'Main'});
-    }
-    
-    // Add cooldown (equipment-filtered) - 8 exercises for ~5 minutes
-    const cooldownExercises = getFilteredExercisesByPhase('cooldown', selectedEquipments);
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map(ex => ({...ex, _section: 'Cool-down', _noRest: true}));
-    workout.push(...selectedCooldown);
-    
-    return workout;
+  const rounds = settings.rounds || Math.max(4, Math.min(12, Math.floor(duration / 5)));
+
+  const mainExercises = availableExercises; // already filtered for equipment
+  const workout = [];
+
+  // Add warmup (equipment-filtered) - 8 exercises for ~5 minutes
+  const warmupExercises = getFilteredExercisesByPhase('warmup', selectedEquipments);
+  const selectedWarmup = selectRandomExercises(warmupExercises, 8).map((ex) => ({
+    ...ex,
+    _section: 'Warm-up',
+    _noRest: true,
+  }));
+  workout.push(...selectedWarmup);
+
+  // Select exercises for Tabata sets - use more variety (up to 4 different exercises)
+  const numTabataExercises = Math.min(4, mainExercises.length);
+  const tabataPool = selectRandomExercises(mainExercises, numTabataExercises);
+
+  // Add Tabata sets
+  for (let set = 1; set <= rounds; set++) {
+    workout.push({
+      type: 'tabata_set',
+      name: `Tabata Set ${set}`,
+      description: `Tabata round ${set} of ${rounds}: 20s work, 10s rest`,
+      set: set,
+      totalSets: rounds,
+    });
+
+    // Cycle through the selected exercises
+    const exercise = tabataPool[(set - 1) % tabataPool.length];
+    if (exercise) workout.push({ ...exercise, _section: 'Main' });
+  }
+
+  // Add cooldown (equipment-filtered) - 8 exercises for ~5 minutes
+  const cooldownExercises = getFilteredExercisesByPhase('cooldown', selectedEquipments);
+  const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map((ex) => ({
+    ...ex,
+    _section: 'Cool-down',
+    _noRest: true,
+  }));
+  workout.push(...selectedCooldown);
+
+  return workout;
 }
 
 /**
  * Generate pyramid workout
  */
 function generatePyramidWorkout(availableExercises, selectedEquipments, duration, settings) {
-    const levels = settings.levels || Math.max(3, Math.min(7, Math.floor(duration / 8)));
-    const exercisesPerLevel = 2;
-    
-    const mainExercises = availableExercises; // already filtered for equipment
-    const workout = [];
-    
-    // Add warmup (equipment-filtered) - 8 exercises for ~5 minutes
-    const warmupExercises = getFilteredExercisesByPhase('warmup', selectedEquipments);
-    const selectedWarmup = selectRandomExercises(warmupExercises, 8).map(ex => ({...ex, _section: 'Warm-up', _noRest: true}));
-    workout.push(...selectedWarmup);
-    
-    // Select pool of exercises for the pyramid - use enough for variety across levels
-    const totalNeeded = levels * exercisesPerLevel;
-    const pyramidPool = selectRandomExercises(mainExercises, Math.min(totalNeeded, mainExercises.length));
-    
-    // Add pyramid levels
-    for (let level = 1; level <= levels; level++) {
-        workout.push({
-            type: 'pyramid_set',
-            name: `Pyramid Level ${level}`,
-            description: `Intensity level ${level} of ${levels}`,
-            level: level,
-            totalLevels: levels
-        });
-        
-        // Get different exercises for each level if available
-        const startIndex = ((level - 1) * exercisesPerLevel) % pyramidPool.length;
-        for (let i = 0; i < exercisesPerLevel; i++) {
-            const exercise = pyramidPool[(startIndex + i) % pyramidPool.length];
-            if (exercise) workout.push({...exercise, _section: 'Main'});
-        }
+  const levels = settings.levels || Math.max(3, Math.min(7, Math.floor(duration / 8)));
+  const exercisesPerLevel = 2;
+
+  const mainExercises = availableExercises; // already filtered for equipment
+  const workout = [];
+
+  // Add warmup (equipment-filtered) - 8 exercises for ~5 minutes
+  const warmupExercises = getFilteredExercisesByPhase('warmup', selectedEquipments);
+  const selectedWarmup = selectRandomExercises(warmupExercises, 8).map((ex) => ({
+    ...ex,
+    _section: 'Warm-up',
+    _noRest: true,
+  }));
+  workout.push(...selectedWarmup);
+
+  // Select pool of exercises for the pyramid - use enough for variety across levels
+  const totalNeeded = levels * exercisesPerLevel;
+  const pyramidPool = selectRandomExercises(
+    mainExercises,
+    Math.min(totalNeeded, mainExercises.length)
+  );
+
+  // Add pyramid levels
+  for (let level = 1; level <= levels; level++) {
+    workout.push({
+      type: 'pyramid_set',
+      name: `Pyramid Level ${level}`,
+      description: `Intensity level ${level} of ${levels}`,
+      level: level,
+      totalLevels: levels,
+    });
+
+    // Get different exercises for each level if available
+    const startIndex = ((level - 1) * exercisesPerLevel) % pyramidPool.length;
+    for (let i = 0; i < exercisesPerLevel; i++) {
+      const exercise = pyramidPool[(startIndex + i) % pyramidPool.length];
+      if (exercise) workout.push({ ...exercise, _section: 'Main' });
     }
-    
-    // Add cooldown (equipment-filtered) - 8 exercises for ~5 minutes
-    const cooldownExercises = getFilteredExercisesByPhase('cooldown', selectedEquipments);
-    const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map(ex => ({...ex, _section: 'Cool-down', _noRest: true}));
-    workout.push(...selectedCooldown);
-    
-    return workout;
+  }
+
+  // Add cooldown (equipment-filtered) - 8 exercises for ~5 minutes
+  const cooldownExercises = getFilteredExercisesByPhase('cooldown', selectedEquipments);
+  const selectedCooldown = selectRandomExercises(cooldownExercises, 8).map((ex) => ({
+    ...ex,
+    _section: 'Cool-down',
+    _noRest: true,
+  }));
+  workout.push(...selectedCooldown);
+
+  return workout;
 }
 
 /**
  * Select random exercises from a list using Fisher-Yates shuffle
  */
 function selectRandomExercises(exercises, count) {
-    const shuffled = [...exercises];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled.slice(0, Math.min(count, exercises.length));
+  const shuffled = [...exercises];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, Math.min(count, exercises.length));
 }
 
 function normalizeEquipmentSelection(equipment) {
-    const normalized = (Array.isArray(equipment) ? equipment : [equipment])
-        .filter(Boolean)
-        .map(item => String(item).trim());
+  const normalized = (Array.isArray(equipment) ? equipment : [equipment])
+    .filter(Boolean)
+    .map((item) => String(item).trim());
 
-    if (normalized.length === 0) return ['Bodyweight'];
-    return [...new Set(normalized)];
+  if (normalized.length === 0) return ['Bodyweight'];
+  return [...new Set(normalized)];
 }
 
 function getFilteredExercisesByPhase(phase, selectedEquipments, level) {
-    return exercises.filter(ex => {
-        if (ex.type !== phase) return false;
+  return exercises.filter((ex) => {
+    if (ex.type !== phase) return false;
 
-        const equipmentMatch = selectedEquipments.includes(ex.equipment);
-        if (!equipmentMatch) return false;
+    const equipmentMatch = selectedEquipments.includes(ex.equipment);
+    if (!equipmentMatch) return false;
 
-        if (!level) return true;
-        return ex.level === level || (Array.isArray(ex.level) && ex.level.includes(level));
-    });
+    if (!level) return true;
+    return ex.level === level || (Array.isArray(ex.level) && ex.level.includes(level));
+  });
 }
 
 function resolveEffectiveTiming(trainingPattern, workTime, restTime) {
-    const normalizedPattern = String(trainingPattern || '').toLowerCase();
-    
-    if (normalizedPattern === 'tabata') {
-        return { workTime: 20, restTime: 10 };
-    }
-    
-    return {
-        workTime: workTime > 0 ? workTime : 45,
-        restTime: restTime > 0 ? restTime : 15
-    };
-}
+  const normalizedPattern = String(trainingPattern || '').toLowerCase();
 
+  if (normalizedPattern === 'tabata') {
+    return { workTime: 20, restTime: 10 };
+  }
+
+  return {
+    workTime: workTime > 0 ? workTime : 45,
+    restTime: restTime > 0 ? restTime : 15,
+  };
+}
 
 /**
  * Calculate estimated workout time
  */
 function calculateWorkoutTime(workout, workTime, restTime) {
-    const exerciseCount = workout.filter(ex => 
-        !['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(ex.type)
-    ).length;
-    
-    return Math.round((exerciseCount * workTime + (exerciseCount - 1) * restTime) / 60);
+  const exerciseCount = workout.filter(
+    (ex) => !['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(ex.type)
+  ).length;
+
+  return Math.round((exerciseCount * workTime + (exerciseCount - 1) * restTime) / 60);
 }
 
 /**
  * Validate form data
  */
 export function validateForm() {
-    const level = document.getElementById('fitness-level')?.value;
-    const duration = document.querySelector('input[name="duration"]:checked')?.value;
-    const workTime = document.getElementById('work-time')?.value;
-    const restTime = document.getElementById('rest-time')?.value;
-    
-    if (!level || !duration) {
-        throw new Error('Please select fitness level and duration');
-    }
-    
-    if (parseInt(workTime) < 10 || parseInt(restTime) < 5) {
-        throw new Error('Work time must be at least 10s and rest time at least 5s');
-    }
-    
-    return true;
+  const level = document.getElementById('fitness-level')?.value;
+  const duration = document.querySelector('input[name="duration"]:checked')?.value;
+  const workTime = document.getElementById('work-time')?.value;
+  const restTime = document.getElementById('rest-time')?.value;
+
+  if (!level || !duration) {
+    throw new Error('Please select fitness level and duration');
+  }
+
+  if (parseInt(workTime) < 10 || parseInt(restTime) < 5) {
+    throw new Error('Work time must be at least 10s and rest time at least 5s');
+  }
+
+  return true;
 }
 
 /**
  * Get form data
  */
 export function getFormData() {
-    const form = document.getElementById('workout-form');
-    if (!form) throw new Error('Workout form not found');
-    
-    const formData = new FormData(form);
-    const data = {};
-    
-    // Get basic form data
-    data.level = formData.get('fitness-level') || 'Intermediate';
-    data.duration = parseInt(formData.get('duration')) || 30;
-    // Get selected equipment (checkboxes) - use FormData to get all selected equipment
-    const selectedEquipment = formData.getAll('equipment');
-    data.equipment = selectedEquipment.length > 0 ? selectedEquipment : ['Bodyweight'];
-    data.workTime = parseInt(document.getElementById('work-time')?.value) || 45;
-    data.restTime = parseInt(document.getElementById('rest-time')?.value) || 15;
-    data.trainingPattern = formData.get('training-pattern') || 'Standard';
-    
-    // Get pattern-specific settings
-    data.patternSettings = {};
-    
-    if (data.trainingPattern === 'circuit') {
-        data.patternSettings.rounds = parseInt(document.getElementById('circuit-rounds')?.value) || 3;
-        data.patternSettings.exercisesPerRound = parseInt(document.getElementById('circuit-exercises')?.value) || 6;
-        data.patternSettings.circuitRest = parseInt(document.getElementById('circuit-rest')?.value) || 60;
-    } else if (data.trainingPattern === 'tabata') {
-        data.patternSettings.rounds = parseInt(document.getElementById('tabata-rounds')?.value) || 8;
-    } else if (data.trainingPattern === 'pyramid') {
-        data.patternSettings.levels = parseInt(document.getElementById('pyramid-levels')?.value) || 5;
-    }
-    
-    return data;
+  const form = document.getElementById('workout-form');
+  if (!form) throw new Error('Workout form not found');
+
+  const formData = new FormData(form);
+  const data = {};
+
+  // Get basic form data
+  data.level = formData.get('fitness-level') || 'Intermediate';
+  data.duration = parseInt(formData.get('duration')) || 30;
+  // Get selected equipment (checkboxes) - use FormData to get all selected equipment
+  const selectedEquipment = formData.getAll('equipment');
+  data.equipment = selectedEquipment.length > 0 ? selectedEquipment : ['Bodyweight'];
+  data.workTime = parseInt(document.getElementById('work-time')?.value) || 45;
+  data.restTime = parseInt(document.getElementById('rest-time')?.value) || 15;
+  data.trainingPattern = formData.get('training-pattern') || 'Standard';
+
+  // Get pattern-specific settings
+  data.patternSettings = {};
+
+  if (data.trainingPattern === 'circuit') {
+    data.patternSettings.rounds = parseInt(document.getElementById('circuit-rounds')?.value) || 3;
+    data.patternSettings.exercisesPerRound =
+      parseInt(document.getElementById('circuit-exercises')?.value) || 6;
+    data.patternSettings.circuitRest =
+      parseInt(document.getElementById('circuit-rest')?.value) || 60;
+  } else if (data.trainingPattern === 'tabata') {
+    data.patternSettings.rounds = parseInt(document.getElementById('tabata-rounds')?.value) || 8;
+  } else if (data.trainingPattern === 'pyramid') {
+    data.patternSettings.levels = parseInt(document.getElementById('pyramid-levels')?.value) || 5;
+  }
+
+  return data;
 }
 
 /**
  * Handle form submission
  */
 export function handleFormSubmission(event) {
-    event.preventDefault();
-    
+  event.preventDefault();
+
+  try {
+    console.log('🚀 Form submitted, generating workout...');
+
+    // Validate form
+    console.log('🔍 About to validate form...');
+    validateForm();
+    console.log('✅ Form validation passed');
+
+    // Get form data
+    console.log('🔍 About to get form data...');
+    const formData = getFormData();
+    console.log('📋 Form data:', formData);
+    trackModeSelected('generator', formData.trainingPattern, { source: 'form_submit' });
+    trackStepCompleted(1, 'mode_selected', {
+      modeType: 'generator',
+      mode: formData.trainingPattern,
+    });
+
+    // Generate workout
+    console.log('🔍 About to generate workout...');
+    const workoutResult = generateWorkout(formData);
+    console.log('✅ Workout generated:', workoutResult);
+    console.log(
+      '🚨 ABOUT TO CALL displayWorkout with workTime:',
+      workoutResult.workTime,
+      'restTime:',
+      workoutResult.restTime
+    );
+
+    // Display workout
+    console.log('🚨 CALLING displayWorkout NOW...');
     try {
-        console.log('🚀 Form submitted, generating workout...');
-        
-        // Validate form
-        console.log('🔍 About to validate form...');
-        validateForm();
-        console.log('✅ Form validation passed');
-        
-        // Get form data
-        console.log('🔍 About to get form data...');
-        const formData = getFormData();
-        console.log('📋 Form data:', formData);
-        
-        // Generate workout
-        console.log('🔍 About to generate workout...');
-        const workoutResult = generateWorkout(formData);
-        console.log('✅ Workout generated:', workoutResult);
-        console.log('🚨 ABOUT TO CALL displayWorkout with workTime:', workoutResult.workTime, 'restTime:', workoutResult.restTime);
-        
-        // Display workout
-        console.log('🚨 CALLING displayWorkout NOW...');
-        try {
-            displayWorkout(workoutResult);
-            console.log('🚨 AFTER displayWorkout call - window.currentWorkoutData:', window.currentWorkoutData);
-        } catch (error) {
-            console.error('❌ Error in displayWorkout:', error);
-        }
-        console.log('🚨 CONTINUING AFTER displayWorkout...');
-        
-        // Track analytics
-        if (window.analytics) {
-            window.analytics.trackEvent('workout_generated', {
-                pattern: formData.trainingPattern,
-                duration: formData.duration,
-                level: formData.level,
-                equipment: formData.equipment
-            });
-        }
-        
+      displayWorkout(workoutResult);
+      console.log(
+        '🚨 AFTER displayWorkout call - window.currentWorkoutData:',
+        window.currentWorkoutData
+      );
     } catch (error) {
-        console.error('❌ Error generating workout:', error);
-        showError(error.message);
+      console.error('❌ Error in displayWorkout:', error);
     }
+    console.log('🚨 CONTINUING AFTER displayWorkout...');
+
+    trackStepCompleted(2, 'workout_generated', {
+      pattern: formData.trainingPattern,
+      duration: formData.duration,
+      level: formData.level,
+      equipment: formData.equipment,
+    });
+  } catch (error) {
+    console.error('❌ Error generating workout:', error);
+    showError(error.message);
+  }
 }
 
 /**
  * Display generated workout
  */
 function displayWorkout(workoutResult) {
-    console.log('🚨🚨🚨 displayWorkout FUNCTION CALLED! 🚨🚨🚨');
-    const { workout, duration, workTime, restTime, trainingPattern, metadata } = workoutResult;
-    
-    console.log('📋 displayWorkout called with:', { workTime, restTime, duration });
-    
-    // Persist current workout in memory for interactive operations (e.g., swapping)
-    window.currentWorkout = workout;
-    window.currentWorkoutMeta = metadata;
-    window.currentWorkoutData = {
-        sequence: workout,
-        workTime: workTime,
-        restTime: restTime,
-        duration: duration,
-        trainingPattern: trainingPattern,
-        metadata: metadata,
-        _circuitData: workoutResult._circuitData // Preserve circuit data from result
-    };
-    
-    console.log('💾 Stored window.currentWorkoutData:', window.currentWorkoutData);
+  console.log('🚨🚨🚨 displayWorkout FUNCTION CALLED! 🚨🚨🚨');
+  const { workout, duration, workTime, restTime, trainingPattern, metadata } = workoutResult;
 
-    // Hide form and show workout
-    const form = document.getElementById('workout-form');
-    const workoutSection = document.getElementById('workout-section');
-    
-    if (form) {
-        form.classList.add('hidden');
-        form.style.display = '';
-    }
-    if (workoutSection) {
-        workoutSection.classList.remove('hidden');
-        workoutSection.style.display = '';
-        workoutSection.innerHTML = generateWorkoutHTML(workout, metadata, workTime, restTime);
-    }
-    
-    // Scroll to workout
-    workoutSection?.scrollIntoView({ behavior: 'smooth' });
+  console.log('📋 displayWorkout called with:', { workTime, restTime, duration });
+
+  // Persist current workout in memory for interactive operations (e.g., swapping)
+  window.currentWorkout = workout;
+  window.currentWorkoutMeta = metadata;
+  window.currentWorkoutData = {
+    sequence: workout,
+    workTime: workTime,
+    restTime: restTime,
+    duration: duration,
+    trainingPattern: trainingPattern,
+    metadata: metadata,
+    _circuitData: workoutResult._circuitData, // Preserve circuit data from result
+  };
+
+  console.log('💾 Stored window.currentWorkoutData:', window.currentWorkoutData);
+
+  // Hide form and show workout
+  const form = document.getElementById('workout-form');
+  const workoutSection = document.getElementById('workout-section');
+
+  if (form) {
+    form.classList.add('hidden');
+    form.style.display = '';
+  }
+  if (workoutSection) {
+    workoutSection.classList.remove('hidden');
+    workoutSection.style.display = '';
+    workoutSection.innerHTML = generateWorkoutHTML(workout, metadata, workTime, restTime);
+  }
+
+  // Scroll to workout
+  workoutSection?.scrollIntoView({ behavior: 'smooth' });
 }
 
 // Create a brief description for list view (first sentence / before warnings)
 function brief(text = '') {
-    if (!text) return '';
-    const warn = text.indexOf('⚠️');
-    const base = warn > -1 ? text.slice(0, warn).trim() : text.trim();
-    const m = base.match(/^[^.!?]{20,200}[.!?]/);
-    if (m) return m[0].trim();
-    return base.length > 180 ? base.slice(0, 177).trim() + '…' : base;
+  if (!text) return '';
+  const warn = text.indexOf('⚠️');
+  const base = warn > -1 ? text.slice(0, warn).trim() : text.trim();
+  const m = base.match(/^[^.!?]{20,200}[.!?]/);
+  if (m) return m[0].trim();
+  return base.length > 180 ? base.slice(0, 177).trim() + '…' : base;
 }
 
 /**
  * Generate workout HTML
  */
 function generateWorkoutHTML(workout, metadata, workTime, restTime) {
-    let currentSection = '';
-    const exerciseHTML = workout.map((exercise, index) => {
-        // Insert section headers when section changes
-        let header = '';
-        if (exercise._section && exercise._section !== currentSection) {
-            currentSection = exercise._section;
-            const badgeColor = currentSection === 'Warm-up' ? 'bg-amber-100 text-amber-700' : currentSection === 'Cool-down' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700';
-            header = `
+  let currentSection = '';
+  const exerciseHTML = workout
+    .map((exercise, index) => {
+      // Insert section headers when section changes
+      let header = '';
+      if (exercise._section && exercise._section !== currentSection) {
+        currentSection = exercise._section;
+        const badgeColor =
+          currentSection === 'Warm-up'
+            ? 'bg-amber-100 text-amber-700'
+            : currentSection === 'Cool-down'
+              ? 'bg-blue-100 text-blue-700'
+              : 'bg-green-100 text-green-700';
+        header = `
                 <div class="mt-6 mb-2">
                     <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}">${currentSection}</span>
                 </div>
             `;
-        }
-        if (['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(exercise.type)) {
-            if (exercise.type === 'circuit_header') {
-                return `
+      }
+      if (
+        ['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(exercise.type)
+      ) {
+        if (exercise.type === 'circuit_header') {
+          return `
                     ${header}
                     <div class="section-header ${exercise.type} bg-gradient-to-r from-fit-primary/10 to-fit-accent/10 p-4 rounded-lg border-2 border-fit-primary/20">
                         <h3 class="text-xl font-bold text-fit-primary mb-2">${exercise.name}</h3>
@@ -494,67 +579,69 @@ function generateWorkoutHTML(workout, metadata, workTime, restTime) {
                         </div>
                     </div>
                 `;
-            } else {
-                return `
+        } else {
+          return `
                     ${header}
                     <div class="section-header ${exercise.type}">
                         <h3 class="text-lg font-bold text-fit-primary">${exercise.name}</h3>
                         <p class="text-fit-secondary text-sm">${exercise.description}</p>
                     </div>
                 `;
-            }
         }
-        
-        const hasSubstitution = exercise._hasSubstitution && exercise._substitution;
-        const substitutionButton = hasSubstitution ? 
-            `<button onclick="showSubstitutionChooser(${index})" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
+      }
+
+      const hasSubstitution = exercise._hasSubstitution && exercise._substitution;
+      const substitutionButton = hasSubstitution
+        ? `<button onclick="showSubstitutionChooser(${index})" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
                 🧠 Smart Alternative
-            </button>` : '';
-        
-        // Add circuit exercise numbering if it's a circuit exercise
-        const circuitNumber = exercise._isCircuitExercise ? 
-            `<span class="inline-block px-2 py-1 bg-fit-accent text-white text-xs rounded-full mr-2">#${exercise._circuitPosition}</span>` : '';
-        
-        // Get equipment icon
-        const getEquipmentIcon = (equipment) => {
-            const icons = {
-                'Bodyweight': '🏃',
-                'Dumbbells': '🏋️',
-                'Kettlebell': '⚡',
-                'TRX Bands': '🎯',
-                'Resistance Band': '🔄',
-                'Pull-up Bar': '🆙',
-                'Jump Rope': '🦘',
-                'Rower': '🚣'
-            };
-            return icons[equipment] || '💪';
-        };
+            </button>`
+        : '';
 
-        // Get muscle group color
-        const getMuscleColor = (muscle) => {
-            const colors = {
-                'Chest': 'bg-red-100 text-red-700',
-                'Back': 'bg-blue-100 text-blue-700',
-                'Legs': 'bg-green-100 text-green-700',
-                'Arms': 'bg-purple-100 text-purple-700',
-                'Shoulders': 'bg-orange-100 text-orange-700',
-                'Core': 'bg-yellow-100 text-yellow-700',
-                'Full Body': 'bg-indigo-100 text-indigo-700'
-            };
-            return colors[muscle] || 'bg-gray-100 text-gray-700';
-        };
+      // Add circuit exercise numbering if it's a circuit exercise
+      const circuitNumber = exercise._isCircuitExercise
+        ? `<span class="inline-block px-2 py-1 bg-fit-accent text-white text-xs rounded-full mr-2">#${exercise._circuitPosition}</span>`
+        : '';
 
-        // Get level color
-        const getLevelColor = (level) => {
-            const colors = {
-                'Beginner': 'bg-green-100 text-green-700',
-                'Intermediate': 'bg-yellow-100 text-yellow-700',
-                'Advanced': 'bg-red-100 text-red-700'
-            };
-            return colors[level] || 'bg-gray-100 text-gray-700';
+      // Get equipment icon
+      const getEquipmentIcon = (equipment) => {
+        const icons = {
+          Bodyweight: '🏃',
+          Dumbbells: '🏋️',
+          Kettlebell: '⚡',
+          'TRX Bands': '🎯',
+          'Resistance Band': '🔄',
+          'Pull-up Bar': '🆙',
+          'Jump Rope': '🦘',
+          Rower: '🚣',
         };
+        return icons[equipment] || '💪';
+      };
 
-        return `
+      // Get muscle group color
+      const getMuscleColor = (muscle) => {
+        const colors = {
+          Chest: 'bg-red-100 text-red-700',
+          Back: 'bg-blue-100 text-blue-700',
+          Legs: 'bg-green-100 text-green-700',
+          Arms: 'bg-purple-100 text-purple-700',
+          Shoulders: 'bg-orange-100 text-orange-700',
+          Core: 'bg-yellow-100 text-yellow-700',
+          'Full Body': 'bg-indigo-100 text-indigo-700',
+        };
+        return colors[muscle] || 'bg-gray-100 text-gray-700';
+      };
+
+      // Get level color
+      const getLevelColor = (level) => {
+        const colors = {
+          Beginner: 'bg-green-100 text-green-700',
+          Intermediate: 'bg-yellow-100 text-yellow-700',
+          Advanced: 'bg-red-100 text-red-700',
+        };
+        return colors[level] || 'bg-gray-100 text-gray-700';
+      };
+
+      return `
             ${header}
             <div id="exercise-item-${index}" class="exercise-item group p-6 bg-white rounded-xl border border-gray-200 hover:border-fit-primary hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-index="${index}">
                 <div class="flex items-start space-x-4">
@@ -615,9 +702,10 @@ function generateWorkoutHTML(workout, metadata, workTime, restTime) {
                 </div>
             </div>
         `;
-    }).join('');
-    
-    return `
+    })
+    .join('');
+
+  return `
         <div class="workout-overview">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-fit-dark">Your Workout</h2>
@@ -665,63 +753,68 @@ function generateWorkoutHTML(workout, metadata, workTime, restTime) {
  * Show error message
  */
 function showError(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
-    errorDiv.textContent = message;
-    
-    document.body.appendChild(errorDiv);
-    
-    setTimeout(() => {
-        errorDiv.remove();
-    }, 5000);
+  const errorDiv = document.createElement('div');
+  errorDiv.className =
+    'fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+  errorDiv.textContent = message;
+
+  document.body.appendChild(errorDiv);
+
+  setTimeout(() => {
+    errorDiv.remove();
+  }, 5000);
 }
 
 /**
  * Generate new workout (reload form)
  */
-window.generateNewWorkout = function() {
-    // Reset workout state
-    window.currentWorkout = null;
-    window.currentWorkoutData = null;
-    
-    // Show the form and hide workout sections
-    const form = document.getElementById('workout-form');
-    const workoutPlan = document.getElementById('workout-plan');
-    const workoutSection = document.getElementById('workout-section');
-    const workoutOverview = document.getElementById('workout-overview');
-    const workoutPlayer = document.getElementById('workout-player');
-    const noResults = document.getElementById('no-results');
-    
-    // Show form container and form (ensure they're visible)
-    if (workoutPlan) {
-        workoutPlan.classList.remove('hidden');
-        workoutPlan.style.display = '';
-    }
-    if (form) {
-        form.classList.remove('hidden');
-        form.style.display = '';
-    }
-    
-    // Hide all workout-related sections
-    if (workoutSection) {
-        workoutSection.classList.add('hidden');
-        workoutSection.style.display = '';
-    }
-    if (workoutOverview) {
-        workoutOverview.classList.add('hidden');
-        workoutOverview.style.display = '';
-    }
-    if (workoutPlayer) {
-        workoutPlayer.classList.add('hidden');
-        workoutPlayer.style.display = '';
-    }
-    if (noResults) {
-        noResults.classList.add('hidden');
-        noResults.style.display = '';
-    }
-    
-    // Scroll back to form
-    form?.scrollIntoView({ behavior: 'smooth' });
+window.generateNewWorkout = function () {
+  if (window.currentWorkoutData) {
+    trackFlowAbandoned(2, 'generate_new_workout');
+  }
+
+  // Reset workout state
+  window.currentWorkout = null;
+  window.currentWorkoutData = null;
+
+  // Show the form and hide workout sections
+  const form = document.getElementById('workout-form');
+  const workoutPlan = document.getElementById('workout-plan');
+  const workoutSection = document.getElementById('workout-section');
+  const workoutOverview = document.getElementById('workout-overview');
+  const workoutPlayer = document.getElementById('workout-player');
+  const noResults = document.getElementById('no-results');
+
+  // Show form container and form (ensure they're visible)
+  if (workoutPlan) {
+    workoutPlan.classList.remove('hidden');
+    workoutPlan.style.display = '';
+  }
+  if (form) {
+    form.classList.remove('hidden');
+    form.style.display = '';
+  }
+
+  // Hide all workout-related sections
+  if (workoutSection) {
+    workoutSection.classList.add('hidden');
+    workoutSection.style.display = '';
+  }
+  if (workoutOverview) {
+    workoutOverview.classList.add('hidden');
+    workoutOverview.style.display = '';
+  }
+  if (workoutPlayer) {
+    workoutPlayer.classList.add('hidden');
+    workoutPlayer.style.display = '';
+  }
+  if (noResults) {
+    noResults.classList.add('hidden');
+    noResults.style.display = '';
+  }
+
+  // Scroll back to form
+  form?.scrollIntoView({ behavior: 'smooth' });
 };
 
 // Note: window.startWorkout is defined in workout-player.js

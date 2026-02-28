@@ -1,0 +1,67 @@
+{
+  "status": "WARNING",
+  "checks": {
+    "has_workout_form": true,
+    "has_smart_substitution_badge": true,
+    "workout_rendered": true,
+    "has_exercise_items": true,
+    "equipment_filtering_works": true,
+    "duration_validation_tests": {
+      "duration_15_correct": true,
+      "duration_30_correct": true,
+      "duration_45_correct": true
+    },
+    "training_pattern_tests": {
+      "standard_workout_generated": true,
+      "circuit_workout_generated": true,
+      "circuit_has_rounds": true,
+      "tabata_workout_generated": true,
+      "pyramid_workout_generated": true
+    },
+    "equipment_combination_tests": false,
+    "fitness_level_tests": {
+      "beginner_workout_generated": true,
+      "intermediate_workout_generated": true,
+      "advanced_workout_generated": true
+    },
+    "workout_timing_validation": true,
+    "accessibility_audit": true,
+    "complete_workout_flow": true,
+    "circuit_training_tests": true,
+    "smart_substitution_tests": true,
+    "workout_player_controls": {
+      "player_visible": true,
+      "sound_controls_working": true,
+      "vibration_controls_working": true,
+      "exit_button_working": true,
+      "all_controls_working": true
+    },
+    "button_styling_tests": {
+      "generate_button": {
+        "exists": true,
+        "visible": false,
+        "clickable": true,
+        "hasGradient": false,
+        "hasHoverEffect": false,
+        "position": "relative",
+        "zIndex": "auto",
+        "width": 0,
+        "height": 0
+      },
+      "start_button": {
+        "exists": true,
+        "visible": false,
+        "clickable": true,
+        "hasGradient": false,
+        "hasHoverEffect": false,
+        "position": "relative",
+        "zIndex": "auto",
+        "width": 0,
+        "height": 0,
+        "classes": "btn-primary"
+      }
+    },
+    "complete_workout_flow_with_controls": false
+  },
+  "url": "http://127.0.0.1:8002/"
+}
