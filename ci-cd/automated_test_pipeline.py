@@ -36,8 +36,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class AutomatedTestPipeline:
-    def __init__(self):
+    def __init__(self, persist_artifacts: bool = True, enable_cache: bool = True):
         self.project_root = Path(__file__).parent.parent
+        self.persist_artifacts = persist_artifacts
+        self.enable_cache = enable_cache
         self.test_results = {
             'timestamp': datetime.now().isoformat(),
             'overall_status': 'PENDING',
@@ -2953,6 +2955,10 @@ class AutomatedTestPipeline:
     
     def save_detailed_results(self):
         """Save detailed test results with enhanced metrics"""
+        if not self.persist_artifacts:
+            logger.info("ℹ️ Detailed artifact writes disabled for this run")
+            return
+
         try:
             # Save enhanced results
             with open(self.project_root / 'reports' / 'test_results' / 'automated_test_results.json', 'w') as f:
@@ -3177,6 +3183,9 @@ class AutomatedTestPipeline:
     
     def has_changes_since_last_run(self) -> bool:
         """Check if files have changed since last test run"""
+        if not self.enable_cache:
+            return True
+
         if not self.cache_file.exists():
             return True
             
@@ -3189,6 +3198,10 @@ class AutomatedTestPipeline:
     
     def save_test_cache(self):
         """Save test results and file hashes to cache"""
+        if not self.enable_cache:
+            logger.info("ℹ️ Cache writes disabled for this run")
+            return
+
         cache_data = {
             'file_hashes': self.file_hashes,
             'test_results': self.test_results,
@@ -3203,6 +3216,9 @@ class AutomatedTestPipeline:
     
     def load_test_cache(self) -> Dict[str, Any]:
         """Load cached test results if available"""
+        if not self.enable_cache:
+            return {}
+
         if self.cache_file.exists():
             try:
                 with open(self.cache_file, 'rb') as f:
@@ -3246,6 +3262,10 @@ class AutomatedTestPipeline:
     
     def save_results(self):
         """Save test results to file"""
+        if not self.persist_artifacts:
+            logger.info("ℹ️ Final result file writes disabled for this run")
+            return
+
         try:
             results_file = self.project_root / 'reports' / 'test_results' / 'automated_test_results.json'
             with open(results_file, 'w', encoding='utf-8') as f:
@@ -3622,10 +3642,17 @@ def main():
                        help='Run tests in parallel mode')
     parser.add_argument('--cache', action='store_true',
                        help='Enable test result caching')
+    parser.add_argument('--hook-mode', action='store_true',
+                       help='Run in pre-commit mode without writing tracked artifacts')
     
     args = parser.parse_args()
     
-    pipeline = AutomatedTestPipeline()
+    pipeline = AutomatedTestPipeline(
+        persist_artifacts=not args.hook_mode,
+        enable_cache=not args.hook_mode,
+    )
+    if args.hook_mode:
+        logger.info("🪝 Hook mode enabled: artifact and cache writes are disabled")
     
     try:
         if args.enhanced or args.parallel:

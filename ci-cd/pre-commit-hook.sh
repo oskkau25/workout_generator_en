@@ -118,14 +118,14 @@ print_status $BLUE "Running enhanced pipeline with parallel execution and cachin
 # Set timeout for pipeline (8 minutes) - handle different systems
 if command -v gtimeout &> /dev/null; then
     # macOS with coreutils installed
-    gtimeout 480 python3 ci-cd/automated_test_pipeline.py --enhanced
+    gtimeout 480 python3 ci-cd/automated_test_pipeline.py --enhanced --hook-mode
 elif command -v timeout &> /dev/null; then
     # Linux systems
-    timeout 480 python3 ci-cd/automated_test_pipeline.py --enhanced
+    timeout 480 python3 ci-cd/automated_test_pipeline.py --enhanced --hook-mode
 else
     # macOS without coreutils - run without timeout
     print_status $YELLOW "⚠️  No timeout command available, running pipeline without timeout"
-    python3 ci-cd/automated_test_pipeline.py --enhanced
+    python3 ci-cd/automated_test_pipeline.py --enhanced --hook-mode
 fi
 
 # Check if pipeline completed successfully
