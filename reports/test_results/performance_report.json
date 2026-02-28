@@ -1,22 +1,36 @@
 {
-  "timestamp": "2025-09-19T23:09:28.499299",
+  "timestamp": "2026-02-28T00:56:07.781106",
   "performance_metrics": {
-    "bundle_sizes": {},
+    "bundle_sizes": {
+      "javascript": {
+        "size_kb": 29.6376953125,
+        "status": "PASSED"
+      },
+      "html": {
+        "size_kb": 104.0654296875,
+        "status": "WARNING"
+      },
+      "dashboard": {
+        "size_kb": 15.2490234375,
+        "status": "PASSED"
+      }
+    },
     "load_times": {},
     "memory_usage": {},
-    "performance_score": 0
+    "performance_score": 80
   },
   "bundle_analysis": {
-    "total_lines": 0,
+    "total_lines": 864,
     "function_count": 0,
-    "class_count": 0,
-    "import_count": 0,
-    "optimization_opportunities": []
+    "class_count": 1,
+    "import_count": 12,
+    "optimization_opportunities": [
+      "Remove console.log statements for production"
+    ]
   },
   "security_score": 100,
   "accessibility_score": 100,
   "recommendations": [
-    "Optimize bundle size by removing unused code and dependencies",
-    "Address failing tests to improve overall code quality"
+    "Excellent! All tests are passing and best practices are followed"
   ]
 }

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitFlow - Smart Workout Generator</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -28,6 +30,34 @@
                 }
             }
         }
+    </script>
+    <script>
+        // Silence verbose debug logs on production hosts, while keeping warnings/errors.
+        (function configureConsoleForProduction() {
+            const hostname = window.location.hostname || '';
+            const isLocalHost = hostname === 'localhost' ||
+                hostname === '127.0.0.1' ||
+                hostname === '::1' ||
+                hostname.endsWith('.local');
+            const isFileProtocol = window.location.protocol === 'file:';
+            const isProductionHost = !isLocalHost && !isFileProtocol;
+
+            let debugOverride = false;
+            try {
+                const query = new URLSearchParams(window.location.search);
+                debugOverride = query.get('debugLogs') === '1' ||
+                    window.localStorage.getItem('fitflow_debug_logs') === 'true';
+            } catch (error) {
+                debugOverride = false;
+            }
+
+            if (isProductionHost && !debugOverride && window.console) {
+                const noop = function() {};
+                window.console.log = noop;
+                window.console.info = noop;
+                window.console.debug = noop;
+            }
+        })();
     </script>
     
     <!-- Enhanced Animations CSS -->
@@ -1551,7 +1581,7 @@
     </button>
 
         <!-- Modular JavaScript Structure -->
-        <script type="module" src="js/main.js?v=59&t=1736540000"></script>
+        <script type="module" src="js/main.js?v=60&t=1736540000"></script>
     
     
     <!-- Fallback for browsers that don't support ES6 modules -->

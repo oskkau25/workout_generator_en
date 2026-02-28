@@ -10,7 +10,12 @@ import logging
 import time
 import os
 import sys
+import socket
+import threading
 from pathlib import Path
+from urllib.parse import urlparse
+from functools import partial
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 # Add the project root to the path
 project_root = Path(__file__).parent.parent
@@ -31,6 +36,50 @@ class CompleteTestSuiteRunner:
         self.base_url = base_url
         self.headless = headless
         self.results = {}
+        self._local_server = None
+        self._local_server_thread = None
+        self._started_local_server = False
+
+    def _is_port_open(self, host: str, port: int) -> bool:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.settimeout(0.5)
+            return sock.connect_ex((host, port)) == 0
+
+    def _start_local_server_if_needed(self):
+        """Start local HTTP server for Selenium suites when using localhost URL."""
+        parsed = urlparse(self.base_url)
+        host = parsed.hostname or "127.0.0.1"
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+
+        # Only auto-manage local development URLs.
+        if host not in {"127.0.0.1", "localhost"}:
+            return
+
+        if self._is_port_open(host, port):
+            logger.info(f"🌐 Reusing existing local server on {host}:{port}")
+            return
+
+        src_dir = project_root / "src"
+        handler = partial(SimpleHTTPRequestHandler, directory=str(src_dir))
+        self._local_server = ThreadingHTTPServer((host, port), handler)
+        self._local_server_thread = threading.Thread(
+            target=self._local_server.serve_forever,
+            daemon=True
+        )
+        self._local_server_thread.start()
+        self._started_local_server = True
+        time.sleep(0.5)
+        logger.info(f"🌐 Started local test server on {host}:{port} serving {src_dir}")
+
+    def _stop_local_server(self):
+        if not self._started_local_server or self._local_server is None:
+            return
+
+        self._local_server.shutdown()
+        self._local_server.server_close()
+        if self._local_server_thread is not None:
+            self._local_server_thread.join(timeout=2)
+        logger.info("🛑 Stopped local test server")
         
     def run_all_test_suites(self):
         """Run all test suites and compile results"""
@@ -69,40 +118,44 @@ class CompleteTestSuiteRunner:
         ]
         
         suite_results = {}
-        
-        for suite_config in test_suites:
-            logger.info(f"🧪 Running {suite_config['name']}")
-            logger.info(f"   Description: {suite_config['description']}")
-            
-            try:
-                # Initialize and run test suite
-                suite_runner = suite_config["class"](self.base_url, self.headless)
-                suite_result = suite_runner.run_all_tests()
+        self._start_local_server_if_needed()
+
+        try:
+            for suite_config in test_suites:
+                logger.info(f"🧪 Running {suite_config['name']}")
+                logger.info(f"   Description: {suite_config['description']}")
                 
-                suite_results[suite_config["name"]] = {
-                    "status": suite_result.get("status", "UNKNOWN"),
-                    "success_rate": suite_result.get("overall_success_rate", 0.0),
-                    "total_tests": len(suite_result.get("tests", {})),
-                    "passed_tests": sum(1 for test in suite_result.get("tests", {}).values() 
-                                       if test.get("status") == "PASSED"),
-                    "description": suite_config["description"],
-                    "details": suite_result
-                }
+                try:
+                    # Initialize and run test suite
+                    suite_runner = suite_config["class"](self.base_url, self.headless)
+                    suite_result = suite_runner.run_all_tests()
+                    
+                    suite_results[suite_config["name"]] = {
+                        "status": suite_result.get("status", "UNKNOWN"),
+                        "success_rate": suite_result.get("overall_success_rate", 0.0),
+                        "total_tests": len(suite_result.get("tests", {})),
+                        "passed_tests": sum(1 for test in suite_result.get("tests", {}).values() 
+                                           if test.get("status") == "PASSED"),
+                        "description": suite_config["description"],
+                        "details": suite_result
+                    }
+                    
+                    logger.info(f"   ✅ {suite_config['name']} completed: {suite_result.get('status', 'UNKNOWN')} - {suite_result.get('overall_success_rate', 0.0):.1%} success rate")
+                    
+                except Exception as e:
+                    logger.error(f"   ❌ {suite_config['name']} failed: {e}")
+                    suite_results[suite_config["name"]] = {
+                        "status": "FAILED",
+                        "success_rate": 0.0,
+                        "total_tests": 0,
+                        "passed_tests": 0,
+                        "description": suite_config["description"],
+                        "error": str(e)
+                    }
                 
-                logger.info(f"   ✅ {suite_config['name']} completed: {suite_result.get('status', 'UNKNOWN')} - {suite_result.get('overall_success_rate', 0.0):.1%} success rate")
-                
-            except Exception as e:
-                logger.error(f"   ❌ {suite_config['name']} failed: {e}")
-                suite_results[suite_config["name"]] = {
-                    "status": "FAILED",
-                    "success_rate": 0.0,
-                    "total_tests": 0,
-                    "passed_tests": 0,
-                    "description": suite_config["description"],
-                    "error": str(e)
-                }
-            
-            logger.info("")
+                logger.info("")
+        finally:
+            self._stop_local_server()
         
         # Calculate overall statistics
         total_tests = sum(result["total_tests"] for result in suite_results.values())

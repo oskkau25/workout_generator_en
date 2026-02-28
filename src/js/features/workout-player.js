@@ -117,6 +117,8 @@ let workoutState = {
     remainingSeconds: 0,
     workTime: 45,
     restTime: 15,
+    defaultWorkTime: 45,
+    defaultRestTime: 15,
     timerId: null,
     isPaused: false,
     enableSound: true,
@@ -222,6 +224,8 @@ export function initializeWorkoutPlayer(workoutData) {
     workoutState.sequence = sequence;
     workoutState.workTime = workoutData.workTime || 45;
     workoutState.restTime = workoutData.restTime || 15;
+    workoutState.defaultWorkTime = workoutState.workTime;
+    workoutState.defaultRestTime = workoutState.restTime;
     console.log('⏱️ Set workTime:', workoutState.workTime, 'restTime:', workoutState.restTime);
     console.log('📋 Final workout sequence length:', sequence.length);
     workoutState.currentIndex = 0;
@@ -613,6 +617,11 @@ function setTimerDisplays() {
     }
 }
 
+// Expose a safe display refresh hook for timer-mode changes.
+window.refreshWorkoutTimerDisplays = function() {
+    setTimerDisplays();
+};
+
 /**
  * Update the next exercise preview with detailed information
  */
@@ -722,13 +731,9 @@ export function exitWorkout() {
         console.log('🎯 Shown "What\'s New" banner after exiting workout');
     }
     
-    // Show the workout overview (which has the "Create New Workout" button)
+    // Return to a clean overview screen state.
+    toggleScreens({ overview: true, player: false, plan: false });
     const workoutOverview = document.getElementById('workout-overview');
-    const workoutPlayer = document.getElementById('workout-player');
-    
-    // Show workout overview and hide player
-    if (workoutOverview) workoutOverview.classList.remove('hidden');
-    if (workoutPlayer) workoutPlayer.classList.add('hidden');
     
     // Scroll to workout overview
     workoutOverview?.scrollIntoView({ behavior: 'smooth' });
@@ -741,10 +746,20 @@ function toggleScreens({ overview = false, player = false, plan = false }) {
     const overviewScreen = document.getElementById('workout-overview');
     const playerScreen = document.getElementById('workout-player');
     const planScreen = document.getElementById('workout-plan');
+    const workoutSection = document.getElementById('workout-section');
+    const noResults = document.getElementById('no-results');
     
+    if (overviewScreen) overviewScreen.style.display = '';
+    if (playerScreen) playerScreen.style.display = '';
+    if (planScreen) planScreen.style.display = '';
+    if (workoutSection) workoutSection.style.display = '';
+    if (noResults) noResults.style.display = '';
+
     if (overviewScreen) overviewScreen.classList.toggle('hidden', !overview);
     if (playerScreen) playerScreen.classList.toggle('hidden', !player);
     if (planScreen) planScreen.classList.toggle('hidden', !plan);
+    if (workoutSection) workoutSection.classList.toggle('hidden', player || overview);
+    if (noResults) noResults.classList.toggle('hidden', player || overview);
 }
 
 /**
@@ -1095,38 +1110,12 @@ export async function setupWorkoutPlayerListeners() {
     // Create new workout button (from workout overview)
     const newWorkoutBtn = document.getElementById('new-workout-btn');
     if (newWorkoutBtn) {
-        newWorkoutBtn.addEventListener('click', () => {
-            // Reset workout state
-            window.currentWorkout = null;
-            window.currentWorkoutData = null;
-            
-            // Show the form and hide workout sections
-            const form = document.getElementById('workout-form');
-            const workoutPlan = document.getElementById('workout-plan');
-            const workoutSection = document.getElementById('workout-section');
-            const workoutOverview = document.getElementById('workout-overview');
-            const workoutPlayer = document.getElementById('workout-player');
-            const noResults = document.getElementById('no-results');
-            
-            // Show form container and form (ensure they're visible)
-            if (workoutPlan) {
-                workoutPlan.classList.remove('hidden');
-                workoutPlan.style.display = 'block';
+        // Use a single shared handler so view transitions stay consistent.
+        newWorkoutBtn.onclick = () => {
+            if (typeof window.generateNewWorkout === 'function') {
+                window.generateNewWorkout();
             }
-            if (form) {
-                form.classList.remove('hidden');
-                form.style.display = 'block';
-            }
-            
-            // Hide all workout-related sections
-            if (workoutSection) workoutSection.classList.add('hidden');
-            if (workoutOverview) workoutOverview.classList.add('hidden');
-            if (workoutPlayer) workoutPlayer.classList.add('hidden');
-            if (noResults) noResults.classList.add('hidden');
-            
-            // Scroll back to form
-            form?.scrollIntoView({ behavior: 'smooth' });
-        });
+        };
     }
     
     
@@ -1225,49 +1214,30 @@ window.startWorkout = function() {
     console.log('🏃 Starting workout...');
     console.log('🔍 Debug - window.currentWorkoutData:', window.currentWorkoutData);
     console.log('🔍 Debug - window.currentWorkout:', window.currentWorkout);
-    
-    // Always try to get timing from the form first (most reliable)
-    let workTime = 45; // Default work time
-    let restTime = 15; // Default rest time
-    
-    try {
-        const workTimeInput = document.getElementById('work-time');
-        const restTimeInput = document.getElementById('rest-time');
-        
-        if (workTimeInput && workTimeInput.value) {
-            workTime = parseInt(workTimeInput.value);
-            console.log('🔍 Found work time from form:', workTime);
-        }
-        
-        if (restTimeInput && restTimeInput.value) {
-            restTime = parseInt(restTimeInput.value);
-            console.log('🔍 Found rest time from form:', restTime);
-        }
-    } catch (error) {
-        console.log('⚠️ Could not extract timing from form, using defaults:', error);
-    }
-    
-    // Get current workout data from global state
+
+    // Get current workout data from global state.
+    // Keep generated workout timing as source of truth for consistency.
     if (window.currentWorkoutData) {
-        console.log('📊 Using currentWorkoutData with form timing override');
-        // Use the complete workout data but override timing with form values
-        const workoutData = {
-            ...window.currentWorkoutData,
-            workTime: workTime,
-            restTime: restTime
-        };
+        console.log('📊 Using currentWorkoutData timing');
+        const workoutData = { ...window.currentWorkoutData };
+        if (!Number.isFinite(workoutData.workTime) || workoutData.workTime <= 0) {
+            workoutData.workTime = 45;
+        }
+        if (!Number.isFinite(workoutData.restTime) || workoutData.restTime <= 0) {
+            workoutData.restTime = 15;
+        }
         console.log('📊 Final workoutData:', workoutData);
         initializeWorkoutPlayer(workoutData);
     } else if (window.currentWorkout && window.currentWorkout.length > 0) {
-        console.log('⚠️ Using legacy format with form timing');
+        console.log('⚠️ Using legacy format with default timing');
         
         const workoutData = {
             sequence: window.currentWorkout,
-            workTime: workTime,
-            restTime: restTime
+            workTime: 45,
+            restTime: 15
         };
         
-        console.log('⚠️ Using fallback workoutData with form timing:', workoutData);
+        console.log('⚠️ Using fallback workoutData:', workoutData);
         initializeWorkoutPlayer(workoutData);
     } else {
         alert('No workout available. Please generate a workout first.');

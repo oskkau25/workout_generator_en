@@ -19,6 +19,7 @@ import time
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from typing import Dict, Any, Callable
+from urllib.parse import unquote, urlsplit
 
 
 def _is_port_open(host: str, port: int) -> bool:
@@ -44,9 +45,10 @@ def _retry_test(test_func: Callable, max_retries: int = 3, delay: float = 1.0) -
 
 class _SrcHandler(SimpleHTTPRequestHandler):
     def translate_path(self, path):
-        # Serve from src directory
+        # Serve from src directory and ignore querystring/fragment.
         root = Path(__file__).resolve().parent.parent / 'src'
-        full = (root / path.lstrip('/')).resolve()
+        clean_path = unquote(urlsplit(path).path).lstrip('/')
+        full = (root / clean_path).resolve()
         if full.is_dir():
             index = full / 'index.html'
             if index.exists():

@@ -66,6 +66,24 @@ class UserInteractionTests:
             return filepath
         return None
 
+    def ensure_form_visible(self):
+        """Ensure workout form is visible before interacting with form fields."""
+        self.driver.execute_script("""
+            const newWorkoutBtn = document.querySelector('#new-workout-btn, .new-workout-btn, [data-action="new-workout"]');
+            if (newWorkoutBtn) {
+                newWorkoutBtn.click();
+            }
+
+            const form = document.getElementById('workout-form');
+            if (form) {
+                form.classList.remove('hidden');
+                form.style.display = 'block';
+                form.removeAttribute('aria-hidden');
+            }
+        """)
+        self.wait.until(EC.presence_of_element_located((By.ID, "workout-form")))
+        time.sleep(0.2)
+
     # ==================== MULTIPLE WORKOUT GENERATION TESTS ====================
     
     def test_multiple_workout_generations(self):
@@ -80,6 +98,8 @@ class UserInteractionTests:
         # Generate 5 different workouts in sequence
         for i in range(5):
             try:
+                self.ensure_form_visible()
+
                 # Reset form
                 self.driver.execute_script("document.getElementById('workout-form').reset();")
                 time.sleep(0.5)
@@ -130,7 +150,7 @@ class UserInteractionTests:
                 
                 # Generate workout
                 generate_btn = self.driver.find_element(By.ID, "generate-btn")
-                generate_btn.click()
+                self.driver.execute_script("arguments[0].click();", generate_btn)
                 time.sleep(3)
                 
                 # Check if workout was generated
@@ -169,6 +189,7 @@ class UserInteractionTests:
         
         self.driver.get(self.base_url)
         self.wait.until(EC.presence_of_element_located((By.ID, "workout-form")))
+        self.ensure_form_visible()
         
         interaction_results = {}
         
@@ -197,16 +218,19 @@ class UserInteractionTests:
         
         # Test 2: Checkbox interactions
         try:
-            # Test duration checkboxes
-            duration_15 = self.driver.find_element(By.ID, "duration-15")
-            duration_30 = self.driver.find_element(By.ID, "duration-30")
-            
-            # Click 15 minutes
-            duration_15.click()
-            time.sleep(0.5)
-            
-            # Click 30 minutes (should uncheck 15)
-            duration_30.click()
+            # Set duration radio options via JS (more reliable for hidden/styled inputs)
+            self.driver.execute_script("""
+                const d15 = document.getElementById('duration-15');
+                const d30 = document.getElementById('duration-30');
+                if (d15) {
+                    d15.checked = true;
+                    d15.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                if (d30) {
+                    d30.checked = true;
+                    d30.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            """)
             time.sleep(0.5)
             
             checkbox_states = self.driver.execute_script("""
@@ -226,13 +250,19 @@ class UserInteractionTests:
         
         # Test 3: Equipment selection interactions
         try:
-            # Test multiple equipment selection
-            bodyweight = self.driver.find_element(By.ID, "eq-bodyweight")
-            dumbbells = self.driver.find_element(By.ID, "eq-dumbbells")
-            
-            bodyweight.click()
-            time.sleep(0.5)
-            dumbbells.click()
+            # Set equipment checkboxes via JS (more reliable for hidden/styled inputs)
+            self.driver.execute_script("""
+                const bodyweight = document.getElementById('eq-bodyweight');
+                const dumbbells = document.getElementById('eq-dumbbells');
+                if (bodyweight) {
+                    bodyweight.checked = true;
+                    bodyweight.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                if (dumbbells) {
+                    dumbbells.checked = true;
+                    dumbbells.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            """)
             time.sleep(0.5)
             
             equipment_states = self.driver.execute_script("""

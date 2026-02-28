@@ -54,7 +54,9 @@ let enhancedTimerState = {
     vibrationEnabled: true,
     audioContext: null,
     currentSuggestion: null,
-    suggestionIndex: 0
+    suggestionIndex: 0,
+    baseWorkTime: 45,
+    baseRestTime: 15
 };
 
 /**
@@ -62,6 +64,20 @@ let enhancedTimerState = {
  */
 export function initializeEnhancedTimer() {
     console.log('🎵 Enhanced Timer Module Loaded');
+    
+    const workoutState = window.workoutState;
+    if (workoutState) {
+        enhancedTimerState.baseWorkTime = Number.isFinite(workoutState.workTime) && workoutState.workTime > 0
+            ? workoutState.workTime
+            : 45;
+        enhancedTimerState.baseRestTime = Number.isFinite(workoutState.restTime) && workoutState.restTime > 0
+            ? workoutState.restTime
+            : 15;
+    } else {
+        enhancedTimerState.baseWorkTime = 45;
+        enhancedTimerState.baseRestTime = 15;
+    }
+    enhancedTimerState.mode = TIMER_MODES.STANDARD;
     
     // Initialize audio context for sound cues
     initializeAudioContext();
@@ -138,6 +154,11 @@ function addTimerModeControls() {
             </div>
         </div>
     `;
+    
+    const customWorkInput = controlsSection.querySelector('#custom-work-time');
+    const customRestInput = controlsSection.querySelector('#custom-rest-time');
+    if (customWorkInput) customWorkInput.value = String(enhancedTimerState.baseWorkTime);
+    if (customRestInput) customRestInput.value = String(enhancedTimerState.baseRestTime);
     
     // Add event listeners with a small delay to ensure DOM is ready
     setTimeout(() => {
@@ -237,29 +258,23 @@ function applyTimerMode(mode) {
         phase: workoutState.phase
     });
     
+    const nextTiming = getTimingForMode(mode);
+    workoutState.workTime = nextTiming.workTime;
+    workoutState.restTime = nextTiming.restTime;
+    
     switch (mode) {
         case TIMER_MODES.TABATA:
-            workoutState.workTime = 20;
-            workoutState.restTime = 10;
             console.log('⚡ Applied Tabata timing: 20s work, 10s rest');
             break;
         case TIMER_MODES.HIIT:
-            workoutState.workTime = 30;
-            workoutState.restTime = 15;
             console.log('🔥 Applied HIIT timing: 30s work, 15s rest');
             break;
         case TIMER_MODES.CUSTOM:
-            const customSettings = getCustomTimerSettings();
-            workoutState.workTime = customSettings.workTime;
-            workoutState.restTime = customSettings.restTime;
-            console.log('⚙️ Applied custom timing:', customSettings);
+            console.log('⚙️ Applied custom timing:', nextTiming);
             break;
         case TIMER_MODES.STANDARD:
         default:
-            // Keep current settings or reset to default
-            workoutState.workTime = 45;
-            workoutState.restTime = 15;
-            console.log('📊 Applied standard timing: 45s work, 15s rest');
+            console.log(`📊 Applied standard timing: ${nextTiming.workTime}s work, ${nextTiming.restTime}s rest`);
             break;
     }
     
@@ -269,23 +284,42 @@ function applyTimerMode(mode) {
         phase: workoutState.phase
     });
     
-    // Update timer displays immediately
-    if (typeof setTimerDisplays === 'function') {
-        setTimerDisplays();
-        console.log('✅ Timer displays updated');
+    // Reset the active phase so mode changes are deterministic and clean.
+    if (workoutState.phase === 'rest') {
+        workoutState.remainingSeconds = workoutState.restTime;
+    } else {
+        workoutState.remainingSeconds = workoutState.workTime;
     }
     
-    // If we're in a rest phase, update the remaining time to match new rest time
-    if (workoutState.phase === 'rest') {
-        const currentRestProgress = (workoutState.restTime - workoutState.remainingSeconds) / workoutState.restTime;
-        workoutState.remainingSeconds = Math.max(1, Math.round(workoutState.restTime * (1 - currentRestProgress)));
-        console.log('🔄 Updated rest time for current phase:', workoutState.remainingSeconds);
+    if (window.currentWorkoutData) {
+        window.currentWorkoutData.workTime = workoutState.workTime;
+        window.currentWorkoutData.restTime = workoutState.restTime;
     }
-    // If we're in a work phase, update the remaining time to match new work time
-    else if (workoutState.phase === 'work') {
-        const currentWorkProgress = (workoutState.workTime - workoutState.remainingSeconds) / workoutState.workTime;
-        workoutState.remainingSeconds = Math.max(1, Math.round(workoutState.workTime * (1 - currentWorkProgress)));
-        console.log('🔄 Updated work time for current phase:', workoutState.remainingSeconds);
+    if (window.appState) {
+        window.appState.workTime = workoutState.workTime;
+        window.appState.restTime = workoutState.restTime;
+        window.appState.remainingSeconds = workoutState.remainingSeconds;
+    }
+    
+    if (typeof window.refreshWorkoutTimerDisplays === 'function') {
+        window.refreshWorkoutTimerDisplays();
+    }
+}
+
+function getTimingForMode(mode) {
+    switch (mode) {
+        case TIMER_MODES.TABATA:
+            return { workTime: 20, restTime: 10 };
+        case TIMER_MODES.HIIT:
+            return { workTime: 30, restTime: 15 };
+        case TIMER_MODES.CUSTOM:
+            return getCustomTimerSettings();
+        case TIMER_MODES.STANDARD:
+        default:
+            return {
+                workTime: enhancedTimerState.baseWorkTime,
+                restTime: enhancedTimerState.baseRestTime
+            };
     }
 }
 
@@ -451,9 +485,14 @@ export function getCustomTimerSettings() {
     const restTimeInput = document.getElementById('custom-rest-time');
     
     return {
-        workTime: workTimeInput ? parseInt(workTimeInput.value) : 45,
-        restTime: restTimeInput ? parseInt(restTimeInput.value) : 15
+        workTime: normalizeTimerValue(workTimeInput ? parseInt(workTimeInput.value, 10) : NaN, enhancedTimerState.baseWorkTime, 5, 300),
+        restTime: normalizeTimerValue(restTimeInput ? parseInt(restTimeInput.value, 10) : NaN, enhancedTimerState.baseRestTime, 5, 120)
     };
+}
+
+function normalizeTimerValue(value, fallback, min, max) {
+    if (!Number.isFinite(value)) return fallback;
+    return Math.min(max, Math.max(min, value));
 }
 
 // Export timer modes and audio cues for use in other modules

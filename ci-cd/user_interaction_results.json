@@ -1,0 +1,143 @@
+{
+  "timestamp": 1772236307.2442722,
+  "base_url": "http://127.0.0.1:8001",
+  "test_suite": "user_interactions",
+  "tests": {
+    "multiple_generations": {
+      "status": "PASSED",
+      "total_generations": 5,
+      "successful_generations": 5,
+      "generation_results": [
+        {
+          "generation": 1,
+          "success": true,
+          "exercise_count": 26,
+          "workout_type": "standard"
+        },
+        {
+          "generation": 2,
+          "success": true,
+          "exercise_count": 23,
+          "workout_type": "circuit"
+        },
+        {
+          "generation": 3,
+          "success": true,
+          "exercise_count": 32,
+          "workout_type": "tabata"
+        },
+        {
+          "generation": 4,
+          "success": true,
+          "exercise_count": 31,
+          "workout_type": "pyramid"
+        },
+        {
+          "generation": 5,
+          "success": true,
+          "exercise_count": 26,
+          "workout_type": "standard"
+        }
+      ]
+    },
+    "form_interactions": {
+      "status": "PASSED",
+      "interaction_results": {
+        "keyboard_navigation": {
+          "success": true,
+          "selected_value": "Intermediate"
+        },
+        "checkbox_interactions": {
+          "success": true,
+          "checkbox_states": {
+            "duration_15_checked": false,
+            "duration_30_checked": true
+          }
+        },
+        "equipment_selection": {
+          "success": true,
+          "equipment_states": {
+            "bodyweight_checked": true,
+            "dumbbells_checked": true
+          }
+        }
+      },
+      "successful_interactions": 3
+    },
+    "button_states": {
+      "status": "PASSED",
+      "button_states": {
+        "empty_form": {
+          "enabled": true,
+          "disabled": false
+        },
+        "filled_form": {
+          "enabled": true,
+          "disabled": false
+        },
+        "start_workout": {
+          "enabled": true,
+          "disabled": false,
+          "visible": true
+        }
+      }
+    },
+    "player_navigation": {
+      "status": "PASSED",
+      "navigation_tests": {
+        "previous_button": {
+          "found": false
+        },
+        "next_button": {
+          "found": false
+        },
+        "resume_button": {
+          "found": false
+        }
+      }
+    },
+    "control_toggles": {
+      "status": "PASSED",
+      "toggle_tests": {
+        "sound_toggle": {
+          "found": true,
+          "initial_state": true,
+          "toggles_off": true,
+          "toggles_on": true,
+          "functional": true
+        },
+        "vibration_toggle": {
+          "found": true,
+          "initial_state": true,
+          "toggles_off": true,
+          "toggles_on": true,
+          "functional": true
+        }
+      }
+    },
+    "exit_workflow": {
+      "status": "PASSED",
+      "exit_tests": {
+        "exit_button": {
+          "found": true,
+          "clickable": true,
+          "exits_workout": true,
+          "returns_to_form": false
+        }
+      }
+    },
+    "pause_resume": {
+      "status": "PASSED",
+      "pause_resume_tests": {
+        "pause_functionality": {
+          "found": false
+        },
+        "resume_functionality": {
+          "error": "Message: element not interactable\n  (Session info: chrome=145.0.7632.117); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementnotinteractableexception\nStacktrace:\n0   chromedriver                        0x0000000104d7d6b4 cxxbridge1$str$ptr + 3127600\n1   chromedriver                        0x0000000104d75a50 cxxbridge1$str$ptr + 3095756\n2   chromedriver                        0x0000000104852370 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74924\n3   chromedriver                        0x000000010489c8c0 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 379388\n4   chromedriver                        0x00000001048917e0 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 334108\n5   chromedriver                        0x000000010489125c _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 332696\n6   chromedriver                        0x00000001048da620 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 632668\n7   chromedriver                        0x000000010488fb9c _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326872\n8   chromedriver                        0x0000000104d3c680 cxxbridge1$str$ptr + 2861308\n9   chromedriver                        0x0000000104d3fdd4 cxxbridge1$str$ptr + 2875472\n10  chromedriver                        0x0000000104d21a7c cxxbridge1$str$ptr + 2751736\n11  chromedriver                        0x0000000104d40658 cxxbridge1$str$ptr + 2877652\n12  chromedriver                        0x0000000104d11ffc cxxbridge1$str$ptr + 2687608\n13  chromedriver                        0x0000000104d64d78 cxxbridge1$str$ptr + 3026932\n14  chromedriver                        0x0000000104d64ef4 cxxbridge1$str$ptr + 3027312\n15  chromedriver                        0x0000000104d756a8 cxxbridge1$str$ptr + 3094820\n16  libsystem_pthread.dylib             0x000000019d6f3c08 _pthread_start + 136\n17  libsystem_pthread.dylib             0x000000019d6eeba8 thread_start + 8\n"
+        }
+      }
+    }
+  },
+  "overall_success_rate": 1.0,
+  "status": "PASSED"
+}

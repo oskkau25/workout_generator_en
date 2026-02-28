@@ -1,0 +1,674 @@
+{
+  "timestamp": 1772236361.289558,
+  "base_url": "http://127.0.0.1:8001",
+  "test_suite": "responsive_design",
+  "tests": {
+    "desktop_viewports": {
+      "status": "PASSED",
+      "desktop_viewports": {
+        "full_hd": {
+          "viewport": "full_hd",
+          "size": "1920x1080",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 948,
+              "form_visible": true,
+              "form_width": 896,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": true
+            },
+            "media_queries": {
+              "is_desktop": true,
+              "is_mobile": false,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 941,
+              "width": 1920
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 896
+            }
+          }
+        },
+        "wide_desktop": {
+          "viewport": "wide_desktop",
+          "size": "1680x1050",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 948,
+              "form_visible": true,
+              "form_width": 896,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": true
+            },
+            "media_queries": {
+              "is_desktop": true,
+              "is_mobile": false,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 911,
+              "width": 1680
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 896
+            }
+          }
+        },
+        "standard_desktop": {
+          "viewport": "standard_desktop",
+          "size": "1440x900",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 948,
+              "form_visible": true,
+              "form_width": 896,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": true
+            },
+            "media_queries": {
+              "is_desktop": true,
+              "is_mobile": false,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 761,
+              "width": 1440
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 896
+            }
+          }
+        },
+        "laptop": {
+          "viewport": "laptop",
+          "size": "1366x768",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 948,
+              "form_visible": true,
+              "form_width": 896,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": true
+            },
+            "media_queries": {
+              "is_desktop": true,
+              "is_mobile": false,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 629,
+              "width": 1366
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 896
+            }
+          }
+        }
+      },
+      "successful_desktop": 4,
+      "total_desktop": 4
+    },
+    "tablet_viewports": {
+      "status": "PASSED",
+      "tablet_viewports": {
+        "ipad_landscape": {
+          "viewport": "ipad_landscape",
+          "size": "1024x768",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 948,
+              "form_visible": true,
+              "form_width": 896,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": true
+            },
+            "media_queries": {
+              "is_desktop": false,
+              "is_mobile": false,
+              "is_tablet": true
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 629,
+              "width": 1024
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 896
+            }
+          }
+        },
+        "ipad_portrait": {
+          "viewport": "ipad_portrait",
+          "size": "768x1024",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 948,
+              "form_visible": true,
+              "form_width": 712,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": true
+            },
+            "media_queries": {
+              "is_desktop": false,
+              "is_mobile": true,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 885,
+              "width": 768
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 712
+            }
+          }
+        },
+        "ipad_pro_portrait": {
+          "viewport": "ipad_pro_portrait",
+          "size": "1024x1366",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 948,
+              "form_visible": true,
+              "form_width": 896,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": true,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": true
+            },
+            "media_queries": {
+              "is_desktop": false,
+              "is_mobile": false,
+              "is_tablet": true
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 1227,
+              "width": 1024
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 896
+            }
+          }
+        },
+        "ipad_pro_landscape": {
+          "viewport": "ipad_pro_landscape",
+          "size": "1366x1024",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 948,
+              "form_visible": true,
+              "form_width": 896,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": true
+            },
+            "media_queries": {
+              "is_desktop": true,
+              "is_mobile": false,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 885,
+              "width": 1366
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 896
+            }
+          }
+        }
+      },
+      "successful_tablet": 4,
+      "total_tablet": 4
+    },
+    "mobile_viewports": {
+      "status": "PASSED",
+      "mobile_viewports": {
+        "iphone_se": {
+          "viewport": "iphone_se",
+          "size": "375x667",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 1509,
+              "form_visible": true,
+              "form_width": 444,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": false
+            },
+            "media_queries": {
+              "is_desktop": false,
+              "is_mobile": true,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 528,
+              "width": 500
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 444
+            }
+          }
+        },
+        "iphone_11": {
+          "viewport": "iphone_11",
+          "size": "414x896",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 1509,
+              "form_visible": true,
+              "form_width": 444,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": false
+            },
+            "media_queries": {
+              "is_desktop": false,
+              "is_mobile": true,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 757,
+              "width": 500
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 444
+            }
+          }
+        },
+        "android_standard": {
+          "viewport": "android_standard",
+          "size": "360x640",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 1509,
+              "form_visible": true,
+              "form_width": 444,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": false
+            },
+            "media_queries": {
+              "is_desktop": false,
+              "is_mobile": true,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 501,
+              "width": 500
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 444
+            }
+          }
+        },
+        "iphone_5": {
+          "viewport": "iphone_5",
+          "size": "320x568",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 1509,
+              "form_visible": true,
+              "form_width": 444,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": false
+            },
+            "media_queries": {
+              "is_desktop": false,
+              "is_mobile": true,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 429,
+              "width": 500
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 444
+            }
+          }
+        },
+        "iphone_12": {
+          "viewport": "iphone_12",
+          "size": "390x844",
+          "success": true,
+          "details": {
+            "elements": {
+              "fitness_level_visible": true,
+              "fitness_level_width": 115,
+              "form_height": 1509,
+              "form_visible": true,
+              "form_width": 444,
+              "generate_btn_visible": true,
+              "generate_btn_width": 255
+            },
+            "layout": {
+              "form_fits_height": false,
+              "form_fits_width": true,
+              "generate_btn_fits": true,
+              "no_horizontal_scroll": false
+            },
+            "media_queries": {
+              "is_desktop": false,
+              "is_mobile": true,
+              "is_tablet": false
+            },
+            "viewport": {
+              "device_pixel_ratio": 1,
+              "height": 705,
+              "width": 500
+            },
+            "functionality": {
+              "workout_data_exists": true,
+              "workout_section_visible": true,
+              "workout_section_width": 444
+            }
+          }
+        }
+      },
+      "successful_mobile": 5,
+      "total_mobile": 5
+    },
+    "orientation_changes": {
+      "status": "PASSED",
+      "orientation_tests": {
+        "landscape": {
+          "form_visible": true,
+          "form_width": 896,
+          "height": 629,
+          "orientation": "landscape",
+          "width": 1024
+        },
+        "portrait": {
+          "form_visible": true,
+          "form_width": 712,
+          "height": 885,
+          "orientation": "portrait",
+          "width": 768
+        }
+      }
+    },
+    "touch_interactions": {
+      "status": "PASSED",
+      "touch_tests": {
+        "touch_targets": {
+          "checkboxes": [
+            {
+              "height": 13,
+              "index": 0,
+              "meets_minimum": false,
+              "width": 13
+            },
+            {
+              "height": 13,
+              "index": 1,
+              "meets_minimum": false,
+              "width": 13
+            },
+            {
+              "height": 13,
+              "index": 2,
+              "meets_minimum": false,
+              "width": 13
+            },
+            {
+              "height": 13,
+              "index": 3,
+              "meets_minimum": false,
+              "width": 13
+            },
+            {
+              "height": 13,
+              "index": 4,
+              "meets_minimum": false,
+              "width": 13
+            },
+            {
+              "height": 13,
+              "index": 5,
+              "meets_minimum": false,
+              "width": 13
+            },
+            {
+              "height": 13,
+              "index": 6,
+              "meets_minimum": false,
+              "width": 13
+            },
+            {
+              "height": 13,
+              "index": 7,
+              "meets_minimum": false,
+              "width": 13
+            },
+            {
+              "height": 0,
+              "index": 8,
+              "meets_minimum": false,
+              "width": 0
+            },
+            {
+              "height": 0,
+              "index": 9,
+              "meets_minimum": false,
+              "width": 0
+            },
+            {
+              "height": 0,
+              "index": 10,
+              "meets_minimum": false,
+              "width": 0
+            },
+            {
+              "height": 0,
+              "index": 11,
+              "meets_minimum": false,
+              "width": 0
+            },
+            {
+              "height": 0,
+              "index": 12,
+              "meets_minimum": false,
+              "width": 0
+            },
+            {
+              "height": 0,
+              "index": 13,
+              "meets_minimum": false,
+              "width": 0
+            },
+            {
+              "height": 0,
+              "index": 14,
+              "meets_minimum": false,
+              "width": 0
+            },
+            {
+              "height": 0,
+              "index": 15,
+              "meets_minimum": false,
+              "width": 0
+            },
+            {
+              "height": 0,
+              "index": 16,
+              "meets_minimum": false,
+              "width": 0
+            }
+          ],
+          "fitness_dropdown": {
+            "height": 22,
+            "meets_minimum": false,
+            "width": 115
+          },
+          "generate_button": {
+            "height": 64,
+            "meets_minimum": true,
+            "width": 255
+          }
+        },
+        "touch_interactions": {
+          "checkbox_touch": true,
+          "equipment_touch": true,
+          "dropdown_touch": true
+        }
+      }
+    },
+    "responsive_navigation": {
+      "status": "PASSED",
+      "navigation_tests": {
+        "desktop": {
+          "elements_per_row": 0,
+          "form_width": 896,
+          "navigation_visible": true,
+          "viewport_width": 1920
+        },
+        "mobile": {
+          "elements_per_row": 0,
+          "form_width": 444,
+          "horizontal_scroll": true,
+          "navigation_visible": true,
+          "viewport_width": 500
+        }
+      }
+    }
+  },
+  "overall_success_rate": 1.0,
+  "status": "PASSED"
+}

