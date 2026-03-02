@@ -4,7 +4,6 @@
  */
 
 import { exercises } from './exercise-database.js';
-import { initializeWorkoutPlayer } from '../features/workout-player.js';
 import { enhanceWorkoutWithSubstitutions } from '../features/smart-substitution.js';
 import {
   trackModeSelected,
@@ -17,7 +16,6 @@ import {
  * This is the core function that creates workouts based on user preferences
  */
 export function generateWorkout(formData) {
-  console.log('🚀 generateWorkout called with formData:', formData);
   const {
     level = 'Intermediate',
     duration = 30,
@@ -27,13 +25,6 @@ export function generateWorkout(formData) {
     trainingPattern = 'Standard',
     patternSettings = {},
   } = formData;
-  console.log(
-    '🚀 Extracted values - trainingPattern:',
-    trainingPattern,
-    'patternSettings:',
-    patternSettings
-  );
-
   const requestedWorkTime = Number.isFinite(Number(workTime)) ? Number(workTime) : 45;
   const requestedRestTime = Number.isFinite(Number(restTime)) ? Number(restTime) : 15;
   const effectiveTiming = resolveEffectiveTiming(
@@ -147,10 +138,8 @@ function generateStandardWorkout(availableExercises, selectedEquipments, duratio
  * Generate circuit training workout
  */
 function generateCircuitWorkout(availableExercises, selectedEquipments, duration, settings) {
-  console.log('🔄 generateCircuitWorkout called with settings:', settings);
   const rounds = settings.rounds || Math.max(2, Math.min(6, Math.floor(duration / 10)));
   const exercisesPerRound = settings.exercisesPerRound || 6;
-  console.log('🔄 Using rounds:', rounds, 'exercisesPerRound:', exercisesPerRound);
 
   const mainExercises = availableExercises; // already filtered for equipment
   const workout = [];
@@ -363,7 +352,7 @@ function resolveEffectiveTiming(trainingPattern, workTime, restTime) {
 /**
  * Calculate estimated workout time
  */
-function calculateWorkoutTime(workout, workTime, restTime) {
+function _calculateWorkoutTime(workout, workTime, restTime) {
   const exerciseCount = workout.filter(
     (ex) => !['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(ex.type)
   ).length;
@@ -436,46 +425,23 @@ export function handleFormSubmission(event) {
   event.preventDefault();
 
   try {
-    console.log('🚀 Form submitted, generating workout...');
-
-    // Validate form
-    console.log('🔍 About to validate form...');
     validateForm();
-    console.log('✅ Form validation passed');
 
-    // Get form data
-    console.log('🔍 About to get form data...');
     const formData = getFormData();
-    console.log('📋 Form data:', formData);
     trackModeSelected('generator', formData.trainingPattern, { source: 'form_submit' });
     trackStepCompleted(1, 'mode_selected', {
       modeType: 'generator',
       mode: formData.trainingPattern,
     });
 
-    // Generate workout
-    console.log('🔍 About to generate workout...');
     const workoutResult = generateWorkout(formData);
-    console.log('✅ Workout generated:', workoutResult);
-    console.log(
-      '🚨 ABOUT TO CALL displayWorkout with workTime:',
-      workoutResult.workTime,
-      'restTime:',
-      workoutResult.restTime
-    );
 
     // Display workout
-    console.log('🚨 CALLING displayWorkout NOW...');
     try {
       displayWorkout(workoutResult);
-      console.log(
-        '🚨 AFTER displayWorkout call - window.currentWorkoutData:',
-        window.currentWorkoutData
-      );
     } catch (error) {
       console.error('❌ Error in displayWorkout:', error);
     }
-    console.log('🚨 CONTINUING AFTER displayWorkout...');
 
     trackStepCompleted(2, 'workout_generated', {
       pattern: formData.trainingPattern,
@@ -493,10 +459,7 @@ export function handleFormSubmission(event) {
  * Display generated workout
  */
 function displayWorkout(workoutResult) {
-  console.log('🚨🚨🚨 displayWorkout FUNCTION CALLED! 🚨🚨🚨');
   const { workout, duration, workTime, restTime, trainingPattern, metadata } = workoutResult;
-
-  console.log('📋 displayWorkout called with:', { workTime, restTime, duration });
 
   // Persist current workout in memory for interactive operations (e.g., swapping)
   window.currentWorkout = workout;
@@ -510,8 +473,6 @@ function displayWorkout(workoutResult) {
     metadata: metadata,
     _circuitData: workoutResult._circuitData, // Preserve circuit data from result
   };
-
-  console.log('💾 Stored window.currentWorkoutData:', window.currentWorkoutData);
 
   // Hide the form and switch to the review-first overview screen.
   const form = document.getElementById('workout-form');
