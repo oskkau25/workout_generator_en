@@ -23,6 +23,31 @@ import {
   trackFlowAbandoned,
 } from './analytics-tracker.js';
 
+const DEBUG = (() => {
+  try {
+    return window.__DEBUG__ === true || window.localStorage.getItem('fitflow_de bug') === '1';
+  } catch {
+    return window.__DEBUG__ === true;
+  }
+})();
+
+function debugLog(...args) {
+  if (DEBUG) {
+    console.log(...args);
+  }
+}
+
+const MOTIVATION_MESSAGES = [
+  "💪 Great job! You're crushing this workout!",
+  "🔥 You're on fire! Keep it up!",
+  "⭐ Amazing progress! You've got this!",
+  "🚀 You're unstoppable! Keep pushing!",
+  "💎 You're doing fantastic! Stay strong!",
+  "🌟 Incredible work! You're a champion!",
+  "⚡ You're absolutely killing it!",
+  '🏆 Outstanding effort! Keep going!',
+];
+
 /**
  * Generate search links for exercise resources
  */
@@ -145,7 +170,13 @@ let workoutState = {
   audioContext: null,
 };
 
+// Mobile-only UI state
+let isMobileResourcesOpen = false;
+
 let workoutPlayerKeyboardBound = false;
+
+let pendingMobileControlsLayout = false;
+let lastMobileControlsHeight = null;
 
 // Sync with main app state if available
 if (window.appState) {
@@ -158,11 +189,11 @@ if (window.appState) {
 function expandCircuitWorkout(workoutData) {
   const circuitData = workoutData._circuitData;
   if (!circuitData) {
-    console.log('❌ No circuit data found, returning original sequence');
+    debugLog('❌ No circuit data found, returning original sequence');
     return workoutData.sequence;
   }
 
-  console.log('🔄 Circuit data found:', circuitData);
+  debugLog('🔄 Circuit data found:', circuitData);
   const workout = workoutData.sequence;
   const expandedWorkout = [];
 
@@ -204,11 +235,11 @@ function expandCircuitWorkout(workoutData) {
   // Insert all circuit exercises at once
   expandedWorkout.splice(insertIndex, 0, ...allCircuitExercises);
 
-  console.log('✅ Circuit expansion complete:');
-  console.log('  - Original sequence length:', workout.length);
-  console.log('  - Expanded sequence length:', expandedWorkout.length);
-  console.log('  - Circuit exercises added:', allCircuitExercises.length);
-  console.log(
+  debugLog('✅ Circuit expansion complete:');
+  debugLog('  - Original sequence length:', workout.length);
+  debugLog('  - Expanded sequence length:', expandedWorkout.length);
+  debugLog('  - Circuit exercises added:', allCircuitExercises.length);
+  debugLog(
     '  - Rounds:',
     circuitData.rounds,
     'Exercises per round:',
@@ -222,12 +253,12 @@ function expandCircuitWorkout(workoutData) {
  * Initialize workout player with workout data
  */
 export function initializeWorkoutPlayer(workoutData) {
-  console.log('🎮 Initializing workout player with data:', workoutData);
+  debugLog('🎮 Initializing workout player with data:', workoutData);
 
   // Use main app state if available, otherwise create new state
   if (window.appState) {
     workoutState = window.appState;
-    console.log('🔄 Using main app state for workout player');
+    debugLog('🔄 Using main app state for workout player');
   }
 
   // Initialize enhanced timer features
@@ -237,13 +268,13 @@ export function initializeWorkoutPlayer(workoutData) {
   const banner = document.getElementById('whats-new-banner');
   if (banner) {
     banner.style.display = 'none';
-    console.log('🎯 Hidden "What\'s New" banner during workout');
+    debugLog('🎯 Hidden "What\'s New" banner during workout');
   }
 
   // Check if this is a circuit workout and expand the sequence
   let sequence = workoutData.sequence || [];
   if (workoutData._circuitData) {
-    console.log('🔄 Expanding circuit workout for all rounds');
+    debugLog('🔄 Expanding circuit workout for all rounds');
     sequence = expandCircuitWorkout(workoutData);
   }
 
@@ -252,8 +283,8 @@ export function initializeWorkoutPlayer(workoutData) {
   workoutState.restTime = workoutData.restTime || 15;
   workoutState.defaultWorkTime = workoutState.workTime;
   workoutState.defaultRestTime = workoutState.restTime;
-  console.log('⏱️ Set workTime:', workoutState.workTime, 'restTime:', workoutState.restTime);
-  console.log('📋 Final workout sequence length:', sequence.length);
+  debugLog('⏱️ Set workTime:', workoutState.workTime, 'restTime:', workoutState.restTime);
+  debugLog('📋 Final workout sequence length:', sequence.length);
   workoutState.currentIndex = 0;
   workoutState.phase = 'work';
   workoutState.remainingSeconds = workoutState.workTime;
@@ -526,7 +557,35 @@ function renderWorkoutPlayer() {
     const resourcesHTML = generateExerciseResources(currentExercise);
     if (resourcesHTML) {
       exerciseResources.innerHTML = resourcesHTML;
-      exerciseResources.classList.remove('hidden');
+
+      const isMobileViewport =
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(max-width: 767px)').matches;
+
+      // In focus mode on mobile, keep resources collapsed by default
+      if (isMobileViewport) {
+        // Reset open state when exercise changes
+        isMobileResourcesOpen = false;
+        exerciseResources.classList.add('hidden');
+      } else {
+        exerciseResources.classList.remove('hidden');
+      }
+
+      // Keep the mobile Resources toggle in sync
+      const mobileResourcesBtn = document.getElementById('mobile-resources-btn');
+      if (mobileResourcesBtn) {
+        const hasResources = !!currentExercise.resources;
+        mobileResourcesBtn.classList.toggle('hidden', !hasResources);
+
+        const label = isMobileResourcesOpen ? 'Hide Resources' : 'Exercise Resources';
+        mobileResourcesBtn.textContent = label;
+        mobileResourcesBtn.setAttribute(
+          'aria-label',
+          isMobileResourcesOpen ? 'Hide exercise resources' : 'Show exercise resources'
+        );
+        mobileResourcesBtn.setAttribute('aria-expanded', String(isMobileResourcesOpen));
+      }
     } else {
       exerciseResources.classList.add('hidden');
     }
@@ -645,17 +704,8 @@ function setTimerDisplays() {
       // Update motivational message
       const motivationalMessage = document.getElementById('motivational-message');
       if (motivationalMessage) {
-        const messages = [
-          "💪 Great job! You're crushing this workout!",
-          "🔥 You're on fire! Keep it up!",
-          "⭐ Amazing progress! You've got this!",
-          "🚀 You're unstoppable! Keep pushing!",
-          "💎 You're doing fantastic! Stay strong!",
-          "🌟 Incredible work! You're a champion!",
-          "⚡ You're absolutely killing it!",
-          '🏆 Outstanding effort! Keep going!',
-        ];
-        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        const randomMessage =
+          MOTIVATION_MESSAGES[Math.floor(Math.random() * MOTIVATION_MESSAGES.length)];
         motivationalMessage.textContent = randomMessage;
       }
 
@@ -810,18 +860,48 @@ function updateMobileWorkoutControls() {
   }
 
   if (mobileResourcesBtn) {
-    mobileResourcesBtn.classList.toggle('hidden', !currentExercise.resources);
+    const hasResources = !!currentExercise.resources;
+    mobileResourcesBtn.classList.toggle('hidden', !hasResources);
+
+    if (hasResources) {
+      const isMobileViewport =
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(max-width: 767px)').matches;
+
+      const label =
+        isMobileResourcesOpen && isMobileViewport ? 'Hide Resources' : 'Exercise Resources';
+      mobileResourcesBtn.textContent = label;
+      mobileResourcesBtn.setAttribute(
+        'aria-label',
+        isMobileResourcesOpen && isMobileViewport
+          ? 'Hide exercise resources'
+          : 'Show exercise resources'
+      );
+      mobileResourcesBtn.setAttribute(
+        'aria-expanded',
+        String(isMobileResourcesOpen && isMobileViewport)
+      );
+    }
   }
 
   if (playerShell) {
-    requestAnimationFrame(() => {
-      const stickyBar = mobileControls.querySelector('.mobile-workout-controls__bar');
-      if (!stickyBar) return;
-      playerShell.style.setProperty(
-        '--mobile-workout-controls-height',
-        `${stickyBar.offsetHeight}px`
-      );
-    });
+    if (!pendingMobileControlsLayout) {
+      pendingMobileControlsLayout = true;
+      requestAnimationFrame(() => {
+        pendingMobileControlsLayout = false;
+        const stickyBar = mobileControls.querySelector('.mobile-workout-controls__bar');
+        if (!stickyBar) return;
+        const nextHeight = stickyBar.offsetHeight;
+        if (nextHeight !== lastMobileControlsHeight) {
+          lastMobileControlsHeight = nextHeight;
+          playerShell.style.setProperty(
+            '--mobile-workout-controls-height',
+            `${nextHeight}px`
+          );
+        }
+      });
+    }
   }
 }
 
@@ -908,11 +988,10 @@ export function exitWorkout() {
     trackFlowAbandoned(3, 'exit_workout', { progressPercent: progress });
   }
 
-  // Show the "What's New" banner again when exiting workout
+  // Clear any transient inline state without overriding the funnel banner's stored visibility.
   const banner = document.getElementById('whats-new-banner');
   if (banner) {
-    banner.style.display = 'block';
-    console.log('🎯 Shown "What\'s New" banner after exiting workout');
+    banner.style.display = '';
   }
 
   // Return to a clean overview screen state.
@@ -1022,9 +1101,9 @@ function recordPersonalWorkout() {
     // Save back to localStorage
     localStorage.setItem('fitflow_personal_workouts', JSON.stringify(personalWorkouts));
 
-    console.log('📊 Personal workout recorded:', workoutData);
+    debugLog('📊 Personal workout recorded:', workoutData);
   } catch (error) {
-    console.warn('Failed to record personal workout:', error);
+    debugLog('Failed to record personal workout:', error);
   }
 }
 
@@ -1146,7 +1225,7 @@ function debugExitButton() {
   const exitBtn = document.getElementById('exit-workout-btn');
 
   if (exitBtn) {
-    console.log('🔍 Exit button debug:', {
+    debugLog('🔍 Exit button debug:', {
       element: exitBtn,
       disabled: exitBtn.disabled,
       style: exitBtn.style.cssText,
@@ -1172,23 +1251,23 @@ function debugExitButton() {
 
     // Add click event for debugging
     exitBtn.addEventListener('click', (e) => {
-      console.log('🚪 Exit button clicked!', e);
+      debugLog('🚪 Exit button clicked!', e);
       e.preventDefault();
       e.stopPropagation();
     });
 
     // Also add mousedown and mouseup events
     exitBtn.addEventListener('mousedown', (e) => {
-      console.log('🚪 Exit button mousedown!', e);
+      debugLog('🚪 Exit button mousedown!', e);
     });
 
     exitBtn.addEventListener('mouseup', (e) => {
-      console.log('🚪 Exit button mouseup!', e);
+      debugLog('🚪 Exit button mouseup!', e);
     });
 
-    console.log('✅ Exit button debugging setup complete');
+    debugLog('✅ Exit button debugging setup complete');
   } else {
-    console.error('❌ Exit button not found');
+    debugLog('❌ Exit button not found');
   }
 }
 
@@ -1197,7 +1276,7 @@ function debugCheckboxes() {
   const vibrationToggle = document.getElementById('vibration-toggle');
 
   if (soundToggle) {
-    console.log('🔍 Sound toggle debug:', {
+    debugLog('🔍 Sound toggle debug:', {
       element: soundToggle,
       checked: soundToggle.checked,
       disabled: soundToggle.disabled,
@@ -1217,12 +1296,12 @@ function debugCheckboxes() {
 
     // Add click event for debugging
     soundToggle.addEventListener('click', (e) => {
-      console.log('🔊 Sound toggle clicked!', e.target.checked);
+      debugLog('🔊 Sound toggle clicked!', e.target.checked);
     });
   }
 
   if (vibrationToggle) {
-    console.log('🔍 Vibration toggle debug:', {
+    debugLog('🔍 Vibration toggle debug:', {
       element: vibrationToggle,
       checked: vibrationToggle.checked,
       disabled: vibrationToggle.disabled,
@@ -1242,18 +1321,18 @@ function debugCheckboxes() {
 
     // Add click event for debugging
     vibrationToggle.addEventListener('click', (e) => {
-      console.log('📳 Vibration toggle clicked!', e.target.checked);
+      debugLog('📳 Vibration toggle clicked!', e.target.checked);
     });
   }
 }
 
 export async function setupWorkoutPlayerListeners() {
-  console.log('🎮 setupWorkoutPlayerListeners called');
-  console.log('🔍 window.appState:', window.appState);
-  console.log('🔍 workoutState:', workoutState);
+  debugLog('🎮 setupWorkoutPlayerListeners called');
+  debugLog('🔍 window.appState:', window.appState);
+  debugLog('🔍 workoutState:', workoutState);
   // Wait for elements to be ready
   await ensureElementsReady();
-  console.log('🎮 Setting up workout player event listeners...');
+  debugLog('🎮 Setting up workout player event listeners...');
   // Debug checkboxes
   debugCheckboxes();
   // Debug exit button
@@ -1282,12 +1361,12 @@ export async function setupWorkoutPlayerListeners() {
     exitBtn.disabled = false; // Ensure it's not disabled
     exitBtn.style.pointerEvents = 'auto'; // Ensure it's clickable
     exitBtn.onclick = (e) => {
-      console.log('🚪 Exit workout button clicked');
+      debugLog('🚪 Exit workout button clicked');
       exitWorkout();
     };
-    console.log('✅ Exit workout button initialized');
+    debugLog('✅ Exit workout button initialized');
   } else {
-    console.error('❌ Exit workout button not found');
+    debugLog('❌ Exit workout button not found');
   }
 
   // Create new workout button (from workout overview)
@@ -1320,12 +1399,12 @@ export async function setupWorkoutPlayerListeners() {
         window.appState.enableSound = newValue;
       }
       syncMobileSecondaryControls();
-      console.log('🔊 Sound toggle changed to:', newValue);
+      debugLog('🔊 Sound toggle changed to:', newValue);
     };
 
-    console.log('✅ Sound toggle initialized:', soundToggle.checked);
+    debugLog('✅ Sound toggle initialized:', soundToggle.checked);
   } else {
-    console.error('❌ Sound toggle element not found');
+    debugLog('❌ Sound toggle element not found');
   }
 
   // Vibration toggle
@@ -1347,12 +1426,12 @@ export async function setupWorkoutPlayerListeners() {
         window.appState.enableVibration = newValue;
       }
       syncMobileSecondaryControls();
-      console.log('📳 Vibration toggle changed to:', newValue);
+      debugLog('📳 Vibration toggle changed to:', newValue);
     };
 
-    console.log('✅ Vibration toggle initialized:', vibrationToggle.checked);
+    debugLog('✅ Vibration toggle initialized:', vibrationToggle.checked);
   } else {
-    console.error('❌ Vibration toggle element not found');
+    debugLog('❌ Vibration toggle element not found');
   }
 
   // Rest overlay close button
@@ -1453,7 +1532,35 @@ export async function setupWorkoutPlayerListeners() {
   if (mobileResourcesBtn) {
     mobileResourcesBtn.onclick = () => {
       const resources = document.getElementById('exercise-resources');
-      resources?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!resources) return;
+
+      const isMobileViewport =
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(max-width: 767px)').matches;
+
+      if (isMobileViewport) {
+        isMobileResourcesOpen = !isMobileResourcesOpen;
+
+        if (isMobileResourcesOpen) {
+          resources.classList.remove('hidden');
+          resources.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          resources.classList.add('hidden');
+          const playerShell = document.getElementById('workout-player');
+          playerShell?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        const label = isMobileResourcesOpen ? 'Hide Resources' : 'Exercise Resources';
+        mobileResourcesBtn.textContent = label;
+        mobileResourcesBtn.setAttribute(
+          'aria-label',
+          isMobileResourcesOpen ? 'Hide exercise resources' : 'Show exercise resources'
+        );
+        mobileResourcesBtn.setAttribute('aria-expanded', String(isMobileResourcesOpen));
+      } else {
+        resources.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     };
   }
 
@@ -1499,14 +1606,14 @@ export async function setupWorkoutPlayerListeners() {
 
 // Make functions available globally for backward compatibility
 window.startWorkout = function () {
-  console.log('🏃 Starting workout...');
-  console.log('🔍 Debug - window.currentWorkoutData:', window.currentWorkoutData);
-  console.log('🔍 Debug - window.currentWorkout:', window.currentWorkout);
+  debugLog('🏃 Starting workout...');
+  debugLog('🔍 Debug - window.currentWorkoutData:', window.currentWorkoutData);
+  debugLog('🔍 Debug - window.currentWorkout:', window.currentWorkout);
 
   // Get current workout data from global state.
   // Keep generated workout timing as source of truth for consistency.
   if (window.currentWorkoutData) {
-    console.log('📊 Using currentWorkoutData timing');
+    debugLog('📊 Using currentWorkoutData timing');
     const workoutData = { ...window.currentWorkoutData };
     if (!Number.isFinite(workoutData.workTime) || workoutData.workTime <= 0) {
       workoutData.workTime = 45;
@@ -1514,7 +1621,7 @@ window.startWorkout = function () {
     if (!Number.isFinite(workoutData.restTime) || workoutData.restTime <= 0) {
       workoutData.restTime = 15;
     }
-    console.log('📊 Final workoutData:', workoutData);
+    debugLog('📊 Final workoutData:', workoutData);
     trackStepCompleted(3, 'workout_started', {
       pattern: workoutData.trainingPattern || 'standard',
       workTime: workoutData.workTime,
@@ -1523,7 +1630,7 @@ window.startWorkout = function () {
     });
     initializeWorkoutPlayer(workoutData);
   } else if (window.currentWorkout && window.currentWorkout.length > 0) {
-    console.log('⚠️ Using legacy format with default timing');
+    debugLog('⚠️ Using legacy format with default timing');
 
     const workoutData = {
       sequence: window.currentWorkout,
@@ -1531,7 +1638,7 @@ window.startWorkout = function () {
       restTime: 15,
     };
 
-    console.log('⚠️ Using fallback workoutData:', workoutData);
+    debugLog('⚠️ Using fallback workoutData:', workoutData);
     trackStepCompleted(3, 'workout_started', {
       pattern: 'standard',
       workTime: workoutData.workTime,

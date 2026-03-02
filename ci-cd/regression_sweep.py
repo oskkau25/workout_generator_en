@@ -230,7 +230,20 @@ def run_timer_matrix(page: Any) -> Dict[str, Any]:
         page, "duration-30", ["eq-bodyweight"], "Intermediate", "standard"
     )
     time.sleep(1.1)
-    page.click('button[onclick="startWorkout()"]')
+    start_selectors = ["#start-workout-btn", 'button[onclick="startWorkout()"]']
+    started = False
+    for selector in start_selectors:
+        if page.locator(selector).count():
+            page.click(selector)
+            started = True
+            break
+
+    if not started:
+        return {
+            "status": "FAILED",
+            "error": "start workout button did not appear after generation",
+            "setup": start_setup,
+        }
 
     try:
         page.wait_for_selector("#timer-mode-select", timeout=12000)

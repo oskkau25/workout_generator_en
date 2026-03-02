@@ -350,13 +350,13 @@ function setupFormFeedback() {
   inputs.forEach((input) => {
     input.addEventListener('focus', (e) => {
       e.target
-        .closest('.duration-option, .equipment-card')
+        .closest('.duration-option, .equipment-card, .training-pattern-card')
         ?.classList.add('ring-2', 'ring-fit-primary/50');
     });
 
     input.addEventListener('blur', (e) => {
       e.target
-        .closest('.duration-option, .equipment-card')
+        .closest('.duration-option, .equipment-card, .training-pattern-card')
         ?.classList.remove('ring-2', 'ring-fit-primary/50');
     });
   });

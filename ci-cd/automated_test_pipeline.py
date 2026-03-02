@@ -553,13 +553,14 @@ class AutomatedTestPipeline:
         logger.info("🔍 Running Static Code Analysis")
         
         try:
-            # Prefer ESLint if available
-            eslint_path = shutil.which('npx')
+            # Prefer an already-installed local ESLint and avoid interactive npx downloads.
+            package_json = self.project_root / 'package.json'
+            eslint_binary = self.project_root / 'node_modules' / '.bin' / 'eslint'
             js_dir = self.project_root / 'src' / 'js'
-            if eslint_path and js_dir.exists():
+            if package_json.exists() and eslint_binary.exists() and js_dir.exists():
                 try:
                     result = subprocess.run(
-                        ['npx', 'eslint', '--format', 'json', '--ext', '.js', 'src/js'],
+                        [str(eslint_binary), '--format', 'json', '--ext', '.js', 'src/js'],
                         capture_output=True,
                         text=True,
                         cwd=self.project_root,
@@ -580,8 +581,8 @@ class AutomatedTestPipeline:
                             }
                         }
                         return
-                except Exception:
-                    pass  # Fall back to legacy checks
+                except Exception as error:
+                    logger.warning(f"⚠️ Local ESLint run failed, falling back to legacy checks: {error}")
             
             # Fallback: existing basic checks on legacy entry file if present
             js_path = self.project_root / 'src' / 'js' / 'main.js'
