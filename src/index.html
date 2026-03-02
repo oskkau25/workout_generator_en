@@ -291,17 +291,17 @@
     </style>
 
 </head>
-<body class="bg-gradient-to-br from-fit-light to-blue-50 min-h-screen font-sans">
+<body class="bg-gradient-to-br from-fit-light to-blue-50 min-h-screen font-sans no-x-scroll">
     <!-- Header -->
-    <header class="gradient-bg text-white py-6">
-        <div class="container mx-auto px-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
+    <header class="gradient-bg text-white py-4 sm:py-6 no-x-scroll">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="flex min-w-0 flex-wrap items-center gap-3">
                     <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                         <span class="text-fit-primary font-bold text-xl">F</span>
                     </div>
                     <h1 class="text-2xl font-display font-bold">FitFlow 🚀</h1>
-                    <div class="ml-3 flex items-center space-x-2" role="status" aria-label="Security indicators">
+                    <div class="flex flex-wrap items-center gap-2" role="status" aria-label="Security indicators">
                         <div class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-xs font-medium border border-green-400/30">
                             🔒 Privacy-First
                         </div>
@@ -310,9 +310,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <p class="text-blue-100 font-medium">Smart Workout Generator</p>
-                    <a href="dashboard.html" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                <div class="flex flex-wrap items-center gap-3 lg:justify-end">
+                    <p class="w-full text-sm text-blue-100 font-medium lg:w-auto">Smart Workout Generator</p>
+                    <a href="dashboard.html" class="tap-target bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-200 inline-flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
@@ -321,7 +321,7 @@
                     
                     <!-- User Account Section -->
                     <div id="user-account-section" class="hidden">
-                        <div class="flex items-center space-x-3">
+                        <div class="flex flex-wrap items-center gap-3 lg:justify-end">
                             <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-2xl" id="user-avatar">
                                 🏃‍♂️
                             </div>
@@ -329,13 +329,13 @@
                                 <div class="text-sm font-medium text-white" id="user-name">User</div>
                                 <div class="text-xs text-blue-100" id="user-streak">0 day streak</div>
                             </div>
-                            <button id="profile-btn" aria-label="Open user profile" class="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm">
+                            <button id="profile-btn" aria-label="Open user profile" class="tap-target bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm">
                                 <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                                 Profile
                             </button>
-                            <button id="logout-btn" aria-label="Log out" class="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm">
+                            <button id="logout-btn" aria-label="Log out" class="tap-target bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm">
                                 <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                                 </svg>
@@ -345,14 +345,14 @@
                     </div>
                     
                     <!-- Guest Section -->
-                    <div id="guest-section">
-                        <button id="login-btn" aria-label="Open login modal" class="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm">
+                    <div id="guest-section" class="flex flex-wrap items-center gap-3">
+                        <button id="login-btn" aria-label="Open login modal" class="tap-target bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm">
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                             </svg>
                             Login
                         </button>
-                        <button id="register-btn" aria-label="Open registration modal" class="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm">
+                        <button id="register-btn" aria-label="Open registration modal" class="tap-target bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors duration-200 text-sm">
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                             </svg>
@@ -365,7 +365,7 @@
     </header>
 
     <!-- Main Content -->
-    <main id="main-content" class="container mx-auto px-6 py-8" role="main" aria-label="Main workout generator content">
+    <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8 no-x-scroll" role="main" aria-label="Main workout generator content">
         
         <!-- Dashboard Section (Hidden by default) -->
         <div id="dashboard-section" class="hidden">
@@ -512,285 +512,163 @@
                     </div>
                 </div>
 
-                <!-- Quick Preset Buttons -->
-                <div class="card mb-6">
-                    <h3 class="text-lg font-semibold text-fit-dark mb-4 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                        Quick Start Presets
-                    </h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <button type="button" class="preset-btn" data-preset="quick-cardio">
-                            <div class="text-2xl mb-2">🏃‍♂️</div>
-                            <div class="font-medium">Quick Cardio</div>
-                            <div class="text-xs text-fit-secondary">15min • Bodyweight</div>
-                        </button>
-                        <button type="button" class="preset-btn" data-preset="strength-training">
-                            <div class="text-2xl mb-2">💪</div>
-                            <div class="font-medium">Strength</div>
-                            <div class="text-xs text-fit-secondary">30min • Dumbbells</div>
-                        </button>
-                        <button type="button" class="preset-btn" data-preset="hiit-workout">
-                            <div class="text-2xl mb-2">⚡</div>
-                            <div class="font-medium">HIIT Blast</div>
-                            <div class="text-xs text-fit-secondary">20min • High Intensity</div>
-                        </button>
-                        <button type="button" class="preset-btn" data-preset="full-body">
-                            <div class="text-2xl mb-2">🔥</div>
-                            <div class="font-medium">Full Body</div>
-                            <div class="text-xs text-fit-secondary">45min • Mixed Equipment</div>
-                        </button>
-                    </div>
-                </div>
-
-                <form id="workout-form" class="card mb-8" role="form" aria-label="Workout generation form">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <!-- Left Column -->
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Workout Duration & Intensity
-                                </label>
-                                <div class="space-y-3">
-                                    <div class="duration-option">
-                                        <input type="radio" id="duration-15" name="duration" value="15" class="duration-radio">
-                                        <label for="duration-15" class="duration-label">
-                                            <div class="duration-header">
-                                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                                </svg>
-                                                <span class="font-medium">15 minutes</span>
-                                                <span class="intensity-badge intensity-light">Light</span>
-                                            </div>
-                                            <div class="duration-details">
-                                                <span class="text-sm text-fit-secondary">Quick cardio & warm-up</span>
-                                            </div>
-                                        </label>
-                                    </div>
-                                    <div class="duration-option">
-                                        <input type="radio" id="duration-30" name="duration" value="30" class="duration-radio" checked>
-                                        <label for="duration-30" class="duration-label">
-                                            <div class="duration-header">
-                                                <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                </svg>
-                                                <span class="font-medium">30 minutes</span>
-                                                <span class="intensity-badge intensity-medium">Medium</span>
-                                            </div>
-                                            <div class="duration-details">
-                                                <span class="text-sm text-fit-secondary">Balanced workout</span>
-                                            </div>
-                                        </label>
-                                    </div>
-                                    <div class="duration-option">
-                                        <input type="radio" id="duration-45" name="duration" value="45" class="duration-radio">
-                                        <label for="duration-45" class="duration-label">
-                                            <div class="duration-header">
-                                                <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                </svg>
-                                                <span class="font-medium">45 minutes</span>
-                                                <span class="intensity-badge intensity-high">High</span>
-                                            </div>
-                                            <div class="duration-details">
-                                                <span class="text-sm text-fit-secondary">Intensive training</span>
-                                            </div>
-                                        </label>
-                                    </div>
-                                    <div class="duration-option">
-                                        <input type="radio" id="duration-60" name="duration" value="60" class="duration-radio">
-                                        <label for="duration-60" class="duration-label">
-                                            <div class="duration-header">
-                                                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
-                                                </svg>
-                                                <span class="font-medium">60 minutes</span>
-                                                <span class="intensity-badge intensity-extreme">Extreme</span>
-                                            </div>
-                                            <div class="duration-details">
-                                                <span class="text-sm text-fit-secondary">Marathon session</span>
-                                            </div>
-                                        </label>
+                <form id="workout-form" class="card mb-24 md:mb-8" role="form" aria-label="Workout generation form">
+                    <div class="space-y-4">
+                        <section class="rounded-2xl border border-fit-border bg-white/80 overflow-hidden" data-collapsible-section>
+                            <h3>
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                                    data-collapsible-trigger
+                                    aria-controls="basic-settings-panel"
+                                    aria-expanded="true"
+                                >
+                                    <span>
+                                        <span class="block text-lg font-semibold text-fit-dark">Basic</span>
+                                        <span class="block text-sm text-fit-secondary">Duration, level, and quick presets</span>
+                                    </span>
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-fit-primary/10 text-fit-primary transition-transform" data-collapsible-icon>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+                            <div id="basic-settings-panel" class="space-y-6 border-t border-fit-border px-5 py-5" data-collapsible-panel>
+                                <div>
+                                    <h4 class="text-sm font-semibold uppercase tracking-wide text-fit-secondary mb-3">Quick Start Presets</h4>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        <button type="button" class="preset-btn" data-preset="quick-cardio">
+                                            <div class="text-2xl mb-2">🏃‍♂️</div>
+                                            <div class="font-medium">Quick Cardio</div>
+                                            <div class="text-xs text-fit-secondary">15min • Bodyweight</div>
+                                        </button>
+                                        <button type="button" class="preset-btn" data-preset="strength-training">
+                                            <div class="text-2xl mb-2">💪</div>
+                                            <div class="font-medium">Strength</div>
+                                            <div class="text-xs text-fit-secondary">30min • Dumbbells</div>
+                                        </button>
+                                        <button type="button" class="preset-btn" data-preset="hiit-workout">
+                                            <div class="text-2xl mb-2">⚡</div>
+                                            <div class="font-medium">HIIT Blast</div>
+                                            <div class="text-xs text-fit-secondary">20min • High Intensity</div>
+                                        </button>
+                                        <button type="button" class="preset-btn" data-preset="full-body">
+                                            <div class="text-2xl mb-2">🔥</div>
+                                            <div class="font-medium">Full Body</div>
+                                            <div class="text-xs text-fit-secondary">45min • Mixed Equipment</div>
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div>
-                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                    </svg>
-                                    Fitness Level
-                                </label>
-                                <select id="fitness-level" name="fitness-level" class="input-field">
-                                    <option value="Beginner">Beginner</option>
-                                    <option value="Intermediate" selected>Intermediate</option>
-                                    <option value="Advanced">Advanced</option>
-                                </select>
-                            </div>
-
-
-                            <div>
-                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                    </svg>
-                                    Work/Rest Timing
-                                </label>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm text-fit-secondary mb-2 flex items-center">
-                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                            </svg>
-                                            Work (seconds)
-                                        </label>
-                                        <input type="number" id="work-time" name="work-time" value="45" min="20" max="120" class="input-field" aria-label="Work time seconds">
-                                        <span id="work-time-value" class="text-xs text-fit-secondary ml-2" aria-live="polite">45s</span>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm text-fit-secondary mb-2 flex items-center">
-                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            Rest (seconds)
-                                        </label>
-                                        <input type="number" id="rest-time" name="rest-time" value="15" min="10" max="60" class="input-field" aria-label="Rest time seconds">
-                                        <span id="rest-time-value" class="text-xs text-fit-secondary ml-2" aria-live="polite">15s</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- New Training Pattern Selection -->
-                            <div>
-                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                    </svg>
-                                    Training Pattern
-                                </label>
-                                <div class="space-y-3">
-                                    <div class="flex items-center space-x-3">
-                                        <input type="radio" id="pattern-standard" name="training-pattern" value="standard" class="w-5 h-5 text-fit-primary" checked>
-                                        <label for="pattern-standard" class="text-fit-secondary flex items-center cursor-pointer">
-                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            Standard Training
-                                        </label>
-                                    </div>
-                                    <div class="flex items-center space-x-3">
-                                        <input type="radio" id="pattern-circuit" name="training-pattern" value="circuit" class="w-5 h-5 text-fit-primary">
-                                        <label for="pattern-circuit" class="text-fit-secondary flex items-center cursor-pointer">
-                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                            </svg>
-                                            Circuit Training
-                                        </label>
-                                    </div>
-                                    <div class="flex items-center space-x-3">
-                                        <input type="radio" id="pattern-tabata" name="training-pattern" value="tabata" class="w-5 h-5 text-fit-primary">
-                                        <label for="pattern-tabata" class="text-fit-secondary flex items-center cursor-pointer">
-                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            Tabata Intervals
-                                        </label>
-                                    </div>
-                                    <div class="flex items-center space-x-3">
-                                        <input type="radio" id="pattern-pyramid" name="training-pattern" value="pyramid" class="w-5 h-5 text-fit-primary">
-                                        <label for="pattern-pyramid" class="text-fit-secondary flex items-center cursor-pointer">
-                                            <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
-                                            </svg>
-                                            Pyramid Training
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <!-- Pattern-specific settings -->
-                                <div id="pattern-settings" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
-                                    <!-- Circuit Training Settings -->
-                                    <div id="circuit-settings" class="hidden">
-                                        <div class="mb-3 p-3 bg-fit-primary/10 rounded-lg">
-                                            <p class="text-sm text-fit-primary font-medium">
-                                                💡 <strong>Smart Calculation:</strong> Rounds automatically adjust based on your workout duration
-                                            </p>
+                                <div>
+                                    <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Workout Duration & Intensity
+                                    </label>
+                                    <div class="space-y-3">
+                                        <div class="duration-option">
+                                            <input type="radio" id="duration-15" name="duration" value="15" class="duration-radio">
+                                            <label for="duration-15" class="duration-label">
+                                                <div class="duration-header">
+                                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                                    </svg>
+                                                    <span class="font-medium">15 minutes</span>
+                                                    <span class="intensity-badge intensity-light">Light</span>
+                                                </div>
+                                                <div class="duration-details">
+                                                    <span class="text-sm text-fit-secondary">Quick cardio & warm-up</span>
+                                                </div>
+                                            </label>
                                         </div>
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label class="block text-sm text-fit-secondary mb-2">Circuit Rounds</label>
-                                                <input type="number" id="circuit-rounds" value="3" min="2" max="8" class="input-field">
-                                                <p class="text-xs text-fit-secondary mt-1">15min: 2-3, 30min: 3-4, 45min: 4-5, 60min: 5-6</p>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm text-fit-secondary mb-2">Exercises per Circuit</label>
-                                                <input type="number" id="circuit-exercises" value="6" min="4" max="10" class="input-field">
-                                                <p class="text-xs text-fit-secondary mt-1">More exercises = longer circuits</p>
-                                            </div>
+                                        <div class="duration-option">
+                                            <input type="radio" id="duration-30" name="duration" value="30" class="duration-radio" checked>
+                                            <label for="duration-30" class="duration-label">
+                                                <div class="duration-header">
+                                                    <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    <span class="font-medium">30 minutes</span>
+                                                    <span class="intensity-badge intensity-medium">Medium</span>
+                                                </div>
+                                                <div class="duration-details">
+                                                    <span class="text-sm text-fit-secondary">Balanced workout</span>
+                                                </div>
+                                            </label>
                                         </div>
-                                        <div class="mt-3">
-                                                <label class="block text-sm text-fit-secondary mb-2">Rest Between Circuits (sec)</label>
-                                                <input type="number" id="circuit-rest" value="60" min="30" max="180" class="input-field">
+                                        <div class="duration-option">
+                                            <input type="radio" id="duration-45" name="duration" value="45" class="duration-radio">
+                                            <label for="duration-45" class="duration-label">
+                                                <div class="duration-header">
+                                                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                    </svg>
+                                                    <span class="font-medium">45 minutes</span>
+                                                    <span class="intensity-badge intensity-high">High</span>
+                                                </div>
+                                                <div class="duration-details">
+                                                    <span class="text-sm text-fit-secondary">Intensive training</span>
+                                                </div>
+                                            </label>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Tabata Settings -->
-                                    <div id="tabata-settings" class="hidden">
-                                        <div class="mb-3 p-3 bg-fit-accent/10 rounded-lg">
-                                            <p class="text-sm text-fit-accent font-medium">
-                                                ⏱️ <strong>Smart Calculation:</strong> Rounds automatically adjust based on your workout duration
-                                            </p>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label class="block text-sm text-fit-secondary mb-2">Tabata Rounds</label>
-                                                <input type="number" id="tabata-rounds" value="8" min="4" max="12" class="input-field">
-                                                <p class="text-xs text-fit-secondary mt-1">15min: 6, 30min: 8, 45min: 10, 60min: 12</p>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm text-fit-secondary mb-2">Rest Between Sets (sec)</label>
-                                                <input type="number" id="tabata-rest" value="30" min="15" max="60" class="input-field">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Pyramid Settings -->
-                                    <div id="pyramid-settings" class="hidden">
-                                        <div class="mb-3 p-3 bg-fit-warning/10 rounded-lg">
-                                            <p class="text-sm text-fit-warning font-medium">
-                                                🏗️ <strong>Smart Calculation:</strong> Levels automatically adjust based on your workout duration
-                                            </p>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label class="block text-sm text-fit-secondary mb-2">Pyramid Levels</label>
-                                                <input type="number" id="pyramid-levels" value="5" min="3" max="7" class="input-field">
-                                                <p class="text-xs text-fit-secondary mt-1">15min: 3-4, 30min: 4-5, 45min: 5-6, 60min: 6-7</p>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm text-fit-secondary mb-2">Rest Between Levels (sec)</label>
-                                                <input type="number" id="pyramid-rest" value="45" min="20" max="90" class="input-field">
-                                            </div>
+                                        <div class="duration-option">
+                                            <input type="radio" id="duration-60" name="duration" value="60" class="duration-radio">
+                                            <label for="duration-60" class="duration-label">
+                                                <div class="duration-header">
+                                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                                    </svg>
+                                                    <span class="font-medium">60 minutes</span>
+                                                    <span class="intensity-badge intensity-extreme">Extreme</span>
+                                                </div>
+                                                <div class="duration-details">
+                                                    <span class="text-sm text-fit-secondary">Marathon session</span>
+                                                </div>
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Right Column -->
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-fit-dark font-semibold mb-3 flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                    </svg>
-                                    Available Equipment
-                                </label>
+                                <div>
+                                    <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        Fitness Level
+                                    </label>
+                                    <select id="fitness-level" name="fitness-level" class="input-field">
+                                        <option value="Beginner">Beginner</option>
+                                        <option value="Intermediate" selected>Intermediate</option>
+                                        <option value="Advanced">Advanced</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="rounded-2xl border border-fit-border bg-white/80 overflow-hidden" data-collapsible-section>
+                            <h3>
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                                    data-collapsible-trigger
+                                    aria-controls="equipment-settings-panel"
+                                    aria-expanded="true"
+                                >
+                                    <span>
+                                        <span class="block text-lg font-semibold text-fit-dark">Equipment</span>
+                                        <span class="block text-sm text-fit-secondary">Choose what you have available</span>
+                                    </span>
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-fit-primary/10 text-fit-primary transition-transform" data-collapsible-icon>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+                            <div id="equipment-settings-panel" class="border-t border-fit-border px-5 py-5" data-collapsible-panel>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div class="equipment-card">
                                         <input type="checkbox" id="eq-bodyweight" name="equipment" value="Bodyweight" class="equipment-checkbox" checked>
@@ -874,10 +752,175 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
+
+                        <section class="rounded-2xl border border-fit-border bg-white/80 overflow-hidden" data-collapsible-section>
+                            <h3>
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                                    data-collapsible-trigger
+                                    aria-controls="advanced-settings-panel"
+                                    aria-expanded="false"
+                                >
+                                    <span>
+                                        <span class="block text-lg font-semibold text-fit-dark">Advanced</span>
+                                        <span class="block text-sm text-fit-secondary">Work and rest timing, plus training pattern</span>
+                                    </span>
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-fit-primary/10 text-fit-primary transition-transform rotate-180" data-collapsible-icon>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+                            <div id="advanced-settings-panel" class="space-y-6 border-t border-fit-border px-5 py-5" data-collapsible-panel hidden>
+                                <div>
+                                    <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                        Work/Rest Timing
+                                    </label>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm text-fit-secondary mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                </svg>
+                                                Work (seconds)
+                                            </label>
+                                            <input type="number" id="work-time" name="work-time" value="45" min="20" max="120" inputmode="numeric" autocomplete="off" class="input-field" aria-label="Work time seconds">
+                                            <span id="work-time-value" class="text-xs text-fit-secondary ml-2" aria-live="polite">45s</span>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-fit-secondary mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                Rest (seconds)
+                                            </label>
+                                            <input type="number" id="rest-time" name="rest-time" value="15" min="10" max="60" inputmode="numeric" autocomplete="off" class="input-field" aria-label="Rest time seconds">
+                                            <span id="rest-time-value" class="text-xs text-fit-secondary ml-2" aria-live="polite">15s</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-fit-dark font-semibold mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        Training Pattern
+                                    </label>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center space-x-3">
+                                            <input type="radio" id="pattern-standard" name="training-pattern" value="standard" class="w-5 h-5 text-fit-primary" checked>
+                                            <label for="pattern-standard" class="text-fit-secondary flex items-center cursor-pointer">
+                                                <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                Standard Training
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <input type="radio" id="pattern-circuit" name="training-pattern" value="circuit" class="w-5 h-5 text-fit-primary">
+                                            <label for="pattern-circuit" class="text-fit-secondary flex items-center cursor-pointer">
+                                                <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                </svg>
+                                                Circuit Training
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <input type="radio" id="pattern-tabata" name="training-pattern" value="tabata" class="w-5 h-5 text-fit-primary">
+                                            <label for="pattern-tabata" class="text-fit-secondary flex items-center cursor-pointer">
+                                                <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                Tabata Intervals
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <input type="radio" id="pattern-pyramid" name="training-pattern" value="pyramid" class="w-5 h-5 text-fit-primary">
+                                            <label for="pattern-pyramid" class="text-fit-secondary flex items-center cursor-pointer">
+                                                <svg class="w-4 h-4 mr-2 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                                </svg>
+                                                Pyramid Training
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div id="pattern-settings" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+                                        <div id="circuit-settings" class="hidden">
+                                            <div class="mb-3 p-3 bg-fit-primary/10 rounded-lg">
+                                                <p class="text-sm text-fit-primary font-medium">
+                                                    💡 <strong>Smart Calculation:</strong> Rounds automatically adjust based on your workout duration
+                                                </p>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm text-fit-secondary mb-2">Circuit Rounds</label>
+                                                    <input type="number" id="circuit-rounds" value="3" min="2" max="8" inputmode="numeric" autocomplete="off" class="input-field">
+                                                    <p class="text-xs text-fit-secondary mt-1">15min: 2-3, 30min: 3-4, 45min: 4-5, 60min: 5-6</p>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-fit-secondary mb-2">Exercises per Circuit</label>
+                                                    <input type="number" id="circuit-exercises" value="6" min="4" max="10" inputmode="numeric" autocomplete="off" class="input-field">
+                                                    <p class="text-xs text-fit-secondary mt-1">More exercises = longer circuits</p>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <label class="block text-sm text-fit-secondary mb-2">Rest Between Circuits (sec)</label>
+                                                <input type="number" id="circuit-rest" value="60" min="30" max="180" inputmode="numeric" autocomplete="off" class="input-field">
+                                            </div>
+                                        </div>
+
+                                        <div id="tabata-settings" class="hidden">
+                                            <div class="mb-3 p-3 bg-fit-accent/10 rounded-lg">
+                                                <p class="text-sm text-fit-accent font-medium">
+                                                    ⏱️ <strong>Smart Calculation:</strong> Rounds automatically adjust based on your workout duration
+                                                </p>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm text-fit-secondary mb-2">Tabata Rounds</label>
+                                                    <input type="number" id="tabata-rounds" value="8" min="4" max="12" inputmode="numeric" autocomplete="off" class="input-field">
+                                                    <p class="text-xs text-fit-secondary mt-1">15min: 6, 30min: 8, 45min: 10, 60min: 12</p>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-fit-secondary mb-2">Rest Between Sets (sec)</label>
+                                                    <input type="number" id="tabata-rest" value="30" min="15" max="60" inputmode="numeric" autocomplete="off" class="input-field">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="pyramid-settings" class="hidden">
+                                            <div class="mb-3 p-3 bg-fit-warning/10 rounded-lg">
+                                                <p class="text-sm text-fit-warning font-medium">
+                                                    🏗️ <strong>Smart Calculation:</strong> Levels automatically adjust based on your workout duration
+                                                </p>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm text-fit-secondary mb-2">Pyramid Levels</label>
+                                                    <input type="number" id="pyramid-levels" value="5" min="3" max="7" inputmode="numeric" autocomplete="off" class="input-field">
+                                                    <p class="text-xs text-fit-secondary mt-1">15min: 3-4, 30min: 4-5, 45min: 5-6, 60min: 6-7</p>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm text-fit-secondary mb-2">Rest Between Levels (sec)</label>
+                                                    <input type="number" id="pyramid-rest" value="45" min="20" max="90" inputmode="numeric" autocomplete="off" class="input-field">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
-                    <div class="mt-8 text-center space-y-4">
+                    <div class="mt-8 text-center space-y-4 pb-2">
                         <button type="submit" id="generate-btn" class="btn-primary text-lg px-8 py-4 relative overflow-hidden" tabindex="0">
                             <span class="flex items-center justify-center space-x-2 relative z-10">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -900,6 +943,17 @@
                         </div>
                     </div>
                 </form>
+
+                <div class="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-fit-border bg-white/95 backdrop-blur px-4 py-3 shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
+                    <button type="submit" id="mobile-generate-cta" form="workout-form" class="btn-primary w-full text-base py-4">
+                        <span class="flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <span>Generate Workout</span>
+                        </span>
+                    </button>
+                </div>
 
                 <!-- Loading State -->
                 <div id="loading" class="hidden text-center py-12">
@@ -955,7 +1009,7 @@
         </div>
 
         <!-- Workout Player -->
-        <div id="workout-player" class="hidden animate-fade-in">
+        <div id="workout-player" class="hidden animate-fade-in workout-player-shell">
             <div class="max-w-4xl mx-auto">
                 <!-- Progress Bar -->
                 <div class="card mb-6">
@@ -1072,7 +1126,7 @@
                 </div>
 
                 <!-- Enhanced Controls -->
-                <div class="card">
+                <div id="desktop-workout-controls" class="card">
                     <div class="flex flex-wrap items-center justify-center gap-6">
                         <button id="prev-exercise-btn" class="btn-secondary transform hover:scale-105 transition-all duration-200 hover:shadow-lg">
                             <span class="flex items-center space-x-2">
@@ -1121,6 +1175,81 @@
                         <button id="exit-workout-btn" class="text-fit-danger hover:text-red-700 font-medium transition-colors" role="button" aria-label="Exit workout">
                             Exit Workout
                         </button>
+                    </div>
+                </div>
+
+                <div id="mobile-workout-controls" class="hidden md:hidden" aria-label="Mobile workout controls">
+                    <div class="mobile-workout-controls__spacer" aria-hidden="true"></div>
+                    <div class="mobile-workout-controls__bar">
+                        <div class="mobile-workout-controls__summary">
+                            <div class="mobile-workout-controls__summary-main">
+                                <p id="mobile-current-exercise" class="mobile-workout-controls__exercise"></p>
+                                <div class="mobile-workout-controls__meta">
+                                    <span id="mobile-phase-pill" class="mobile-workout-controls__phase"></span>
+                                    <span id="mobile-exercise-progress"></span>
+                                </div>
+                            </div>
+                            <div id="mobile-current-timer" class="mobile-workout-controls__timer" aria-live="polite"></div>
+                        </div>
+
+                        <div class="mobile-workout-controls__actions" role="group" aria-label="Primary workout controls">
+                            <button id="mobile-prev-exercise-btn" type="button" class="mobile-workout-btn mobile-workout-btn--secondary tap-target" aria-label="Go to previous exercise">
+                                Previous
+                            </button>
+                            <button id="mobile-pause-resume-btn" type="button" class="mobile-workout-btn mobile-workout-btn--primary tap-target" aria-label="Pause workout">
+                                Pause
+                            </button>
+                            <button id="mobile-next-exercise-btn" type="button" class="mobile-workout-btn mobile-workout-btn--secondary tap-target" aria-label="Go to next exercise">
+                                Next
+                            </button>
+                        </div>
+
+                        <div class="mobile-workout-controls__secondary">
+                            <button id="mobile-more-toggle" type="button" class="mobile-workout-btn mobile-workout-btn--ghost tap-target" aria-expanded="false" aria-controls="mobile-more-panel" aria-label="Show more workout controls">
+                                More
+                            </button>
+                            <button id="mobile-exit-workout-btn" type="button" class="mobile-workout-btn mobile-workout-btn--ghost tap-target" aria-label="Exit workout">
+                                Exit
+                            </button>
+                        </div>
+
+                        <div id="mobile-more-panel" class="mobile-workout-controls__more hidden" aria-label="Additional workout controls">
+                            <div class="mobile-workout-controls__row">
+                                <label for="mobile-timer-mode-select" class="mobile-workout-controls__label">Timer mode</label>
+                                <select id="mobile-timer-mode-select" class="mobile-workout-controls__select tap-target" aria-label="Select timer mode">
+                                    <option value="standard">Standard</option>
+                                    <option value="tabata">Tabata</option>
+                                    <option value="hiit">HIIT</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+
+                            <div id="mobile-custom-timer-settings" class="mobile-workout-controls__custom hidden">
+                                <label class="mobile-workout-controls__field">
+                                    <span class="mobile-workout-controls__label">Work (sec)</span>
+                                    <input id="mobile-custom-work-time" type="number" min="5" max="300" inputmode="numeric" class="mobile-workout-controls__input tap-target" aria-label="Custom work time in seconds">
+                                </label>
+                                <label class="mobile-workout-controls__field">
+                                    <span class="mobile-workout-controls__label">Rest (sec)</span>
+                                    <input id="mobile-custom-rest-time" type="number" min="5" max="120" inputmode="numeric" class="mobile-workout-controls__input tap-target" aria-label="Custom rest time in seconds">
+                                </label>
+                            </div>
+
+                            <div class="mobile-workout-controls__toggles" role="group" aria-label="Sound and vibration controls">
+                                <label class="mobile-workout-toggle tap-target">
+                                    <input type="checkbox" id="mobile-sound-toggle" checked aria-label="Toggle workout sound">
+                                    <span>Sound</span>
+                                </label>
+                                <label class="mobile-workout-toggle tap-target">
+                                    <input type="checkbox" id="mobile-vibration-toggle" checked aria-label="Toggle workout vibration">
+                                    <span>Vibration</span>
+                                </label>
+                            </div>
+
+                            <button id="mobile-resources-btn" type="button" class="mobile-workout-btn mobile-workout-btn--ghost tap-target" aria-label="Jump to exercise resources">
+                                Exercise Resources
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1241,11 +1370,11 @@
                 <form id="login-form" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Username</label>
-                        <input type="text" id="login-username" required class="input-field w-full" placeholder="Enter your username">
+                        <input type="text" id="login-username" required autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="text" class="input-field w-full" placeholder="Enter your username">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Password</label>
-                        <input type="password" id="login-password" required class="input-field w-full" placeholder="Enter your password">
+                        <input type="password" id="login-password" required autocomplete="current-password" autocapitalize="none" spellcheck="false" class="input-field w-full" placeholder="Enter your password">
                     </div>
                     <div id="login-error" class="text-red-600 text-sm hidden"></div>
                     
@@ -1293,16 +1422,16 @@
                 <form id="register-form" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Name</label>
-                        <input type="text" id="register-name" required class="input-field w-full" placeholder="Enter your name">
+                        <input type="text" id="register-name" required autocomplete="name" inputmode="text" class="input-field w-full" placeholder="Enter your name">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Username</label>
-                        <input type="text" id="register-username" required class="input-field w-full" placeholder="Choose a username">
+                        <input type="text" id="register-username" required autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="text" class="input-field w-full" placeholder="Choose a username">
                         <p class="text-xs text-gray-500 mt-1">This will be your login username</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Password</label>
-                        <input type="password" id="register-password" required class="input-field w-full" placeholder="Create a password">
+                        <input type="password" id="register-password" required autocomplete="new-password" autocapitalize="none" spellcheck="false" class="input-field w-full" placeholder="Create a password">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Fitness Experience</label>
@@ -1395,7 +1524,7 @@
                         </div>
                         <div class="mt-3">
                             <label class="block text-sm font-medium text-fit-dark mb-2">Security Answer</label>
-                            <input type="text" id="register-security-answer" class="input-field w-full" placeholder="Enter your answer">
+                            <input type="text" id="register-security-answer" autocomplete="off" autocapitalize="words" spellcheck="false" inputmode="text" class="input-field w-full" placeholder="Enter your answer">
                         </div>
                         <p class="text-xs text-gray-500 mt-2">This will be used to verify your identity if you need to reset your password.</p>
                     </div>
@@ -1478,7 +1607,7 @@
                 <form id="password-reset-form" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Username</label>
-                        <input type="text" id="reset-username" required class="input-field w-full" placeholder="Enter your username">
+                        <input type="text" id="reset-username" required autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="text" class="input-field w-full" placeholder="Enter your username">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Security Question</label>
@@ -1492,11 +1621,11 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">Security Answer</label>
-                        <input type="text" id="reset-security-answer" required class="input-field w-full" placeholder="Enter your answer">
+                        <input type="text" id="reset-security-answer" required autocomplete="off" autocapitalize="words" spellcheck="false" inputmode="text" class="input-field w-full" placeholder="Enter your answer">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-fit-dark mb-2">New Password</label>
-                        <input type="password" id="reset-new-password" required class="input-field w-full" placeholder="Enter new password">
+                        <input type="password" id="reset-new-password" required autocomplete="new-password" autocapitalize="none" spellcheck="false" class="input-field w-full" placeholder="Enter new password">
                     </div>
                     
                     <div id="password-reset-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
