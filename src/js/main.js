@@ -6,7 +6,25 @@
  * and ensures all modules are loaded in the correct order
  */
 
-console.log('🔧 MAIN.JS LOADED - v24 - CACHE BUSTED');
+const DEBUG = (() => {
+  try {
+    return (
+      window.__DEBUG__ === true ||
+      window.localStorage.getItem('fitflow_debug') === '1' ||
+      window.localStorage.getItem('fitflow_de bug') === '1'
+    );
+  } catch {
+    return window.__DEBUG__ === true;
+  }
+})();
+
+function debugLog(...args) {
+  if (DEBUG) {
+    console.log(...args);
+  }
+}
+
+debugLog('🔧 MAIN.JS LOADED - v24 - CACHE BUSTED');
 
 // Import core modules
 import { exercises, exerciseDatabase } from './core/exercise-database.js';
@@ -66,8 +84,8 @@ class FitFlowApp {
   }
 
   init() {
-    console.log('🚀 FitFlow App Initializing...');
-    console.log('📦 Modules loaded:', Object.keys(this.modules));
+    debugLog('🚀 FitFlow App Initializing...');
+    debugLog('📦 Modules loaded:', Object.keys(this.modules));
 
     // Make modules globally available for backward compatibility
     this.setupGlobalExports();
@@ -93,7 +111,7 @@ class FitFlowApp {
     // Setup dashboard functionality
     this.setupDashboard();
 
-    console.log('✅ FitFlow App Initialized Successfully!');
+    debugLog('✅ FitFlow App Initialized Successfully!');
   }
 
   /**
@@ -141,7 +159,7 @@ class FitFlowApp {
    */
   initializeUserAccount() {
     if (userAccount.isLoggedIn) {
-      console.log('👤 User logged in:', userAccount.currentUser.profile.name);
+      debugLog('👤 User logged in:', userAccount.currentUser.profile.name);
       // Ensure DOM is ready before updating UI
       if (document.readyState === 'complete' || document.readyState === 'interactive') {
         this.updateUserInterface();
@@ -149,7 +167,7 @@ class FitFlowApp {
         document.addEventListener('DOMContentLoaded', () => this.updateUserInterface());
       }
     } else {
-      console.log('👤 No user logged in');
+      debugLog('👤 No user logged in');
     }
   }
 
@@ -176,18 +194,18 @@ class FitFlowApp {
    * Update user interface based on login status
    */
   updateUserInterface() {
-    console.log('🔄 Updating user interface...');
-    console.log('👤 User logged in:', userAccount.isLoggedIn);
-    console.log('👤 Current user:', userAccount.currentUser);
+    debugLog('🔄 Updating user interface...');
+    debugLog('👤 User logged in:', userAccount.isLoggedIn);
+    debugLog('👤 Current user:', userAccount.currentUser);
 
     const userSection = document.getElementById('user-account-section');
     const guestSection = document.getElementById('guest-section');
 
-    console.log('🎯 User section found:', !!userSection);
-    console.log('🎯 Guest section found:', !!guestSection);
+    debugLog('🎯 User section found:', !!userSection);
+    debugLog('🎯 Guest section found:', !!guestSection);
 
     if (userAccount.isLoggedIn) {
-      console.log('✅ Showing user section, hiding guest section');
+      debugLog('✅ Showing user section, hiding guest section');
       if (userSection) userSection.classList.remove('hidden');
       if (guestSection) guestSection.classList.add('hidden');
 
@@ -196,25 +214,25 @@ class FitFlowApp {
       const userStreak = document.getElementById('user-streak');
       const userAvatar = document.getElementById('user-avatar');
 
-      console.log('🎯 User name element found:', !!userName);
-      console.log('🎯 User streak element found:', !!userStreak);
-      console.log('🎯 User avatar element found:', !!userAvatar);
+      debugLog('🎯 User name element found:', !!userName);
+      debugLog('🎯 User streak element found:', !!userStreak);
+      debugLog('🎯 User avatar element found:', !!userAvatar);
 
       if (userName) {
         userName.textContent = userAccount.currentUser.profile.name;
-        console.log('✅ Updated user name to:', userAccount.currentUser.profile.name);
+        debugLog('✅ Updated user name to:', userAccount.currentUser.profile.name);
       }
       if (userStreak) {
         const streak = userAccount.getStats().currentStreak;
         userStreak.textContent = `${streak} day streak`;
-        console.log('✅ Updated user streak to:', streak);
+        debugLog('✅ Updated user streak to:', streak);
       }
       if (userAvatar) {
         userAvatar.textContent = userAccount.currentUser.profile.avatar || '🏃‍♂️';
-        console.log('✅ Updated user avatar to:', userAccount.currentUser.profile.avatar);
+        debugLog('✅ Updated user avatar to:', userAccount.currentUser.profile.avatar);
       }
     } else {
-      console.log('❌ Hiding user section, showing guest section');
+      debugLog('❌ Hiding user section, showing guest section');
       if (userSection) userSection.classList.add('hidden');
       if (guestSection) guestSection.classList.remove('hidden');
     }
@@ -244,7 +262,7 @@ class FitFlowApp {
     const workoutForm = document.getElementById('workout-form');
     if (workoutForm) {
       workoutForm.addEventListener('submit', handleFormSubmission);
-      console.log('📝 Workout form listener attached');
+      debugLog('📝 Workout form listener attached');
     } else {
       console.warn('⚠️ Workout form not found');
     }
@@ -263,12 +281,12 @@ class FitFlowApp {
       input.addEventListener('change', (e) => {
         const pattern = e.target.value;
         this.showPatternSettings(pattern);
-        console.log('🔄 Training pattern changed to:', pattern);
+        debugLog('🔄 Training pattern changed to:', pattern);
         trackModeSelected('generator', pattern, { source: 'training_pattern_change' });
       });
     });
 
-    console.log('🔄 Training pattern listeners attached');
+    debugLog('🔄 Training pattern listeners attached');
   }
 
   /**
@@ -311,7 +329,7 @@ class FitFlowApp {
    * Setup user account event listeners
    */
   setupUserAccountListeners() {
-    console.log('🔧 Setting up user account event listeners...');
+    debugLog('🔧 Setting up user account event listeners...');
     // Login button
     const loginBtn = document.getElementById('login-btn');
     if (loginBtn) {
@@ -345,7 +363,7 @@ class FitFlowApp {
     // Login modal close button
     const closeLoginModal = document.getElementById('close-login-modal');
     if (closeLoginModal) {
-      console.log('✅ Attaching close button listener to login modal');
+      debugLog('✅ Attaching close button listener to login modal');
       closeLoginModal.addEventListener('click', () => this.hideModal('login-modal'));
     } else {
       console.warn('⚠️ Login modal close button not found');
@@ -366,7 +384,7 @@ class FitFlowApp {
     // Switch to register button (in login modal)
     const switchToRegister = document.getElementById('switch-to-register');
     if (switchToRegister) {
-      console.log('✅ Attaching register button listener');
+      debugLog('✅ Attaching register button listener');
       switchToRegister.addEventListener('click', () => {
         this.hideModal('login-modal');
         this.showRegisterModal();
@@ -435,7 +453,7 @@ class FitFlowApp {
       modal.classList.remove('hidden');
       modal.removeAttribute('aria-hidden');
     } else {
-      console.log('🔐 Show login modal');
+      debugLog('🔐 Show login modal');
     }
   }
 
@@ -448,7 +466,7 @@ class FitFlowApp {
       modal.classList.remove('hidden');
       modal.removeAttribute('aria-hidden');
     } else {
-      console.log('📝 Show register modal');
+      debugLog('📝 Show register modal');
     }
   }
 
@@ -457,7 +475,7 @@ class FitFlowApp {
    */
   showProfileModal() {
     // This will be implemented when we extract the UI modules
-    console.log('👤 Show profile modal');
+    debugLog('👤 Show profile modal');
   }
 
   /**
@@ -469,7 +487,7 @@ class FitFlowApp {
       modal.classList.remove('hidden');
       modal.removeAttribute('aria-hidden');
     } else {
-      console.log('🔑 Show password reset modal');
+      debugLog('🔑 Show password reset modal');
     }
   }
 
@@ -479,7 +497,7 @@ class FitFlowApp {
   handleLogout() {
     userAccount.logout();
     this.updateUserInterface();
-    console.log('👋 User logged out');
+    debugLog('👋 User logged out');
   }
 
   /**
@@ -592,7 +610,7 @@ class FitFlowApp {
         setTimeout(() => {
           this.updateUserInterface();
         }, 100);
-        console.log('✅ Account created successfully!');
+        debugLog('✅ Account created successfully!');
       } else {
         if (errorDiv) {
           errorDiv.textContent = result.error;
@@ -626,7 +644,7 @@ class FitFlowApp {
         setTimeout(() => {
           this.updateUserInterface();
         }, 100);
-        console.log('✅ Login successful!');
+        debugLog('✅ Login successful!');
       } else {
         if (errorDiv) {
           errorDiv.textContent = result.error;
@@ -863,12 +881,12 @@ class FitFlowApp {
 // Initialize the application when the DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('📄 DOM Content Loaded - Initializing FitFlow App...');
+    debugLog('📄 DOM Content Loaded - Initializing FitFlow App...');
     window.fitFlowApp = new FitFlowApp();
   });
 } else {
   // DOM is already loaded
-  console.log('📄 DOM Already Loaded - Initializing FitFlow App...');
+  debugLog('📄 DOM Already Loaded - Initializing FitFlow App...');
   window.fitFlowApp = new FitFlowApp();
 }
 
