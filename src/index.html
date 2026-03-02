@@ -1009,7 +1009,7 @@
         </div>
 
         <!-- Workout Player -->
-        <div id="workout-player" class="hidden animate-fade-in">
+        <div id="workout-player" class="hidden animate-fade-in workout-player-shell">
             <div class="max-w-4xl mx-auto">
                 <!-- Progress Bar -->
                 <div class="card mb-6">
@@ -1126,7 +1126,7 @@
                 </div>
 
                 <!-- Enhanced Controls -->
-                <div class="card">
+                <div id="desktop-workout-controls" class="card">
                     <div class="flex flex-wrap items-center justify-center gap-6">
                         <button id="prev-exercise-btn" class="btn-secondary transform hover:scale-105 transition-all duration-200 hover:shadow-lg">
                             <span class="flex items-center space-x-2">
@@ -1175,6 +1175,81 @@
                         <button id="exit-workout-btn" class="text-fit-danger hover:text-red-700 font-medium transition-colors" role="button" aria-label="Exit workout">
                             Exit Workout
                         </button>
+                    </div>
+                </div>
+
+                <div id="mobile-workout-controls" class="hidden md:hidden" aria-label="Mobile workout controls">
+                    <div class="mobile-workout-controls__spacer" aria-hidden="true"></div>
+                    <div class="mobile-workout-controls__bar">
+                        <div class="mobile-workout-controls__summary">
+                            <div class="mobile-workout-controls__summary-main">
+                                <p id="mobile-current-exercise" class="mobile-workout-controls__exercise"></p>
+                                <div class="mobile-workout-controls__meta">
+                                    <span id="mobile-phase-pill" class="mobile-workout-controls__phase"></span>
+                                    <span id="mobile-exercise-progress"></span>
+                                </div>
+                            </div>
+                            <div id="mobile-current-timer" class="mobile-workout-controls__timer" aria-live="polite"></div>
+                        </div>
+
+                        <div class="mobile-workout-controls__actions" role="group" aria-label="Primary workout controls">
+                            <button id="mobile-prev-exercise-btn" type="button" class="mobile-workout-btn mobile-workout-btn--secondary tap-target" aria-label="Go to previous exercise">
+                                Previous
+                            </button>
+                            <button id="mobile-pause-resume-btn" type="button" class="mobile-workout-btn mobile-workout-btn--primary tap-target" aria-label="Pause workout">
+                                Pause
+                            </button>
+                            <button id="mobile-next-exercise-btn" type="button" class="mobile-workout-btn mobile-workout-btn--secondary tap-target" aria-label="Go to next exercise">
+                                Next
+                            </button>
+                        </div>
+
+                        <div class="mobile-workout-controls__secondary">
+                            <button id="mobile-more-toggle" type="button" class="mobile-workout-btn mobile-workout-btn--ghost tap-target" aria-expanded="false" aria-controls="mobile-more-panel" aria-label="Show more workout controls">
+                                More
+                            </button>
+                            <button id="mobile-exit-workout-btn" type="button" class="mobile-workout-btn mobile-workout-btn--ghost tap-target" aria-label="Exit workout">
+                                Exit
+                            </button>
+                        </div>
+
+                        <div id="mobile-more-panel" class="mobile-workout-controls__more hidden" aria-label="Additional workout controls">
+                            <div class="mobile-workout-controls__row">
+                                <label for="mobile-timer-mode-select" class="mobile-workout-controls__label">Timer mode</label>
+                                <select id="mobile-timer-mode-select" class="mobile-workout-controls__select tap-target" aria-label="Select timer mode">
+                                    <option value="standard">Standard</option>
+                                    <option value="tabata">Tabata</option>
+                                    <option value="hiit">HIIT</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+
+                            <div id="mobile-custom-timer-settings" class="mobile-workout-controls__custom hidden">
+                                <label class="mobile-workout-controls__field">
+                                    <span class="mobile-workout-controls__label">Work (sec)</span>
+                                    <input id="mobile-custom-work-time" type="number" min="5" max="300" inputmode="numeric" class="mobile-workout-controls__input tap-target" aria-label="Custom work time in seconds">
+                                </label>
+                                <label class="mobile-workout-controls__field">
+                                    <span class="mobile-workout-controls__label">Rest (sec)</span>
+                                    <input id="mobile-custom-rest-time" type="number" min="5" max="120" inputmode="numeric" class="mobile-workout-controls__input tap-target" aria-label="Custom rest time in seconds">
+                                </label>
+                            </div>
+
+                            <div class="mobile-workout-controls__toggles" role="group" aria-label="Sound and vibration controls">
+                                <label class="mobile-workout-toggle tap-target">
+                                    <input type="checkbox" id="mobile-sound-toggle" checked aria-label="Toggle workout sound">
+                                    <span>Sound</span>
+                                </label>
+                                <label class="mobile-workout-toggle tap-target">
+                                    <input type="checkbox" id="mobile-vibration-toggle" checked aria-label="Toggle workout vibration">
+                                    <span>Vibration</span>
+                                </label>
+                            </div>
+
+                            <button id="mobile-resources-btn" type="button" class="mobile-workout-btn mobile-workout-btn--ghost tap-target" aria-label="Jump to exercise resources">
+                                Exercise Resources
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

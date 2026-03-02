@@ -145,6 +145,8 @@ let workoutState = {
   audioContext: null,
 };
 
+let workoutPlayerKeyboardBound = false;
+
 // Sync with main app state if available
 if (window.appState) {
   Object.assign(workoutState, window.appState);
@@ -544,6 +546,9 @@ function renderWorkoutPlayer() {
   if (window.applySettingsToWorkoutPlayer) {
     window.applySettingsToWorkoutPlayer();
   }
+
+  syncMobileSecondaryControls();
+  updateMobileWorkoutControls();
 }
 
 /**
@@ -671,6 +676,8 @@ function setTimerDisplays() {
       }
     }
   }
+
+  updateMobileWorkoutControls();
 }
 
 // Expose a safe display refresh hook for timer-mode changes.
@@ -750,6 +757,115 @@ function updatePauseButton() {
       }
       if (text) text.textContent = 'Pause';
     }
+  }
+
+  const mobilePauseBtn = document.getElementById('mobile-pause-resume-btn');
+  if (mobilePauseBtn) {
+    const nextLabel = workoutState.isPaused ? 'Resume' : 'Pause';
+    mobilePauseBtn.textContent = nextLabel;
+    mobilePauseBtn.setAttribute('aria-label', `${nextLabel} workout`);
+  }
+
+  updateMobileWorkoutControls();
+}
+
+function updateMobileWorkoutControls() {
+  const currentExercise = workoutState.sequence?.[workoutState.currentIndex];
+  const mobileControls = document.getElementById('mobile-workout-controls');
+  if (!mobileControls || !currentExercise) return;
+
+  const mobileExercise = document.getElementById('mobile-current-exercise');
+  const mobileProgress = document.getElementById('mobile-exercise-progress');
+  const mobilePhase = document.getElementById('mobile-phase-pill');
+  const mobileTimer = document.getElementById('mobile-current-timer');
+  const mobilePrevBtn = document.getElementById('mobile-prev-exercise-btn');
+  const mobileNextBtn = document.getElementById('mobile-next-exercise-btn');
+  const mobileResourcesBtn = document.getElementById('mobile-resources-btn');
+  const playerShell = document.getElementById('workout-player');
+
+  if (mobileExercise) {
+    mobileExercise.textContent = currentExercise.name || 'Current exercise';
+  }
+
+  if (mobileProgress) {
+    mobileProgress.textContent = `Exercise ${workoutState.currentIndex + 1} of ${workoutState.sequence.length}`;
+  }
+
+  if (mobilePhase) {
+    mobilePhase.textContent = workoutState.phase === 'rest' ? 'Rest' : 'Work';
+  }
+
+  if (mobileTimer) {
+    mobileTimer.textContent = formatSeconds(workoutState.remainingSeconds || 0);
+  }
+
+  if (mobilePrevBtn) {
+    mobilePrevBtn.disabled = workoutState.currentIndex === 0;
+    mobilePrevBtn.setAttribute('aria-disabled', mobilePrevBtn.disabled ? 'true' : 'false');
+  }
+
+  if (mobileNextBtn) {
+    mobileNextBtn.disabled = workoutState.currentIndex >= workoutState.sequence.length - 1;
+    mobileNextBtn.setAttribute('aria-disabled', mobileNextBtn.disabled ? 'true' : 'false');
+  }
+
+  if (mobileResourcesBtn) {
+    mobileResourcesBtn.classList.toggle('hidden', !currentExercise.resources);
+  }
+
+  if (playerShell) {
+    requestAnimationFrame(() => {
+      const stickyBar = mobileControls.querySelector('.mobile-workout-controls__bar');
+      if (!stickyBar) return;
+      playerShell.style.setProperty(
+        '--mobile-workout-controls-height',
+        `${stickyBar.offsetHeight}px`
+      );
+    });
+  }
+}
+
+function syncMobileSecondaryControls() {
+  const soundToggle = document.getElementById('sound-toggle');
+  const vibrationToggle = document.getElementById('vibration-toggle');
+  const timerModeSelect = document.getElementById('timer-mode-select');
+  const customWorkTime = document.getElementById('custom-work-time');
+  const customRestTime = document.getElementById('custom-rest-time');
+  const mobileSoundToggle = document.getElementById('mobile-sound-toggle');
+  const mobileVibrationToggle = document.getElementById('mobile-vibration-toggle');
+  const mobileTimerModeSelect = document.getElementById('mobile-timer-mode-select');
+  const mobileCustomWorkTime = document.getElementById('mobile-custom-work-time');
+  const mobileCustomRestTime = document.getElementById('mobile-custom-rest-time');
+  const mobileCustomSettings = document.getElementById('mobile-custom-timer-settings');
+
+  if (mobileSoundToggle) {
+    mobileSoundToggle.checked = soundToggle
+      ? soundToggle.checked
+      : workoutState.enableSound !== false;
+  }
+
+  if (mobileVibrationToggle) {
+    mobileVibrationToggle.checked = vibrationToggle
+      ? vibrationToggle.checked
+      : workoutState.enableVibration !== false;
+  }
+
+  const currentTimerMode = timerModeSelect?.value || getCurrentTimerMode() || TIMER_MODES.STANDARD;
+  if (mobileTimerModeSelect) {
+    mobileTimerModeSelect.value = currentTimerMode;
+  }
+
+  const isCustomMode = currentTimerMode === TIMER_MODES.CUSTOM;
+  if (mobileCustomSettings) {
+    mobileCustomSettings.classList.toggle('hidden', !isCustomMode);
+  }
+
+  if (mobileCustomWorkTime) {
+    mobileCustomWorkTime.value = customWorkTime?.value || String(workoutState.workTime || 45);
+  }
+
+  if (mobileCustomRestTime) {
+    mobileCustomRestTime.value = customRestTime?.value || String(workoutState.restTime || 15);
   }
 }
 
@@ -1145,19 +1261,19 @@ export async function setupWorkoutPlayerListeners() {
   // Pause/Resume button
   const pauseBtn = document.getElementById('pause-resume-btn');
   if (pauseBtn) {
-    pauseBtn.addEventListener('click', togglePause);
+    pauseBtn.onclick = togglePause;
   }
 
   // Previous exercise button
   const prevBtn = document.getElementById('prev-exercise-btn');
   if (prevBtn) {
-    prevBtn.addEventListener('click', previousExercise);
+    prevBtn.onclick = previousExercise;
   }
 
   // Next exercise button
   const nextBtn = document.getElementById('next-exercise-btn');
   if (nextBtn) {
-    nextBtn.addEventListener('click', nextExercise);
+    nextBtn.onclick = nextExercise;
   }
 
   // Exit workout button
@@ -1165,10 +1281,10 @@ export async function setupWorkoutPlayerListeners() {
   if (exitBtn) {
     exitBtn.disabled = false; // Ensure it's not disabled
     exitBtn.style.pointerEvents = 'auto'; // Ensure it's clickable
-    exitBtn.addEventListener('click', (e) => {
+    exitBtn.onclick = (e) => {
       console.log('🚪 Exit workout button clicked');
       exitWorkout();
-    });
+    };
     console.log('✅ Exit workout button initialized');
   } else {
     console.error('❌ Exit workout button not found');
@@ -1196,15 +1312,16 @@ export async function setupWorkoutPlayerListeners() {
     soundToggle.disabled = false; // Ensure it's not disabled
     soundToggle.style.pointerEvents = 'auto'; // Ensure it's clickable
 
-    soundToggle.addEventListener('change', (e) => {
+    soundToggle.onchange = (e) => {
       const newValue = e.target.checked;
       workoutState.enableSound = newValue;
       // Also update main app state if it exists
       if (window.appState) {
         window.appState.enableSound = newValue;
       }
+      syncMobileSecondaryControls();
       console.log('🔊 Sound toggle changed to:', newValue);
-    });
+    };
 
     console.log('✅ Sound toggle initialized:', soundToggle.checked);
   } else {
@@ -1222,15 +1339,16 @@ export async function setupWorkoutPlayerListeners() {
     vibrationToggle.disabled = false; // Ensure it's not disabled
     vibrationToggle.style.pointerEvents = 'auto'; // Ensure it's clickable
 
-    vibrationToggle.addEventListener('change', (e) => {
+    vibrationToggle.onchange = (e) => {
       const newValue = e.target.checked;
       workoutState.enableVibration = newValue;
       // Also update main app state if it exists
       if (window.appState) {
         window.appState.enableVibration = newValue;
       }
+      syncMobileSecondaryControls();
       console.log('📳 Vibration toggle changed to:', newValue);
-    });
+    };
 
     console.log('✅ Vibration toggle initialized:', vibrationToggle.checked);
   } else {
@@ -1240,45 +1358,143 @@ export async function setupWorkoutPlayerListeners() {
   // Rest overlay close button
   const overlayExitBtn = document.getElementById('overlay-exit-btn');
   if (overlayExitBtn) {
-    overlayExitBtn.addEventListener('click', () => {
+    overlayExitBtn.onclick = () => {
       const restOverlay = document.getElementById('rest-overlay');
       if (restOverlay) {
         restOverlay.classList.add('hidden');
       }
-    });
+    };
+  }
+
+  const mobilePrevBtn = document.getElementById('mobile-prev-exercise-btn');
+  if (mobilePrevBtn) {
+    mobilePrevBtn.onclick = previousExercise;
+  }
+
+  const mobilePauseBtn = document.getElementById('mobile-pause-resume-btn');
+  if (mobilePauseBtn) {
+    mobilePauseBtn.onclick = togglePause;
+  }
+
+  const mobileNextBtn = document.getElementById('mobile-next-exercise-btn');
+  if (mobileNextBtn) {
+    mobileNextBtn.onclick = nextExercise;
+  }
+
+  const mobileExitBtn = document.getElementById('mobile-exit-workout-btn');
+  if (mobileExitBtn) {
+    mobileExitBtn.onclick = exitWorkout;
+  }
+
+  const mobileMoreToggle = document.getElementById('mobile-more-toggle');
+  const mobileMorePanel = document.getElementById('mobile-more-panel');
+  if (mobileMoreToggle && mobileMorePanel) {
+    mobileMoreToggle.onclick = () => {
+      const isHidden = mobileMorePanel.classList.toggle('hidden');
+      mobileMoreToggle.setAttribute('aria-expanded', String(!isHidden));
+      updateMobileWorkoutControls();
+    };
+  }
+
+  const mobileSoundToggle = document.getElementById('mobile-sound-toggle');
+  if (mobileSoundToggle && soundToggle) {
+    mobileSoundToggle.onchange = (e) => {
+      soundToggle.checked = e.target.checked;
+      soundToggle.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+  }
+
+  const mobileVibrationToggle = document.getElementById('mobile-vibration-toggle');
+  if (mobileVibrationToggle && vibrationToggle) {
+    mobileVibrationToggle.onchange = (e) => {
+      vibrationToggle.checked = e.target.checked;
+      vibrationToggle.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+  }
+
+  const mobileTimerModeSelect = document.getElementById('mobile-timer-mode-select');
+  if (mobileTimerModeSelect) {
+    mobileTimerModeSelect.onchange = (e) => {
+      const timerModeSelect = document.getElementById('timer-mode-select');
+      if (timerModeSelect) {
+        timerModeSelect.value = e.target.value;
+        timerModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      syncMobileSecondaryControls();
+      updateMobileWorkoutControls();
+    };
+  }
+
+  const mobileCustomWorkTime = document.getElementById('mobile-custom-work-time');
+  if (mobileCustomWorkTime) {
+    mobileCustomWorkTime.onchange = (e) => {
+      const customWorkTime = document.getElementById('custom-work-time');
+      if (customWorkTime) {
+        customWorkTime.value = e.target.value;
+        customWorkTime.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      syncMobileSecondaryControls();
+    };
+  }
+
+  const mobileCustomRestTime = document.getElementById('mobile-custom-rest-time');
+  if (mobileCustomRestTime) {
+    mobileCustomRestTime.onchange = (e) => {
+      const customRestTime = document.getElementById('custom-rest-time');
+      if (customRestTime) {
+        customRestTime.value = e.target.value;
+        customRestTime.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      syncMobileSecondaryControls();
+    };
+  }
+
+  const mobileResourcesBtn = document.getElementById('mobile-resources-btn');
+  if (mobileResourcesBtn) {
+    mobileResourcesBtn.onclick = () => {
+      const resources = document.getElementById('exercise-resources');
+      resources?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
   }
 
   // Keyboard shortcuts
-  document.addEventListener('keydown', (e) => {
-    const playerScreen = document.getElementById('workout-player');
-    if (!playerScreen || playerScreen.classList.contains('hidden')) return;
-    if (
-      e.target &&
-      (e.target.tagName === 'INPUT' ||
-        e.target.tagName === 'TEXTAREA' ||
-        e.target.isContentEditable)
-    )
-      return;
+  if (!workoutPlayerKeyboardBound) {
+    document.addEventListener('keydown', (e) => {
+      const playerScreen = document.getElementById('workout-player');
+      if (!playerScreen || playerScreen.classList.contains('hidden')) return;
+      if (
+        e.target &&
+        (e.target.tagName === 'INPUT' ||
+          e.target.tagName === 'TEXTAREA' ||
+          e.target.isContentEditable)
+      )
+        return;
 
-    switch (e.key) {
-      case ' ':
-        e.preventDefault();
-        togglePause();
-        break;
-      case 'ArrowLeft':
-        e.preventDefault();
-        previousExercise();
-        break;
-      case 'ArrowRight':
-        e.preventDefault();
-        nextExercise();
-        break;
-      case 'Escape':
-        e.preventDefault();
-        exitWorkout();
-        break;
-    }
-  });
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          togglePause();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          previousExercise();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          nextExercise();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          exitWorkout();
+          break;
+      }
+    });
+    workoutPlayerKeyboardBound = true;
+  }
+
+  syncMobileSecondaryControls();
+  updatePauseButton();
+  updateMobileWorkoutControls();
 }
 
 // Make functions available globally for backward compatibility
