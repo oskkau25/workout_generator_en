@@ -441,6 +441,9 @@ class AnalyticsDashboard {
     // Update insights
     this.updateInsights();
 
+    // Update funnel metrics
+    this.updateFunnelMetrics();
+
     // Update auto-generated hotfix priorities
     this.updateHotfixPriorities();
 
@@ -501,6 +504,142 @@ class AnalyticsDashboard {
 
     const d7El = document.getElementById('d7-retention');
     if (d7El) d7El.textContent = `${retention.d7}%`;
+  }
+
+  updateFunnelMetrics() {
+    const container = this.ensureFunnelSection();
+    if (!container) return;
+
+    const funnel = this.getFunnelMetrics();
+    const steps = funnel.steps;
+
+    steps.forEach((step) => {
+      const countEl = document.getElementById(step.countId);
+      if (countEl) countEl.textContent = step.count.toLocaleString();
+
+      const rateEl = document.getElementById(step.rateId);
+      if (rateEl) rateEl.textContent = step.rateLabel;
+    });
+  }
+
+  ensureFunnelSection() {
+    const existing = document.getElementById('funnel-metrics-section');
+    if (existing) return existing;
+
+    const main = document.querySelector('main');
+    if (!main) return null;
+
+    const section = document.createElement('section');
+    section.id = 'funnel-metrics-section';
+    section.className = 'bg-white rounded-2xl shadow-lg p-6 mb-6';
+    section.innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-lg font-semibold text-fit-dark">Mobile Funnel Snapshot</h2>
+            <p class="text-sm text-fit-secondary">Counts are based on local session events only.</p>
+          </div>
+          <span class="text-xs font-semibold bg-fit-primary/10 text-fit-primary px-3 py-1 rounded-full">Local</span>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <div class="rounded-xl border border-gray-200 p-4">
+            <p class="text-xs text-fit-secondary mb-1">App Open</p>
+            <p id="funnel-app-open" class="text-2xl font-bold text-fit-dark">0</p>
+            <p id="funnel-app-open-rate" class="text-xs text-fit-secondary mt-2">Baseline</p>
+          </div>
+          <div class="rounded-xl border border-gray-200 p-4">
+            <p class="text-xs text-fit-secondary mb-1">Workout Generated</p>
+            <p id="funnel-workout-generated" class="text-2xl font-bold text-fit-dark">0</p>
+            <p id="funnel-workout-generated-rate" class="text-xs text-fit-secondary mt-2">0% from open</p>
+          </div>
+          <div class="rounded-xl border border-gray-200 p-4">
+            <p class="text-xs text-fit-secondary mb-1">Workout Started</p>
+            <p id="funnel-workout-started" class="text-2xl font-bold text-fit-dark">0</p>
+            <p id="funnel-workout-started-rate" class="text-xs text-fit-secondary mt-2">0% from generated</p>
+          </div>
+          <div class="rounded-xl border border-gray-200 p-4">
+            <p class="text-xs text-fit-secondary mb-1">Workout Completed</p>
+            <p id="funnel-workout-completed" class="text-2xl font-bold text-fit-dark">0</p>
+            <p id="funnel-workout-completed-rate" class="text-xs text-fit-secondary mt-2">0% from started</p>
+          </div>
+          <div class="rounded-xl border border-gray-200 p-4">
+            <p class="text-xs text-fit-secondary mb-1">Feedback Submitted</p>
+            <p id="funnel-feedback-submitted" class="text-2xl font-bold text-fit-dark">0</p>
+            <p id="funnel-feedback-submitted-rate" class="text-xs text-fit-secondary mt-2">0% from completed</p>
+          </div>
+        </div>
+      `;
+
+    main.prepend(section);
+    return section;
+  }
+
+  getFunnelMetrics() {
+    const events = Array.isArray(this.analyticsData.activity) ? this.analyticsData.activity : [];
+    const countBy = (names, stepName = null, fallbackNames = []) => {
+      const explicitCount = events.filter((event) => names.includes(event.event)).length;
+      if (explicitCount > 0) {
+        return explicitCount;
+      }
+
+      const stepCount = stepName
+        ? events.filter(
+            (event) => event.event === 'step_completed' && event.details?.stepName === stepName
+          ).length
+        : 0;
+      if (stepCount > 0) {
+        return stepCount;
+      }
+
+      if (fallbackNames.length > 0) {
+        return events.filter((event) => fallbackNames.includes(event.event)).length;
+      }
+
+      return 0;
+    };
+
+    const appOpen = countBy(['app_open'], null, ['session_started']);
+    const workoutGenerated = countBy(['workout_generated'], 'workout_generated');
+    const workoutStarted = countBy(['workout_started'], 'workout_started');
+    const workoutCompleted = countBy(['workout_completed'], 'workout_completed');
+    const feedbackSubmitted = countBy(['feedback_submitted']);
+
+    const rate = (current, previous) =>
+      previous > 0 ? `${Math.round((current / previous) * 100)}%` : '0%';
+
+    return {
+      steps: [
+        {
+          countId: 'funnel-app-open',
+          rateId: 'funnel-app-open-rate',
+          count: appOpen,
+          rateLabel: 'Baseline',
+        },
+        {
+          countId: 'funnel-workout-generated',
+          rateId: 'funnel-workout-generated-rate',
+          count: workoutGenerated,
+          rateLabel: `${rate(workoutGenerated, appOpen)} from open`,
+        },
+        {
+          countId: 'funnel-workout-started',
+          rateId: 'funnel-workout-started-rate',
+          count: workoutStarted,
+          rateLabel: `${rate(workoutStarted, workoutGenerated)} from generated`,
+        },
+        {
+          countId: 'funnel-workout-completed',
+          rateId: 'funnel-workout-completed-rate',
+          count: workoutCompleted,
+          rateLabel: `${rate(workoutCompleted, workoutStarted)} from started`,
+        },
+        {
+          countId: 'funnel-feedback-submitted',
+          rateId: 'funnel-feedback-submitted-rate',
+          count: feedbackSubmitted,
+          rateLabel: `${rate(feedbackSubmitted, workoutCompleted)} from completed`,
+        },
+      ],
+    };
   }
 
   getMostPopular(field) {
