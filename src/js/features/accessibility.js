@@ -1,7 +1,7 @@
 /**
  * Accessibility Features Module
  * Provides high contrast mode, large text options, and keyboard navigation
- * 
+ *
  * Features:
  * - High contrast mode toggle
  * - Large text size options
@@ -14,103 +14,117 @@ console.log('♿ ACCESSIBILITY.JS LOADED - v1');
 
 // Accessibility state management
 const accessibilityState = {
-    highContrast: false,
-    largeText: false,
-    reducedMotion: false,
-    keyboardNavigation: false
+  highContrast: false,
+  largeText: false,
+  reducedMotion: false,
+  keyboardNavigation: false,
 };
 
 // CSS classes for accessibility features
 const ACCESSIBILITY_CLASSES = {
-    highContrast: 'accessibility-high-contrast',
-    largeText: 'accessibility-large-text',
-    reducedMotion: 'accessibility-reduced-motion',
-    keyboardNav: 'accessibility-keyboard-nav'
+  highContrast: 'accessibility-high-contrast',
+  largeText: 'accessibility-large-text',
+  reducedMotion: 'accessibility-reduced-motion',
+  keyboardNav: 'accessibility-keyboard-nav',
 };
+
+let accessibilityFocusReturnTarget = null;
+let focusManagementInitialized = false;
 
 /**
  * Initialize accessibility features
  */
 export function initializeAccessibility() {
-    console.log('♿ Initializing accessibility features...');
-    
-    // Load saved accessibility preferences
-    loadAccessibilityPreferences();
-    
-    // Setup accessibility controls
-    setupAccessibilityControls();
-    
-    // Setup keyboard navigation
-    setupKeyboardNavigation();
-    
-    // Apply initial accessibility settings
-    applyAccessibilitySettings();
-    
-    console.log('✅ Accessibility features initialized');
+  console.log('♿ Initializing accessibility features...');
+
+  // Load saved accessibility preferences
+  loadAccessibilityPreferences();
+
+  // Setup accessibility controls
+  setupAccessibilityControls();
+
+  // Setup keyboard navigation
+  setupKeyboardNavigation();
+
+  // Normalize shared disclosure semantics
+  setupCollapsibleAccessibility();
+
+  // Apply initial accessibility settings
+  applyAccessibilitySettings();
+
+  console.log('✅ Accessibility features initialized');
 }
 
 /**
  * Load accessibility preferences from localStorage
  */
 function loadAccessibilityPreferences() {
-    try {
-        const saved = localStorage.getItem('fitflow_accessibility');
-        if (saved) {
-            const preferences = JSON.parse(saved);
-            Object.assign(accessibilityState, preferences);
-            console.log('♿ Loaded accessibility preferences:', preferences);
-        }
-    } catch (error) {
-        console.warn('Failed to load accessibility preferences:', error);
+  try {
+    const saved = localStorage.getItem('fitflow_accessibility');
+    if (saved) {
+      const preferences = JSON.parse(saved);
+      Object.assign(accessibilityState, preferences);
+      console.log('♿ Loaded accessibility preferences:', preferences);
     }
+  } catch (error) {
+    console.warn('Failed to load accessibility preferences:', error);
+  }
 }
 
 /**
  * Save accessibility preferences to localStorage
  */
 function saveAccessibilityPreferences() {
-    try {
-        localStorage.setItem('fitflow_accessibility', JSON.stringify(accessibilityState));
-        console.log('♿ Saved accessibility preferences:', accessibilityState);
-    } catch (error) {
-        console.warn('Failed to save accessibility preferences:', error);
-    }
+  try {
+    localStorage.setItem('fitflow_accessibility', JSON.stringify(accessibilityState));
+    console.log('♿ Saved accessibility preferences:', accessibilityState);
+  } catch (error) {
+    console.warn('Failed to save accessibility preferences:', error);
+  }
 }
 
 /**
  * Setup accessibility control buttons
  */
 function setupAccessibilityControls() {
-    // Create accessibility panel if it doesn't exist
-    createAccessibilityPanel();
-    
-    // Setup toggle buttons
-    setupToggleButton('high-contrast-toggle', 'highContrast', 'High Contrast Mode');
-    setupToggleButton('large-text-toggle', 'largeText', 'Large Text');
-    setupToggleButton('reduced-motion-toggle', 'reducedMotion', 'Reduced Motion');
-    setupToggleButton('keyboard-nav-toggle', 'keyboardNavigation', 'Keyboard Navigation');
-    
-    // Setup accessibility menu toggle
-    const accessibilityBtn = document.getElementById('accessibility-btn');
-    if (accessibilityBtn) {
-        accessibilityBtn.addEventListener('click', toggleAccessibilityPanel);
-    }
+  // Create accessibility panel if it doesn't exist
+  createAccessibilityPanel();
+
+  // Setup toggle buttons
+  setupToggleButton('high-contrast-toggle', 'highContrast', 'High Contrast Mode');
+  setupToggleButton('large-text-toggle', 'largeText', 'Large Text');
+  setupToggleButton('reduced-motion-toggle', 'reducedMotion', 'Reduced Motion');
+  setupToggleButton('keyboard-nav-toggle', 'keyboardNavigation', 'Keyboard Navigation');
+
+  // Setup accessibility menu toggle
+  const accessibilityBtn = document.getElementById('accessibility-btn');
+  if (accessibilityBtn) {
+    accessibilityBtn.setAttribute('aria-controls', 'accessibility-panel');
+    accessibilityBtn.setAttribute('aria-expanded', 'false');
+    accessibilityBtn.setAttribute('aria-haspopup', 'dialog');
+    accessibilityBtn.addEventListener('click', toggleAccessibilityPanel);
+  }
 }
 
 /**
  * Create accessibility control panel
  */
 function createAccessibilityPanel() {
-    // Check if panel already exists
-    if (document.getElementById('accessibility-panel')) return;
-    
-    const panel = document.createElement('div');
-    panel.id = 'accessibility-panel';
-    panel.className = 'accessibility-panel hidden';
-    panel.innerHTML = `
+  // Check if panel already exists
+  if (document.getElementById('accessibility-panel')) return;
+
+  const panel = document.createElement('div');
+  panel.id = 'accessibility-panel';
+  panel.className = 'accessibility-panel hidden';
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'false');
+  panel.setAttribute('aria-labelledby', 'accessibility-panel-title');
+  panel.setAttribute('tabindex', '-1');
+  panel.style.zIndex = '80';
+  panel.innerHTML = `
         <div class="accessibility-panel-content">
             <div class="accessibility-header">
-                <h3 class="accessibility-title">
+                <h3 id="accessibility-panel-title" class="accessibility-title">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                     </svg>
@@ -176,131 +190,179 @@ function createAccessibilityPanel() {
             </div>
         </div>
     `;
-    
-    // Add to body
-    document.body.appendChild(panel);
-    
-    // Setup close button
-    const closeBtn = document.getElementById('close-accessibility-panel');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            panel.classList.add('hidden');
-        });
+
+  // Add to body
+  document.body.appendChild(panel);
+
+  // Setup close button
+  const closeBtn = document.getElementById('close-accessibility-panel');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', hideAccessibilityPanel);
+  }
+
+  // Setup reset button
+  const resetBtn = document.getElementById('reset-accessibility');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetAccessibilitySettings);
+  }
+
+  panel.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      hideAccessibilityPanel();
     }
-    
-    // Setup reset button
-    const resetBtn = document.getElementById('reset-accessibility');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', resetAccessibilitySettings);
-    }
+  });
 }
 
 /**
  * Setup toggle button for accessibility options
  */
 function setupToggleButton(buttonId, stateKey, label) {
-    const button = document.getElementById(buttonId);
-    if (!button) return;
-    
-    // Set initial state
-    button.checked = accessibilityState[stateKey];
-    
-    // Add event listener
-    button.addEventListener('change', (e) => {
-        accessibilityState[stateKey] = e.target.checked;
-        applyAccessibilitySettings();
-        saveAccessibilityPreferences();
-        
-        // Announce change to screen readers
-        announceAccessibilityChange(label, e.target.checked);
-    });
+  const button = document.getElementById(buttonId);
+  if (!button) return;
+
+  // Set initial state
+  button.checked = accessibilityState[stateKey];
+
+  // Add event listener
+  button.addEventListener('change', (e) => {
+    accessibilityState[stateKey] = e.target.checked;
+    applyAccessibilitySettings();
+    saveAccessibilityPreferences();
+
+    // Announce change to screen readers
+    announceAccessibilityChange(label, e.target.checked);
+  });
+
+  button.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      button.checked = !button.checked;
+      button.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
 }
 
 /**
  * Toggle accessibility panel visibility
  */
 function toggleAccessibilityPanel() {
-    const panel = document.getElementById('accessibility-panel');
-    if (panel) {
-        panel.classList.toggle('hidden');
-        
-        // Focus management
-        if (!panel.classList.contains('hidden')) {
-            const firstFocusable = panel.querySelector('input, button');
-            if (firstFocusable) {
-                firstFocusable.focus();
-            }
-        }
+  const panel = document.getElementById('accessibility-panel');
+  if (panel) {
+    const willOpen = panel.classList.contains('hidden');
+    if (willOpen) {
+      showAccessibilityPanel();
+      return;
     }
+
+    hideAccessibilityPanel();
+  }
+}
+
+function showAccessibilityPanel() {
+  const panel = document.getElementById('accessibility-panel');
+  const accessibilityBtn = document.getElementById('accessibility-btn');
+  if (!panel) return;
+
+  accessibilityFocusReturnTarget =
+    document.activeElement instanceof HTMLElement ? document.activeElement : accessibilityBtn;
+
+  panel.classList.remove('hidden');
+  accessibilityBtn?.setAttribute('aria-expanded', 'true');
+
+  const firstFocusable = panel.querySelector(
+    'input, button, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  if (firstFocusable instanceof HTMLElement) {
+    firstFocusable.focus();
+  } else {
+    panel.focus();
+  }
+}
+
+function hideAccessibilityPanel() {
+  const panel = document.getElementById('accessibility-panel');
+  const accessibilityBtn = document.getElementById('accessibility-btn');
+  if (!panel || panel.classList.contains('hidden')) return;
+
+  panel.classList.add('hidden');
+  accessibilityBtn?.setAttribute('aria-expanded', 'false');
+
+  if (accessibilityFocusReturnTarget instanceof HTMLElement) {
+    accessibilityFocusReturnTarget.focus();
+  } else {
+    accessibilityBtn?.focus();
+  }
 }
 
 /**
  * Apply accessibility settings to the page
  */
 function applyAccessibilitySettings() {
-    const body = document.body;
-    
-    // Remove all accessibility classes first
-    Object.values(ACCESSIBILITY_CLASSES).forEach(className => {
-        body.classList.remove(className);
-    });
-    
-    // Apply active accessibility features
-    if (accessibilityState.highContrast) {
-        body.classList.add(ACCESSIBILITY_CLASSES.highContrast);
-    }
-    
-    if (accessibilityState.largeText) {
-        body.classList.add(ACCESSIBILITY_CLASSES.largeText);
-    }
-    
-    if (accessibilityState.reducedMotion) {
-        body.classList.add(ACCESSIBILITY_CLASSES.reducedMotion);
-    }
-    
-    if (accessibilityState.keyboardNavigation) {
-        body.classList.add(ACCESSIBILITY_CLASSES.keyboardNav);
-        setupKeyboardNavigation();
-    }
-    
-    console.log('♿ Applied accessibility settings:', accessibilityState);
+  const body = document.body;
+
+  // Remove all accessibility classes first
+  Object.values(ACCESSIBILITY_CLASSES).forEach((className) => {
+    body.classList.remove(className);
+  });
+
+  // Apply active accessibility features
+  if (accessibilityState.highContrast) {
+    body.classList.add(ACCESSIBILITY_CLASSES.highContrast);
+  }
+
+  if (accessibilityState.largeText) {
+    body.classList.add(ACCESSIBILITY_CLASSES.largeText);
+  }
+
+  if (accessibilityState.reducedMotion) {
+    body.classList.add(ACCESSIBILITY_CLASSES.reducedMotion);
+  }
+
+  if (accessibilityState.keyboardNavigation) {
+    body.classList.add(ACCESSIBILITY_CLASSES.keyboardNav);
+    setupKeyboardNavigation();
+  }
+
+  console.log('♿ Applied accessibility settings:', accessibilityState);
 }
 
 /**
  * Reset accessibility settings to defaults
  */
 function resetAccessibilitySettings() {
-    // Reset state
-    Object.keys(accessibilityState).forEach(key => {
-        accessibilityState[key] = false;
-    });
-    
-    // Update UI
-    Object.keys(accessibilityState).forEach(key => {
-        const button = document.getElementById(`${key.replace(/([A-Z])/g, '-$1').toLowerCase()}-toggle`);
-        if (button) {
-            button.checked = false;
-        }
-    });
-    
-    // Apply settings
-    applyAccessibilitySettings();
-    saveAccessibilityPreferences();
-    
-    // Announce reset
-    announceAccessibilityChange('Accessibility settings', 'reset to defaults');
+  // Reset state
+  Object.keys(accessibilityState).forEach((key) => {
+    accessibilityState[key] = false;
+  });
+
+  // Update UI
+  Object.keys(accessibilityState).forEach((key) => {
+    const button = document.getElementById(
+      `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}-toggle`
+    );
+    if (button) {
+      button.checked = false;
+    }
+  });
+
+  // Apply settings
+  applyAccessibilitySettings();
+  saveAccessibilityPreferences();
+
+  // Announce reset
+  announceAccessibilityChange('Accessibility settings', 'reset to defaults');
 }
 
 /**
  * Setup keyboard navigation support
  */
 function setupKeyboardNavigation() {
-    if (!accessibilityState.keyboardNavigation) return;
-    
-    // Add keyboard navigation styles
-    const style = document.createElement('style');
-    style.id = 'keyboard-navigation-styles';
-    style.textContent = `
+  if (!accessibilityState.keyboardNavigation) return;
+
+  // Add keyboard navigation styles
+  const style = document.createElement('style');
+  style.id = 'keyboard-navigation-styles';
+  style.textContent = `
         .accessibility-keyboard-nav *:focus {
             outline: 3px solid #0ea5e9 !important;
             outline-offset: 2px !important;
@@ -323,131 +385,180 @@ function setupKeyboardNavigation() {
             top: 6px;
         }
     `;
-    
-    // Remove existing styles if any
-    const existing = document.getElementById('keyboard-navigation-styles');
-    if (existing) {
-        existing.remove();
-    }
-    
-    document.head.appendChild(style);
-    
-    // Add skip links
-    addSkipLinks();
-    
-    // Setup focus management
-    setupFocusManagement();
+
+  // Remove existing styles if any
+  const existing = document.getElementById('keyboard-navigation-styles');
+  if (existing) {
+    existing.remove();
+  }
+
+  document.head.appendChild(style);
+
+  // Add skip links
+  addSkipLinks();
+
+  // Setup focus management
+  setupFocusManagement();
 }
 
 /**
  * Add skip links for keyboard navigation
  */
 function addSkipLinks() {
-    // Check if skip links already exist
-    if (document.querySelector('.skip-link')) return;
-    
-    const skipLinks = document.createElement('div');
-    skipLinks.className = 'skip-links';
-    skipLinks.innerHTML = `
+  // Check if skip links already exist
+  if (document.querySelector('.skip-link')) return;
+
+  const skipLinks = document.createElement('div');
+  skipLinks.className = 'skip-links';
+  skipLinks.innerHTML = `
         <a href="#main-content" class="skip-link">Skip to main content</a>
         <a href="#workout-form" class="skip-link">Skip to workout form</a>
         <a href="#accessibility-panel" class="skip-link">Skip to accessibility options</a>
     `;
-    
-    document.body.insertBefore(skipLinks, document.body.firstChild);
+
+  document.body.insertBefore(skipLinks, document.body.firstChild);
 }
 
 /**
  * Setup focus management
  */
 function setupFocusManagement() {
-    // Trap focus in modals
-    const modals = document.querySelectorAll('[role="dialog"], .modal');
-    modals.forEach(modal => {
-        modal.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                trapFocus(e, modal);
-            }
-        });
+  if (focusManagementInitialized) return;
+  focusManagementInitialized = true;
+
+  // Trap focus in modals
+  const modals = document.querySelectorAll('[role="dialog"], .modal');
+  modals.forEach((modal) => {
+    modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        trapFocus(e, modal);
+      }
     });
-    
-    // Manage focus for dynamic content
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-                if (node.nodeType === Node.ELEMENT_NODE) {
-                    // Focus new interactive elements
-                    const focusable = node.querySelector('input, button, select, textarea, [tabindex]');
-                    if (focusable && accessibilityState.keyboardNavigation) {
-                        focusable.focus();
-                    }
-                }
-            });
-        });
-    });
-    
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+  });
 }
 
 /**
  * Trap focus within a modal
  */
 function trapFocus(e, modal) {
-    const focusableElements = modal.querySelectorAll(
-        'input, button, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-    
-    if (e.shiftKey) {
-        if (document.activeElement === firstElement) {
-            lastElement.focus();
-            e.preventDefault();
-        }
-    } else {
-        if (document.activeElement === lastElement) {
-            firstElement.focus();
-            e.preventDefault();
-        }
+  const focusableElements = modal.querySelectorAll(
+    'input, button, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+
+  if (!focusableElements.length) return;
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+
+  if (e.shiftKey) {
+    if (document.activeElement === firstElement) {
+      lastElement.focus();
+      e.preventDefault();
     }
+  } else {
+    if (document.activeElement === lastElement) {
+      firstElement.focus();
+      e.preventDefault();
+    }
+  }
 }
 
 /**
  * Announce accessibility changes to screen readers
  */
 function announceAccessibilityChange(feature, status) {
-    const announcement = document.createElement('div');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.setAttribute('aria-atomic', 'true');
-    announcement.className = 'sr-only';
-    announcement.textContent = `${feature} ${status}`;
-    
-    document.body.appendChild(announcement);
-    
-    // Remove after announcement
-    setTimeout(() => {
-        document.body.removeChild(announcement);
-    }, 1000);
+  const announcement = document.createElement('div');
+  announcement.setAttribute('aria-live', 'polite');
+  announcement.setAttribute('aria-atomic', 'true');
+  announcement.className = 'sr-only';
+  announcement.textContent = `${feature} ${status}`;
+
+  document.body.appendChild(announcement);
+
+  // Remove after announcement
+  setTimeout(() => {
+    document.body.removeChild(announcement);
+  }, 1000);
+}
+
+function setupCollapsibleAccessibility() {
+  const triggers = document.querySelectorAll('[data-collapsible-trigger]');
+
+  triggers.forEach((trigger, index) => {
+    const triggerElement = trigger instanceof HTMLElement ? trigger : null;
+    if (!triggerElement) return;
+
+    const triggerId = triggerElement.id || `collapsible-trigger-${index + 1}`;
+    triggerElement.id = triggerId;
+
+    let panelId = triggerElement.getAttribute('aria-controls');
+    let panel = panelId ? document.getElementById(panelId) : null;
+
+    if (!panel) {
+      panel = triggerElement
+        .closest('[data-collapsible-section]')
+        ?.querySelector('[data-collapsible-panel]');
+    }
+
+    if (!(panel instanceof HTMLElement)) return;
+
+    if (!panel.id) {
+      panel.id = `collapsible-panel-${index + 1}`;
+    }
+
+    panelId = panel.id;
+    triggerElement.setAttribute('aria-controls', panelId);
+    triggerElement.setAttribute('aria-expanded', String(!panel.hidden));
+    panel.setAttribute('role', 'region');
+    panel.setAttribute('aria-labelledby', triggerId);
+
+    if (triggerElement.tagName !== 'BUTTON') {
+      triggerElement.setAttribute('role', 'button');
+      if (!triggerElement.hasAttribute('tabindex')) {
+        triggerElement.setAttribute('tabindex', '0');
+      }
+
+      if (triggerElement.dataset.a11yToggleBound !== 'true') {
+        triggerElement.addEventListener('click', () =>
+          toggleCollapsiblePanel(triggerElement, panel)
+        );
+        triggerElement.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleCollapsiblePanel(triggerElement, panel);
+          }
+        });
+        triggerElement.dataset.a11yToggleBound = 'true';
+      }
+    }
+  });
+}
+
+function toggleCollapsiblePanel(trigger, panel) {
+  const nextExpandedState = trigger.getAttribute('aria-expanded') !== 'true';
+  trigger.setAttribute('aria-expanded', String(nextExpandedState));
+  panel.hidden = !nextExpandedState;
+
+  const icon = trigger.querySelector('[data-collapsible-icon]');
+  if (icon) {
+    icon.classList.toggle('rotate-180', !nextExpandedState);
+  }
 }
 
 /**
  * Get current accessibility state
  */
 export function getAccessibilityState() {
-    return { ...accessibilityState };
+  return { ...accessibilityState };
 }
 
 /**
  * Set accessibility state
  */
 export function setAccessibilityState(newState) {
-    Object.assign(accessibilityState, newState);
-    applyAccessibilitySettings();
-    saveAccessibilityPreferences();
+  Object.assign(accessibilityState, newState);
+  applyAccessibilitySettings();
+  saveAccessibilityPreferences();
 }
 
 // Export for global access
