@@ -1,8 +1,10 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: ["Quality Gates CI"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -12,39 +14,39 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
+    # Allow manual deploy OR successful quality-gate run
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout tested commit
         uses: actions/checkout@v4
-        
+        with:
+          # For workflow_run deploy the exact commit that passed quality gates
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        
-      - name: Build and Deploy
+
+      - name: Build site artifact
         run: |
-          # Copy source files to root for GitHub Pages
-          cp -r src/* .
-          cp README.md .
-          
-          # Ensure index.html is the main entry point
-          if [ -f index.html ]; then
-            echo "✅ index.html found and will be served"
-          else
-            echo "❌ index.html not found - this will cause issues"
-          fi
-          
+          rm -rf _site
+          mkdir -p _site
+          cp -R src/* _site/
+          test -f _site/index.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
-          
+          path: _site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
