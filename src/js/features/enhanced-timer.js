@@ -55,8 +55,6 @@ let enhancedTimerState = {
  * Initialize enhanced timer features
  */
 export function initializeEnhancedTimer() {
-  console.log('🎵 Enhanced Timer Module Loaded');
-
   const workoutState = window.workoutState;
   if (workoutState) {
     enhancedTimerState.baseWorkTime =
@@ -92,7 +90,6 @@ export function initializeEnhancedTimer() {
 function initializeAudioContext() {
   try {
     enhancedTimerState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    console.log('🎵 Audio context initialized');
   } catch (error) {
     console.warn('Audio not supported:', error);
     enhancedTimerState.audioEnabled = false;
@@ -164,26 +161,12 @@ function addTimerModeControls() {
  * Setup timer mode event listeners
  */
 function setupTimerModeListeners() {
-  console.log('🔧 Setting up timer mode listeners...');
-
   const modeSelect = document.getElementById('timer-mode-select');
   // Audio and vibration controls removed - using main workout player controls instead
   const customSettings = document.getElementById('custom-timer-settings');
 
-  console.log('🔍 Found elements:', {
-    modeSelect: !!modeSelect,
-    customSettings: !!customSettings,
-  });
-
   if (modeSelect) {
-    // Test if element is actually clickable
-    console.log('🔍 Testing modeSelect clickability...');
-    console.log('🔍 modeSelect disabled:', modeSelect.disabled);
-    console.log('🔍 modeSelect style pointer-events:', getComputedStyle(modeSelect).pointerEvents);
-    console.log('🔍 modeSelect z-index:', getComputedStyle(modeSelect).zIndex);
-
     modeSelect.addEventListener('change', (e) => {
-      console.log('🎯 Timer mode changed to:', e.target.value);
       enhancedTimerState.mode = e.target.value;
 
       if (e.target.value === TIMER_MODES.CUSTOM) {
@@ -200,11 +183,6 @@ function setupTimerModeListeners() {
         workTime: workoutState.workTime,
         restTime: workoutState.restTime,
       });
-    });
-
-    // Also add click event for debugging
-    modeSelect.addEventListener('click', (e) => {
-      console.log('🖱️ modeSelect clicked!');
     });
 
     // Set initial value
@@ -237,8 +215,6 @@ function setupTimerModeListeners() {
       }
     });
   }
-
-  console.log('✅ Timer mode listeners setup complete');
 }
 
 /**
@@ -247,44 +223,12 @@ function setupTimerModeListeners() {
 function applyTimerMode(mode) {
   const workoutState = window.workoutState;
   if (!workoutState) {
-    console.log('⚠️ No workout state found');
     return;
   }
-
-  console.log('🎯 Applying timer mode:', mode, 'to current workout');
-  console.log('🔍 Current workout state before:', {
-    workTime: workoutState.workTime,
-    restTime: workoutState.restTime,
-    phase: workoutState.phase,
-  });
 
   const nextTiming = getTimingForMode(mode);
   workoutState.workTime = nextTiming.workTime;
   workoutState.restTime = nextTiming.restTime;
-
-  switch (mode) {
-    case TIMER_MODES.TABATA:
-      console.log('⚡ Applied Tabata timing: 20s work, 10s rest');
-      break;
-    case TIMER_MODES.HIIT:
-      console.log('🔥 Applied HIIT timing: 30s work, 15s rest');
-      break;
-    case TIMER_MODES.CUSTOM:
-      console.log('⚙️ Applied custom timing:', nextTiming);
-      break;
-    case TIMER_MODES.STANDARD:
-    default:
-      console.log(
-        `📊 Applied standard timing: ${nextTiming.workTime}s work, ${nextTiming.restTime}s rest`
-      );
-      break;
-  }
-
-  console.log('🔍 Current workout state after:', {
-    workTime: workoutState.workTime,
-    restTime: workoutState.restTime,
-    phase: workoutState.phase,
-  });
 
   // Reset the active phase so mode changes are deterministic and clean.
   if (workoutState.phase === 'rest') {
@@ -330,20 +274,17 @@ function getTimingForMode(mode) {
  */
 function addAudioControls() {
   // Audio controls are already added in addTimerModeControls
-  console.log('🎵 Audio controls added');
 }
 
 /**
  * Initialize smart rest suggestions
  */
-function initializeRestSuggestions() {
-  console.log('💡 Smart rest suggestions initialized');
-}
+function initializeRestSuggestions() {}
 
 /**
  * Play audio cue
  */
-export function playAudioCue(cueType, frequency = 800, duration = 200) {
+export function playAudioCue(_cueType, frequency = 800, duration = 200) {
   // Use main workout player's sound state
   const workoutState = window.workoutState || window.appState;
   if (!workoutState?.enableSound || !enhancedTimerState.audioContext) return;
@@ -366,8 +307,6 @@ export function playAudioCue(cueType, frequency = 800, duration = 200) {
 
     oscillator.start(enhancedTimerState.audioContext.currentTime);
     oscillator.stop(enhancedTimerState.audioContext.currentTime + duration / 1000);
-
-    console.log(`🔊 Played audio cue: ${cueType}`);
   } catch (error) {
     console.warn('Audio cue failed:', error);
   }
@@ -383,7 +322,6 @@ export function triggerVibration(pattern = [100]) {
 
   try {
     navigator.vibrate(pattern);
-    console.log('📳 Vibration triggered');
   } catch (error) {
     console.warn('Vibration failed:', error);
   }

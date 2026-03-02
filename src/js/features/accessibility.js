@@ -10,8 +10,6 @@
  * - Screen reader support
  */
 
-console.log('♿ ACCESSIBILITY.JS LOADED - v1');
-
 // Accessibility state management
 const accessibilityState = {
   highContrast: false,
@@ -35,8 +33,6 @@ let focusManagementInitialized = false;
  * Initialize accessibility features
  */
 export function initializeAccessibility() {
-  console.log('♿ Initializing accessibility features...');
-
   // Load saved accessibility preferences
   loadAccessibilityPreferences();
 
@@ -51,8 +47,6 @@ export function initializeAccessibility() {
 
   // Apply initial accessibility settings
   applyAccessibilitySettings();
-
-  console.log('✅ Accessibility features initialized');
 }
 
 /**
@@ -64,7 +58,6 @@ function loadAccessibilityPreferences() {
     if (saved) {
       const preferences = JSON.parse(saved);
       Object.assign(accessibilityState, preferences);
-      console.log('♿ Loaded accessibility preferences:', preferences);
     }
   } catch (error) {
     console.warn('Failed to load accessibility preferences:', error);
@@ -77,7 +70,6 @@ function loadAccessibilityPreferences() {
 function saveAccessibilityPreferences() {
   try {
     localStorage.setItem('fitflow_accessibility', JSON.stringify(accessibilityState));
-    console.log('♿ Saved accessibility preferences:', accessibilityState);
   } catch (error) {
     console.warn('Failed to save accessibility preferences:', error);
   }
@@ -322,8 +314,6 @@ function applyAccessibilitySettings() {
     body.classList.add(ACCESSIBILITY_CLASSES.keyboardNav);
     setupKeyboardNavigation();
   }
-
-  console.log('♿ Applied accessibility settings:', accessibilityState);
 }
 
 /**

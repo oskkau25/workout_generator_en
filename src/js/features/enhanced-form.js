@@ -48,16 +48,12 @@ const WORKOUT_PRESETS = {
  * Initialize enhanced form features
  */
 export function initializeEnhancedForm() {
-  console.log('🎨 Initializing Enhanced Form Features...');
-
   setupCollapsibleSections();
   setupPresetButtons();
   setupSmartValidation();
   setupFormFeedback();
   setupEquipmentSelection();
   setupMobileGenerateCta();
-
-  console.log('✅ Enhanced Form Features initialized');
 }
 
 function setupCollapsibleSections() {
@@ -117,7 +113,6 @@ function applyPreset(presetKey) {
   const preset = WORKOUT_PRESETS[presetKey];
   if (!preset) return;
 
-  console.log(`🎯 Applying preset: ${presetKey}`, preset);
   expandSection('advanced-settings-panel');
 
   // Apply duration

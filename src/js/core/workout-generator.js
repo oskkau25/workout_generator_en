@@ -156,7 +156,7 @@ function generateCircuitWorkout(availableExercises, selectedEquipments, duration
   // Add circuit header with exercise count and rounds info
   workout.push({
     type: 'circuit_header',
-    name: `Circuit Training`,
+    name: 'Circuit Training',
     description: `Complete all ${exercisesPerRound} exercises, then repeat for ${rounds} total rounds`,
     rounds: rounds,
     exercisesPerRound: exercisesPerRound,
@@ -232,7 +232,9 @@ function generateTabataWorkout(availableExercises, selectedEquipments, duration,
 
     // Cycle through the selected exercises
     const exercise = tabataPool[(set - 1) % tabataPool.length];
-    if (exercise) workout.push({ ...exercise, _section: 'Main' });
+    if (exercise) {
+      workout.push({ ...exercise, _section: 'Main' });
+    }
   }
 
   // Add cooldown (equipment-filtered) - 8 exercises for ~5 minutes
@@ -287,7 +289,9 @@ function generatePyramidWorkout(availableExercises, selectedEquipments, duration
     const startIndex = ((level - 1) * exercisesPerLevel) % pyramidPool.length;
     for (let i = 0; i < exercisesPerLevel; i++) {
       const exercise = pyramidPool[(startIndex + i) % pyramidPool.length];
-      if (exercise) workout.push({ ...exercise, _section: 'Main' });
+      if (exercise) {
+        workout.push({ ...exercise, _section: 'Main' });
+      }
     }
   }
 
@@ -320,18 +324,26 @@ function normalizeEquipmentSelection(equipment) {
     .filter(Boolean)
     .map((item) => String(item).trim());
 
-  if (normalized.length === 0) return ['Bodyweight'];
+  if (normalized.length === 0) {
+    return ['Bodyweight'];
+  }
   return [...new Set(normalized)];
 }
 
 function getFilteredExercisesByPhase(phase, selectedEquipments, level) {
   return exercises.filter((ex) => {
-    if (ex.type !== phase) return false;
+    if (ex.type !== phase) {
+      return false;
+    }
 
     const equipmentMatch = selectedEquipments.includes(ex.equipment);
-    if (!equipmentMatch) return false;
+    if (!equipmentMatch) {
+      return false;
+    }
 
-    if (!level) return true;
+    if (!level) {
+      return true;
+    }
     return ex.level === level || (Array.isArray(ex.level) && ex.level.includes(level));
   });
 }
@@ -385,7 +397,9 @@ export function validateForm() {
  */
 export function getFormData() {
   const form = document.getElementById('workout-form');
-  if (!form) throw new Error('Workout form not found');
+  if (!form) {
+    throw new Error('Workout form not found');
+  }
 
   const formData = new FormData(form);
   const data = {};
@@ -511,11 +525,15 @@ function displayWorkout(workoutResult) {
 
 // Create a brief description for list view (first sentence / before warnings)
 function brief(text = '') {
-  if (!text) return '';
+  if (!text) {
+    return '';
+  }
   const warn = text.indexOf('⚠️');
   const base = warn > -1 ? text.slice(0, warn).trim() : text.trim();
   const m = base.match(/^[^.!?]{20,200}[.!?]/);
-  if (m) return m[0].trim();
+  if (m) {
+    return m[0].trim();
+  }
   return base.length > 180 ? base.slice(0, 177).trim() + '…' : base;
 }
 
