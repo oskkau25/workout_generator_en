@@ -1651,3 +1651,12 @@ select,
     justify-content: center;
   }
 }
+
+/* Generated workout overview collapsibles */
+.workout-section-chevron {
+  transition: transform 0.2s ease;
+}
+
+.workout-section-toggle[aria-expanded='true'] .workout-section-chevron {
+  transform: rotate(180deg);
+}

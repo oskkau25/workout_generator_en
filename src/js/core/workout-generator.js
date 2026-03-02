@@ -525,6 +525,7 @@ function displayWorkout(workoutResult) {
     workoutSection.classList.remove('hidden');
     workoutSection.style.display = '';
     workoutSection.innerHTML = generateWorkoutHTML(workout, metadata, workTime, restTime);
+    initializeWorkoutOverviewInteractions(workoutSection);
   }
 
   // Scroll to workout
@@ -541,212 +542,322 @@ function brief(text = '') {
   return base.length > 180 ? base.slice(0, 177).trim() + '…' : base;
 }
 
+const COLLAPSIBLE_SECTION_ORDER = ['Warm-up', 'Main', 'Cool-down'];
+const STRUCTURED_WORKOUT_ITEM_TYPES = new Set([
+  'circuit_round',
+  'tabata_set',
+  'pyramid_set',
+  'circuit_header',
+]);
+
+function shouldExpandWorkoutSectionsByDefault() {
+  return !window.matchMedia('(max-width: 767px)').matches;
+}
+
+function groupExercisesBySection(workout) {
+  const groupedSections = new Map();
+
+  COLLAPSIBLE_SECTION_ORDER.forEach((sectionName) => {
+    groupedSections.set(sectionName, []);
+  });
+
+  workout.forEach((exercise, index) => {
+    const sectionName = exercise._section || 'Main';
+    if (!groupedSections.has(sectionName)) {
+      groupedSections.set(sectionName, []);
+    }
+    groupedSections.get(sectionName).push({ exercise, index });
+  });
+
+  return Array.from(groupedSections.entries())
+    .map(([name, items]) => ({ name, items }))
+    .filter((section) => section.items.length > 0);
+}
+
+function getSectionPreviewText(items) {
+  const exerciseCount = items.filter(
+    ({ exercise }) => !STRUCTURED_WORKOUT_ITEM_TYPES.has(exercise.type)
+  ).length;
+  const label = exerciseCount === 1 ? 'exercise' : 'exercises';
+  return `${exerciseCount} ${label}`;
+}
+
+function generateStructuredWorkoutItemHTML(exercise, header) {
+  if (exercise.type === 'circuit_header') {
+    return `
+      ${header}
+      <div class="section-header ${exercise.type} bg-gradient-to-r from-fit-primary/10 to-fit-accent/10 p-4 rounded-lg border-2 border-fit-primary/20">
+        <h3 class="text-xl font-bold text-fit-primary mb-2">${exercise.name}</h3>
+        <p class="text-fit-secondary text-sm mb-3">${exercise.description}</p>
+        <div class="flex gap-4 text-sm">
+          <span class="px-3 py-1 bg-fit-primary text-white rounded-full">${exercise.rounds} Rounds</span>
+          <span class="px-3 py-1 bg-fit-accent text-white rounded-full">${exercise.exercisesPerRound} Exercises</span>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    ${header}
+    <div class="section-header ${exercise.type}">
+      <h3 class="text-lg font-bold text-fit-primary">${exercise.name}</h3>
+      <p class="text-fit-secondary text-sm">${exercise.description}</p>
+    </div>
+  `;
+}
+
+function generateExerciseCardHTML(exercise, index, workTime, restTime, showSectionHeader = false) {
+  const header = showSectionHeader
+    ? `
+      <div class="hidden md:block mt-6 mb-2">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+          exercise._section === 'Warm-up'
+            ? 'bg-amber-100 text-amber-700'
+            : exercise._section === 'Cool-down'
+              ? 'bg-blue-100 text-blue-700'
+              : 'bg-green-100 text-green-700'
+        }">${exercise._section}</span>
+      </div>
+    `
+    : '';
+
+  if (STRUCTURED_WORKOUT_ITEM_TYPES.has(exercise.type)) {
+    return generateStructuredWorkoutItemHTML(exercise, header);
+  }
+
+  const hasSubstitution = exercise._hasSubstitution && exercise._substitution;
+  const substitutionButton = hasSubstitution
+    ? `<button onclick="showSubstitutionChooser(${index})" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
+        🧠 Smart Alternative
+      </button>`
+    : '';
+
+  const circuitNumber = exercise._isCircuitExercise
+    ? `<span class="inline-block px-2 py-1 bg-fit-accent text-white text-xs rounded-full mr-2">#${exercise._circuitPosition}</span>`
+    : '';
+
+  const getEquipmentIcon = (equipment) => {
+    const icons = {
+      Bodyweight: '🏃',
+      Dumbbells: '🏋️',
+      Kettlebell: '⚡',
+      'TRX Bands': '🎯',
+      'Resistance Band': '🔄',
+      'Pull-up Bar': '🆙',
+      'Jump Rope': '🦘',
+      Rower: '🚣',
+    };
+    return icons[equipment] || '💪';
+  };
+
+  const getMuscleColor = (muscle) => {
+    const colors = {
+      Chest: 'bg-red-100 text-red-700',
+      Back: 'bg-blue-100 text-blue-700',
+      Legs: 'bg-green-100 text-green-700',
+      Arms: 'bg-purple-100 text-purple-700',
+      Shoulders: 'bg-orange-100 text-orange-700',
+      Core: 'bg-yellow-100 text-yellow-700',
+      'Full Body': 'bg-indigo-100 text-indigo-700',
+    };
+    return colors[muscle] || 'bg-gray-100 text-gray-700';
+  };
+
+  const getLevelColor = (level) => {
+    const colors = {
+      Beginner: 'bg-green-100 text-green-700',
+      Intermediate: 'bg-yellow-100 text-yellow-700',
+      Advanced: 'bg-red-100 text-red-700',
+    };
+    return colors[level] || 'bg-gray-100 text-gray-700';
+  };
+
+  return `
+    ${header}
+    <div id="exercise-item-${index}" class="exercise-item group p-4 md:p-6 bg-white rounded-xl border border-gray-200 hover:border-fit-primary hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-index="${index}">
+      <div class="flex items-start space-x-3 md:space-x-4">
+        <div class="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-fit-primary/10 to-fit-accent/10 rounded-full flex items-center justify-center text-xl md:text-2xl">
+          ${getEquipmentIcon(exercise.equipment)}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-col gap-3 md:flex-row md:justify-between md:items-start mb-3">
+            <div class="flex items-center space-x-2 min-w-0">
+              ${circuitNumber}
+              <h4 class="font-bold text-base md:text-lg text-fit-dark group-hover:text-fit-primary transition-colors" data-field="name">
+                ${exercise.name}
+              </h4>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 md:justify-end">
+              ${substitutionButton}
+              <span class="px-3 py-1 ${getLevelColor(exercise.level)} text-xs font-semibold rounded-full" data-field="level">
+                ${exercise.level}
+              </span>
+            </div>
+          </div>
+          <p class="text-fit-secondary text-sm mb-4 leading-relaxed" data-field="description">
+            ${brief(exercise.description)}
+          </p>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+              </svg>
+              <span class="text-xs text-fit-secondary" data-field="equipment">${exercise.equipment}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+              <span class="px-2 py-1 ${getMuscleColor(exercise.muscle)} text-xs font-medium rounded-full" data-field="muscle">
+                ${exercise.muscle}
+              </span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="text-xs text-fit-secondary">
+                ${exercise._noRest ? 'No rest' : `${workTime}s work, ${restTime}s rest`}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function generateSectionHTML(section, workTime, restTime, isExpandedByDefault) {
+  const sectionId = `workout-section-panel-${section.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  const previewText = getSectionPreviewText(section.items);
+  const badgeColor =
+    section.name === 'Warm-up'
+      ? 'bg-amber-100 text-amber-700'
+      : section.name === 'Cool-down'
+        ? 'bg-blue-100 text-blue-700'
+        : 'bg-green-100 text-green-700';
+  const contentHTML = section.items
+    .map(({ exercise, index }, itemIndex) =>
+      generateExerciseCardHTML(exercise, index, workTime, restTime, itemIndex === 0)
+    )
+    .join('');
+
+  return `
+    <section class="workout-section-group rounded-2xl border border-fit-border bg-white/90 overflow-hidden">
+      <button
+        type="button"
+        class="workout-section-toggle w-full flex items-center justify-between gap-4 px-4 py-4 md:px-5 md:py-5 text-left transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fit-primary focus:ring-inset"
+        aria-expanded="${isExpandedByDefault ? 'true' : 'false'}"
+        aria-controls="${sectionId}"
+      >
+        <span class="min-w-0">
+          <span class="flex items-center gap-3">
+            <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}">${section.name}</span>
+            <span class="text-sm font-medium text-fit-secondary">${previewText}</span>
+          </span>
+        </span>
+        <span class="workout-section-chevron flex-shrink-0 text-fit-secondary" aria-hidden="true">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </span>
+      </button>
+      <div id="${sectionId}" class="workout-section-panel border-t border-slate-100 px-3 py-3 md:px-4 md:py-4" ${isExpandedByDefault ? '' : 'hidden'}>
+        <div class="space-y-3">
+          ${contentHTML}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function toggleWorkoutSection(toggleButton) {
+  const panelId = toggleButton.getAttribute('aria-controls');
+  if (!panelId) return;
+
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+
+  const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+  toggleButton.setAttribute('aria-expanded', String(!isExpanded));
+  panel.hidden = isExpanded;
+}
+
+function initializeWorkoutOverviewInteractions(workoutSection) {
+  if (!workoutSection || workoutSection.dataset.workoutOverviewBound === 'true') return;
+
+  workoutSection.addEventListener('click', (event) => {
+    const toggleButton = event.target.closest('.workout-section-toggle');
+    if (!toggleButton) return;
+    toggleWorkoutSection(toggleButton);
+  });
+
+  workoutSection.dataset.workoutOverviewBound = 'true';
+}
+
 /**
  * Generate workout HTML
  */
 function generateWorkoutHTML(workout, metadata, workTime, restTime) {
-  let currentSection = '';
-  const exerciseHTML = workout
-    .map((exercise, index) => {
-      // Insert section headers when section changes
-      let header = '';
-      if (exercise._section && exercise._section !== currentSection) {
-        currentSection = exercise._section;
-        const badgeColor =
-          currentSection === 'Warm-up'
-            ? 'bg-amber-100 text-amber-700'
-            : currentSection === 'Cool-down'
-              ? 'bg-blue-100 text-blue-700'
-              : 'bg-green-100 text-green-700';
-        header = `
-                <div class="mt-6 mb-2">
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}">${currentSection}</span>
-                </div>
-            `;
-      }
-      if (
-        ['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(exercise.type)
-      ) {
-        if (exercise.type === 'circuit_header') {
-          return `
-                    ${header}
-                    <div class="section-header ${exercise.type} bg-gradient-to-r from-fit-primary/10 to-fit-accent/10 p-4 rounded-lg border-2 border-fit-primary/20">
-                        <h3 class="text-xl font-bold text-fit-primary mb-2">${exercise.name}</h3>
-                        <p class="text-fit-secondary text-sm mb-3">${exercise.description}</p>
-                        <div class="flex gap-4 text-sm">
-                            <span class="px-3 py-1 bg-fit-primary text-white rounded-full">${exercise.rounds} Rounds</span>
-                            <span class="px-3 py-1 bg-fit-accent text-white rounded-full">${exercise.exercisesPerRound} Exercises</span>
-                        </div>
-                    </div>
-                `;
-        } else {
-          return `
-                    ${header}
-                    <div class="section-header ${exercise.type}">
-                        <h3 class="text-lg font-bold text-fit-primary">${exercise.name}</h3>
-                        <p class="text-fit-secondary text-sm">${exercise.description}</p>
-                    </div>
-                `;
-        }
-      }
-
-      const hasSubstitution = exercise._hasSubstitution && exercise._substitution;
-      const substitutionButton = hasSubstitution
-        ? `<button onclick="showSubstitutionChooser(${index})" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
-                🧠 Smart Alternative
-            </button>`
-        : '';
-
-      // Add circuit exercise numbering if it's a circuit exercise
-      const circuitNumber = exercise._isCircuitExercise
-        ? `<span class="inline-block px-2 py-1 bg-fit-accent text-white text-xs rounded-full mr-2">#${exercise._circuitPosition}</span>`
-        : '';
-
-      // Get equipment icon
-      const getEquipmentIcon = (equipment) => {
-        const icons = {
-          Bodyweight: '🏃',
-          Dumbbells: '🏋️',
-          Kettlebell: '⚡',
-          'TRX Bands': '🎯',
-          'Resistance Band': '🔄',
-          'Pull-up Bar': '🆙',
-          'Jump Rope': '🦘',
-          Rower: '🚣',
-        };
-        return icons[equipment] || '💪';
-      };
-
-      // Get muscle group color
-      const getMuscleColor = (muscle) => {
-        const colors = {
-          Chest: 'bg-red-100 text-red-700',
-          Back: 'bg-blue-100 text-blue-700',
-          Legs: 'bg-green-100 text-green-700',
-          Arms: 'bg-purple-100 text-purple-700',
-          Shoulders: 'bg-orange-100 text-orange-700',
-          Core: 'bg-yellow-100 text-yellow-700',
-          'Full Body': 'bg-indigo-100 text-indigo-700',
-        };
-        return colors[muscle] || 'bg-gray-100 text-gray-700';
-      };
-
-      // Get level color
-      const getLevelColor = (level) => {
-        const colors = {
-          Beginner: 'bg-green-100 text-green-700',
-          Intermediate: 'bg-yellow-100 text-yellow-700',
-          Advanced: 'bg-red-100 text-red-700',
-        };
-        return colors[level] || 'bg-gray-100 text-gray-700';
-      };
-
-      return `
-            ${header}
-            <div id="exercise-item-${index}" class="exercise-item group p-6 bg-white rounded-xl border border-gray-200 hover:border-fit-primary hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-index="${index}">
-                <div class="flex items-start space-x-4">
-                    <!-- Equipment Icon -->
-                    <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-fit-primary/10 to-fit-accent/10 rounded-full flex items-center justify-center text-2xl">
-                        ${getEquipmentIcon(exercise.equipment)}
-                    </div>
-                    
-                    <!-- Exercise Content -->
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center space-x-2">
-                                ${circuitNumber}
-                                <h4 class="font-bold text-lg text-fit-dark group-hover:text-fit-primary transition-colors" data-field="name">
-                                    ${exercise.name}
-                                </h4>
-                            </div>
-                            <div class="flex space-x-2">
-                                ${substitutionButton}
-                                <span class="px-3 py-1 ${getLevelColor(exercise.level)} text-xs font-semibold rounded-full" data-field="level">
-                                    ${exercise.level}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <p class="text-fit-secondary text-sm mb-4 leading-relaxed" data-field="description">
-                            ${brief(exercise.description)}
-                        </p>
-                        
-                        <div class="flex flex-wrap items-center gap-3">
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                                </svg>
-                                <span class="text-xs text-fit-secondary" data-field="equipment">${exercise.equipment}</span>
-                            </div>
-                            
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                </svg>
-                                <span class="px-2 py-1 ${getMuscleColor(exercise.muscle)} text-xs font-medium rounded-full" data-field="muscle">
-                                    ${exercise.muscle}
-                                </span>
-                            </div>
-                            
-                            <!-- Timing Info -->
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-4 h-4 text-fit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span class="text-xs text-fit-secondary">
-                                    ${exercise._noRest ? 'No rest' : `${workTime}s work, ${restTime}s rest`}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    })
+  const groupedSections = groupExercisesBySection(workout);
+  const expandByDefault = shouldExpandWorkoutSectionsByDefault();
+  const sectionHTML = groupedSections
+    .map((section) => generateSectionHTML(section, workTime, restTime, expandByDefault))
     .join('');
 
   return `
-        <div class="workout-overview">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-fit-dark">Your Workout</h2>
-                <button onclick="startWorkout()" class="btn-primary">
-                    Start Workout
-                </button>
+    <div class="workout-overview space-y-5 md:space-y-6">
+      <div class="rounded-3xl border border-fit-border bg-white p-4 md:p-6 card-shadow">
+        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div class="space-y-4 flex-1">
+            <div>
+              <h2 class="text-2xl font-bold text-fit-dark">Your Workout</h2>
+              <p class="text-sm text-fit-secondary mt-1">Review the plan or start right away.</p>
             </div>
-            
-            <div class="workout-stats grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="stat-card p-3 bg-fit-primary/10 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-fit-primary">${metadata.totalExercises}</div>
-                    <div class="text-xs text-fit-secondary">Exercises</div>
-                </div>
-                <div class="stat-card p-3 bg-fit-accent/10 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-fit-accent">${metadata.estimatedTime}min</div>
-                    <div class="text-xs text-fit-secondary">Duration</div>
-                </div>
-                <div class="stat-card p-3 bg-green-100 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-green-600">${metadata.level}</div>
-                    <div class="text-xs text-fit-secondary">Level</div>
-                </div>
-                <div class="stat-card p-3 bg-blue-100 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-blue-600">${metadata.equipment}</div>
-                    <div class="text-xs text-fit-secondary">Equipment</div>
-                </div>
+            <div class="workout-stats grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              <div class="stat-card p-3 bg-fit-primary/10 rounded-lg text-center">
+                <div class="text-xl md:text-2xl font-bold text-fit-primary">${metadata.totalExercises}</div>
+                <div class="text-xs text-fit-secondary">Exercises</div>
+              </div>
+              <div class="stat-card p-3 bg-fit-accent/10 rounded-lg text-center">
+                <div class="text-xl md:text-2xl font-bold text-fit-accent">${metadata.estimatedTime}min</div>
+                <div class="text-xs text-fit-secondary">Duration</div>
+              </div>
+              <div class="stat-card p-3 bg-green-100 rounded-lg text-center">
+                <div class="text-sm md:text-2xl font-bold text-green-600 break-words">${metadata.level}</div>
+                <div class="text-xs text-fit-secondary">Level</div>
+              </div>
+              <div class="stat-card p-3 bg-blue-100 rounded-lg text-center">
+                <div class="text-sm md:text-2xl font-bold text-blue-600 break-words">${metadata.equipment}</div>
+                <div class="text-xs text-fit-secondary">Equipment</div>
+              </div>
             </div>
-            
-            <div class="exercises-list space-y-3">
-                ${exerciseHTML}
-            </div>
-            
-            <div class="workout-actions mt-6 flex space-x-4">
-                <button onclick="startWorkout()" class="btn-primary flex-1">
-                    Start Workout
-                </button>
-                <button onclick="generateNewWorkout()" class="btn-secondary">
-                    Generate New
-                </button>
-            </div>
+          </div>
+          <div class="workout-actions flex flex-col sm:flex-row md:flex-col gap-3 md:min-w-[220px]">
+            <button onclick="startWorkout()" class="btn-primary w-full">
+              Start Workout
+            </button>
+            <button onclick="generateNewWorkout()" class="btn-secondary w-full">
+              Generate New
+            </button>
+          </div>
         </div>
-    `;
+      </div>
+
+      <div class="exercises-list space-y-3">
+        ${sectionHTML}
+      </div>
+
+      <div class="workout-actions hidden md:flex md:space-x-4">
+        <button onclick="startWorkout()" class="btn-primary flex-1">
+          Start Workout
+        </button>
+        <button onclick="generateNewWorkout()" class="btn-secondary">
+          Generate New
+        </button>
+      </div>
+    </div>
+  `;
 }
 
 /**
