@@ -145,6 +145,108 @@ let workoutState = {
   audioContext: null,
 };
 
+function ensureMobileWorkoutUI() {
+  if (!document.getElementById('mobile-workout-ui-styles')) {
+    const style = document.createElement('style');
+    style.id = 'mobile-workout-ui-styles';
+    style.textContent = `
+      @media (max-width: 767px) {
+        #workout-player {
+          padding-top: 5.5rem;
+          padding-bottom: 6.5rem;
+        }
+
+        #mobile-workout-status {
+          position: sticky;
+          top: 0.75rem;
+          z-index: 70;
+          margin-bottom: 1rem;
+        }
+
+        #mobile-workout-controls {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 70;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 0.75rem;
+          padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+          background: rgba(255, 255, 255, 0.96);
+          backdrop-filter: blur(16px);
+          border-top: 1px solid rgba(148, 163, 184, 0.25);
+          box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.12);
+        }
+      }
+
+      @media (min-width: 768px) {
+        #mobile-workout-status,
+        #mobile-workout-controls {
+          display: none !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const playerScreen = document.getElementById('workout-player');
+  if (!playerScreen) return;
+
+  if (!document.getElementById('mobile-workout-status')) {
+    const status = document.createElement('div');
+    status.id = 'mobile-workout-status';
+    status.className =
+      'md:hidden rounded-2xl border border-fit-border bg-white/95 px-4 py-3 shadow-lg backdrop-blur';
+    status.innerHTML = `
+      <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div id="mobile-current-section" class="text-xs font-semibold uppercase text-fit-primary"></div>
+          <div id="mobile-current-exercise" class="truncate text-base font-bold text-fit-dark"></div>
+        </div>
+        <div class="shrink-0 text-right">
+          <div id="mobile-phase-label" class="text-xs font-medium text-fit-secondary"></div>
+          <div id="mobile-phase-timer" class="text-2xl font-bold text-fit-dark"></div>
+        </div>
+      </div>
+    `;
+    playerScreen.prepend(status);
+  }
+
+  if (!document.getElementById('mobile-workout-controls')) {
+    const controls = document.createElement('div');
+    controls.id = 'mobile-workout-controls';
+    controls.className = 'md:hidden';
+    controls.innerHTML = `
+      <button id="mobile-prev-exercise-btn" type="button" class="btn-secondary text-sm">Previous</button>
+      <button id="mobile-pause-resume-btn" type="button" class="btn-accent text-sm">Pause</button>
+      <button id="mobile-next-exercise-btn" type="button" class="btn-secondary text-sm">Next</button>
+    `;
+    playerScreen.appendChild(controls);
+  }
+}
+
+function updateMobileWorkoutUI() {
+  const currentExercise = workoutState.sequence[workoutState.currentIndex];
+  const phaseLabel = document.getElementById('mobile-phase-label');
+  const phaseTimer = document.getElementById('mobile-phase-timer');
+  const currentSection = document.getElementById('mobile-current-section');
+  const currentName = document.getElementById('mobile-current-exercise');
+  const prevBtn = document.getElementById('mobile-prev-exercise-btn');
+  const nextBtn = document.getElementById('mobile-next-exercise-btn');
+  const pauseBtn = document.getElementById('mobile-pause-resume-btn');
+
+  if (currentSection) currentSection.textContent = currentExercise?._section || 'Exercise';
+  if (currentName) currentName.textContent = currentExercise?.name || 'Workout';
+  if (phaseLabel) phaseLabel.textContent = workoutState.phase === 'rest' ? 'Rest' : 'Work';
+  if (phaseTimer)
+    phaseTimer.textContent = formatSeconds(Math.max(0, workoutState.remainingSeconds));
+
+  if (prevBtn) prevBtn.disabled = workoutState.currentIndex <= 0;
+  if (nextBtn) nextBtn.disabled = workoutState.currentIndex >= workoutState.sequence.length - 1;
+  if (pauseBtn) pauseBtn.textContent = workoutState.isPaused ? 'Resume' : 'Pause';
+}
+
 // Sync with main app state if available
 if (window.appState) {
   Object.assign(workoutState, window.appState);
@@ -264,6 +366,7 @@ export function initializeWorkoutPlayer(workoutData) {
   clearRunningTimer();
 
   // Render the player
+  ensureMobileWorkoutUI();
   renderWorkoutPlayer();
 
   // Setup event listeners after rendering
@@ -544,6 +647,8 @@ function renderWorkoutPlayer() {
   if (window.applySettingsToWorkoutPlayer) {
     window.applySettingsToWorkoutPlayer();
   }
+
+  updateMobileWorkoutUI();
 }
 
 /**
@@ -671,6 +776,8 @@ function setTimerDisplays() {
       }
     }
   }
+
+  updateMobileWorkoutUI();
 }
 
 // Expose a safe display refresh hook for timer-mode changes.
@@ -750,6 +857,11 @@ function updatePauseButton() {
       }
       if (text) text.textContent = 'Pause';
     }
+  }
+
+  const mobilePauseBtn = document.getElementById('mobile-pause-resume-btn');
+  if (mobilePauseBtn) {
+    mobilePauseBtn.textContent = workoutState.isPaused ? 'Resume' : 'Pause';
   }
 }
 
@@ -1145,19 +1257,34 @@ export async function setupWorkoutPlayerListeners() {
   // Pause/Resume button
   const pauseBtn = document.getElementById('pause-resume-btn');
   if (pauseBtn) {
-    pauseBtn.addEventListener('click', togglePause);
+    pauseBtn.onclick = togglePause;
   }
 
   // Previous exercise button
   const prevBtn = document.getElementById('prev-exercise-btn');
   if (prevBtn) {
-    prevBtn.addEventListener('click', previousExercise);
+    prevBtn.onclick = previousExercise;
+  }
+
+  const mobilePrevBtn = document.getElementById('mobile-prev-exercise-btn');
+  if (mobilePrevBtn) {
+    mobilePrevBtn.onclick = previousExercise;
   }
 
   // Next exercise button
   const nextBtn = document.getElementById('next-exercise-btn');
   if (nextBtn) {
-    nextBtn.addEventListener('click', nextExercise);
+    nextBtn.onclick = nextExercise;
+  }
+
+  const mobileNextBtn = document.getElementById('mobile-next-exercise-btn');
+  if (mobileNextBtn) {
+    mobileNextBtn.onclick = nextExercise;
+  }
+
+  const mobilePauseBtn = document.getElementById('mobile-pause-resume-btn');
+  if (mobilePauseBtn) {
+    mobilePauseBtn.onclick = togglePause;
   }
 
   // Exit workout button
@@ -1165,10 +1292,10 @@ export async function setupWorkoutPlayerListeners() {
   if (exitBtn) {
     exitBtn.disabled = false; // Ensure it's not disabled
     exitBtn.style.pointerEvents = 'auto'; // Ensure it's clickable
-    exitBtn.addEventListener('click', (e) => {
+    exitBtn.onclick = () => {
       console.log('🚪 Exit workout button clicked');
       exitWorkout();
-    });
+    };
     console.log('✅ Exit workout button initialized');
   } else {
     console.error('❌ Exit workout button not found');

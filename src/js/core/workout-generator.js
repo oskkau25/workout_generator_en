@@ -239,6 +239,7 @@ function generateTabataWorkout(availableExercises, selectedEquipments, duration,
       description: `Tabata round ${set} of ${rounds}: 20s work, 10s rest`,
       set: set,
       totalSets: rounds,
+      _section: 'Main',
     });
 
     // Cycle through the selected exercises
@@ -292,6 +293,7 @@ function generatePyramidWorkout(availableExercises, selectedEquipments, duration
       description: `Intensity level ${level} of ${levels}`,
       level: level,
       totalLevels: levels,
+      _section: 'Main',
     });
 
     // Get different exercises for each level if available
@@ -541,35 +543,54 @@ function brief(text = '') {
   return base.length > 180 ? base.slice(0, 177).trim() + '…' : base;
 }
 
+function getSectionLabel(sectionName) {
+  if (sectionName === 'Warm-up') return 'Wake the body up';
+  if (sectionName === 'Cool-down') return 'Bring the pace back down';
+  return 'Primary working sets';
+}
+
+function getSectionBadgeColor(sectionName) {
+  if (sectionName === 'Warm-up') return 'bg-amber-100 text-amber-700';
+  if (sectionName === 'Cool-down') return 'bg-blue-100 text-blue-700';
+  return 'bg-green-100 text-green-700';
+}
+
+function getSectionContainerClasses(sectionName) {
+  if (sectionName === 'Warm-up') return 'border-amber-200 bg-amber-50/70';
+  if (sectionName === 'Cool-down') return 'border-blue-200 bg-blue-50/70';
+  return 'border-green-200 bg-green-50/70';
+}
+
+function groupWorkoutBySection(workout) {
+  const sectionOrder = ['Warm-up', 'Main', 'Cool-down'];
+  const groupedSections = new Map(sectionOrder.map((section) => [section, []]));
+
+  workout.forEach((exercise, index) => {
+    const sectionName = sectionOrder.includes(exercise._section) ? exercise._section : 'Main';
+    groupedSections.get(sectionName)?.push({ exercise, index });
+  });
+
+  return sectionOrder
+    .map((section) => ({
+      name: section,
+      exercises: groupedSections.get(section) || [],
+    }))
+    .filter((section) => section.exercises.length > 0);
+}
+
 /**
  * Generate workout HTML
  */
 function generateWorkoutHTML(workout, metadata, workTime, restTime) {
-  let currentSection = '';
-  const exerciseHTML = workout
-    .map((exercise, index) => {
-      // Insert section headers when section changes
-      let header = '';
-      if (exercise._section && exercise._section !== currentSection) {
-        currentSection = exercise._section;
-        const badgeColor =
-          currentSection === 'Warm-up'
-            ? 'bg-amber-100 text-amber-700'
-            : currentSection === 'Cool-down'
-              ? 'bg-blue-100 text-blue-700'
-              : 'bg-green-100 text-green-700';
-        header = `
-                <div class="mt-6 mb-2">
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}">${currentSection}</span>
-                </div>
-            `;
-      }
-      if (
-        ['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(exercise.type)
-      ) {
-        if (exercise.type === 'circuit_header') {
-          return `
-                    ${header}
+  const sectionHTML = groupWorkoutBySection(workout)
+    .map(({ name: sectionName, exercises }) => {
+      const exerciseHTML = exercises
+        .map(({ exercise, index }) => {
+          if (
+            ['circuit_round', 'tabata_set', 'pyramid_set', 'circuit_header'].includes(exercise.type)
+          ) {
+            if (exercise.type === 'circuit_header') {
+              return `
                     <div class="section-header ${exercise.type} bg-gradient-to-r from-fit-primary/10 to-fit-accent/10 p-4 rounded-lg border-2 border-fit-primary/20">
                         <h3 class="text-xl font-bold text-fit-primary mb-2">${exercise.name}</h3>
                         <p class="text-fit-secondary text-sm mb-3">${exercise.description}</p>
@@ -579,70 +600,68 @@ function generateWorkoutHTML(workout, metadata, workTime, restTime) {
                         </div>
                     </div>
                 `;
-        } else {
-          return `
-                    ${header}
+            } else {
+              return `
                     <div class="section-header ${exercise.type}">
                         <h3 class="text-lg font-bold text-fit-primary">${exercise.name}</h3>
                         <p class="text-fit-secondary text-sm">${exercise.description}</p>
                     </div>
                 `;
-        }
-      }
+            }
+          }
 
-      const hasSubstitution = exercise._hasSubstitution && exercise._substitution;
-      const substitutionButton = hasSubstitution
-        ? `<button onclick="showSubstitutionChooser(${index})" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
+          const hasSubstitution = exercise._hasSubstitution && exercise._substitution;
+          const substitutionButton = hasSubstitution
+            ? `<button onclick="showSubstitutionChooser(${index})" class="px-3 py-1 bg-fit-accent text-white text-xs rounded-full hover:bg-fit-accent/80 transition-colors">
                 🧠 Smart Alternative
             </button>`
-        : '';
+            : '';
 
-      // Add circuit exercise numbering if it's a circuit exercise
-      const circuitNumber = exercise._isCircuitExercise
-        ? `<span class="inline-block px-2 py-1 bg-fit-accent text-white text-xs rounded-full mr-2">#${exercise._circuitPosition}</span>`
-        : '';
+          // Add circuit exercise numbering if it's a circuit exercise
+          const circuitNumber = exercise._isCircuitExercise
+            ? `<span class="inline-block px-2 py-1 bg-fit-accent text-white text-xs rounded-full mr-2">#${exercise._circuitPosition}</span>`
+            : '';
 
-      // Get equipment icon
-      const getEquipmentIcon = (equipment) => {
-        const icons = {
-          Bodyweight: '🏃',
-          Dumbbells: '🏋️',
-          Kettlebell: '⚡',
-          'TRX Bands': '🎯',
-          'Resistance Band': '🔄',
-          'Pull-up Bar': '🆙',
-          'Jump Rope': '🦘',
-          Rower: '🚣',
-        };
-        return icons[equipment] || '💪';
-      };
+          // Get equipment icon
+          const getEquipmentIcon = (equipment) => {
+            const icons = {
+              Bodyweight: '🏃',
+              Dumbbells: '🏋️',
+              Kettlebell: '⚡',
+              'TRX Bands': '🎯',
+              'Resistance Band': '🔄',
+              'Pull-up Bar': '🆙',
+              'Jump Rope': '🦘',
+              Rower: '🚣',
+            };
+            return icons[equipment] || '💪';
+          };
 
-      // Get muscle group color
-      const getMuscleColor = (muscle) => {
-        const colors = {
-          Chest: 'bg-red-100 text-red-700',
-          Back: 'bg-blue-100 text-blue-700',
-          Legs: 'bg-green-100 text-green-700',
-          Arms: 'bg-purple-100 text-purple-700',
-          Shoulders: 'bg-orange-100 text-orange-700',
-          Core: 'bg-yellow-100 text-yellow-700',
-          'Full Body': 'bg-indigo-100 text-indigo-700',
-        };
-        return colors[muscle] || 'bg-gray-100 text-gray-700';
-      };
+          // Get muscle group color
+          const getMuscleColor = (muscle) => {
+            const colors = {
+              Chest: 'bg-red-100 text-red-700',
+              Back: 'bg-blue-100 text-blue-700',
+              Legs: 'bg-green-100 text-green-700',
+              Arms: 'bg-purple-100 text-purple-700',
+              Shoulders: 'bg-orange-100 text-orange-700',
+              Core: 'bg-yellow-100 text-yellow-700',
+              'Full Body': 'bg-indigo-100 text-indigo-700',
+            };
+            return colors[muscle] || 'bg-gray-100 text-gray-700';
+          };
 
-      // Get level color
-      const getLevelColor = (level) => {
-        const colors = {
-          Beginner: 'bg-green-100 text-green-700',
-          Intermediate: 'bg-yellow-100 text-yellow-700',
-          Advanced: 'bg-red-100 text-red-700',
-        };
-        return colors[level] || 'bg-gray-100 text-gray-700';
-      };
+          // Get level color
+          const getLevelColor = (level) => {
+            const colors = {
+              Beginner: 'bg-green-100 text-green-700',
+              Intermediate: 'bg-yellow-100 text-yellow-700',
+              Advanced: 'bg-red-100 text-red-700',
+            };
+            return colors[level] || 'bg-gray-100 text-gray-700';
+          };
 
-      return `
-            ${header}
+          return `
             <div id="exercise-item-${index}" class="exercise-item group p-6 bg-white rounded-xl border border-gray-200 hover:border-fit-primary hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-index="${index}">
                 <div class="flex items-start space-x-4">
                     <!-- Equipment Icon -->
@@ -702,6 +721,30 @@ function generateWorkoutHTML(workout, metadata, workTime, restTime) {
                 </div>
             </div>
         `;
+        })
+        .join('');
+
+      return `
+            <details class="group rounded-2xl border ${getSectionContainerClasses(sectionName)} bg-white/90 shadow-sm" ${sectionName === 'Cool-down' ? '' : 'open'}>
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-3">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${getSectionBadgeColor(sectionName)}">${sectionName}</span>
+                            <span class="text-sm font-medium text-fit-secondary">${exercises.length} items</span>
+                        </div>
+                        <p class="mt-2 text-sm text-fit-secondary">${getSectionLabel(sectionName)}</p>
+                    </div>
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-fit-primary/10 text-fit-primary transition-transform group-open:rotate-180">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </span>
+                </summary>
+                <div class="space-y-3 border-t border-fit-border px-4 py-4 md:px-5">
+                    ${exerciseHTML}
+                </div>
+            </details>
+        `;
     })
     .join('');
 
@@ -733,8 +776,8 @@ function generateWorkoutHTML(workout, metadata, workTime, restTime) {
                 </div>
             </div>
             
-            <div class="exercises-list space-y-3">
-                ${exerciseHTML}
+            <div class="exercises-list space-y-4">
+                ${sectionHTML}
             </div>
             
             <div class="workout-actions mt-6 flex space-x-4">
