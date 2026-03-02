@@ -391,13 +391,13 @@
         <div class="flex flex-wrap items-center gap-2 mb-3">
           <button
             id="export-hotfix-issues-btn"
-            class="px-3 py-2 rounded-lg text-xs font-medium bg-fit-primary text-white hover:bg-blue-700 transition-colors"
+            class="px-3 py-2 rounded-lg text-xs font-medium bg-fit-primary text-white hover:bg-blue-700 transition-colors tap-target"
           >
             Generate GitHub Issue Templates
           </button>
           <button
             id="copy-hotfix-issues-btn"
-            class="px-3 py-2 rounded-lg text-xs font-medium bg-fit-secondary text-white hover:bg-gray-600 transition-colors"
+            class="px-3 py-2 rounded-lg text-xs font-medium bg-fit-secondary text-white hover:bg-gray-600 transition-colors tap-target"
           >
             Copy
           </button>
@@ -601,6 +601,8 @@
 
         .dashboard-data-table tbody tr {
           display: block;
+          width: 100%;
+          max-width: 100%;
           border: 1px solid #e2e8f0;
           border-radius: 0.875rem;
           padding: 0.875rem;
@@ -615,6 +617,7 @@
           padding: 0.35rem 0;
           white-space: normal;
           border: 0;
+          word-break: break-word;
         }
 
         .dashboard-data-table tbody td::before {

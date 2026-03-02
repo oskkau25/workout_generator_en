@@ -20,7 +20,7 @@ fi
 
 # Run the AI code review
 echo "🔍 Starting AI code review..."
-python3 code_review_ai.py
+python3 scripts/code_review_ai.py
 
 echo ""
 echo "✅ Review complete! Check ai_code_review_report.json for detailed results."
