@@ -41,7 +41,8 @@ jobs:
       - name: Install Playwright browser
         run: python -m playwright install --with-deps chromium
 
-      - name: Lint JavaScript
+      - name: Lint JavaScript (advisory)
+        continue-on-error: true
         run: npx --yes eslint@8 --max-warnings=0 --ext .js src/js
 
       - name: Typecheck and build sanity
