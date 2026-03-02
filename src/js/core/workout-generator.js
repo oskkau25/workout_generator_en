@@ -513,23 +513,39 @@ function displayWorkout(workoutResult) {
 
   console.log('💾 Stored window.currentWorkoutData:', window.currentWorkoutData);
 
-  // Hide form and show workout
+  // Hide the form and switch to the review-first overview screen.
   const form = document.getElementById('workout-form');
+  const workoutPlan = document.getElementById('workout-plan');
   const workoutSection = document.getElementById('workout-section');
+  const workoutOverview = document.getElementById('workout-overview');
+  const overviewList = document.getElementById('overview-list');
 
   if (form) {
     form.classList.add('hidden');
     form.style.display = '';
   }
+  if (workoutPlan) {
+    workoutPlan.classList.remove('hidden');
+    workoutPlan.style.display = '';
+  }
   if (workoutSection) {
-    workoutSection.classList.remove('hidden');
+    workoutSection.classList.add('hidden');
     workoutSection.style.display = '';
-    workoutSection.innerHTML = generateWorkoutHTML(workout, metadata, workTime, restTime);
-    initializeWorkoutOverviewInteractions(workoutSection);
+    workoutSection.innerHTML = '';
+  }
+  if (overviewList) {
+    overviewList.innerHTML = generateWorkoutHTML(workout, metadata, workTime, restTime);
+    initializeWorkoutOverviewInteractions(overviewList);
+  }
+  if (workoutOverview) {
+    workoutOverview.style.display = '';
+    workoutOverview.classList.remove('hidden');
   }
 
-  // Scroll to workout
-  workoutSection?.scrollIntoView({ behavior: 'smooth' });
+  bindWorkoutOverviewActions();
+
+  // Scroll to workout overview
+  workoutOverview?.scrollIntoView({ behavior: 'smooth' });
 }
 
 // Create a brief description for list view (first sentence / before warnings)
@@ -795,6 +811,26 @@ function initializeWorkoutOverviewInteractions(workoutSection) {
   workoutSection.dataset.workoutOverviewBound = 'true';
 }
 
+function bindWorkoutOverviewActions() {
+  const startWorkoutBtn = document.getElementById('start-workout-btn');
+  if (startWorkoutBtn) {
+    startWorkoutBtn.onclick = () => {
+      if (typeof window.startWorkout === 'function') {
+        window.startWorkout();
+      }
+    };
+  }
+
+  const newWorkoutBtn = document.getElementById('new-workout-btn');
+  if (newWorkoutBtn) {
+    newWorkoutBtn.onclick = () => {
+      if (typeof window.generateNewWorkout === 'function') {
+        window.generateNewWorkout();
+      }
+    };
+  }
+}
+
 /**
  * Generate workout HTML
  */
@@ -833,28 +869,11 @@ function generateWorkoutHTML(workout, metadata, workTime, restTime) {
               </div>
             </div>
           </div>
-          <div class="workout-actions flex flex-col sm:flex-row md:flex-col gap-3 md:min-w-[220px]">
-            <button onclick="startWorkout()" class="btn-primary w-full">
-              Start Workout
-            </button>
-            <button onclick="generateNewWorkout()" class="btn-secondary w-full">
-              Generate New
-            </button>
-          </div>
         </div>
       </div>
 
       <div class="exercises-list space-y-3">
         ${sectionHTML}
-      </div>
-
-      <div class="workout-actions hidden md:flex md:space-x-4">
-        <button onclick="startWorkout()" class="btn-primary flex-1">
-          Start Workout
-        </button>
-        <button onclick="generateNewWorkout()" class="btn-secondary">
-          Generate New
-        </button>
       </div>
     </div>
   `;
