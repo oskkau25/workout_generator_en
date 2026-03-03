@@ -262,7 +262,6 @@ class FitFlowApp {
       // setupWorkoutPlayerListeners() is called when workout player is rendered
       this.setupDashboardListeners();
       this.setupFunnelEventListeners();
-      this.setupFeedbackListeners();
       this.instrumentWorkoutStart();
       this.observeWorkoutCompletion();
     };
@@ -363,87 +362,6 @@ class FitFlowApp {
     const observer = new MutationObserver(checkCompletion);
     observer.observe(player, { childList: true, subtree: true });
     player.__fitflowObserverAttached = true;
-  }
-
-  setupFeedbackListeners() {
-    const feedbackForm = document.getElementById('feedback-form');
-    if (!feedbackForm || feedbackForm.dataset.bound === 'true') return;
-
-    const statusEl = document.getElementById('feedback-status');
-    const messageEl = document.getElementById('feedback-message');
-    const feedbackKey = 'fitflow_feedback_entries';
-
-    const readEntries = () => {
-      try {
-        const raw = localStorage.getItem(feedbackKey);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (error) {
-        debugLog('Failed to read feedback entries:', error);
-        return [];
-      }
-    };
-
-    const writeEntries = (entries) => {
-      try {
-        localStorage.setItem(feedbackKey, JSON.stringify(entries));
-      } catch (error) {
-        debugLog('Failed to write feedback entries:', error);
-      }
-    };
-
-    const setStatus = (message, tone = 'neutral') => {
-      if (!statusEl) return;
-      statusEl.textContent = message;
-      statusEl.className = 'text-sm';
-      if (tone === 'success') {
-        statusEl.classList.add('text-green-700');
-      } else if (tone === 'error') {
-        statusEl.classList.add('text-red-600');
-      } else {
-        statusEl.classList.add('text-fit-secondary');
-      }
-    };
-
-    feedbackForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const ratingInput = feedbackForm.querySelector('input[name="feedback-rating"]:checked');
-      if (!ratingInput) {
-        setStatus('Please select a rating before sending feedback.', 'error');
-        return;
-      }
-
-      const rating = Number(ratingInput.value);
-      const message = messageEl?.value?.trim() || '';
-      const entry = {
-        id: `feedback_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,
-        rating,
-        message,
-        timestamp: new Date().toISOString(),
-        context: {
-          pattern: window.currentWorkoutData?.trainingPattern || null,
-          duration: window.currentWorkoutData?.duration || null,
-        },
-      };
-
-      const entries = readEntries();
-      entries.push(entry);
-      writeEntries(entries);
-
-      trackEvent('feedback_submitted', {
-        rating,
-        hasMessage: message.length > 0,
-        messageLength: message.length,
-        pattern: entry.context.pattern,
-        duration: entry.context.duration,
-      });
-
-      feedbackForm.reset();
-      setStatus('Thanks for the feedback. It stays on this device.', 'success');
-    });
-
-    feedbackForm.dataset.bound = 'true';
   }
 
   setupHomeScreenFunnel() {

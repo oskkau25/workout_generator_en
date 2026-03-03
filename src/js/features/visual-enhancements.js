@@ -26,9 +26,19 @@ const FLOATING_CONTROL_STACK = FLOATING_CONTROL_SIZE + FLOATING_CONTROL_GAP;
 const FLOATING_BUTTON_Z_INDEX = '70';
 const FLOATING_PANEL_Z_INDEX = '80';
 const FLOATING_MODAL_Z_INDEX = '90';
+const COMPACT_WORKOUT_VIEWPORT_QUERY =
+  '(max-width: 768px), (hover: none) and (pointer: coarse) and (orientation: landscape) and (max-height: 430px)';
 
 let visualControlsFocusReturnTarget = null;
 let videoModalFocusReturnTarget = null;
+
+function isCompactWorkoutViewport() {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia(COMPACT_WORKOUT_VIEWPORT_QUERY).matches
+  );
+}
 
 // Smart video system with fallback videos
 const VIDEO_SYSTEM = {
@@ -142,6 +152,18 @@ const VIDEO_SYSTEM = {
     relaxation: ['relaxation', 'relaxation exercise'],
   },
 };
+
+const DEFAULT_VIDEO_ID = 'YaXPRqUwItQ';
+
+export function getExerciseVideoId(exerciseName) {
+  if (!exerciseName) return null;
+  const slug = exerciseName.toLowerCase().trim().replace(/\s+/g, '-');
+  return VIDEO_SYSTEM.fallbackVideos[slug] || null;
+}
+
+export function getGenericExerciseVideoId() {
+  return DEFAULT_VIDEO_ID;
+}
 
 /**
  * Initialize visual enhancements
@@ -675,7 +697,7 @@ function showGenericExerciseVideo(exerciseName) {
     title.textContent = `${exerciseName.charAt(0).toUpperCase() + exerciseName.slice(1).replace(/-/g, ' ')} - Exercise Video`;
 
     // Use a generic exercise video (FitnessBlender push-up video - known to work)
-    const genericVideoId = 'YaXPRqUwItQ'; // FitnessBlender - Full Body Workout (verified working)
+    const genericVideoId = DEFAULT_VIDEO_ID; // FitnessBlender - Full Body Workout (verified working)
     const autoplayParam = visualEnhancementState.autoPlay ? '&autoplay=1' : '';
     const videoUrl = `https://www.youtube.com/embed/${genericVideoId}?rel=0&modestbranding=1&controls=1&fs=1${autoplayParam}`;
 
@@ -802,6 +824,10 @@ function applySettingsToWorkoutPlayer() {
     }
   });
 
+  if (window.updateInlineExerciseVideo) {
+    window.updateInlineExerciseVideo();
+  }
+
   console.log('🎬 Visual settings applied to workout player');
 }
 
@@ -869,9 +895,10 @@ function applySettingsToExistingElements() {
   // Update exercise instructions and safety sections
   const exerciseInstructions = document.getElementById('exercise-instructions');
   const exerciseSafety = document.getElementById('exercise-safety');
+  const isMobileViewport = isCompactWorkoutViewport();
 
   if (exerciseInstructions) {
-    if (visualEnhancementState.showGuides) {
+    if (visualEnhancementState.showGuides || isMobileViewport) {
       exerciseInstructions.style.display = 'block';
       console.log('🎬 Showing exercise instructions');
     } else {
@@ -881,7 +908,7 @@ function applySettingsToExistingElements() {
   }
 
   if (exerciseSafety) {
-    if (visualEnhancementState.showGuides) {
+    if (visualEnhancementState.showGuides && !isMobileViewport) {
       exerciseSafety.style.display = 'block';
       console.log('🎬 Showing exercise safety');
     } else {
@@ -1036,7 +1063,7 @@ function setupFloatingControlLayout() {
     const visualBtn = document.getElementById('visual-enhancement-btn');
     const accessibilityPanel = document.getElementById('accessibility-panel');
     const visualPanel = document.getElementById('visual-controls-panel');
-    const isMobileViewport = window.matchMedia('(max-width: 768px)').matches;
+    const isMobileViewport = isCompactWorkoutViewport();
     const stickyBarHeight = getBottomObstructionHeight();
 
     if (accessibilityBtn) {
@@ -1081,15 +1108,27 @@ function setupFloatingControlLayout() {
 }
 
 function getBottomObstructionHeight() {
+  const obstructionCandidates = [];
   const mobileCta = document.getElementById('mobile-generate-cta');
-  const stickyBar = mobileCta?.closest('div');
-  if (!(stickyBar instanceof HTMLElement)) return 0;
+  const ctaBar = mobileCta?.closest('div');
+  if (ctaBar instanceof HTMLElement) {
+    obstructionCandidates.push(ctaBar);
+  }
 
-  const styles = window.getComputedStyle(stickyBar);
-  const rect = stickyBar.getBoundingClientRect();
-  const isVisible = styles.display !== 'none' && styles.visibility !== 'hidden' && rect.height > 0;
+  const workoutControlsBar = document.querySelector(
+    '#mobile-workout-controls .mobile-workout-controls__bar'
+  );
+  if (workoutControlsBar instanceof HTMLElement) {
+    obstructionCandidates.push(workoutControlsBar);
+  }
 
-  return isVisible ? Math.ceil(rect.height) : 0;
+  return obstructionCandidates.reduce((maxHeight, element) => {
+    const styles = window.getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    const isVisible = styles.display !== 'none' && styles.visibility !== 'hidden' && rect.height > 0;
+    if (!isVisible) return maxHeight;
+    return Math.max(maxHeight, Math.ceil(rect.height));
+  }, 0);
 }
 
 /**
@@ -1113,4 +1152,5 @@ window.initializeVisualEnhancements = initializeVisualEnhancements;
 window.getVisualEnhancementState = getVisualEnhancementState;
 window.applySettingsToWorkoutPlayer = applySettingsToWorkoutPlayer;
 window.setVisualEnhancementState = setVisualEnhancementState;
+window.getExerciseVideoId = getExerciseVideoId;
 window.showExerciseVideo = showExerciseVideo;
