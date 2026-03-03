@@ -24,9 +24,10 @@ import {
 } from './analytics-tracker.js';
 import {
   getExerciseVideoId,
+  getExerciseVideoSearchQuery,
   getGenericExerciseVideoId,
   getVisualEnhancementState,
-} from './visual-enhancements.js';
+} from './visual-enhancements.js?v=4';
 
 const DEBUG = (() => {
   try {
@@ -1196,9 +1197,8 @@ function updateExercisePreview(exercise) {
   const visualState =
     typeof getVisualEnhancementState === 'function'
       ? getVisualEnhancementState()
-      : { showVideos: true, autoPlay: false };
+      : { showVideos: true };
   const showVideos = visualState?.showVideos !== false;
-  const autoplay = !!visualState?.autoPlay;
 
   if (!showVideos) {
     preview.dataset.hasVideo = 'false';
@@ -1210,38 +1210,79 @@ function updateExercisePreview(exercise) {
 
   const exerciseSlug = getExerciseSlug(exerciseName);
   const resolvedVideoId =
-    typeof getExerciseVideoId === 'function'
-      ? getExerciseVideoId(exerciseSlug) || INLINE_VIDEO_FALLBACK_ID
-      : INLINE_VIDEO_FALLBACK_ID;
+    typeof getExerciseVideoId === 'function' ? getExerciseVideoId(exercise) : null;
+  const searchQuery =
+    typeof getExerciseVideoSearchQuery === 'function' ? getExerciseVideoSearchQuery(exercise) : '';
 
-  if (!resolvedVideoId) {
+  if (!resolvedVideoId && !searchQuery && !INLINE_VIDEO_FALLBACK_ID) {
     preview.dataset.hasVideo = 'false';
+    preview.dataset.videoId = '';
+    preview.dataset.videoUrl = '';
     preview.classList.add('hidden');
     preview.innerHTML = '';
     lastInlineVideoKey = null;
     return;
   }
 
-  const nextKey = `${resolvedVideoId}:${autoplay ? '1' : '0'}:${exerciseSlug}`;
+  const previewMode = resolvedVideoId ? 'embed' : searchQuery ? 'search' : 'generic';
+  const nextKey = `${previewMode}:${resolvedVideoId || searchQuery || INLINE_VIDEO_FALLBACK_ID}:${exerciseSlug}`;
   preview.classList.remove('hidden');
-  if (lastInlineVideoKey === nextKey && preview.querySelector('iframe')) {
-    preview.dataset.hasVideo = 'true';
+  if (lastInlineVideoKey === nextKey) {
+    preview.dataset.hasVideo = previewMode === 'search' ? 'search' : 'true';
     return;
   }
 
-  const autoplayParam = autoplay ? '&autoplay=1' : '';
-  const videoUrl = `https://www.youtube.com/embed/${resolvedVideoId}?rel=0&modestbranding=1&controls=1&playsinline=1${autoplayParam}`;
-  preview.dataset.hasVideo = 'true';
-  preview.innerHTML = `
-    <div class="exercise-preview__frame">
-      <iframe
-        src="${videoUrl}"
-        title="${exerciseName} video preview"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-        loading="lazy"></iframe>
-    </div>
-  `;
+  if (resolvedVideoId) {
+    const videoUrl = `https://www.youtube.com/embed/${resolvedVideoId}?rel=0&modestbranding=1&controls=1&playsinline=1`;
+    preview.dataset.hasVideo = 'true';
+    preview.dataset.videoId = resolvedVideoId;
+    preview.dataset.videoUrl = videoUrl;
+    preview.innerHTML = `
+      <div class="exercise-preview__frame">
+        <iframe
+          src="${videoUrl}"
+          title="${exerciseName} video preview"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>
+    `;
+  } else if (searchQuery) {
+    const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+    preview.dataset.hasVideo = 'search';
+    preview.dataset.videoId = '';
+    preview.dataset.videoUrl = searchUrl;
+    preview.innerHTML = `
+      <div class="exercise-preview__frame flex items-center justify-center bg-slate-950/95 px-6 py-8 text-center text-white">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">No direct embed available</p>
+          <p class="mt-3 text-sm leading-relaxed text-white/90">Open exercise-specific YouTube results for ${exerciseName}.</p>
+          <a
+            href="${searchUrl}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-4 inline-flex items-center rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700">
+            Open YouTube Search
+          </a>
+        </div>
+      </div>
+    `;
+  } else {
+    const videoUrl = `https://www.youtube.com/embed/${INLINE_VIDEO_FALLBACK_ID}?rel=0&modestbranding=1&controls=1&playsinline=1`;
+    preview.dataset.hasVideo = 'true';
+    preview.dataset.videoId = INLINE_VIDEO_FALLBACK_ID;
+    preview.dataset.videoUrl = videoUrl;
+    preview.innerHTML = `
+      <div class="exercise-preview__frame">
+        <iframe
+          src="${videoUrl}"
+          title="${exerciseName} video preview"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>
+    `;
+  }
   lastInlineVideoKey = nextKey;
 }
 

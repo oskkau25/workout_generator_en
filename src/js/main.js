@@ -20,7 +20,7 @@ function debugLog(...args) {
   }
 }
 
-debugLog('🔧 MAIN.JS LOADED - v24 - CACHE BUSTED');
+debugLog('🔧 MAIN.JS LOADED - v25 - CACHE BUSTED');
 
 // Import core modules
 import { exercises, exerciseDatabase } from './core/exercise-database.js';
@@ -33,8 +33,7 @@ import {
 import { CONSTANTS } from './utils/constants.js';
 import { initializeEnhancedForm, getValidatedFormData } from './features/enhanced-form.js';
 import { initializeEnhancedTimer } from './features/enhanced-timer.js';
-import { initializeAccessibility } from './features/accessibility.js';
-import { initializeVisualEnhancements } from './features/visual-enhancements.js';
+import { initializeVisualEnhancements } from './features/visual-enhancements.js?v=4';
 import {
   initializeAnalyticsTracker,
   trackModeSelected,
@@ -50,7 +49,7 @@ import {
 } from './features/smart-substitution.js';
 
 import { UserAccount, userAccount } from './features/user-accounts.js';
-import { setupWorkoutPlayerListeners } from './features/workout-player.js?v=32';
+import { setupWorkoutPlayerListeners } from './features/workout-player.js?v=34';
 
 // Import UI modules (to be created)
 // import { WorkoutUI } from './ui/workout-ui.js';
@@ -110,9 +109,6 @@ class FitFlowApp {
     // Initialize enhanced form features
     initializeEnhancedForm();
 
-    // Initialize accessibility features
-    initializeAccessibility();
-
     // Initialize visual enhancements
     initializeVisualEnhancements();
 
@@ -144,9 +140,6 @@ class FitFlowApp {
 
     // Enhanced form features
     window.getValidatedFormData = getValidatedFormData;
-
-    // Accessibility features
-    window.initializeAccessibility = initializeAccessibility;
 
     // Visual enhancements
     window.initializeVisualEnhancements = initializeVisualEnhancements;

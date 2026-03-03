@@ -15,15 +15,9 @@ console.log('🎬 VISUAL-ENHANCEMENTS.JS LOADED - v1');
 // Visual enhancement state management
 const visualEnhancementState = {
   showVideos: true,
-  showGuides: true,
-  autoPlay: false,
   quality: 'medium', // low, medium, high
 };
 
-const FLOATING_CONTROL_GAP = 16;
-const FLOATING_CONTROL_SIZE = 56;
-const FLOATING_CONTROL_STACK = FLOATING_CONTROL_SIZE + FLOATING_CONTROL_GAP;
-const FLOATING_BUTTON_Z_INDEX = '70';
 const FLOATING_PANEL_Z_INDEX = '80';
 const FLOATING_MODAL_Z_INDEX = '90';
 const COMPACT_WORKOUT_VIEWPORT_QUERY =
@@ -31,6 +25,7 @@ const COMPACT_WORKOUT_VIEWPORT_QUERY =
 
 let visualControlsFocusReturnTarget = null;
 let videoModalFocusReturnTarget = null;
+let instructionModalFocusReturnTarget = null;
 
 function isCompactWorkoutViewport() {
   return (
@@ -155,10 +150,161 @@ const VIDEO_SYSTEM = {
 
 const DEFAULT_VIDEO_ID = 'YaXPRqUwItQ';
 
-export function getExerciseVideoId(exerciseName) {
-  if (!exerciseName) return null;
-  const slug = exerciseName.toLowerCase().trim().replace(/\s+/g, '-');
-  return VIDEO_SYSTEM.fallbackVideos[slug] || null;
+const VIDEO_FALLBACK_ALIASES = {
+  'ankle-rotations': 'ankle-circles',
+  'childs-pose': 'child-pose',
+  'glute-bridges': 'bridge',
+  'glute-bridges-warm-up': 'bridge',
+  'hip-openers-lunge-circle': 'hip-openers',
+  'plank-to-downward-dog': 'downward-dog',
+  'seated-forward-fold': 'forward-bends',
+  'seated-spinal-twist': 'torso-twists',
+  'single-leg-glute-bridge': 'single-leg-bridge',
+  'standing-forward-fold': 'forward-bends',
+  'supine-twist': 'torso-twists',
+};
+
+const VIDEO_KEYWORD_MATCHERS = [
+  { pattern: /\bdiamond push ?ups?\b/, key: 'diamond-push-ups' },
+  { pattern: /\bpike push ?ups?\b/, key: 'pike-push-ups' },
+  { pattern: /\bwide push ?ups?\b/, key: 'wide-push-ups' },
+  { pattern: /\bincline push ?ups?\b/, key: 'incline-push-ups' },
+  { pattern: /\bdecline push ?ups?\b/, key: 'decline-push-ups' },
+  { pattern: /\bwall push ?ups?\b/, key: 'wall-push-ups' },
+  { pattern: /\bchair dips?\b/, key: 'chair-dips' },
+  { pattern: /\btricep dips?\b/, key: 'tricep-dips' },
+  { pattern: /\bpush ?ups?\b|\bchest press\b/, key: 'push-ups' },
+  { pattern: /\bjump squats?\b/, key: 'jump-squats' },
+  { pattern: /\bsumo squats?\b/, key: 'sumo-squats' },
+  { pattern: /\bbodyweight squats?\b/, key: 'bodyweight-squats' },
+  { pattern: /\bsingle leg squats?\b/, key: 'single-leg-squats' },
+  { pattern: /\bsquats?\b/, key: 'squats' },
+  { pattern: /\bwalking lunges?\b/, key: 'walking-lunges' },
+  { pattern: /\breverse lunges?\b/, key: 'reverse-lunges' },
+  { pattern: /\bside lunges?\b/, key: 'side-lunges' },
+  { pattern: /\blunges?\b|\bsplit squats?\b/, key: 'lunges' },
+  { pattern: /\bside plank\b/, key: 'side-plank' },
+  { pattern: /\breverse plank\b/, key: 'reverse-plank' },
+  { pattern: /\bspider ?man plank\b/, key: 'spider-man-plank' },
+  { pattern: /\bplank jacks?\b/, key: 'plank-jacks' },
+  { pattern: /\bplank to downward dog\b/, key: 'downward-dog' },
+  { pattern: /\bplank\b|\bshoulder taps?\b|\bhollow body hold\b/, key: 'plank' },
+  { pattern: /\bburpees?\b/, key: 'burpees' },
+  { pattern: /\bmountain climbers?\b/, key: 'mountain-climbers' },
+  { pattern: /\bbear crawl\b/, key: 'bear-crawl' },
+  { pattern: /\bcrab walk\b/, key: 'crab-walk' },
+  { pattern: /\bjumping jacks?\b/, key: 'jumping-jacks' },
+  { pattern: /\bseal jacks?\b/, key: 'seal-jacks' },
+  { pattern: /\bstar jumps?\b/, key: 'star-jumps' },
+  { pattern: /\btuck jumps?\b/, key: 'tuck-jumps' },
+  { pattern: /\bbox jumps?\b/, key: 'box-jumps' },
+  { pattern: /\bhigh knees?\b/, key: 'high-knees' },
+  { pattern: /\bbutt kicks?\b/, key: 'butt-kicks' },
+  { pattern: /\brussian twists?\b/, key: 'russian-twists' },
+  { pattern: /\bbicycle crunch(es)?\b/, key: 'bicycle-crunches' },
+  { pattern: /\bleg raises?\b/, key: 'leg-raises' },
+  { pattern: /\bflutter kicks?\b/, key: 'flutter-kicks' },
+  { pattern: /\bscissor kicks?\b/, key: 'scissor-kicks' },
+  { pattern: /\bdead bug\b/, key: 'dead-bug' },
+  { pattern: /\bbird dog\b/, key: 'bird-dog' },
+  { pattern: /\bsuperman\b/, key: 'superman' },
+  { pattern: /\bsingle leg glute bridge\b/, key: 'single-leg-bridge' },
+  { pattern: /\bglute bridge(s)?\b|\bbridge\b/, key: 'bridge' },
+  { pattern: /\bwall sit\b/, key: 'wall-sit' },
+  { pattern: /\bstep ups?\b/, key: 'step-ups' },
+  { pattern: /\bcalf raises?\b/, key: 'calf-raises' },
+  { pattern: /\barm circles?\b/, key: 'arm-circles' },
+  { pattern: /\bshoulder rolls?\b/, key: 'shoulder-rolls' },
+  { pattern: /\btoe touches?\b/, key: 'toe-touches' },
+  { pattern: /\bwindmills?\b/, key: 'windmills' },
+  { pattern: /\bcat cow\b/, key: 'cat-cow' },
+  { pattern: /\bchild(?:s|ren)? pose\b/, key: 'child-pose' },
+  { pattern: /\bdownward dog\b/, key: 'downward-dog' },
+  { pattern: /\bhip circles?\b|\bhip openers?\b/, key: 'hip-openers' },
+  { pattern: /\bankle circles?\b|\bankle rotations?\b/, key: 'ankle-circles' },
+  { pattern: /\bwrist circles?\b/, key: 'wrist-circles' },
+  { pattern: /\bneck rolls?\b/, key: 'neck-rolls' },
+  { pattern: /\btorso twists?\b|\bspinal twists?\b|\bsupine twists?\b/, key: 'torso-twists' },
+  { pattern: /\bforward bends?\b|\bforward fold\b/, key: 'forward-bends' },
+  { pattern: /\bside bends?\b/, key: 'side-bends' },
+  { pattern: /\bback bends?\b/, key: 'back-bends' },
+];
+
+function normalizeExerciseLookupValue(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/\+/g, ' plus ')
+    .replace(/\(([^)]*)\)/g, ' $1 ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function slugifyExerciseLookupValue(value) {
+  const normalized = normalizeExerciseLookupValue(value);
+  return normalized ? normalized.replace(/\s+/g, '-') : '';
+}
+
+function resolveFallbackVideoKey(exerciseInput) {
+  const descriptor =
+    typeof exerciseInput === 'string' ? { name: exerciseInput } : exerciseInput || {};
+  const primaryLookupValues = [descriptor.name]
+    .map((value) => String(value || '').trim())
+    .filter(Boolean);
+
+  for (const value of primaryLookupValues) {
+    const directSlug = value.toLowerCase().trim().replace(/\s+/g, '-');
+    if (VIDEO_SYSTEM.fallbackVideos[directSlug]) {
+      return directSlug;
+    }
+
+    const normalizedSlug = slugifyExerciseLookupValue(value);
+    if (!normalizedSlug) continue;
+
+    if (VIDEO_SYSTEM.fallbackVideos[normalizedSlug]) {
+      return normalizedSlug;
+    }
+
+    const aliasKey = VIDEO_FALLBACK_ALIASES[normalizedSlug];
+    if (aliasKey && VIDEO_SYSTEM.fallbackVideos[aliasKey]) {
+      return aliasKey;
+    }
+  }
+
+  // Only use fuzzy keyword matching on the actual exercise name.
+  // Search metadata and alternatives are too broad and can produce unrelated embeds.
+  for (const value of primaryLookupValues) {
+    const normalized = normalizeExerciseLookupValue(value);
+    if (!normalized) continue;
+
+    for (const matcher of VIDEO_KEYWORD_MATCHERS) {
+      if (matcher.pattern.test(normalized) && VIDEO_SYSTEM.fallbackVideos[matcher.key]) {
+        return matcher.key;
+      }
+    }
+  }
+
+  return null;
+}
+
+export function getExerciseVideoId(exerciseInput) {
+  const key = resolveFallbackVideoKey(exerciseInput);
+  return key ? VIDEO_SYSTEM.fallbackVideos[key] || null : null;
+}
+
+export function getExerciseVideoSearchQuery(exerciseInput) {
+  const descriptor =
+    typeof exerciseInput === 'string' ? { name: exerciseInput } : exerciseInput || {};
+  const searchQuery =
+    descriptor.resources?.youtubeSearch ||
+    descriptor.resources?.googleSearch ||
+    (descriptor.name ? `${descriptor.name} exercise tutorial` : '');
+
+  return String(searchQuery || '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export function getGenericExerciseVideoId() {
@@ -183,8 +329,8 @@ export function initializeVisualEnhancements() {
   // Setup video modal
   setupVideoModal();
 
-  // Keep floating controls above sticky mobile bars
-  setupFloatingControlLayout();
+  // Setup instruction & safety modal
+  setupInstructionSafetyModal();
 
   console.log('✅ Visual enhancements initialized');
 }
@@ -197,7 +343,12 @@ function loadVisualPreferences() {
     const saved = localStorage.getItem('fitflow_visual_preferences');
     if (saved) {
       const preferences = JSON.parse(saved);
-      Object.assign(visualEnhancementState, preferences);
+      if (typeof preferences.showVideos === 'boolean') {
+        visualEnhancementState.showVideos = preferences.showVideos;
+      }
+      if (typeof preferences.quality === 'string') {
+        visualEnhancementState.quality = preferences.quality;
+      }
       console.log('🎬 Loaded visual preferences:', preferences);
     }
   } catch (error) {
@@ -210,7 +361,11 @@ function loadVisualPreferences() {
  */
 function saveVisualPreferences() {
   try {
-    localStorage.setItem('fitflow_visual_preferences', JSON.stringify(visualEnhancementState));
+    const payload = {
+      showVideos: visualEnhancementState.showVideos,
+      quality: visualEnhancementState.quality,
+    };
+    localStorage.setItem('fitflow_visual_preferences', JSON.stringify(payload));
     console.log('🎬 Saved visual preferences:', visualEnhancementState);
   } catch (error) {
     console.warn('Failed to save visual preferences:', error);
@@ -227,13 +382,8 @@ function setupVisualControls() {
   // Setup visual enhancement button
   setupVisualEnhancementButton();
 
-  // Setup toggle buttons
-  setupToggleButton('show-videos-toggle', 'showVideos', 'Show Videos');
-  setupToggleButton('show-guides-toggle', 'showGuides', 'Show Instructions & Safety');
-  setupToggleButton('autoplay-toggle', 'autoPlay', 'Auto Play Videos');
-
-  // Setup quality selector
-  setupQualitySelector();
+  // Setup action buttons
+  setupVisualActionButtons();
 }
 
 /**
@@ -300,62 +450,19 @@ function createVisualControlsPanel() {
             </div>
             
             <div class="visual-controls-options">
-                <div class="visual-controls-option">
-                    <label class="visual-controls-option-label">
-                        <input type="checkbox" id="show-videos-toggle" class="visual-controls-toggle">
-                        <span class="visual-controls-toggle-slider"></span>
-                        <div class="visual-controls-option-content">
-                            <div class="visual-controls-option-title">Show Videos</div>
-                            <div class="visual-controls-option-description">Display exercise demonstration videos</div>
-                        </div>
-                    </label>
-                </div>
-                
-                
-                <div class="visual-controls-option">
-                    <label class="visual-controls-option-label">
-                        <input type="checkbox" id="show-guides-toggle" class="visual-controls-toggle">
-                        <span class="visual-controls-toggle-slider"></span>
-                        <div class="visual-controls-option-content">
-                            <div class="visual-controls-option-title">Show Instructions & Safety</div>
-                            <div class="visual-controls-option-description">Display exercise instructions and safety guidelines</div>
-                        </div>
-                    </label>
-                </div>
-                
-                <div class="visual-controls-option">
-                    <label class="visual-controls-option-label">
-                        <input type="checkbox" id="autoplay-toggle" class="visual-controls-toggle">
-                        <span class="visual-controls-toggle-slider"></span>
-                        <div class="visual-controls-option-content">
-                            <div class="visual-controls-option-title">Auto Play Videos</div>
-                            <div class="visual-controls-option-description">Automatically play videos when opened</div>
-                        </div>
-                    </label>
-                </div>
-                
-                <div class="visual-controls-option">
-                    <div class="visual-controls-option-content">
-                        <div class="visual-controls-option-title">Video Quality</div>
-                        <div class="visual-controls-option-description">Choose video playback quality</div>
-                        <select id="quality-selector" class="visual-controls-select">
-                            <option value="low">Low (480p)</option>
-                            <option value="medium" selected>Medium (720p)</option>
-                            <option value="high">High (1080p)</option>
-                        </select>
+                <button id="toggle-video-visibility" type="button" class="visual-controls-action">
+                    <div class="visual-controls-action-header">
+                        <span class="visual-controls-action-title">Videos</span>
+                        <span id="video-toggle-state" class="visual-controls-action-pill"></span>
                     </div>
-                </div>
-            </div>
-            
-            <div class="visual-controls-footer">
-                <button id="save-visual-controls" class="visual-controls-save-btn">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Save Settings
+                    <p class="visual-controls-action-description">Show or hide exercise demonstration videos and previews.</p>
                 </button>
-                <button id="reset-visual-controls" class="visual-controls-reset-btn">
-                    Reset to Defaults
+
+                <button id="open-instruction-safety" type="button" class="visual-controls-action visual-controls-action--secondary">
+                    <div class="visual-controls-action-header">
+                        <span class="visual-controls-action-title">Instructions &amp; Safety</span>
+                    </div>
+                    <p class="visual-controls-action-description">Open a focused view of form cues and safety tips for the current exercise.</p>
                 </button>
             </div>
         </div>
@@ -370,18 +477,6 @@ function createVisualControlsPanel() {
     closeBtn.addEventListener('click', hideVisualControlsPanel);
   }
 
-  // Setup save button
-  const saveBtn = document.getElementById('save-visual-controls');
-  if (saveBtn) {
-    saveBtn.addEventListener('click', saveVisualSettings);
-  }
-
-  // Setup reset button
-  const resetBtn = document.getElementById('reset-visual-controls');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', resetVisualSettings);
-  }
-
   panel.style.zIndex = FLOATING_PANEL_Z_INDEX;
   panel.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -391,65 +486,63 @@ function createVisualControlsPanel() {
 }
 
 /**
- * Setup toggle button for visual options
+ * Setup action buttons for visual controls
  */
-function setupToggleButton(buttonId, stateKey, label) {
-  const button = document.getElementById(buttonId);
-  if (!button) return;
+function setupVisualActionButtons() {
+  const videoToggleButton = document.getElementById('toggle-video-visibility');
+  if (videoToggleButton && videoToggleButton.dataset.bound !== 'true') {
+    videoToggleButton.addEventListener('click', () => {
+      visualEnhancementState.showVideos = !visualEnhancementState.showVideos;
+      saveVisualPreferences();
+      applyVisualSettings();
+      updateVideoToggleButtonUI();
+      announceVisualChange('Videos', visualEnhancementState.showVideos ? 'enabled' : 'disabled');
+    });
+    videoToggleButton.dataset.bound = 'true';
+  }
 
-  // Set initial state
-  button.checked = visualEnhancementState[stateKey];
+  const instructionButton = document.getElementById('open-instruction-safety');
+  if (instructionButton && instructionButton.dataset.bound !== 'true') {
+    instructionButton.addEventListener('click', showInstructionSafetyModal);
+    instructionButton.dataset.bound = 'true';
+  }
 
-  // Add event listener
-  button.addEventListener('change', (e) => {
-    visualEnhancementState[stateKey] = e.target.checked;
-    applyVisualSettings();
-    saveVisualPreferences();
-
-    // Announce change
-    announceVisualChange(label, e.target.checked);
-  });
-
-  button.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      button.checked = !button.checked;
-      button.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
+  updateVideoToggleButtonUI();
 }
 
-/**
- * Setup quality selector
- */
-function setupQualitySelector() {
-  const selector = document.getElementById('quality-selector');
-  if (!selector) return;
+function updateVideoToggleButtonUI() {
+  const videoToggleButton = document.getElementById('toggle-video-visibility');
+  const statePill = document.getElementById('video-toggle-state');
+  if (!videoToggleButton || !statePill) return;
 
-  // Set initial value
-  selector.value = visualEnhancementState.quality;
-
-  // Add event listener
-  selector.addEventListener('change', (e) => {
-    visualEnhancementState.quality = e.target.value;
-    applyVisualSettings();
-    saveVisualPreferences();
-
-    announceVisualChange('Video quality', e.target.value);
-  });
+  const isOn = !!visualEnhancementState.showVideos;
+  videoToggleButton.setAttribute('aria-pressed', String(isOn));
+  videoToggleButton.classList.toggle('is-active', isOn);
+  statePill.textContent = isOn ? 'On' : 'Off';
+  statePill.classList.toggle('is-on', isOn);
+  statePill.classList.toggle('is-off', !isOn);
 }
 
 /**
  * Enhance existing exercise cards with visual elements
  */
 function enhanceExerciseCards() {
-  // Wait for exercise cards to be rendered
-  setTimeout(() => {
-    const exerciseItems = document.querySelectorAll('.exercise-item');
-    exerciseItems.forEach((item) => {
+  const applyEnhancements = (items) => {
+    items.forEach((item) => {
       addVisualEnhancementsToExercise(item);
     });
-  }, 1000);
+  };
+
+  const exerciseItems = document.querySelectorAll('.exercise-item');
+  if (exerciseItems.length) {
+    applyEnhancements(exerciseItems);
+    return;
+  }
+
+  // Wait briefly for exercise cards to be rendered
+  setTimeout(() => {
+    applyEnhancements(document.querySelectorAll('.exercise-item'));
+  }, 500);
 }
 
 /**
@@ -459,31 +552,29 @@ function addVisualEnhancementsToExercise(exerciseItem) {
   const exerciseName = exerciseItem.querySelector('.exercise-name')?.textContent?.toLowerCase();
   if (!exerciseName) return;
 
+  const existingControls = exerciseItem.querySelector('.exercise-visual-controls');
+  if (existingControls) {
+    existingControls.remove();
+  }
+
+  const showVideoControls = visualEnhancementState.showVideos;
+  if (!showVideoControls) {
+    return;
+  }
+
   // Add visual enhancement buttons
   const visualControls = document.createElement('div');
   visualControls.className = 'exercise-visual-controls';
   visualControls.innerHTML = `
         <div class="visual-buttons">
             ${
-              visualEnhancementState.showVideos
+              showVideoControls
                 ? `
                 <button class="visual-btn video-btn" data-exercise="${exerciseName}" title="Watch demonstration video">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                     </svg>
                     Video
-                </button>
-            `
-                : ''
-            }
-            ${
-              visualEnhancementState.show3DModels
-                ? `
-                <button class="visual-btn model-btn" data-exercise="${exerciseName}" title="View 3D model">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                    </svg>
-                    3D
                 </button>
             `
                 : ''
@@ -503,19 +594,9 @@ function addVisualEnhancementsToExercise(exerciseItem) {
  */
 function setupVisualButtonListeners(visualControls, exerciseName) {
   const videoBtn = visualControls.querySelector('.video-btn');
-  const modelBtn = visualControls.querySelector('.model-btn');
-  const guideBtn = visualControls.querySelector('.guide-btn');
 
   if (videoBtn) {
     videoBtn.addEventListener('click', () => showExerciseVideo(exerciseName));
-  }
-
-  if (modelBtn) {
-    modelBtn.addEventListener('click', () => showExercise3DModel(exerciseName));
-  }
-
-  if (guideBtn) {
-    guideBtn.addEventListener('click', () => showExerciseGuide(exerciseName));
   }
 }
 
@@ -600,6 +681,56 @@ function setupVideoModal() {
 }
 
 /**
+ * Setup instruction & safety modal
+ */
+function setupInstructionSafetyModal() {
+  if (document.getElementById('instruction-modal')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'instruction-modal';
+  modal.className = 'instruction-modal hidden';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'instruction-modal-title');
+  modal.setAttribute('tabindex', '-1');
+  modal.innerHTML = `
+        <div class="instruction-modal-content">
+            <div class="instruction-modal-header">
+                <h3 id="instruction-modal-title">Instructions &amp; Safety</h3>
+                <button id="close-instruction-modal" class="instruction-modal-close-btn" aria-label="Close instructions and safety">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="instruction-modal-body" class="instruction-modal-body">
+                <!-- Instruction content will be injected here -->
+            </div>
+        </div>
+    `;
+
+  document.body.appendChild(modal);
+  modal.style.zIndex = FLOATING_MODAL_Z_INDEX;
+
+  const closeBtn = document.getElementById('close-instruction-modal');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeInstructionSafetyModal);
+  }
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeInstructionSafetyModal();
+    }
+  });
+
+  modal.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeInstructionSafetyModal();
+    }
+  });
+}
+
+/**
  * Setup 3D model viewer
  */
 
@@ -622,15 +753,14 @@ function showExerciseVideo(exerciseName) {
     document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
   // Get video ID from fallback system
-  const videoId = VIDEO_SYSTEM.fallbackVideos[exerciseName];
+  const videoId = getExerciseVideoId(exerciseName);
 
   if (videoId) {
     // Use fallback video
     title.textContent = `${exerciseName.charAt(0).toUpperCase() + exerciseName.slice(1).replace(/-/g, ' ')} - Exercise Video`;
 
-    // Create YouTube embed URL with autoplay based on user preference
-    const autoplayParam = visualEnhancementState.autoPlay ? '&autoplay=1' : '';
-    const videoUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&fs=1${autoplayParam}`;
+    // Create YouTube embed URL (autoplay disabled)
+    const videoUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&fs=1`;
 
     // Create video element
     const video = document.createElement('iframe');
@@ -638,8 +768,7 @@ function showExerciseVideo(exerciseName) {
     video.width = '100%';
     video.height = '315';
     video.frameBorder = '0';
-    video.allow =
-      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    video.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     video.allowFullscreen = true;
     video.style.borderRadius = '8px';
 
@@ -658,28 +787,9 @@ function showExerciseVideo(exerciseName) {
     console.log(`🎬 Video modal opened with fallback video: ${videoId}`);
     console.log(`🎬 Video URL: ${videoUrl}`);
   } else {
-    // Show generic video placeholder for exercises not in our database
-    console.log(`🎬 No specific video found for: ${exerciseName}, showing generic video`);
+    // Fall back to exercise-specific search results when no direct embed mapping exists.
+    console.log(`🎬 No specific video found for: ${exerciseName}, showing fallback search`);
     showGenericExerciseVideo(exerciseName);
-  }
-}
-
-/**
- * Show generic exercise 3D model when no specific model is available
- */
-function showGenericExercise3DModel(exerciseName) {
-  const viewer = document.getElementById('model-viewer');
-  const title = document.getElementById('model-viewer-title');
-
-  if (viewer && title) {
-    title.textContent = `${exerciseName.charAt(0).toUpperCase() + exerciseName.slice(1)} 3D Model`;
-
-    // Show the modal
-    viewer.classList.remove('hidden');
-
-    console.log('🎬 3D model modal opened with placeholder content');
-  } else {
-    console.warn('🎬 3D model modal elements not found');
   }
 }
 
@@ -695,26 +805,42 @@ function showGenericExerciseVideo(exerciseName) {
     videoModalFocusReturnTarget =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
     title.textContent = `${exerciseName.charAt(0).toUpperCase() + exerciseName.slice(1).replace(/-/g, ' ')} - Exercise Video`;
+    const searchQuery = getExerciseVideoSearchQuery(exerciseName);
 
-    // Use a generic exercise video (FitnessBlender push-up video - known to work)
-    const genericVideoId = DEFAULT_VIDEO_ID; // FitnessBlender - Full Body Workout (verified working)
-    const autoplayParam = visualEnhancementState.autoPlay ? '&autoplay=1' : '';
-    const videoUrl = `https://www.youtube.com/embed/${genericVideoId}?rel=0&modestbranding=1&controls=1&fs=1${autoplayParam}`;
+    if (searchQuery) {
+      const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+      videoContainer.innerHTML = `
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-fit-secondary">No direct embed available</p>
+          <p class="mt-3 text-fit-dark">Open exercise-specific YouTube results for ${exerciseName.replace(/-/g, ' ')}.</p>
+          <a
+            href="${searchUrl}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-4 inline-flex items-center rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700">
+            Open YouTube Search
+          </a>
+        </div>
+      `;
+      console.log(`🎬 Generic video modal opened with search URL: ${searchUrl}`);
+    } else {
+      const genericVideoId = DEFAULT_VIDEO_ID;
+      const videoUrl = `https://www.youtube.com/embed/${genericVideoId}?rel=0&modestbranding=1&controls=1&fs=1`;
 
-    // Create video element
-    const video = document.createElement('iframe');
-    video.src = videoUrl;
-    video.width = '100%';
-    video.height = '315';
-    video.frameBorder = '0';
-    video.allow =
-      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    video.allowFullscreen = true;
-    video.style.borderRadius = '8px';
+      const video = document.createElement('iframe');
+      video.src = videoUrl;
+      video.width = '100%';
+      video.height = '315';
+      video.frameBorder = '0';
+      video.allow =
+        'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      video.allowFullscreen = true;
+      video.style.borderRadius = '8px';
 
-    // Clear container and add video
-    videoContainer.innerHTML = '';
-    videoContainer.appendChild(video);
+      videoContainer.innerHTML = '';
+      videoContainer.appendChild(video);
+      console.log(`🎬 Generic video modal opened with video: ${genericVideoId}`);
+    }
 
     // Show the modal
     modal.classList.remove('hidden');
@@ -724,7 +850,6 @@ function showGenericExerciseVideo(exerciseName) {
     } else {
       modal.focus();
     }
-    console.log(`🎬 Generic video modal opened with video: ${genericVideoId}`);
   }
 }
 
@@ -748,18 +873,146 @@ function closeVideoModal() {
   }
 }
 
-/**
- * Close 3D model viewer
- */
-function closeModelViewer() {
-  console.log('🎬 closeModelViewer called');
-  const viewer = document.getElementById('model-viewer');
-  if (viewer) {
-    viewer.classList.add('hidden');
-    console.log('🎬 3D model modal closed');
-  } else {
-    console.warn('🎬 3D model modal not found');
+function showInstructionSafetyModal() {
+  const modal = document.getElementById('instruction-modal');
+  const title = document.getElementById('instruction-modal-title');
+  const body = document.getElementById('instruction-modal-body');
+
+  if (!modal || !title || !body) {
+    console.warn('🎬 Instruction modal elements not found');
+    return;
   }
+
+  instructionModalFocusReturnTarget =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+  const payload = getInstructionSafetyPayload();
+  if (!payload) {
+    title.textContent = 'Instructions & Safety';
+    body.innerHTML = `
+      <div class="text-sm text-fit-secondary">
+        Start a workout to view instructions and safety guidance for the active exercise.
+      </div>
+    `;
+  } else {
+    title.textContent = `${payload.name} - Instructions & Safety`;
+    body.innerHTML = buildInstructionSafetyMarkup(payload);
+  }
+
+  modal.classList.remove('hidden');
+  const closeButton = document.getElementById('close-instruction-modal');
+  if (closeButton instanceof HTMLElement) {
+    closeButton.focus();
+  } else {
+    modal.focus();
+  }
+}
+
+function closeInstructionSafetyModal() {
+  const modal = document.getElementById('instruction-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+
+  if (instructionModalFocusReturnTarget instanceof HTMLElement) {
+    instructionModalFocusReturnTarget.focus();
+  }
+}
+
+function getInstructionSafetyPayload() {
+  const workoutState = window.workoutState;
+  const sequence = workoutState?.sequence;
+  if (!Array.isArray(sequence) || sequence.length === 0) return null;
+
+  const index =
+    typeof workoutState.currentIndex === 'number' ? workoutState.currentIndex : 0;
+  const exercise = sequence[index];
+  if (!exercise) return null;
+
+  const description = String(exercise.description || '');
+  const { instruction, safety } = parseInstructionAndSafety(description);
+  const { doText, dontText } = parseDoDont(safety);
+
+  return {
+    name: exercise.name || 'Exercise',
+    instruction,
+    safety,
+    doText,
+    dontText,
+  };
+}
+
+function parseInstructionAndSafety(description) {
+  const parts = String(description || '').split('⚠️');
+  const instruction = (parts[0] || '').trim();
+  const safety = (parts[1] || '').trim();
+  return { instruction, safety };
+}
+
+function parseDoDont(safetyGuidelines) {
+  if (!safetyGuidelines) return { doText: '', dontText: '' };
+  const doMatch = safetyGuidelines.match(/DO:\s*(.+?)\.\s*DON'T:/i);
+  const dontMatch = safetyGuidelines.match(/DON'T:\s*(.+)/i);
+  return {
+    doText: doMatch ? doMatch[1].trim() : '',
+    dontText: dontMatch ? dontMatch[1].trim() : '',
+  };
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildInstructionSafetyMarkup({ instruction, safety, doText, dontText }) {
+  const instructionText = instruction ? escapeHtml(instruction) : 'No instruction available.';
+  let safetyMarkup = '';
+
+  if (doText || dontText) {
+    safetyMarkup = `
+      <div class="space-y-3">
+        ${
+          doText
+            ? `<div class="flex items-start gap-2">
+                <span class="font-bold text-emerald-600">✓</span>
+                <span class="text-sm text-fit-secondary">${escapeHtml(doText)}</span>
+              </div>`
+            : ''
+        }
+        ${
+          dontText
+            ? `<div class="flex items-start gap-2">
+                <span class="font-bold text-rose-600">✗</span>
+                <span class="text-sm text-fit-secondary">${escapeHtml(dontText)}</span>
+              </div>`
+            : ''
+        }
+      </div>
+    `;
+  } else if (safety) {
+    safetyMarkup = `<p class="text-sm text-fit-secondary leading-relaxed">${escapeHtml(
+      safety
+    )}</p>`;
+  } else {
+    safetyMarkup = '<p class="text-sm text-fit-secondary">No safety guidance provided.</p>';
+  }
+
+  return `
+    <div class="space-y-6">
+      <section class="space-y-2">
+        <h4 class="text-base font-semibold text-fit-dark">Instructions</h4>
+        <p class="text-sm text-fit-secondary leading-relaxed">${instructionText}</p>
+      </section>
+      <section class="space-y-2">
+        <h4 class="text-base font-semibold text-fit-dark">Safety</h4>
+        ${safetyMarkup}
+      </section>
+    </div>
+  `;
 }
 
 /**
@@ -777,6 +1030,7 @@ function applyVisualSettings() {
     applySettingsToWorkoutPlayer();
   }
 
+  updateVideoToggleButtonUI();
   console.log('🎬 Applied visual settings:', visualEnhancementState);
 }
 
@@ -785,16 +1039,6 @@ function applyVisualSettings() {
  */
 function applySettingsToWorkoutPlayer() {
   console.log('🎬 Applying visual settings to workout player...');
-
-  // Update exercise resources section
-  const exerciseResources = document.getElementById('exercise-resources');
-  if (exerciseResources) {
-    if (visualEnhancementState.showVideos) {
-      exerciseResources.style.display = 'block';
-    } else {
-      exerciseResources.style.display = 'none';
-    }
-  }
 
   // Update video buttons within exercise resources
   const videoButtons = document.querySelectorAll(
@@ -810,20 +1054,6 @@ function applySettingsToWorkoutPlayer() {
     }
   });
 
-  // Apply autoplay settings to video elements
-  const videoElements = document.querySelectorAll(
-    '#exercise-resources video, #exercise-resources iframe[src*="youtube"]'
-  );
-  videoElements.forEach((video) => {
-    if (visualEnhancementState.autoPlay) {
-      video.setAttribute('autoplay', 'true');
-      console.log('🎬 Enabling video autoplay');
-    } else {
-      video.removeAttribute('autoplay');
-      console.log('🎬 Disabling video autoplay');
-    }
-  });
-
   if (window.updateInlineExerciseVideo) {
     window.updateInlineExerciseVideo();
   }
@@ -832,55 +1062,10 @@ function applySettingsToWorkoutPlayer() {
 }
 
 /**
- * Save visual settings and apply them
- */
-function saveVisualSettings() {
-  // Get current values from UI
-  const showVideosToggle = document.getElementById('show-videos-toggle');
-  const showGuidesToggle = document.getElementById('show-guides-toggle');
-  const autoplayToggle = document.getElementById('autoplay-toggle');
-  const qualitySelector = document.getElementById('quality-selector');
-
-  if (showVideosToggle) visualEnhancementState.showVideos = showVideosToggle.checked;
-  if (showGuidesToggle) visualEnhancementState.showGuides = showGuidesToggle.checked;
-  if (autoplayToggle) visualEnhancementState.autoPlay = autoplayToggle.checked;
-  if (qualitySelector) visualEnhancementState.quality = qualitySelector.value;
-
-  // Save to localStorage
-  saveVisualPreferences();
-
-  // Apply settings
-  applyVisualSettings();
-
-  // Show success message
-  showVisualSettingsSaved();
-
-  // Close panel
-  const panel = document.getElementById('visual-controls-panel');
-  if (panel) {
-    hideVisualControlsPanel();
-  }
-
-  console.log('🎬 Visual settings saved and applied:', visualEnhancementState);
-}
-
-/**
  * Apply settings to existing elements on the page
  */
 function applySettingsToExistingElements() {
   console.log('🎬 Applying visual settings to existing elements...');
-
-  // Update exercise resources section (contains videos, guides, etc.)
-  const exerciseResources = document.getElementById('exercise-resources');
-  if (exerciseResources) {
-    if (visualEnhancementState.showVideos || visualEnhancementState.showGuides) {
-      exerciseResources.style.display = 'block';
-      console.log('🎬 Showing exercise resources');
-    } else {
-      exerciseResources.style.display = 'none';
-      console.log('🎬 Hiding exercise resources');
-    }
-  }
 
   // Update video elements within resources
   const videoElements = document.querySelectorAll('.exercise-resources a[href*="youtube.com"]');
@@ -898,17 +1083,12 @@ function applySettingsToExistingElements() {
   const isMobileViewport = isCompactWorkoutViewport();
 
   if (exerciseInstructions) {
-    if (visualEnhancementState.showGuides || isMobileViewport) {
-      exerciseInstructions.style.display = 'block';
-      console.log('🎬 Showing exercise instructions');
-    } else {
-      exerciseInstructions.style.display = 'none';
-      console.log('🎬 Hiding exercise instructions');
-    }
+    exerciseInstructions.style.display = 'block';
+    console.log('🎬 Showing exercise instructions');
   }
 
   if (exerciseSafety) {
-    if (visualEnhancementState.showGuides && !isMobileViewport) {
+    if (!isMobileViewport) {
       exerciseSafety.style.display = 'block';
       console.log('🎬 Showing exercise safety');
     } else {
@@ -918,90 +1098,6 @@ function applySettingsToExistingElements() {
   }
 
   console.log('🎬 Visual settings applied to existing elements');
-}
-
-/**
- * Show settings saved message
- */
-function showVisualSettingsSaved() {
-  // Create temporary success message
-  const message = document.createElement('div');
-  message.className = 'visual-settings-saved-message';
-  message.innerHTML = `
-        <div class="visual-settings-saved-content">
-            <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Visual settings saved successfully!
-        </div>
-    `;
-
-  // Add styles
-  message.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: white;
-        border: 2px solid #10b981;
-        border-radius: 8px;
-        padding: 12px 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        font-weight: 500;
-        color: #374151;
-        animation: slideInRight 0.3s ease-out;
-    `;
-
-  document.body.appendChild(message);
-
-  // Remove after 3 seconds
-  setTimeout(() => {
-    message.style.animation = 'slideOutRight 0.3s ease-in';
-    setTimeout(() => {
-      if (message.parentNode) {
-        message.parentNode.removeChild(message);
-      }
-    }, 300);
-  }, 3000);
-}
-
-/**
- * Reset visual settings to defaults
- */
-function resetVisualSettings() {
-  // Reset state
-  Object.assign(visualEnhancementState, {
-    showVideos: true,
-    showGuides: true,
-    autoPlay: false,
-    quality: 'medium',
-  });
-
-  // Update UI
-  const toggles = [
-    ['show-videos-toggle', 'showVideos'],
-    ['show-guides-toggle', 'showGuides'],
-    ['autoplay-toggle', 'autoPlay'],
-  ];
-  toggles.forEach(([toggleId, stateKey]) => {
-    const toggle = document.getElementById(toggleId);
-    if (toggle) {
-      toggle.checked = visualEnhancementState[stateKey];
-    }
-  });
-
-  const qualitySelector = document.getElementById('quality-selector');
-  if (qualitySelector) {
-    qualitySelector.value = visualEnhancementState.quality;
-  }
-
-  // Apply settings
-  applyVisualSettings();
-  saveVisualPreferences();
-
-  announceVisualChange('Visual settings', 'reset to defaults');
 }
 
 /**
@@ -1057,80 +1153,6 @@ function hideVisualControlsPanel() {
   }
 }
 
-function setupFloatingControlLayout() {
-  const updateFloatingControls = () => {
-    const accessibilityBtn = document.getElementById('accessibility-btn');
-    const visualBtn = document.getElementById('visual-enhancement-btn');
-    const accessibilityPanel = document.getElementById('accessibility-panel');
-    const visualPanel = document.getElementById('visual-controls-panel');
-    const isMobileViewport = isCompactWorkoutViewport();
-    const stickyBarHeight = getBottomObstructionHeight();
-
-    if (accessibilityBtn) {
-      accessibilityBtn.style.zIndex = FLOATING_BUTTON_Z_INDEX;
-    }
-
-    if (visualBtn) {
-      visualBtn.style.zIndex = FLOATING_BUTTON_Z_INDEX;
-    }
-
-    if (accessibilityPanel) {
-      accessibilityPanel.style.zIndex = FLOATING_PANEL_Z_INDEX;
-    }
-
-    if (visualPanel) {
-      visualPanel.style.zIndex = FLOATING_PANEL_Z_INDEX;
-    }
-
-    if (!isMobileViewport) {
-      if (accessibilityBtn) accessibilityBtn.style.bottom = '';
-      if (visualBtn) {
-        visualBtn.style.bottom = '';
-        visualBtn.style.right = '';
-      }
-      return;
-    }
-
-    const baseBottom = stickyBarHeight + FLOATING_CONTROL_GAP;
-    if (accessibilityBtn) {
-      accessibilityBtn.style.bottom = `${baseBottom}px`;
-    }
-
-    if (visualBtn) {
-      visualBtn.style.bottom = `${baseBottom + FLOATING_CONTROL_STACK}px`;
-      visualBtn.style.right = '20px';
-    }
-  };
-
-  updateFloatingControls();
-  window.addEventListener('resize', updateFloatingControls);
-  window.addEventListener('orientationchange', updateFloatingControls);
-}
-
-function getBottomObstructionHeight() {
-  const obstructionCandidates = [];
-  const mobileCta = document.getElementById('mobile-generate-cta');
-  const ctaBar = mobileCta?.closest('div');
-  if (ctaBar instanceof HTMLElement) {
-    obstructionCandidates.push(ctaBar);
-  }
-
-  const workoutControlsBar = document.querySelector(
-    '#mobile-workout-controls .mobile-workout-controls__bar'
-  );
-  if (workoutControlsBar instanceof HTMLElement) {
-    obstructionCandidates.push(workoutControlsBar);
-  }
-
-  return obstructionCandidates.reduce((maxHeight, element) => {
-    const styles = window.getComputedStyle(element);
-    const rect = element.getBoundingClientRect();
-    const isVisible = styles.display !== 'none' && styles.visibility !== 'hidden' && rect.height > 0;
-    if (!isVisible) return maxHeight;
-    return Math.max(maxHeight, Math.ceil(rect.height));
-  }, 0);
-}
-
 /**
  * Get current visual enhancement state
  */
@@ -1142,7 +1164,13 @@ export function getVisualEnhancementState() {
  * Set visual enhancement state
  */
 export function setVisualEnhancementState(newState) {
-  Object.assign(visualEnhancementState, newState);
+  if (!newState || typeof newState !== 'object') return;
+  if (typeof newState.showVideos === 'boolean') {
+    visualEnhancementState.showVideos = newState.showVideos;
+  }
+  if (typeof newState.quality === 'string') {
+    visualEnhancementState.quality = newState.quality;
+  }
   applyVisualSettings();
   saveVisualPreferences();
 }

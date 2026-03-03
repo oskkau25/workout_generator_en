@@ -1942,31 +1942,120 @@ class AutomatedTestPipeline:
     def test_exhaustive_equipment_combinations(self):
         """Test that all equipment combinations can generate valid workout plans"""
         try:
-            js_path = self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js'
-            if not js_path.exists():
+            source_paths = [
+                self.project_root / 'src' / 'js' / 'core' / 'exercise-database.js',
+                self.project_root / 'src' / 'js' / 'core' / 'workout-generator.js',
+            ]
+            js_content = None
+            source_file = None
+            for path in source_paths:
+                if path.exists():
+                    source_file = path
+                    with open(path, 'r', encoding='utf-8') as f:
+                        js_content = f.read()
+                    break
+
+            if js_content is None:
                 return {
                     'status': 'FAILED',
-                    'error': 'Workout generator file not found'
+                    'error': 'Exercise database not found'
                 }
-            
-            with open(js_path, 'r', encoding='utf-8') as f:
-                js_content = f.read()
-            
-            # Extract exercises using regex pattern
+
+            def extract_exercise_objects(content: str):
+                start_idx = content.find('export const exercises')
+                if start_idx == -1:
+                    start_idx = content.find('const exercises')
+                if start_idx == -1:
+                    return []
+                bracket_start = content.find('[', start_idx)
+                if bracket_start == -1:
+                    return []
+
+                in_str = None
+                escape = False
+                bracket_depth = 0
+                bracket_end = None
+                for i in range(bracket_start, len(content)):
+                    ch = content[i]
+                    if in_str:
+                        if escape:
+                            escape = False
+                        elif ch == '\\\\':
+                            escape = True
+                        elif ch == in_str:
+                            in_str = None
+                        continue
+                    if ch in ('"', "'", '`'):
+                        in_str = ch
+                        continue
+                    if ch == '[':
+                        bracket_depth += 1
+                    elif ch == ']':
+                        bracket_depth -= 1
+                        if bracket_depth == 0:
+                            bracket_end = i
+                            break
+
+                if bracket_end is None:
+                    return []
+
+                array_content = content[bracket_start + 1: bracket_end]
+                objects = []
+                in_str = None
+                escape = False
+                depth = 0
+                start = None
+                for idx, ch in enumerate(array_content):
+                    if in_str:
+                        if escape:
+                            escape = False
+                        elif ch == '\\\\':
+                            escape = True
+                        elif ch == in_str:
+                            in_str = None
+                        continue
+                    if ch in ('"', "'", '`'):
+                        in_str = ch
+                        continue
+                    if ch == '{':
+                        if depth == 0:
+                            start = idx
+                        depth += 1
+                    elif ch == '}':
+                        depth -= 1
+                        if depth == 0 and start is not None:
+                            objects.append(array_content[start:idx + 1])
+                            start = None
+                return objects
+
             import re
-            pattern = re.compile(r"\{\s*name:\s*\"([^\"]+)\",[\s\S]*?description:\s*\"([\s\S]*?)\",[\s\S]*?equipment:\s*\"([^\"]+)\",[\s\S]*?level:\s*\[([^\]]*)\],[\s\S]*?muscle:\s*\"([^\"]+)\",[\s\S]*?type:\s*\"([^\"]+)\"\s*\}")
-            
             exercises = []
-            for m in pattern.finditer(js_content):
-                name, description, equipment, level_raw, muscle, etype = m.groups()
-                levels = [s.strip().strip('\"') for s in level_raw.split(',') if s.strip()]
+            for obj in extract_exercise_objects(js_content):
+                name_match = re.search(r"name:\s*['\"]([^'\"]+)['\"]", obj)
+                equipment_match = re.search(r"equipment:\s*['\"]([^'\"]+)['\"]", obj)
+                muscle_match = re.search(r"muscle:\s*['\"]([^'\"]+)['\"]", obj)
+                type_match = re.search(r"type:\s*['\"]([^'\"]+)['\"]", obj)
+                level_match = re.search(r"level:\s*(\[[^\]]*\]|['\"][^'\"]+['\"])", obj, re.S)
+
+                if not (name_match and equipment_match and muscle_match and type_match and level_match):
+                    continue
+
+                level_raw = level_match.group(1).strip()
+                if level_raw.startswith('['):
+                    levels = [
+                        lvl.strip().strip("\"'")
+                        for lvl in re.findall(r"['\"]([^'\"]+)['\"]", level_raw)
+                    ]
+                else:
+                    levels = [level_raw.strip().strip("\"'")]
+
                 exercises.append({
-                    'name': name,
-                    'description': description,
-                    'equipment': equipment,
+                    'name': name_match.group(1),
+                    'description': '',
+                    'equipment': equipment_match.group(1),
                     'level': levels,
-                    'muscle': muscle,
-                    'type': etype
+                    'muscle': muscle_match.group(1),
+                    'type': type_match.group(1)
                 })
             
             if not exercises:
