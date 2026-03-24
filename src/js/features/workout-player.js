@@ -1503,6 +1503,13 @@ window.startWorkout = function () {
   console.log('🔍 Debug - window.currentWorkoutData:', window.currentWorkoutData);
   console.log('🔍 Debug - window.currentWorkout:', window.currentWorkout);
 
+  const workTimeInput = document.getElementById('work-time');
+  const restTimeInput = document.getElementById('rest-time');
+  const fallbackWorkTime = Number.parseInt(workTimeInput?.value, 10);
+  const fallbackRestTime = Number.parseInt(restTimeInput?.value, 10);
+  const resolvedWorkTime = Number.isFinite(fallbackWorkTime) && fallbackWorkTime > 0 ? fallbackWorkTime : 45;
+  const resolvedRestTime = Number.isFinite(fallbackRestTime) && fallbackRestTime > 0 ? fallbackRestTime : 15;
+
   // Get current workout data from global state.
   // Keep generated workout timing as source of truth for consistency.
   if (window.currentWorkoutData) {
@@ -1523,12 +1530,12 @@ window.startWorkout = function () {
     });
     initializeWorkoutPlayer(workoutData);
   } else if (window.currentWorkout && window.currentWorkout.length > 0) {
-    console.log('⚠️ Using legacy format with default timing');
+    console.log('⚠️ Using legacy format with form timing fallback');
 
     const workoutData = {
       sequence: window.currentWorkout,
-      workTime: 45,
-      restTime: 15,
+      workTime: resolvedWorkTime,
+      restTime: resolvedRestTime,
     };
 
     console.log('⚠️ Using fallback workoutData:', workoutData);
