@@ -14,6 +14,7 @@ export function createHistoryEntryFromPlayerState(playerState: PlayerState, work
     status,
     startedAt,
     completedAt: status === 'completed' ? now : undefined,
+    syncState: 'local-only',
     summary: {
       sessionId,
       workoutId: workout.id,

@@ -22,6 +22,8 @@ export interface WorkoutHistoryEntry {
   status: 'completed' | 'abandoned'
   startedAt: string
   completedAt?: string
+  userId?: string
+  syncState?: 'local-only' | 'pending-sync' | 'synced'
   summary: WorkoutCompletionSummary
 }
 
