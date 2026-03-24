@@ -11,7 +11,11 @@ export class LocalStorageStore<TValue> {
       return null
     }
 
-    return JSON.parse(raw) as TValue
+    try {
+      return JSON.parse(raw) as TValue
+    } catch {
+      return null
+    }
   }
 
   async save(value: TValue): Promise<void> {
