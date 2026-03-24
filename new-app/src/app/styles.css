@@ -8,10 +8,15 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: dark;
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -37,8 +42,50 @@ button {
   cursor: pointer;
 }
 
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+.nav-link,
+.primary-action,
+.secondary-action,
+.ghost-action,
+.choice-card,
+.equipment-card,
+.choice-chip,
+.compact-chip,
+.section-toggle {
+  min-height: 44px;
+}
+
+:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 3px;
+}
+
 #root {
   min-height: 100vh;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 20;
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  background: #facc15;
+  color: #07131a;
+  font-weight: 800;
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
 }
 
 .app-shell {
@@ -70,7 +117,8 @@ button {
 .card p,
 .card li,
 .card span,
-.card label {
+.card label,
+.player-shortcut-hint {
   color: #c4d4d9;
 }
 
@@ -182,6 +230,16 @@ button {
   color: #f3f7f7;
 }
 
+.choice-card:hover,
+.equipment-card:hover,
+.choice-chip:hover,
+.compact-chip:hover,
+.secondary-action:hover,
+.ghost-action:hover,
+.nav-link:hover {
+  border-color: rgba(125, 211, 252, 0.45);
+}
+
 .choice-card.is-selected,
 .equipment-card.is-selected,
 .choice-chip.is-selected,
@@ -196,6 +254,7 @@ button {
   gap: 0.75rem;
   overflow-x: auto;
   padding-bottom: 0.25rem;
+  scroll-padding-inline: 0.25rem;
 }
 
 .choice-chip,
@@ -277,8 +336,13 @@ button {
 
 .builder-help-text,
 .summary-confidence-copy,
-.inline-link {
+.inline-link,
+.player-shortcut-hint {
   color: #9ed9ef;
+}
+
+.empty-state-card {
+  border-style: dashed;
 }
 
 .summary-stat {
@@ -464,6 +528,7 @@ button {
   font-weight: 900;
   letter-spacing: 0.04em;
   color: #f3f7f7;
+  font-variant-numeric: tabular-nums;
 }
 
 .player-timer-context {

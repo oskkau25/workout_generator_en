@@ -10,6 +10,10 @@ const primaryNav = [
 export function AppShell({ children }: PropsWithChildren) {
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
+
       <header className="topbar">
         <div>
           <p className="eyebrow">Workout Generator</p>
@@ -20,7 +24,9 @@ export function AppShell({ children }: PropsWithChildren) {
         </p>
       </header>
 
-      <main className="page-shell">{children}</main>
+      <main id="main-content" className="page-shell" tabIndex={-1}>
+        {children}
+      </main>
 
       <nav className="bottom-nav" aria-label="Primary">
         {primaryNav.map((item) => (

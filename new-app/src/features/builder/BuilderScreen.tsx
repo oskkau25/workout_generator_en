@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { SavedWorkoutSession } from '@/services/storage/storage-types'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
@@ -14,6 +14,7 @@ import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { generateWorkout } from '@/domain/workouts/workout-generator'
 import { LocalStorageStore } from '@/services/storage/local-storage-store'
 import { STORAGE_KEYS } from '@/services/storage/storage-keys'
+import { analyticsGateway } from '@/services/analytics/analytics'
 import { GeneratedWorkoutStore } from '@/services/storage/generated-workout-store'
 import { workoutSessionStore } from '@/services/storage/workout-session-store'
 
@@ -104,6 +105,10 @@ export function BuilderScreen() {
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [activeSession, setActiveSession] = useState<SavedWorkoutSession | null>(null)
+  const advancedPanelId = useId()
+  const equipmentHelpId = useId()
+  const timingHelpId = useId()
+  const summaryStatusId = useId()
 
   useEffect(() => {
     let cancelled = false
@@ -147,9 +152,24 @@ export function BuilderScreen() {
 
   async function handleGenerate() {
     setIsGenerating(true)
+    const timestamp = new Date().toISOString()
+
     try {
+      void analyticsGateway.track({
+        type: 'builder_generate_clicked',
+        timestamp,
+        request: normalizedRequest,
+      })
+
       const workout = generateWorkout(normalizedRequest, legacyExerciseCatalog)
       await GeneratedWorkoutStore.save({ id: workout.id, workout })
+      void analyticsGateway.track({
+        type: 'workout_generated',
+        timestamp: new Date().toISOString(),
+        workoutId: workout.id,
+        format: workout.metadata.format,
+        goal: workout.metadata.goal,
+      })
       setActiveSession(null)
       navigate(`/workout/${workout.id}/summary`)
     } finally {
@@ -159,15 +179,15 @@ export function BuilderScreen() {
 
   return (
     <div className="builder-screen">
-      <section className="builder-hero card builder-hero-card">
+      <section className="builder-hero card builder-hero-card" aria-labelledby="builder-title">
         <p className="card-eyebrow">Primary flow</p>
-        <h2>Build your workout</h2>
+        <h2 id="builder-title">Build your workout</h2>
         <p>
           Quick to start, deep when you want it. Dial in your goal, gear, and structure, then
           generate a session built from the normalized domain request.
         </p>
         {activeSession ? (
-          <div className="summary-block builder-resume-block">
+          <div className="summary-block builder-resume-block" role="status" aria-live="polite">
             <span>Resume available</span>
             <strong>{activeSession.workout.metadata.title} is still saved locally.</strong>
             <button
@@ -181,20 +201,23 @@ export function BuilderScreen() {
         ) : null}
       </section>
 
-      <section className="card builder-section">
+      <section className="card builder-section" aria-labelledby="goal-level-heading">
         <div className="section-heading">
           <div>
             <p className="card-eyebrow">1. Goal and level</p>
-            <h3>What do you want to train?</h3>
+            <h3 id="goal-level-heading">What do you want to train?</h3>
           </div>
-          <span className="mini-pill">Intensity {draft.advanced.targetIntensity}/5</span>
+          <span className="mini-pill" aria-label={`Target intensity ${draft.advanced.targetIntensity} out of 5`}>
+            Intensity {draft.advanced.targetIntensity}/5
+          </span>
         </div>
 
-        <div className="option-grid option-grid-large">
+        <div className="option-grid option-grid-large" role="group" aria-label="Workout goal">
           {goalOptions.map((option) => (
             <button
               key={option.value}
               type="button"
+              aria-pressed={draft.goal === option.value}
               className={draft.goal === option.value ? 'choice-card is-selected' : 'choice-card'}
               onClick={() => updateDraft((current) => ({ ...current, goal: option.value }))}
             >
@@ -204,11 +227,12 @@ export function BuilderScreen() {
           ))}
         </div>
 
-        <div className="chip-row">
+        <div className="chip-row" role="group" aria-label="Fitness level">
           {levelOptions.map((option) => (
             <button
               key={option.value}
               type="button"
+              aria-pressed={draft.level === option.value}
               className={draft.level === option.value ? 'choice-chip is-selected' : 'choice-chip'}
               onClick={() => updateDraft((current) => ({ ...current, level: option.value }))}
             >
@@ -219,19 +243,20 @@ export function BuilderScreen() {
         </div>
       </section>
 
-      <section className="card builder-section">
+      <section className="card builder-section" aria-labelledby="duration-format-heading">
         <div className="section-heading">
           <div>
             <p className="card-eyebrow">2. Duration and format</p>
-            <h3>Shape the session</h3>
+            <h3 id="duration-format-heading">Shape the session</h3>
           </div>
         </div>
 
-        <div className="chip-inline-group" aria-label="Duration options">
+        <div className="chip-inline-group" role="group" aria-label="Duration options">
           {durationOptions.map((minutes) => (
             <button
               key={minutes}
               type="button"
+              aria-pressed={draft.duration.targetMinutes === minutes}
               className={draft.duration.targetMinutes === minutes ? 'compact-chip is-selected' : 'compact-chip'}
               onClick={() =>
                 updateDraft((current) => ({
@@ -245,11 +270,12 @@ export function BuilderScreen() {
           ))}
         </div>
 
-        <div className="option-grid">
+        <div className="option-grid" role="group" aria-label="Workout format">
           {formatOptions.map((option) => (
             <button
               key={option.value}
               type="button"
+              aria-pressed={draft.format === option.value}
               className={draft.format === option.value ? 'choice-card is-selected' : 'choice-card'}
               onClick={() => updateDraft((current) => ({ ...current, format: option.value }))}
             >
@@ -260,16 +286,16 @@ export function BuilderScreen() {
         </div>
       </section>
 
-      <section className="card builder-section builder-equipment-section">
+      <section className="card builder-section builder-equipment-section" aria-labelledby="equipment-heading">
         <div className="section-heading">
           <div>
             <p className="card-eyebrow">3. Equipment</p>
-            <h3>Your available gear</h3>
+            <h3 id="equipment-heading">Your available gear</h3>
           </div>
-          <span className="mini-pill">{draft.selectedEquipment.length} selected</span>
+          <span className="mini-pill" aria-live="polite">{draft.selectedEquipment.length} selected</span>
         </div>
 
-        <div className="equipment-grid">
+        <div className="equipment-grid" role="group" aria-describedby={equipmentHelpId}>
           {equipmentOptions.map((option) => {
             const selected = draft.selectedEquipment.includes(option.value)
             return (
@@ -287,28 +313,30 @@ export function BuilderScreen() {
           })}
         </div>
 
-        <p className="builder-help-text">
-          You can leave this empty while editing. The domain normalizer will fall back to
-          bodyweight on generate.
+        <p id={equipmentHelpId} className="builder-help-text" role="status" aria-live="polite">
+          {draft.selectedEquipment.length === 0
+            ? 'No equipment selected right now. Generate will safely fall back to bodyweight.'
+            : 'Equipment selection changes the exercise pool and is reflected in your live summary.'}
         </p>
       </section>
 
-      <section className="card builder-section">
+      <section className="card builder-section" aria-labelledby="advanced-heading">
         <button
           type="button"
           className="section-toggle"
           onClick={() => setAdvancedOpen((current) => !current)}
           aria-expanded={advancedOpen}
+          aria-controls={advancedPanelId}
         >
           <span>
             <span className="card-eyebrow">4. Advanced workout settings</span>
-            <strong>Tune timing and structure</strong>
+            <strong id="advanced-heading">Tune timing and structure</strong>
           </span>
           <span>{advancedOpen ? 'Hide' : 'Show'}</span>
         </button>
 
         {advancedOpen ? (
-          <div className="advanced-panel">
+          <div id={advancedPanelId} className="advanced-panel">
             <div className="toggle-grid">
               {[
                 ['includeWarmup', 'Include warm-up'],
@@ -335,6 +363,11 @@ export function BuilderScreen() {
               ))}
             </div>
 
+            <p id={timingHelpId} className="builder-help-text">
+              Out-of-range values will be clamped on generate. Tabata always plays back at 20s work
+              and 10s rest.
+            </p>
+
             <div className="field-grid">
               <label className="field-card">
                 <span>Target intensity</span>
@@ -344,6 +377,7 @@ export function BuilderScreen() {
                   max="5"
                   step="1"
                   value={draft.advanced.targetIntensity ?? 3}
+                  aria-describedby={timingHelpId}
                   onChange={(event) =>
                     updateDraft((current) => ({
                       ...current,
@@ -361,9 +395,11 @@ export function BuilderScreen() {
                 <span>Work seconds</span>
                 <input
                   type="number"
+                  inputMode="numeric"
                   min="10"
                   max="300"
                   value={draft.timing.workSeconds ?? 40}
+                  aria-describedby={timingHelpId}
                   onChange={(event) =>
                     updateDraft((current) => ({
                       ...current,
@@ -380,9 +416,11 @@ export function BuilderScreen() {
                 <span>Rest seconds</span>
                 <input
                   type="number"
+                  inputMode="numeric"
                   min="5"
                   max="180"
                   value={draft.timing.restSeconds ?? 20}
+                  aria-describedby={timingHelpId}
                   onChange={(event) =>
                     updateDraft((current) => ({
                       ...current,
@@ -402,6 +440,7 @@ export function BuilderScreen() {
                   <span>Rounds</span>
                   <input
                     type="number"
+                    inputMode="numeric"
                     min="2"
                     max="8"
                     value={draft.formatConfig.circuit?.rounds ?? 3}
@@ -423,6 +462,7 @@ export function BuilderScreen() {
                   <span>Exercises per round</span>
                   <input
                     type="number"
+                    inputMode="numeric"
                     min="3"
                     max="10"
                     value={draft.formatConfig.circuit?.exercisesPerRound ?? 5}
@@ -444,6 +484,7 @@ export function BuilderScreen() {
                   <span>Round rest</span>
                   <input
                     type="number"
+                    inputMode="numeric"
                     min="5"
                     max="180"
                     value={draft.formatConfig.circuit?.roundRestSeconds ?? 60}
@@ -470,6 +511,7 @@ export function BuilderScreen() {
                   <span>Tabata rounds</span>
                   <input
                     type="number"
+                    inputMode="numeric"
                     min="4"
                     max="12"
                     value={draft.formatConfig.tabata?.rounds ?? 8}
@@ -487,7 +529,7 @@ export function BuilderScreen() {
                     }
                   />
                 </label>
-                <p className="builder-help-text tabata-note">
+                <p className="builder-help-text tabata-note" role="note">
                   Timing inputs stay visible for consistency, but effective playback always uses
                   fixed 20s work / 10s rest.
                 </p>
@@ -500,6 +542,7 @@ export function BuilderScreen() {
                   <span>Pyramid levels</span>
                   <input
                     type="number"
+                    inputMode="numeric"
                     min="3"
                     max="7"
                     value={draft.formatConfig.pyramid?.levels ?? 5}
@@ -523,21 +566,21 @@ export function BuilderScreen() {
         ) : null}
       </section>
 
-      <section className="card builder-section summary-card">
+      <section className="card builder-section summary-card" aria-labelledby="live-summary-heading">
         <div className="section-heading">
           <div>
             <p className="card-eyebrow">5. Live summary</p>
-            <h3>{summaryTitle}</h3>
+            <h3 id="live-summary-heading">{summaryTitle}</h3>
           </div>
           <span className="mini-pill">Ready to generate</span>
         </div>
 
-        <p className="summary-confidence-copy">
+        <p id={summaryStatusId} className="summary-confidence-copy" role="status" aria-live="polite">
           This is a live intent summary from your current builder draft — not fake generated
           content.
         </p>
 
-        <div className="summary-stat-grid">
+        <div className="summary-stat-grid" aria-describedby={summaryStatusId}>
           <div className="summary-stat">
             <span>Duration</span>
             <strong>{normalizedRequest.targetMinutes} min</strong>
@@ -575,10 +618,10 @@ export function BuilderScreen() {
         </div>
       </section>
 
-      <section className="builder-action-bar card">
+      <section className="builder-action-bar card" aria-labelledby="generate-heading">
         <div>
           <p className="card-eyebrow">Primary action</p>
-          <h3>Generate from normalized state</h3>
+          <h3 id="generate-heading">Generate from normalized state</h3>
           <p>
             {draft.selectedEquipment.length === 0
               ? 'No equipment selected right now — generate will safely fall back to bodyweight.'

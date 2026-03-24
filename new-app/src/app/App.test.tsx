@@ -30,6 +30,7 @@ describe('App shell routing', () => {
   it('renders the workout builder on the default route', () => {
     renderWithRouter(<App />)
 
+    expect(screen.getByRole('link', { name: /skip to content/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /react redesign foundation/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /build your workout/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /generate workout/i })).toBeInTheDocument()

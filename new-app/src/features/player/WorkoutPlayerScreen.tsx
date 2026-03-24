@@ -103,6 +103,15 @@ function getNextUpLabel(step: WorkoutExerciseStep | null) {
   return labels.join(' • ')
 }
 
+function isInteractiveElement(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false
+  }
+
+  const tagName = target.tagName.toLowerCase()
+  return target.isContentEditable || ['input', 'textarea', 'select', 'button', 'a'].includes(tagName)
+}
+
 export function WorkoutPlayerScreen() {
   const { workoutId } = useParams()
   const navigate = useNavigate()
@@ -237,10 +246,50 @@ export function WorkoutPlayerScreen() {
     navigate(`/workout/${workoutId}/summary`)
   }
 
+  useEffect(() => {
+    function handleKeydown(event: KeyboardEvent) {
+      if (!playerState.workout || isInteractiveElement(event.target)) {
+        return
+      }
+
+      if (event.key === ' ' || event.key === 'Spacebar') {
+        if (playerState.timer.phase === 'ready') {
+          event.preventDefault()
+          dispatch({ type: 'START' })
+        } else if (playerState.timer.phase === 'work' || playerState.timer.phase === 'rest') {
+          event.preventDefault()
+          dispatch({ type: 'PAUSE' })
+        } else if (playerState.timer.phase === 'paused') {
+          event.preventDefault()
+          dispatch({ type: 'RESUME' })
+        }
+        return
+      }
+
+      if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        if (playerState.timer.phase === 'rest') {
+          dispatch({ type: 'SKIP_REST' })
+        } else if (canGoNext(playerState)) {
+          dispatch({ type: 'NEXT_STEP' })
+        }
+        return
+      }
+
+      if (event.key === 'ArrowLeft' && canGoPrevious(playerState)) {
+        event.preventDefault()
+        dispatch({ type: 'PREVIOUS_STEP' })
+      }
+    }
+
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [playerState])
+
   if (isLoading) {
     return (
       <div className="screen-grid">
-        <section className="card">
+        <section className="card" role="status" aria-live="polite">
           <p className="card-eyebrow">Coach flow</p>
           <h2>Loading your workout…</h2>
           <p>Booting the guided player from the generated workout handoff.</p>
@@ -252,13 +301,15 @@ export function WorkoutPlayerScreen() {
   if (loadError || !playerState.workout) {
     return (
       <div className="screen-grid">
-        <section className="card">
+        <section className="card empty-state-card" role="alert">
           <p className="card-eyebrow">Coach flow</p>
           <h2>Player unavailable</h2>
           <p>{loadError ?? 'There is no workout loaded in the player yet.'}</p>
-          <Link className="inline-link" to="/build">
-            Build a workout
-          </Link>
+          <div className="summary-action-stack">
+            <Link className="primary-action summary-primary-action" to="/build">
+              Build a workout
+            </Link>
+          </div>
         </section>
       </div>
     )
@@ -267,7 +318,7 @@ export function WorkoutPlayerScreen() {
   if (playerState.timer.phase === 'completed') {
     return (
       <div className="player-layout">
-        <section className="card player-complete-card">
+        <section className="card player-complete-card" role="status" aria-live="polite">
           <p className="card-eyebrow">Completed</p>
           <h2>You finished {playerState.workout.metadata.title}</h2>
           <p>{playerState.workout.metadata.format.toUpperCase()} session done. Nice work.</p>
@@ -305,13 +356,18 @@ export function WorkoutPlayerScreen() {
 
   return (
     <div className="player-layout">
-      <section className="card player-session-card">
+      <section className="card player-session-card" aria-labelledby="player-session-title">
         <div className="player-session-topline">
           <div>
             <p className="card-eyebrow">Coach flow</p>
-            <h2>{playerState.workout.metadata.title}</h2>
+            <h2 id="player-session-title">{playerState.workout.metadata.title}</h2>
           </div>
-          <button type="button" className="ghost-action player-exit-button" onClick={() => void handleExit()}>
+          <button
+            type="button"
+            className="ghost-action player-exit-button"
+            onClick={() => void handleExit()}
+            aria-label="Exit workout and return to summary"
+          >
             Exit
           </button>
         </div>
@@ -325,7 +381,7 @@ export function WorkoutPlayerScreen() {
         </div>
       </section>
 
-      <section className={`card player-phase-card player-phase-${phaseKey}`}>
+      <section className={`card player-phase-card player-phase-${phaseKey}`} role="status" aria-live="polite">
         <p className="card-eyebrow">Current phase</p>
         <div className="player-phase-heading">
           <h3>{phaseCopy.label}</h3>
@@ -336,9 +392,9 @@ export function WorkoutPlayerScreen() {
         <p>{phaseCopy.message}</p>
       </section>
 
-      <section className="card player-timer-card">
-        <p className="card-eyebrow">Timer</p>
-        <div className="player-timer-display" aria-live="polite">
+      <section className="card player-timer-card" aria-labelledby="timer-title">
+        <p id="timer-title" className="card-eyebrow">Timer</p>
+        <div className="player-timer-display" aria-live="polite" aria-atomic="true">
           {formatSeconds(playerState.timer.remainingSeconds)}
         </div>
         <div className="player-timer-context">
@@ -351,11 +407,11 @@ export function WorkoutPlayerScreen() {
         </div>
       </section>
 
-      <section className="card player-current-card">
+      <section className="card player-current-card" aria-labelledby="current-exercise-title">
         <div className="player-card-heading">
           <div>
             <p className="card-eyebrow">Current exercise</p>
-            <h3>{currentExercise?.name ?? 'Workout ready'}</h3>
+            <h3 id="current-exercise-title">{currentExercise?.name ?? 'Workout ready'}</h3>
           </div>
           {currentStep ? <span className="summary-step-badge">{BLOCK_LABELS[currentStep.block]}</span> : null}
         </div>
@@ -381,11 +437,11 @@ export function WorkoutPlayerScreen() {
         ) : null}
       </section>
 
-      <section className="card player-next-card">
+      <section className="card player-next-card" aria-labelledby="next-up-title">
         <div className="player-card-heading">
           <div>
             <p className="card-eyebrow">Next up</p>
-            <h3>{nextExercise?.name ?? 'Completion transition next'}</h3>
+            <h3 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h3>
           </div>
           <span className="mini-pill">Stay ready</span>
         </div>
@@ -393,23 +449,34 @@ export function WorkoutPlayerScreen() {
         <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
       </section>
 
-      <section className="card player-progress-card">
+      <section className="card player-progress-card" aria-labelledby="progress-title">
         <div className="player-card-heading">
           <div>
             <p className="card-eyebrow">Progress</p>
-            <h3>
+            <h3 id="progress-title">
               {playerState.progress.completedStepIds.length} of {playerState.progress.totalSteps} steps done
             </h3>
           </div>
           <span className="summary-step-badge">{progressPercent}%</span>
         </div>
-        <div className="player-progress-bar" aria-label={`Workout progress ${progressPercent}%`}>
+        <div
+          className="player-progress-bar"
+          role="progressbar"
+          aria-label="Workout progress"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progressPercent}
+          aria-valuetext={`${progressPercent}% complete`}
+        >
           <div className="player-progress-fill" style={{ width: `${progressPercent}%` }} />
         </div>
       </section>
 
-      <section className="card player-controls-card">
-        <p className="card-eyebrow">Controls</p>
+      <section className="card player-controls-card" aria-labelledby="controls-title">
+        <p id="controls-title" className="card-eyebrow">Controls</p>
+        <div className="player-shortcut-hint" role="note">
+          Keyboard: Space to start/pause/resume, ← previous step, → next step or skip rest.
+        </div>
         <div className="player-primary-controls">
           {playerState.timer.phase === 'ready' ? (
             <button type="button" className="primary-action" onClick={() => dispatch({ type: 'START' })}>
@@ -436,6 +503,7 @@ export function WorkoutPlayerScreen() {
             className="secondary-action"
             onClick={() => dispatch({ type: 'PREVIOUS_STEP' })}
             disabled={!canGoPrevious(playerState)}
+            aria-label="Go to previous step"
           >
             Previous
           </button>
@@ -444,6 +512,7 @@ export function WorkoutPlayerScreen() {
             className="secondary-action"
             onClick={() => dispatch({ type: 'NEXT_STEP' })}
             disabled={!canGoNext(playerState)}
+            aria-label="Go to next step"
           >
             Next
           </button>
@@ -452,14 +521,15 @@ export function WorkoutPlayerScreen() {
             className="ghost-action"
             onClick={() => dispatch({ type: 'SKIP_REST' })}
             disabled={playerState.timer.phase !== 'rest'}
+            aria-label="Skip rest"
           >
             Skip rest
           </button>
         </div>
       </section>
 
-      <section className="card player-preferences-card">
-        <p className="card-eyebrow">Preferences</p>
+      <section className="card player-preferences-card" aria-labelledby="preferences-title">
+        <p id="preferences-title" className="card-eyebrow">Preferences</p>
         <div className="toggle-grid">
           <label className="toggle-card">
             <input

@@ -83,13 +83,15 @@ export function WorkoutSummaryScreen() {
   if (!workout || !summary) {
     return (
       <div className="screen-grid">
-        <section className="card">
+        <section className="card empty-state-card" role="alert">
           <p className="card-eyebrow">Review before start</p>
           <h2>No generated workout found</h2>
           <p>Generate a workout from the builder first so this summary has real data to review.</p>
-          <Link className="inline-link" to="/build">
-            Build a workout
-          </Link>
+          <div className="summary-action-stack">
+            <Link className="primary-action summary-primary-action" to="/build">
+              Build a workout
+            </Link>
+          </div>
         </section>
       </div>
     )
@@ -97,19 +99,19 @@ export function WorkoutSummaryScreen() {
 
   return (
     <div className="summary-layout">
-      <section className="card summary-hero-card">
+      <section className="card summary-hero-card" aria-labelledby="summary-title">
         <p className="card-eyebrow">Review before start</p>
-        <h2>{summary.header.title}</h2>
+        <h2 id="summary-title">{summary.header.title}</h2>
         <p className="summary-hero-subtitle">{summary.header.subtitle}</p>
         <p className="summary-generated-at">{summary.header.generatedAtLabel}</p>
       </section>
 
       <aside className="summary-sidebar">
-        <section className="card summary-sidebar-card">
+        <section className="card summary-sidebar-card" aria-labelledby="metadata-title">
           <div className="section-heading">
             <div>
               <p className="card-eyebrow">Workout metadata</p>
-              <h3>Quick scan</h3>
+              <h3 id="metadata-title">Quick scan</h3>
             </div>
             <span className="mini-pill">Ready to start</span>
           </div>
@@ -123,9 +125,9 @@ export function WorkoutSummaryScreen() {
           </div>
         </section>
 
-        <section className="card summary-sidebar-card">
+        <section className="card summary-sidebar-card" aria-labelledby="intent-title">
           <p className="card-eyebrow">Intent recap</p>
-          <h3>This is what you asked for</h3>
+          <h3 id="intent-title">This is what you asked for</h3>
           <div className="summary-intent-grid">
             {summary.intent.map((item) => (
               <div key={item.label} className="summary-intent-item">
@@ -136,9 +138,9 @@ export function WorkoutSummaryScreen() {
           </div>
         </section>
 
-        <section className="card summary-actions-card">
+        <section className="card summary-actions-card" aria-labelledby="summary-actions-title">
           <p className="card-eyebrow">Actions</p>
-          <h3>Start now or tweak it</h3>
+          <h3 id="summary-actions-title">Start now or tweak it</h3>
           <div className="summary-action-stack">
             <Link className="primary-action summary-primary-action" to={`/workout/${workout.id}/play`}>
               {hasResumableSession ? 'Resume workout' : 'Start workout'}
@@ -151,20 +153,24 @@ export function WorkoutSummaryScreen() {
               className="ghost-action"
               onClick={() => void handleRegenerate()}
               disabled={isRegenerating}
+              aria-describedby="regenerate-note"
             >
               {isRegenerating ? 'Regenerating…' : 'Regenerate workout'}
             </button>
+            <p id="regenerate-note" className="builder-help-text">
+              Regenerate keeps your current request settings and replaces only this generated result.
+            </p>
           </div>
         </section>
       </aside>
 
-      <div className="summary-content-stack">
+      <div className="summary-content-stack" aria-live="polite">
         {summary.sections.map((section) => (
-          <section key={section.id} className="card summary-block-card">
+          <section key={section.id} className="card summary-block-card" aria-labelledby={`section-${section.id}`}>
             <div className="summary-section-heading">
               <div>
                 <p className="card-eyebrow">{section.eyebrow}</p>
-                <h3>{section.title}</h3>
+                <h3 id={`section-${section.id}`}>{section.title}</h3>
               </div>
               <span className="mini-pill">{section.steps.length} items</span>
             </div>
@@ -186,9 +192,9 @@ export function WorkoutSummaryScreen() {
         ))}
 
         {summary.diagnostics.length > 0 ? (
-          <section className="card summary-diagnostics-card">
+          <section className="card summary-diagnostics-card" aria-labelledby="diagnostics-title">
             <p className="card-eyebrow">Notes</p>
-            <h3>Generation notes</h3>
+            <h3 id="diagnostics-title">Generation notes</h3>
             <ul className="summary-note-list">
               {summary.diagnostics.map((note) => (
                 <li key={note}>{note}</li>

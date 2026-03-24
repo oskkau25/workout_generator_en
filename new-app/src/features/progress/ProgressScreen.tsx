@@ -51,9 +51,9 @@ export function ProgressScreen() {
 
   return (
     <div className="screen-grid progress-screen">
-      <section className="card progress-hero-card">
+      <section className="card progress-hero-card" aria-labelledby="progress-title">
         <p className="card-eyebrow">Scoped v1 surface</p>
-        <h2>Your progress</h2>
+        <h2 id="progress-title">Your progress</h2>
         <p>
           Lightweight local momentum for now: recent workouts, a resumable session when it exists,
           and just enough stats to make the app feel alive without pretending there is backend
@@ -71,11 +71,11 @@ export function ProgressScreen() {
         </div>
       </section>
 
-      <section className="card">
+      <section className="card" aria-labelledby="momentum-title">
         <div className="section-heading">
           <div>
             <p className="card-eyebrow">Momentum snapshot</p>
-            <h3>Local stats</h3>
+            <h3 id="momentum-title">Local stats</h3>
           </div>
           <span className="mini-pill">Stored on this device</span>
         </div>
@@ -100,11 +100,11 @@ export function ProgressScreen() {
       </section>
 
       {activeSession ? (
-        <section className="card">
+        <section className="card" aria-labelledby="resume-title">
           <div className="section-heading">
             <div>
               <p className="card-eyebrow">Resume</p>
-              <h3>Active workout saved</h3>
+              <h3 id="resume-title">Active workout saved</h3>
             </div>
             <span className="mini-pill">{activeSession.playerState.timer.phase.toUpperCase()}</span>
           </div>
@@ -122,16 +122,16 @@ export function ProgressScreen() {
         </section>
       ) : null}
 
-      <section className="card">
+      <section className="card" aria-labelledby="history-title">
         <div className="section-heading">
           <div>
             <p className="card-eyebrow">Recent workouts</p>
-            <h3>{hasData ? 'Latest sessions on this device' : 'Nothing logged yet'}</h3>
+            <h3 id="history-title">{hasData ? 'Latest sessions on this device' : 'Nothing logged yet'}</h3>
           </div>
         </div>
 
         {hasData ? (
-          <div className="summary-step-stack">
+          <div className="summary-step-stack" aria-live="polite">
             {history.map((entry) => (
               <article key={entry.id} className="summary-step-card">
                 <div className="summary-step-topline">
@@ -148,7 +148,7 @@ export function ProgressScreen() {
             ))}
           </div>
         ) : (
-          <div className="summary-block">
+          <div className="summary-block empty-state-card" role="status" aria-live="polite">
             <span>Strong empty state</span>
             <strong>Finish your first workout and this screen starts feeling useful immediately.</strong>
             <p>

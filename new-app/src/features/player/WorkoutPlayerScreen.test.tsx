@@ -107,12 +107,12 @@ describe('WorkoutPlayerScreen', () => {
     await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })
 
     act(() => {
-      screen.getByRole('button', { name: /next/i }).click()
+      screen.getByRole('button', { name: /go to next step/i }).click()
     })
     expect(screen.getByText(new RegExp(`step 2 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
 
     act(() => {
-      screen.getByRole('button', { name: /previous/i }).click()
+      screen.getByRole('button', { name: /go to previous step/i }).click()
     })
     expect(screen.getByText(new RegExp(`step 1 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
 
@@ -121,7 +121,7 @@ describe('WorkoutPlayerScreen', () => {
 
     for (let index = 0; index < restStepIndex; index += 1) {
       act(() => {
-        screen.getByRole('button', { name: /next/i }).click()
+        screen.getByRole('button', { name: /go to next step/i }).click()
       })
     }
     expect(screen.getByText(new RegExp(`step ${restStepIndex + 1} / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
@@ -154,6 +154,29 @@ describe('WorkoutPlayerScreen', () => {
       screen.getByRole('button', { name: /skip rest/i }).click()
     })
     expect(screen.getByText(new RegExp(`step ${restStepIndex + 2} / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+  })
+
+  it('supports player keyboard shortcuts for start pause resume and step navigation', async () => {
+    const workout = seedWorkout()
+    const user = userEvent.setup()
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+    await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })
+
+    await user.keyboard('{ArrowRight}')
+    expect(screen.getByText(new RegExp(`step 2 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+
+    await user.keyboard('{ArrowLeft}')
+    expect(screen.getByText(new RegExp(`step 1 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+
+    await user.keyboard(' ')
+    expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument()
+
+    await user.keyboard(' ')
+    expect(screen.getByRole('button', { name: /resume/i })).toBeInTheDocument()
+
+    await user.keyboard(' ')
+    expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument()
   })
 
   it('shows first circuit round using generator indexing', async () => {
