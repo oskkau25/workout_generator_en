@@ -5,6 +5,7 @@ import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
 import { normalizeBuilderDraft } from '@/domain/builder/builder-normalizer'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { generateWorkout } from '@/domain/workouts/workout-generator'
+import { STORAGE_KEYS } from '@/services/storage/storage-keys'
 import { renderWithRouter } from '@/test/render-with-router'
 
 function seedWorkout() {
@@ -50,6 +51,36 @@ describe('App shell routing', () => {
     expect(await screen.findByRole('heading', { name: /your progress/i })).toBeInTheDocument()
     expect(screen.getByText(/finish your first workout/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /build a workout/i })).toHaveAttribute('href', '/build')
+  })
+
+  it('generates a workout from the builder, persists it, and hands off to the summary route', async () => {
+    const user = userEvent.setup()
+    renderWithRouter(<App />, { route: '/build' })
+
+    await user.click(screen.getByRole('button', { name: /tabata/i }))
+    await user.click(screen.getByRole('button', { name: /generate workout/i }))
+
+    const storedWorkoutRaw = window.localStorage.getItem(STORAGE_KEYS.generatedWorkout)
+
+    expect(storedWorkoutRaw).not.toBeNull()
+
+    const storedWorkout = JSON.parse(storedWorkoutRaw ?? 'null') as {
+      id: string
+      workout: {
+        id: string
+        metadata: { title: string }
+        sourceRequest: { format: string }
+      }
+    }
+
+    expect(storedWorkout.id).toBe(storedWorkout.workout.id)
+    expect(storedWorkout.workout.sourceRequest.format).toBe('tabata')
+    expect(await screen.findByRole('heading', { name: new RegExp(storedWorkout.workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /this is what you asked for/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /start workout/i })).toHaveAttribute(
+      'href',
+      `/workout/${storedWorkout.id}/play`,
+    )
   })
 
   it('renders the workout summary review screen from stored generated workout data', async () => {
