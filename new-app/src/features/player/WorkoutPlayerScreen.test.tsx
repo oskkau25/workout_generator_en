@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { App } from '@/app/App'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
 import { normalizeBuilderDraft } from '@/domain/builder/builder-normalizer'
+import type { BuilderDraft } from '@/domain/builder/builder-types'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { generateWorkout } from '@/domain/workouts/workout-generator'
 import { renderWithRouter } from '@/test/render-with-router'
@@ -16,11 +17,18 @@ describe('WorkoutPlayerScreen', () => {
     vi.useRealTimers()
   })
 
-  function seedWorkout() {
-    const workout = generateWorkout(normalizeBuilderDraft(createDefaultBuilderDraft()), legacyExerciseCatalog, {
-      random: () => 0,
-      now: () => new Date('2026-03-24T10:00:00.000Z'),
-    })
+  function seedWorkout(overrides: Partial<BuilderDraft> = {}) {
+    const workout = generateWorkout(
+      normalizeBuilderDraft({
+        ...createDefaultBuilderDraft(),
+        ...overrides,
+      }),
+      legacyExerciseCatalog,
+      {
+        random: () => 0,
+        now: () => new Date('2026-03-24T10:00:00.000Z'),
+      },
+    )
 
     window.localStorage.setItem(
       'workout-generator-react.v1.generated-workout',
@@ -28,6 +36,44 @@ describe('WorkoutPlayerScreen', () => {
     )
 
     return workout
+  }
+
+  function seedActiveSession(workout: ReturnType<typeof seedWorkout>, currentStepIndex: number) {
+    window.localStorage.setItem(
+      'workout-generator-react.v1.active-session',
+      JSON.stringify({
+        workout,
+        playerState: {
+          workout,
+          session: {
+            sessionId: `session-${workout.id}`,
+            workoutId: workout.id,
+            startedAt: '2026-03-24T10:00:00.000Z',
+            lastUpdatedAt: '2026-03-24T10:05:00.000Z',
+            status: 'paused',
+            playbackStepIds: workout.playback.steps.map((step) => step.id),
+          },
+          timer: {
+            phase: 'paused',
+            previousPhase: 'work',
+            remainingSeconds: workout.playback.steps[currentStepIndex]?.workSeconds ?? 0,
+            phaseTotalSeconds: workout.playback.steps[currentStepIndex]?.workSeconds ?? 0,
+            elapsedSeconds: 0,
+          },
+          progress: {
+            currentStepIndex,
+            totalSteps: workout.playback.steps.length,
+            completedStepIds: workout.playback.steps.slice(0, currentStepIndex).map((step) => step.id),
+          },
+          preferences: {
+            soundEnabled: true,
+            vibrationEnabled: true,
+            voiceCountdownEnabled: false,
+          },
+        },
+        savedAt: '2026-03-24T10:05:00.000Z',
+      }),
+    )
   }
 
   it('boots from stored generated workout data and runs the coach flow through completion', async () => {
@@ -108,6 +154,45 @@ describe('WorkoutPlayerScreen', () => {
       screen.getByRole('button', { name: /skip rest/i }).click()
     })
     expect(screen.getByText(new RegExp(`step ${restStepIndex + 2} / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+  })
+
+  it('shows first circuit round using generator indexing', async () => {
+    const workout = seedWorkout({
+      format: 'circuit',
+      formatConfig: { circuit: { rounds: 3, exercisesPerRound: 4, roundRestSeconds: 60 } },
+    })
+    seedActiveSession(workout, workout.playback.steps.findIndex((step) => step.roundIndex === 1))
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+
+    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(screen.getByText('Round 1 of 3')).toBeInTheDocument()
+  })
+
+  it('shows first tabata interval using generator indexing', async () => {
+    const workout = seedWorkout({
+      format: 'tabata',
+      formatConfig: { tabata: { rounds: 6 } },
+    })
+    seedActiveSession(workout, workout.playback.steps.findIndex((step) => step.setIndex === 1))
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+
+    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(screen.getByText('Interval 1 of 6')).toBeInTheDocument()
+  })
+
+  it('shows first pyramid level using generator indexing', async () => {
+    const workout = seedWorkout({
+      format: 'pyramid',
+      formatConfig: { pyramid: { levels: 4 } },
+    })
+    seedActiveSession(workout, workout.playback.steps.findIndex((step) => step.levelIndex === 1))
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+
+    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(screen.getByText('Level 1 of 4')).toBeInTheDocument()
   })
 
   it('rehydrates a saved session with stored preferences and exact timer state', async () => {

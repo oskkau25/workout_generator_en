@@ -73,15 +73,15 @@ function getStepContext(step: WorkoutExerciseStep | null) {
   const labels: string[] = [BLOCK_LABELS[step.block]]
 
   if (typeof step.roundIndex === 'number' && typeof step.totalRounds === 'number') {
-    labels.push(`Round ${step.roundIndex + 1} of ${step.totalRounds}`)
+    labels.push(`Round ${step.roundIndex} of ${step.totalRounds}`)
   }
 
   if (typeof step.setIndex === 'number' && typeof step.totalSets === 'number') {
-    labels.push(`Interval ${step.setIndex + 1} of ${step.totalSets}`)
+    labels.push(`Interval ${step.setIndex} of ${step.totalSets}`)
   }
 
   if (typeof step.levelIndex === 'number' && typeof step.totalLevels === 'number') {
-    labels.push(`Level ${step.levelIndex + 1} of ${step.totalLevels}`)
+    labels.push(`Level ${step.levelIndex} of ${step.totalLevels}`)
   }
 
   return labels
