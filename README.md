@@ -4,13 +4,22 @@ A modern, feature-rich workout generator application with enterprise-grade CI/CD
 
 ## 🚀 **Quick Start**
 
-### **Run the Application**
+### **Legacy static app**
 ```bash
-# Start local development server
+# Start local development server from repo root
 python3 -m http.server 5173
 
-# Open in browser: http://localhost:5173
+# Open in browser: http://localhost:5173/src/
 ```
+
+### **React redesign (`new-app/`)**
+```bash
+cd new-app
+npm install
+npm run dev
+```
+
+Open the Vite URL shown in the terminal.
 
 ### **Run Enhanced CI/CD Pipeline**
 ```bash
@@ -52,11 +61,17 @@ See `TEST_AUDIT.md` for KEEP / REWRITE / MANUAL / REMOVE classification.
 
 ```
 workout_generator_en/
-├── 📁 src/                          # Application source code
+├── 📁 src/                          # Legacy static app source code
 │   ├── index.html                   # Main workout generator
-│   ├── script.js                    # Core application logic
+│   ├── script.js                    # Legacy/parallel logic reference
 │   ├── dashboard.html               # Analytics dashboard
 │   └── dashboard.js                 # Dashboard functionality
+│
+├── 📁 new-app/                      # React + TypeScript redesign track
+│   ├── src/app                      # App shell and routing
+│   ├── src/domain                   # Typed workout/player domain logic
+│   ├── src/features                 # Builder, summary, player, progress
+│   └── src/services/storage         # Local persistence and future seams
 │
 ├── 📁 ci-cd/                        # CI/CD pipeline & automation
 │   ├── automated_test_pipeline.py   # Enhanced test pipeline
@@ -196,6 +211,9 @@ git push origin main
 - **[Analytics Dashboard](docs/ANALYTICS_DASHBOARD_README.md)** - Dashboard features and usage
 - **[Feature Maintenance](docs/FEATURE_MAINTENANCE.md)** - Adding and updating features
 - **[Pipeline Updates](docs/PIPELINE_AUTO_UPDATE_GUIDE.md)** - Pipeline maintenance
+- **[V1 scope](docs/v1-scope.md)** - explicit redesign scope guardrails
+- **[Redesign known limitations](docs/redesign-known-limitations.md)** - RC limitations and later-scope items
+- **[new-app README](new-app/README.md)** - how to run and work in the React redesign
 
 ## 🤝 **Contributing**
 

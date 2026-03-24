@@ -30,7 +30,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "new-app/package-lock.json"
 
       - name: Install dependencies
         run: |
@@ -53,6 +55,22 @@ jobs:
 
       - name: Run unit tests
         run: python -m unittest discover -s ci-cd/tests -p "test_*.py" -v
+
+      - name: Install new-app dependencies
+        working-directory: new-app
+        run: npm ci
+
+      - name: Lint new-app
+        working-directory: new-app
+        run: npm run lint
+
+      - name: Test new-app
+        working-directory: new-app
+        run: npm run test -- --run
+
+      - name: Build new-app
+        working-directory: new-app
+        run: npm run build
 
       - name: Run E2E smoke test
         run: python ci-cd/run_e2e_smoke.py
