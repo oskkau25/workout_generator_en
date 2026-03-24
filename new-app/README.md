@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# Workout Generator redesign (`new-app`)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite foundation for the redesign track.
 
-Currently, two official plugins are available:
+## What this app currently covers
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The redesign already includes the main v1 flow:
+- builder with goal, level, duration, format, equipment, and advanced controls
+- generated workout summary/review step
+- guided player with work/rest flow, pause/resume, next/previous, exit, and completion
+- lightweight local progress/history surface
+- profile/settings placeholder for later auth-backed work
 
-## React Compiler
+The app is intentionally local-first for now. It stores generated workouts, active sessions, progress history, and player preferences in browser storage.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Quick start
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd new-app
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the local Vite URL shown in the terminal.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Useful scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev        # local development
+npm run build      # production build
+npm run lint       # eslint
+npm run test       # vitest with coverage
+npm run preview    # preview production build
 ```
+
+## Project shape
+
+```text
+new-app/
+├─ public/                  # static assets
+├─ src/app/                 # app shell, router, global styles
+├─ src/domain/              # builder, workout, exercise, and player domain logic
+├─ src/features/            # route-level screens
+├─ src/services/storage/    # local persistence and future backend seams
+├─ src/components/          # reusable UI/layout pieces
+└─ src/test/                # shared test helpers
+```
+
+## Current boundaries
+
+This redesign track is focused on release-candidate v1 scope, not full parity with every legacy surface.
+
+Still intentionally deferred:
+- full auth flows and account backend integration
+- deep analytics/dashboard intelligence
+- cloud sync and multi-device continuity
+- exhaustive migration of every legacy preset, modal, and edge-case UI path
+
+See `../docs/v1-scope.md` for the scope guardrails and `../docs/redesign-known-limitations.md` for the current RC limitations/later-scope list.
