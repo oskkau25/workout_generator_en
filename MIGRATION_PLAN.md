@@ -335,6 +335,7 @@ Artifacts:
 
 #### Exit criteria
 - Phase 3 work can start from explicit screen behavior and state expectations instead of inventing them during implementation
+- `new-app/` passes reproducible clean checks from a fresh install (`npm ci`, `npm run lint`, `npm run test -- --run`, `npm run build`) before Phase 3 tickets continue
 
 ---
 
