@@ -317,6 +317,27 @@ Artifacts:
 
 ---
 
+### Ticket 2.5 — Create implementation blueprints for builder, summary, and player UI
+**Goal:** bridge the domain foundation into concrete Phase 3 screen implementation targets.
+
+#### Tasks
+- define builder sections, fields, defaults, CTA behavior, and live-summary rules
+- define summary screen content, layout, actions, and format-specific rendering rules
+- define player UI composition, controls, states, progress behavior, and completion transition
+- align the docs with `PRODUCT_SPEC.md`, Phase 1 docs, and the new domain/player contracts in `new-app/`
+- create:
+  - `docs/builder-spec.md`
+  - `docs/summary-spec.md`
+  - `docs/player-ui-spec.md`
+
+#### Deliverables
+- implementation-facing blueprint docs for the three core Phase 3 screens
+
+#### Exit criteria
+- Phase 3 work can start from explicit screen behavior and state expectations instead of inventing them during implementation
+
+---
+
 ## Phase 3 — Experience implementation
 
 ### Ticket 3.1 — Build the mobile-first workout builder
