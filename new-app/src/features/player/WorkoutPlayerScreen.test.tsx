@@ -1,4 +1,4 @@
-import { act, screen } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { App } from '@/app/App'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
@@ -216,6 +216,50 @@ describe('WorkoutPlayerScreen', () => {
 
     expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
     expect(screen.getByText('Level 1 of 4')).toBeInTheDocument()
+  })
+
+  it('does not create an active resumable saved session before the user presses Start', async () => {
+    const workout = seedWorkout()
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+
+    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /start workout/i })).toBeInTheDocument()
+    expect(window.localStorage.getItem('workout-generator-react.v1.active-session')).toBeNull()
+  })
+
+  it('exiting from the ready screen does not append fake history, while started sessions are saved on exit', async () => {
+    const workout = seedWorkout()
+    const user = userEvent.setup()
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+
+    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /exit workout and return to summary/i }))
+
+    expect(window.localStorage.getItem('workout-generator-react.v1.history')).toBeNull()
+    expect(window.localStorage.getItem('workout-generator-react.v1.active-session')).toBeNull()
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /start workout/i }))
+    await user.click(screen.getByRole('button', { name: /exit workout and return to summary/i }))
+
+    await waitFor(() => {
+      expect(window.localStorage.getItem('workout-generator-react.v1.history')).not.toBeNull()
+    })
+
+    const history = JSON.parse(window.localStorage.getItem('workout-generator-react.v1.history') ?? '[]')
+    expect(history).toHaveLength(1)
+    expect(history[0]).toMatchObject({
+      workoutId: workout.id,
+      status: 'abandoned',
+    })
+    expect(history[0].startedAt).toBeTruthy()
+    expect(window.localStorage.getItem('workout-generator-react.v1.active-session')).toBeNull()
   })
 
   it('rehydrates a saved session with stored preferences and exact timer state', async () => {

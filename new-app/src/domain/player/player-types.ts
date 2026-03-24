@@ -27,7 +27,7 @@ export interface PlayerProgressState {
 export interface ActiveWorkoutSession {
   sessionId: string
   workoutId: string
-  startedAt: string
+  startedAt: string | null
   lastUpdatedAt: string
   status: 'active' | 'paused' | 'completed' | 'abandoned'
   playbackStepIds: string[]
@@ -44,7 +44,7 @@ export interface PlayerState {
 export type PlayerAction =
   | { type: 'LOAD_WORKOUT'; workout: GeneratedWorkout; resumeFromStepIndex?: number; now?: string; sessionId?: string }
   | { type: 'HYDRATE_STATE'; playerState: PlayerState }
-  | { type: 'START' }
+  | { type: 'START'; now?: string }
   | { type: 'TICK'; seconds?: number }
   | { type: 'PAUSE' }
   | { type: 'RESUME' }

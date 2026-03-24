@@ -49,34 +49,30 @@ function getStep(workout: GeneratedWorkout | null, stepIndex: number): WorkoutEx
   return workout.playback.steps[stepIndex] ?? null
 }
 
-function getWorkPhaseTimer(step: WorkoutExerciseStep): PlayerTimerState {
+function createPhaseTimer(
+  phase: PlayerActivePhase,
+  totalSeconds: number,
+  elapsedSeconds: number,
+): PlayerTimerState {
   return {
-    phase: 'work',
-    previousPhase: 'work',
-    remainingSeconds: step.workSeconds,
-    phaseTotalSeconds: step.workSeconds,
-    elapsedSeconds: 0,
+    phase,
+    previousPhase: phase,
+    remainingSeconds: totalSeconds,
+    phaseTotalSeconds: totalSeconds,
+    elapsedSeconds,
   }
 }
 
-function getReadyTimer(step: WorkoutExerciseStep | null): PlayerTimerState {
-  return {
-    phase: 'ready',
-    previousPhase: 'ready',
-    remainingSeconds: step?.workSeconds ?? 0,
-    phaseTotalSeconds: step?.workSeconds ?? 0,
-    elapsedSeconds: 0,
-  }
+function getWorkPhaseTimer(step: WorkoutExerciseStep, elapsedSeconds: number): PlayerTimerState {
+  return createPhaseTimer('work', step.workSeconds, elapsedSeconds)
 }
 
-function getRestTimer(step: WorkoutExerciseStep): PlayerTimerState {
-  return {
-    phase: 'rest',
-    previousPhase: 'rest',
-    remainingSeconds: step.restSeconds,
-    phaseTotalSeconds: step.restSeconds,
-    elapsedSeconds: 0,
-  }
+function getReadyTimer(step: WorkoutExerciseStep | null, elapsedSeconds: number): PlayerTimerState {
+  return createPhaseTimer('ready', step?.workSeconds ?? 0, elapsedSeconds)
+}
+
+function getRestTimer(step: WorkoutExerciseStep, elapsedSeconds: number): PlayerTimerState {
+  return createPhaseTimer('rest', step.restSeconds, elapsedSeconds)
 }
 
 function touchSession(session: ActiveWorkoutSession | null, status: ActiveWorkoutSession['status'], now?: string) {
@@ -91,6 +87,19 @@ function touchSession(session: ActiveWorkoutSession | null, status: ActiveWorkou
   }
 }
 
+function activateSession(session: ActiveWorkoutSession | null, now?: string) {
+  if (!session) {
+    return null
+  }
+
+  return {
+    ...session,
+    startedAt: session.startedAt ?? now ?? session.lastUpdatedAt,
+    status: 'active' as const,
+    lastUpdatedAt: now ?? session.lastUpdatedAt,
+  }
+}
+
 function completedStepIds(workout: GeneratedWorkout | null, currentStepIndex: number): string[] {
   if (!workout) {
     return []
@@ -99,19 +108,20 @@ function completedStepIds(workout: GeneratedWorkout | null, currentStepIndex: nu
   return workout.playback.steps.slice(0, currentStepIndex).map((step) => step.id)
 }
 
-function moveToStep(state: PlayerState, stepIndex: number, phase: PlayerActivePhase = 'ready'): PlayerState {
+function moveToStep(state: PlayerState, stepIndex: number, phase: PlayerActivePhase = 'ready', now?: string): PlayerState {
   const step = getStep(state.workout, stepIndex)
 
   if (!step) {
-    return completePlayerState(state)
+    return completePlayerState(state, now)
   }
 
+  const elapsedSeconds = state.timer.elapsedSeconds
   const timer =
     phase === 'work'
-      ? getWorkPhaseTimer(step)
+      ? getWorkPhaseTimer(step, elapsedSeconds)
       : phase === 'rest'
-        ? getRestTimer(step)
-        : getReadyTimer(step)
+        ? getRestTimer(step, elapsedSeconds)
+        : getReadyTimer(step, elapsedSeconds)
 
   return {
     ...state,
@@ -121,7 +131,7 @@ function moveToStep(state: PlayerState, stepIndex: number, phase: PlayerActivePh
       totalSteps: state.workout?.playback.steps.length ?? 0,
       completedStepIds: completedStepIds(state.workout, stepIndex),
     },
-    session: touchSession(state.session, 'active'),
+    session: phase === 'ready' ? state.session : activateSession(state.session, now),
   }
 }
 
@@ -141,29 +151,29 @@ function completePlayerState(state: PlayerState, now?: string): PlayerState {
       totalSteps,
       completedStepIds: state.workout?.playback.steps.map((step) => step.id) ?? [],
     },
-    session: touchSession(state.session, 'completed', now),
+    session: touchSession(activateSession(state.session, now), 'completed', now),
   }
 }
 
-function advanceAfterWork(state: PlayerState): PlayerState {
+function advanceAfterWork(state: PlayerState, now?: string): PlayerState {
   const currentStep = getStep(state.workout, state.progress.currentStepIndex)
   if (!currentStep) {
-    return completePlayerState(state)
+    return completePlayerState(state, now)
   }
 
   if (currentStep.restSeconds > 0 && !currentStep.noRestAfter) {
     return {
       ...state,
-      timer: getRestTimer(currentStep),
-      session: touchSession(state.session, 'active'),
+      timer: getRestTimer(currentStep, state.timer.elapsedSeconds),
+      session: activateSession(state.session, now),
     }
   }
 
-  return moveToStep(state, state.progress.currentStepIndex + 1, 'work')
+  return moveToStep(state, state.progress.currentStepIndex + 1, 'work', now)
 }
 
-function advanceAfterRest(state: PlayerState): PlayerState {
-  return moveToStep(state, state.progress.currentStepIndex + 1, 'work')
+function advanceAfterRest(state: PlayerState, now?: string): PlayerState {
+  return moveToStep(state, state.progress.currentStepIndex + 1, 'work', now)
 }
 
 export function playerReducer(state: PlayerState, action: PlayerAction): PlayerState {
@@ -188,12 +198,12 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
         session: {
           sessionId: action.sessionId ?? `session-${action.workout.id}`,
           workoutId: action.workout.id,
-          startedAt: now,
+          startedAt: null,
           lastUpdatedAt: now,
-          status: 'active',
+          status: 'paused',
           playbackStepIds: action.workout.playback.steps.map((playbackStep) => playbackStep.id),
         },
-        timer: step ? getReadyTimer(step) : { ...IDLE_TIMER, phase: 'completed' },
+        timer: step ? getReadyTimer(step, 0) : { ...IDLE_TIMER, phase: 'completed' },
         progress: {
           currentStepIndex: step ? stepIndex : action.workout.playback.steps.length,
           totalSteps: action.workout.playback.steps.length,
@@ -203,7 +213,7 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
     }
 
     case 'START':
-      return state.timer.phase === 'ready' ? moveToStep(state, state.progress.currentStepIndex, 'work') : state
+      return state.timer.phase === 'ready' ? moveToStep(state, state.progress.currentStepIndex, 'work', action.now) : state
 
     case 'TICK': {
       if (state.timer.phase !== 'work' && state.timer.phase !== 'rest') {
@@ -222,7 +232,7 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
             remainingSeconds,
             elapsedSeconds,
           },
-          session: touchSession(state.session, 'active'),
+          session: activateSession(state.session),
         }
       }
 
@@ -249,7 +259,7 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
               phase: 'paused',
               previousPhase: state.timer.phase,
             },
-            session: touchSession(state.session, 'paused'),
+            session: touchSession(activateSession(state.session), 'paused'),
           }
         : state
 
@@ -261,7 +271,7 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
               ...state.timer,
               phase: state.timer.previousPhase,
             },
-            session: touchSession(state.session, 'active'),
+            session: activateSession(state.session),
           }
         : state
 
@@ -278,7 +288,10 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
       return {
         ...state,
         timer: { ...state.timer, phase: 'idle', previousPhase: null, remainingSeconds: 0, phaseTotalSeconds: 0 },
-        session: touchSession(state.session, state.timer.phase === 'completed' ? 'completed' : 'abandoned', action.now),
+        session:
+          state.session?.startedAt != null
+            ? touchSession(state.session, state.timer.phase === 'completed' ? 'completed' : 'abandoned', action.now)
+            : state.session,
       }
 
     case 'COMPLETE':

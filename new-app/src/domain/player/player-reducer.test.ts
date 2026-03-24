@@ -85,7 +85,7 @@ function createWorkout(): GeneratedWorkout {
 }
 
 describe('playerReducer', () => {
-  it('loads a workout into a ready state with session and progress metadata', () => {
+  it('loads a workout into a ready state without marking the session started yet', () => {
     const workout = createWorkout()
     const state = playerReducer(createInitialPlayerState(), {
       type: 'LOAD_WORKOUT',
@@ -104,25 +104,30 @@ describe('playerReducer', () => {
     expect(state.session).toMatchObject({
       sessionId: 'session-123',
       workoutId: 'workout-1',
-      status: 'active',
+      startedAt: null,
+      status: 'paused',
+      lastUpdatedAt: '2026-03-24T10:05:00.000Z',
     })
   })
 
-  it('walks ready -> work -> rest -> next work and tracks progress deterministically', () => {
+  it('walks ready -> work -> rest -> next work and keeps elapsed time cumulative across phase transitions', () => {
     const workout = createWorkout()
     let state = playerReducer(createInitialPlayerState(), { type: 'LOAD_WORKOUT', workout })
 
-    state = playerReducer(state, { type: 'START' })
+    state = playerReducer(state, { type: 'START', now: '2026-03-24T10:00:05.000Z' })
     expect(state.timer.phase).toBe('work')
     expect(getCurrentStep(state)?.id).toBe('step-1')
+    expect(state.session?.startedAt).toBe('2026-03-24T10:00:05.000Z')
 
     state = playerReducer(state, { type: 'TICK', seconds: 30 })
     expect(state.timer.phase).toBe('rest')
     expect(isRestPhase(state)).toBe(true)
+    expect(state.timer.elapsedSeconds).toBe(30)
     expect(state.progress.completedStepIds).toEqual([])
 
     state = playerReducer(state, { type: 'TICK', seconds: 10 })
     expect(state.timer.phase).toBe('work')
+    expect(state.timer.elapsedSeconds).toBe(40)
     expect(state.progress.currentStepIndex).toBe(1)
     expect(state.progress.completedStepIds).toEqual(['step-1'])
     expect(getProgressPercent(state)).toBe(33)
@@ -133,7 +138,7 @@ describe('playerReducer', () => {
   it('pauses and resumes without losing remaining time or active sub-phase', () => {
     const workout = createWorkout()
     let state = playerReducer(createInitialPlayerState(), { type: 'LOAD_WORKOUT', workout })
-    state = playerReducer(state, { type: 'START' })
+    state = playerReducer(state, { type: 'START', now: '2026-03-24T10:00:01.000Z' })
     state = playerReducer(state, { type: 'TICK', seconds: 12 })
 
     const remainingBeforePause = state.timer.remainingSeconds
@@ -161,35 +166,38 @@ describe('playerReducer', () => {
     expect(state.progress.currentStepIndex).toBe(1)
     expect(state.timer.phase).toBe('ready')
     expect(canGoPrevious(state)).toBe(true)
+    expect(state.session?.startedAt).toBeNull()
 
     state = playerReducer(state, { type: 'PREVIOUS_STEP' })
     expect(state.progress.currentStepIndex).toBe(0)
 
-    state = playerReducer(state, { type: 'START' })
+    state = playerReducer(state, { type: 'START', now: '2026-03-24T10:00:02.000Z' })
     state = playerReducer(state, { type: 'TICK', seconds: 30 })
     expect(state.timer.phase).toBe('rest')
 
     state = playerReducer(state, { type: 'SKIP_REST' })
     expect(state.progress.currentStepIndex).toBe(1)
     expect(state.timer.phase).toBe('work')
+    expect(state.timer.elapsedSeconds).toBe(30)
   })
 
   it('completes cleanly when the last step has no rest and handles overshoot ticks', () => {
     const workout = createWorkout()
     let state = playerReducer(createInitialPlayerState(), { type: 'LOAD_WORKOUT', workout, resumeFromStepIndex: 2 })
 
-    state = playerReducer(state, { type: 'START' })
+    state = playerReducer(state, { type: 'START', now: '2026-03-24T10:00:03.000Z' })
     state = playerReducer(state, { type: 'TICK', seconds: 50 })
 
     expect(state.timer.phase).toBe('completed')
     expect(state.progress.currentStepIndex).toBe(3)
     expect(state.progress.completedStepIds).toEqual(['step-1', 'step-2', 'step-3'])
     expect(state.session?.status).toBe('completed')
+    expect(state.session?.startedAt).toBe('2026-03-24T10:00:03.000Z')
     expect(getCurrentStep(state)).toBeNull()
     expect(getProgressPercent(state)).toBe(100)
   })
 
-  it('clamps invalid resume indexes and can mark an active session abandoned on exit', () => {
+  it('clamps invalid resume indexes, does not create fake abandoned history before start, and marks started sessions abandoned on exit', () => {
     const workout = createWorkout()
     let state = playerReducer(createInitialPlayerState(), {
       type: 'LOAD_WORKOUT',
@@ -206,7 +214,22 @@ describe('playerReducer', () => {
     })
 
     expect(state.timer.phase).toBe('idle')
+    expect(state.session?.startedAt).toBeNull()
+    expect(state.session?.status).toBe('paused')
+    expect(state.session?.lastUpdatedAt).toBe(workout.createdAt)
+
+    state = playerReducer(playerReducer(createInitialPlayerState(), { type: 'LOAD_WORKOUT', workout }), {
+      type: 'START',
+      now: '2026-03-24T10:07:00.000Z',
+    })
+    state = playerReducer(state, {
+      type: 'EXIT',
+      now: '2026-03-24T10:09:00.000Z',
+    })
+
+    expect(state.timer.phase).toBe('idle')
     expect(state.session?.status).toBe('abandoned')
+    expect(state.session?.startedAt).toBe('2026-03-24T10:07:00.000Z')
     expect(state.session?.lastUpdatedAt).toBe('2026-03-24T10:09:00.000Z')
   })
 })

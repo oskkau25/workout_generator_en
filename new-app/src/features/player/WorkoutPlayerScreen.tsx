@@ -191,7 +191,8 @@ export function WorkoutPlayerScreen() {
       return
     }
 
-    if (playerState.timer.phase === 'idle' || playerState.timer.phase === 'completed') {
+    const sessionStarted = playerState.session.startedAt != null
+    if (!sessionStarted || playerState.timer.phase === 'idle' || playerState.timer.phase === 'completed') {
       void workoutSessionStore.clearActiveSession()
       return
     }
@@ -232,7 +233,7 @@ export function WorkoutPlayerScreen() {
       return
     }
 
-    if (playerState.workout && playerState.session && !historySavedRef.current) {
+    if (playerState.workout && playerState.session?.startedAt && !historySavedRef.current) {
       historySavedRef.current = true
       const now = new Date().toISOString()
       const exitedState = playerReducer(playerState, { type: 'EXIT', now })
@@ -255,7 +256,7 @@ export function WorkoutPlayerScreen() {
       if (event.key === ' ' || event.key === 'Spacebar') {
         if (playerState.timer.phase === 'ready') {
           event.preventDefault()
-          dispatch({ type: 'START' })
+          dispatch({ type: 'START', now: new Date().toISOString() })
         } else if (playerState.timer.phase === 'work' || playerState.timer.phase === 'rest') {
           event.preventDefault()
           dispatch({ type: 'PAUSE' })
@@ -479,7 +480,7 @@ export function WorkoutPlayerScreen() {
         </div>
         <div className="player-primary-controls">
           {playerState.timer.phase === 'ready' ? (
-            <button type="button" className="primary-action" onClick={() => dispatch({ type: 'START' })}>
+            <button type="button" className="primary-action" onClick={() => dispatch({ type: 'START', now: new Date().toISOString() })}>
               Start workout
             </button>
           ) : null}
