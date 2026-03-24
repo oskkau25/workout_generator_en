@@ -1,16 +1,14 @@
 import type { BuilderDraft, WorkoutGenerationRequest } from '@/domain/builder/builder-types'
 import type { GeneratedWorkout } from '@/domain/workouts/workout-types'
 import { LocalStorageStore } from '@/services/storage/local-storage-store'
-import { STORAGE_NAMESPACE } from '@/services/storage/storage-keys'
+import { STORAGE_KEYS } from '@/services/storage/storage-keys'
 
 export interface StoredGeneratedWorkout {
   id: string
   workout: GeneratedWorkout
 }
 
-const generatedWorkoutStore = new LocalStorageStore<StoredGeneratedWorkout>(
-  `${STORAGE_NAMESPACE}.generated-workout`,
-)
+const generatedWorkoutStore = new LocalStorageStore<StoredGeneratedWorkout>(STORAGE_KEYS.generatedWorkout)
 
 function toDuration(targetMinutes: number): BuilderDraft['duration'] {
   const safeMinutes = [15, 20, 30, 45, 60].includes(targetMinutes) ? targetMinutes : 30

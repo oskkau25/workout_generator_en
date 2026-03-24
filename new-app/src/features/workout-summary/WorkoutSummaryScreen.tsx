@@ -8,6 +8,7 @@ import type { GeneratedWorkout } from '@/domain/workouts/workout-types'
 import { GeneratedWorkoutStore, rehydrateBuilderDraftFromRequest } from '@/services/storage/generated-workout-store'
 import { LocalStorageStore } from '@/services/storage/local-storage-store'
 import { STORAGE_KEYS } from '@/services/storage/storage-keys'
+import { workoutSessionStore } from '@/services/storage/workout-session-store'
 
 const builderDraftStore = new LocalStorageStore<BuilderDraft>(STORAGE_KEYS.builderDraft)
 
@@ -28,15 +29,21 @@ export function WorkoutSummaryScreen() {
   const navigate = useNavigate()
   const [workout, setWorkout] = useState<GeneratedWorkout | null>(null)
   const [isRegenerating, setIsRegenerating] = useState(false)
+  const [hasResumableSession, setHasResumableSession] = useState(false)
 
   useEffect(() => {
     let cancelled = false
 
-    GeneratedWorkoutStore.load().then((stored) => {
-      if (!cancelled && stored && stored.id === workoutId) {
-        setWorkout(stored.workout)
-      }
-    })
+    Promise.all([GeneratedWorkoutStore.load(), workoutSessionStore.loadActiveSession()]).then(
+      ([stored, savedSession]) => {
+        if (!cancelled) {
+          if (stored && stored.id === workoutId) {
+            setWorkout(stored.workout)
+          }
+          setHasResumableSession(Boolean(savedSession && savedSession.workout.id === workoutId))
+        }
+      },
+    )
 
     return () => {
       cancelled = true
@@ -134,7 +141,7 @@ export function WorkoutSummaryScreen() {
           <h3>Start now or tweak it</h3>
           <div className="summary-action-stack">
             <Link className="primary-action summary-primary-action" to={`/workout/${workout.id}/play`}>
-              Start workout
+              {hasResumableSession ? 'Resume workout' : 'Start workout'}
             </Link>
             <button type="button" className="secondary-action" onClick={() => void handleEditSettings()}>
               Edit settings

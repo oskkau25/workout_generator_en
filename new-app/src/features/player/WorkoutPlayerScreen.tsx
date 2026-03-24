@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useState } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { playerReducer, createInitialPlayerState } from '@/domain/player/player-reducer'
@@ -14,6 +14,10 @@ import type { PlayerPhase } from '@/domain/player/player-types'
 import type { ExerciseDefinition } from '@/domain/exercises/exercise-types'
 import type { WorkoutBlockType, WorkoutExerciseStep } from '@/domain/workouts/workout-types'
 import { GeneratedWorkoutStore } from '@/services/storage/generated-workout-store'
+import { createHistoryEntryFromPlayerState } from '@/services/storage/progress-helpers'
+import { preferencesStore } from '@/services/storage/preferences-store'
+import { workoutHistoryStore } from '@/services/storage/workout-history-store'
+import { workoutSessionStore } from '@/services/storage/workout-session-store'
 
 const PHASE_COPY: Record<Exclude<PlayerPhase, 'idle'>, { label: string; message: string }> = {
   ready: { label: 'Ready', message: 'Get ready to start' },
@@ -50,7 +54,7 @@ function titleCase(value: string) {
 }
 
 function createExerciseMap(catalog: ExerciseDefinition[]) {
-  return new Map(catalog.map((exercise) => [exercise.slug, exercise]))
+  return new Map(catalog.map((exercise) => [exercise.id, exercise]))
 }
 
 function getExercise(step: WorkoutExerciseStep | null, exerciseMap: Map<string, ExerciseDefinition>) {
@@ -105,31 +109,50 @@ export function WorkoutPlayerScreen() {
   const [playerState, dispatch] = useReducer(playerReducer, undefined, () => createInitialPlayerState())
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const historySavedRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
 
-    GeneratedWorkoutStore.load()
-      .then((stored) => {
+    async function loadPlayer() {
+      try {
+        const [savedSession, savedPreferences, storedWorkout] = await Promise.all([
+          workoutSessionStore.loadActiveSession(),
+          preferencesStore.load(),
+          GeneratedWorkoutStore.load(),
+        ])
+
         if (cancelled) {
           return
         }
 
-        if (!stored || stored.id !== workoutId) {
+        if (savedPreferences) {
+          dispatch({ type: 'UPDATE_PREFERENCES', preferences: savedPreferences })
+        }
+
+        if (savedSession && savedSession.workout.id === workoutId) {
+          dispatch({ type: 'HYDRATE_STATE', playerState: savedSession.playerState })
+          setIsLoading(false)
+          return
+        }
+
+        if (!storedWorkout || storedWorkout.id !== workoutId) {
           setLoadError('No generated workout found for this player session.')
           setIsLoading(false)
           return
         }
 
-        dispatch({ type: 'LOAD_WORKOUT', workout: stored.workout })
+        dispatch({ type: 'LOAD_WORKOUT', workout: storedWorkout.workout })
         setIsLoading(false)
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) {
           setLoadError('The player could not load the stored workout.')
           setIsLoading(false)
         }
-      })
+      }
+    }
+
+    void loadPlayer()
 
     return () => {
       cancelled = true
@@ -150,6 +173,38 @@ export function WorkoutPlayerScreen() {
     }
   }, [playerState.timer.phase])
 
+  useEffect(() => {
+    void preferencesStore.save(playerState.preferences)
+  }, [playerState.preferences])
+
+  useEffect(() => {
+    if (!playerState.workout || !playerState.session) {
+      return
+    }
+
+    if (playerState.timer.phase === 'idle' || playerState.timer.phase === 'completed') {
+      void workoutSessionStore.clearActiveSession()
+      return
+    }
+
+    void workoutSessionStore.saveActiveSession({
+      workout: playerState.workout,
+      playerState,
+      savedAt: new Date().toISOString(),
+    })
+  }, [playerState])
+
+  useEffect(() => {
+    if (!playerState.workout || playerState.timer.phase !== 'completed' || historySavedRef.current) {
+      return
+    }
+
+    historySavedRef.current = true
+    const completedAt = new Date().toISOString()
+    void workoutHistoryStore.append(createHistoryEntryFromPlayerState(playerState, playerState.workout, completedAt))
+    void workoutSessionStore.clearActiveSession()
+  }, [playerState])
+
   const exerciseMap = useMemo(() => createExerciseMap(legacyExerciseCatalog), [])
   const currentStep = useMemo(() => getCurrentStep(playerState), [playerState])
   const nextStep = useMemo(() => getNextStep(playerState), [playerState])
@@ -168,7 +223,17 @@ export function WorkoutPlayerScreen() {
       return
     }
 
-    dispatch({ type: 'EXIT', now: new Date().toISOString() })
+    if (playerState.workout && playerState.session && !historySavedRef.current) {
+      historySavedRef.current = true
+      const now = new Date().toISOString()
+      const exitedState = playerReducer(playerState, { type: 'EXIT', now })
+      await workoutHistoryStore.append(createHistoryEntryFromPlayerState(exitedState, playerState.workout, now))
+      await workoutSessionStore.clearActiveSession()
+      dispatch({ type: 'EXIT', now })
+    } else {
+      dispatch({ type: 'EXIT', now: new Date().toISOString() })
+    }
+
     navigate(`/workout/${workoutId}/summary`)
   }
 
@@ -214,8 +279,8 @@ export function WorkoutPlayerScreen() {
               </strong>
             </div>
             <div className="summary-stat">
-              <span>Total planned duration</span>
-              <strong>{formatDurationLabel(playerState.workout.playback.totalDurationSeconds)}</strong>
+              <span>Active time</span>
+              <strong>{formatDurationLabel(playerState.timer.elapsedSeconds)}</strong>
             </div>
             <div className="summary-stat">
               <span>Format</span>
@@ -256,6 +321,7 @@ export function WorkoutPlayerScreen() {
             Step {currentStepNumber} / {playerState.progress.totalSteps}
           </span>
           <span className="mini-pill">Elapsed {formatDurationLabel(playerState.timer.elapsedSeconds)}</span>
+          {playerState.timer.phase === 'paused' ? <span className="mini-pill">Resume available</span> : null}
         </div>
       </section>
 
@@ -432,7 +498,7 @@ export function WorkoutPlayerScreen() {
             <span>
               <strong>Voice countdown</strong>
               <br />
-              <span>Keep spoken final seconds ready for Ticket 3.4.</span>
+              <span>Stored locally so your player picks up where you left it.</span>
             </span>
           </label>
         </div>

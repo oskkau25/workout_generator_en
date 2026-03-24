@@ -168,6 +168,15 @@ function advanceAfterRest(state: PlayerState): PlayerState {
 
 export function playerReducer(state: PlayerState, action: PlayerAction): PlayerState {
   switch (action.type) {
+    case 'HYDRATE_STATE':
+      return {
+        ...action.playerState,
+        preferences: {
+          ...DEFAULT_PREFERENCES,
+          ...action.playerState.preferences,
+        },
+      }
+
     case 'LOAD_WORKOUT': {
       const stepIndex = Math.max(0, Math.min(action.resumeFromStepIndex ?? 0, action.workout.playback.steps.length))
       const step = action.workout.playback.steps[stepIndex] ?? null

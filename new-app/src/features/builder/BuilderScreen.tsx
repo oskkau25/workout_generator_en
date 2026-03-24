@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import type { SavedWorkoutSession } from '@/services/storage/storage-types'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
 import { normalizeBuilderDraft } from '@/domain/builder/builder-normalizer'
 import type {
@@ -14,6 +15,7 @@ import { generateWorkout } from '@/domain/workouts/workout-generator'
 import { LocalStorageStore } from '@/services/storage/local-storage-store'
 import { STORAGE_KEYS } from '@/services/storage/storage-keys'
 import { GeneratedWorkoutStore } from '@/services/storage/generated-workout-store'
+import { workoutSessionStore } from '@/services/storage/workout-session-store'
 
 const builderDraftStore = new LocalStorageStore<BuilderDraft>(STORAGE_KEYS.builderDraft)
 
@@ -101,13 +103,17 @@ export function BuilderScreen() {
   const [draft, setDraft] = useState<BuilderDraft>(() => createDefaultBuilderDraft())
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [activeSession, setActiveSession] = useState<SavedWorkoutSession | null>(null)
 
   useEffect(() => {
     let cancelled = false
 
-    builderDraftStore.load().then((savedDraft) => {
-      if (!cancelled && savedDraft) {
-        setDraft(savedDraft)
+    Promise.all([builderDraftStore.load(), workoutSessionStore.loadActiveSession()]).then(([savedDraft, savedSession]) => {
+      if (!cancelled) {
+        if (savedDraft) {
+          setDraft(savedDraft)
+        }
+        setActiveSession(savedSession)
       }
     })
 
@@ -144,6 +150,7 @@ export function BuilderScreen() {
     try {
       const workout = generateWorkout(normalizedRequest, legacyExerciseCatalog)
       await GeneratedWorkoutStore.save({ id: workout.id, workout })
+      setActiveSession(null)
       navigate(`/workout/${workout.id}/summary`)
     } finally {
       setIsGenerating(false)
@@ -159,6 +166,19 @@ export function BuilderScreen() {
           Quick to start, deep when you want it. Dial in your goal, gear, and structure, then
           generate a session built from the normalized domain request.
         </p>
+        {activeSession ? (
+          <div className="summary-block builder-resume-block">
+            <span>Resume available</span>
+            <strong>{activeSession.workout.metadata.title} is still saved locally.</strong>
+            <button
+              type="button"
+              className="secondary-action"
+              onClick={() => navigate(`/workout/${activeSession.workout.id}/play`)}
+            >
+              Resume active workout
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section className="card builder-section">

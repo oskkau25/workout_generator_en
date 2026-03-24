@@ -43,6 +43,7 @@ export interface PlayerState {
 
 export type PlayerAction =
   | { type: 'LOAD_WORKOUT'; workout: GeneratedWorkout; resumeFromStepIndex?: number; now?: string; sessionId?: string }
+  | { type: 'HYDRATE_STATE'; playerState: PlayerState }
   | { type: 'START' }
   | { type: 'TICK'; seconds?: number }
   | { type: 'PAUSE' }
