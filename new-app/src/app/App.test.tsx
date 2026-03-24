@@ -7,6 +7,20 @@ import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { generateWorkout } from '@/domain/workouts/workout-generator'
 import { renderWithRouter } from '@/test/render-with-router'
 
+function seedWorkout() {
+  const workout = generateWorkout(normalizeBuilderDraft(createDefaultBuilderDraft()), legacyExerciseCatalog, {
+    random: () => 0,
+    now: () => new Date('2026-03-24T10:00:00.000Z'),
+  })
+
+  window.localStorage.setItem(
+    'workout-generator-react.v1.generated-workout',
+    JSON.stringify({ id: workout.id, workout }),
+  )
+
+  return workout
+}
+
 describe('App shell routing', () => {
   beforeEach(() => {
     window.localStorage.clear()
@@ -30,22 +44,16 @@ describe('App shell routing', () => {
     expect(screen.getByText(/8 tabata rounds at 20s work \/ 10s rest/i)).toBeInTheDocument()
   })
 
-  it('renders the progress shell on /progress', () => {
+  it('renders the progress dashboard with a strong empty state', async () => {
     renderWithRouter(<App />, { route: '/progress' })
 
-    expect(screen.getByRole('heading', { name: /progress shell/i })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /your progress/i })).toBeInTheDocument()
+    expect(screen.getByText(/finish your first workout/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /build a workout/i })).toHaveAttribute('href', '/build')
   })
 
   it('renders the workout summary review screen from stored generated workout data', async () => {
-    const workout = generateWorkout(normalizeBuilderDraft(createDefaultBuilderDraft()), legacyExerciseCatalog, {
-      random: () => 0,
-      now: () => new Date('2026-03-24T10:00:00.000Z'),
-    })
-
-    window.localStorage.setItem(
-      'workout-generator-react.v1.generated-workout',
-      JSON.stringify({ id: workout.id, workout }),
-    )
+    const workout = seedWorkout()
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/summary` })
 
@@ -56,5 +64,49 @@ describe('App shell routing', () => {
       `/workout/${workout.id}/play`,
     )
     expect(screen.getByText(/legacy generation rules were preserved as invariants/i)).toBeInTheDocument()
+  })
+
+  it('shows a resume affordance on the builder when an active local session exists', async () => {
+    const workout = seedWorkout()
+
+    window.localStorage.setItem(
+      'workout-generator-react.v1.active-session',
+      JSON.stringify({
+        workout,
+        playerState: {
+          workout,
+          session: {
+            sessionId: `session-${workout.id}`,
+            workoutId: workout.id,
+            startedAt: '2026-03-24T10:00:00.000Z',
+            lastUpdatedAt: '2026-03-24T10:02:00.000Z',
+            status: 'paused',
+            playbackStepIds: workout.playback.steps.map((step) => step.id),
+          },
+          timer: {
+            phase: 'paused',
+            previousPhase: 'work',
+            remainingSeconds: 12,
+            phaseTotalSeconds: 40,
+            elapsedSeconds: 120,
+          },
+          progress: {
+            currentStepIndex: 1,
+            totalSteps: workout.playback.steps.length,
+            completedStepIds: workout.playback.steps.slice(0, 1).map((step) => step.id),
+          },
+          preferences: {
+            soundEnabled: true,
+            vibrationEnabled: true,
+            voiceCountdownEnabled: false,
+          },
+        },
+        savedAt: '2026-03-24T10:02:00.000Z',
+      }),
+    )
+
+    renderWithRouter(<App />, { route: '/build' })
+
+    expect(await screen.findByRole('button', { name: /resume active workout/i })).toBeInTheDocument()
   })
 })
