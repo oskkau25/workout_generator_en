@@ -25,7 +25,7 @@ const WORKOUT_PRESETS = {
     description: 'Focused strength training with dumbbells',
   },
   'hiit-workout': {
-    duration: '20',
+    duration: '15',
     fitnessLevel: 'Advanced',
     equipment: ['Bodyweight'],
     workTime: 20,
@@ -54,6 +54,7 @@ export function initializeEnhancedForm() {
   setupFormFeedback();
   setupEquipmentSelection();
   setupMobileGenerateCta();
+  setupLiveSummary();
 }
 
 function setupCollapsibleSections() {
@@ -212,6 +213,21 @@ function setupSmartValidation() {
   validateForm();
 }
 
+function setupLiveSummary() {
+  const form = document.getElementById('workout-form');
+  if (!form) return;
+
+  const syncSummary = () => updateLiveSummary(form);
+
+  const inputs = form.querySelectorAll('input, select');
+  inputs.forEach((input) => {
+    input.addEventListener('change', syncSummary);
+    input.addEventListener('input', syncSummary);
+  });
+
+  syncSummary();
+}
+
 /**
  * Validate the entire form and provide feedback
  */
@@ -334,6 +350,117 @@ function displayValidationResults(errors, warnings) {
             </div>
         `;
     validationContainer.appendChild(successDiv);
+  }
+}
+
+function updateLiveSummary(form) {
+  const duration = form.querySelector('input[name="duration"]:checked')?.value || '30';
+  const level = document.getElementById('fitness-level')?.value || 'Intermediate';
+  const pattern = form.querySelector('input[name="training-pattern"]:checked')?.value || 'standard';
+  const equipment = Array.from(form.querySelectorAll('input[name="equipment"]:checked')).map(
+    (input) => input.value
+  );
+  const workTime = parseInt(document.getElementById('work-time')?.value || '45', 10);
+  const restTime = parseInt(document.getElementById('rest-time')?.value || '15', 10);
+
+  const durationLabel = document.getElementById('summary-duration-label');
+  const levelLabel = document.getElementById('summary-level-label');
+  const patternLabel = document.getElementById('summary-pattern-label');
+  const equipmentLabel = document.getElementById('summary-equipment-label');
+  const workRestLabel = document.getElementById('summary-workrest-label');
+  const estimateLabel = document.getElementById('summary-estimate-label');
+  const readyPill = document.getElementById('summary-ready-pill');
+  const equipmentChips = document.getElementById('summary-equipment-chips');
+  const mobileCtaSubtitle = document.getElementById('mobile-cta-subtitle');
+
+  const durationDescriptor = getDurationDescriptor(duration);
+  const patternDescriptor = getPatternDescriptor(pattern);
+  const estimatedFlow = getEstimatedFlow(duration, pattern, level, equipment.length);
+
+  if (durationLabel) {
+    durationLabel.textContent = `${duration} min ${durationDescriptor}`;
+  }
+  if (levelLabel) {
+    levelLabel.textContent = `${level} effort`;
+  }
+  if (patternLabel) {
+    patternLabel.textContent = patternDescriptor;
+  }
+  if (equipmentLabel) {
+    equipmentLabel.textContent =
+      equipment.length === 0
+        ? 'No equipment selected yet'
+        : `${equipment.length} option${equipment.length === 1 ? '' : 's'} selected`;
+  }
+  if (workRestLabel) {
+    workRestLabel.textContent = `${workTime}s work / ${restTime}s rest`;
+  }
+  if (estimateLabel) {
+    estimateLabel.textContent = estimatedFlow;
+  }
+  if (readyPill) {
+    readyPill.textContent = equipment.length === 0 ? 'Needs equipment' : 'Ready';
+  }
+  if (mobileCtaSubtitle) {
+    mobileCtaSubtitle.textContent = `${duration} min ${durationDescriptor}`;
+  }
+
+  if (equipmentChips) {
+    equipmentChips.innerHTML = '';
+
+    const visibleEquipment = equipment.length > 0 ? equipment : ['Select equipment'];
+    visibleEquipment.forEach((item) => {
+      const chip = document.createElement('span');
+      chip.className = 'summary-chip';
+      chip.textContent = item;
+      equipmentChips.appendChild(chip);
+    });
+  }
+}
+
+function getDurationDescriptor(duration) {
+  switch (duration) {
+    case '15':
+      return 'quick reset';
+    case '30':
+      return 'balanced session';
+    case '45':
+      return 'focused push';
+    case '60':
+      return 'long-form block';
+    default:
+      return 'custom session';
+  }
+}
+
+function getPatternDescriptor(pattern) {
+  switch (pattern) {
+    case 'circuit':
+      return 'Circuit training';
+    case 'tabata':
+      return 'Tabata intervals';
+    case 'pyramid':
+      return 'Pyramid training';
+    default:
+      return 'Standard training';
+  }
+}
+
+function getEstimatedFlow(duration, pattern, level, equipmentCount) {
+  const intensity =
+    level === 'Advanced' ? 'higher output' : level === 'Beginner' ? 'steady pacing' : 'moderate pacing';
+  const equipmentText =
+    equipmentCount > 1 ? 'with multiple equipment swaps' : equipmentCount === 1 ? 'with minimal setup' : 'once gear is selected';
+
+  switch (pattern) {
+    case 'circuit':
+      return `${duration}-minute circuit rotation with ${intensity} ${equipmentText}.`;
+    case 'tabata':
+      return `${duration}-minute interval block built for fast transitions and ${intensity}.`;
+    case 'pyramid':
+      return `${duration}-minute ramp-up structure that builds intensity gradually ${equipmentText}.`;
+    default:
+      return `${duration}-minute workout with a warm-up, main block, and ${intensity} recovery rhythm.`;
   }
 }
 

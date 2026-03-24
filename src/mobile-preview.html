@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitFlow Mobile Preview</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg-top: #0f172a;
+            --bg-bottom: #dbeafe;
+            --panel: rgba(255, 255, 255, 0.9);
+            --panel-border: rgba(148, 163, 184, 0.28);
+            --text-strong: #0f172a;
+            --text-soft: #475569;
+            --accent: #0ea5e9;
+            --accent-dark: #0369a1;
+            --shell: #111827;
+            --shell-edge: #1f2937;
+            --screen: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, sans-serif;
+            color: var(--text-strong);
+            background:
+                radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 28%),
+                linear-gradient(180deg, var(--bg-top) 0%, #1e293b 35%, var(--bg-bottom) 100%);
+        }
+
+        .layout {
+            width: min(1200px, calc(100% - 2rem));
+            margin: 0 auto;
+            padding: 2rem 0 3rem;
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .toolbar,
+        .frame-panel {
+            border: 1px solid var(--panel-border);
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            border-radius: 24px;
+            box-shadow: 0 24px 50px rgba(15, 23, 42, 0.16);
+        }
+
+        .toolbar {
+            padding: 1.25rem;
+        }
+
+        .toolbar-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .toolbar h1 {
+            font-size: clamp(1.6rem, 2vw, 2rem);
+            margin: 0;
+        }
+
+        .toolbar p {
+            margin: 0.35rem 0 0;
+            color: var(--text-soft);
+            max-width: 44rem;
+            line-height: 1.5;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .device-grid {
+            display: grid;
+            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .device-button,
+        .action-link {
+            appearance: none;
+            border: 1px solid rgba(14, 165, 233, 0.18);
+            background: #fff;
+            color: var(--text-strong);
+            border-radius: 16px;
+            padding: 0.9rem 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+            text-decoration: none;
+            font: inherit;
+        }
+
+        .device-button:hover,
+        .device-button:focus-visible,
+        .action-link:hover,
+        .action-link:focus-visible {
+            transform: translateY(-1px);
+            border-color: rgba(14, 165, 233, 0.55);
+            box-shadow: 0 14px 24px rgba(14, 165, 233, 0.12);
+            outline: none;
+        }
+
+        .device-button.is-active {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(125, 211, 252, 0.22));
+            border-color: rgba(14, 165, 233, 0.7);
+        }
+
+        .device-name {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .device-meta {
+            display: block;
+            color: var(--text-soft);
+            font-size: 0.9rem;
+        }
+
+        .frame-panel {
+            padding: 1.25rem;
+        }
+
+        .status-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            border-radius: 999px;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--accent-dark);
+            padding: 0.5rem 0.85rem;
+            font-weight: 700;
+        }
+
+        .phone-stage {
+            display: grid;
+            place-items: center;
+            padding: 1rem 0 0.5rem;
+            overflow: auto;
+        }
+
+        .phone-shell {
+            width: calc(var(--device-width, 390) * 1px + 22px);
+            height: calc(var(--device-height, 844) * 1px + 22px);
+            border-radius: 42px;
+            padding: 11px;
+            background: linear-gradient(180deg, #374151 0%, #111827 100%);
+            box-shadow:
+                0 28px 60px rgba(15, 23, 42, 0.35),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+
+        .phone-shell::before {
+            content: "";
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 34%;
+            height: 24px;
+            border-radius: 999px;
+            background: #030712;
+            z-index: 2;
+        }
+
+        .phone-screen {
+            width: calc(var(--device-width, 390) * 1px);
+            height: calc(var(--device-height, 844) * 1px);
+            border: 0;
+            border-radius: 32px;
+            background: var(--screen);
+            display: block;
+        }
+
+        .notes {
+            margin-top: 1rem;
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .notes strong {
+            color: var(--text-strong);
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                width: min(100% - 1rem, 100%);
+                padding-top: 1rem;
+            }
+
+            .toolbar-header,
+            .status-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .phone-stage {
+                padding-left: 0;
+                padding-right: 0;
+                justify-items: start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <section class="toolbar" aria-label="Mobile preview controls">
+            <div class="toolbar-header">
+                <div>
+                    <h1>FitFlow Mobile Preview</h1>
+                    <p>Test the live localhost app inside a desktop phone frame. Pick a device size, reload after edits, and use the direct app link when you want full browser DevTools.</p>
+                </div>
+                <div class="toolbar-actions">
+                    <a class="action-link" href="./index.html" target="preview-frame" rel="noreferrer">Open app in frame</a>
+                    <a class="action-link" href="./index.html">Open direct app</a>
+                </div>
+            </div>
+
+            <div class="device-grid" role="group" aria-label="Device presets">
+                <button class="device-button is-active" type="button" data-device-name="iPhone 14 Pro" data-width="393" data-height="852">
+                    <span class="device-name">iPhone 14 Pro</span>
+                    <span class="device-meta">393 × 852</span>
+                </button>
+                <button class="device-button" type="button" data-device-name="iPhone SE" data-width="375" data-height="667">
+                    <span class="device-name">iPhone SE</span>
+                    <span class="device-meta">375 × 667</span>
+                </button>
+                <button class="device-button" type="button" data-device-name="Pixel 7" data-width="412" data-height="915">
+                    <span class="device-name">Pixel 7</span>
+                    <span class="device-meta">412 × 915</span>
+                </button>
+                <button class="device-button" type="button" data-device-name="Galaxy S20" data-width="360" data-height="800">
+                    <span class="device-name">Galaxy S20</span>
+                    <span class="device-meta">360 × 800</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="frame-panel">
+            <div class="status-row">
+                <div class="status-pill">
+                    <span>Viewport</span>
+                    <span id="device-label">iPhone 14 Pro · 393 × 852</span>
+                </div>
+                <div class="toolbar-actions">
+                    <button class="action-link" type="button" id="reload-preview">Reload preview</button>
+                </div>
+            </div>
+
+            <div class="phone-stage">
+                <div class="phone-shell" id="phone-shell">
+                    <iframe
+                        class="phone-screen"
+                        id="preview-frame"
+                        name="preview-frame"
+                        src="./index.html"
+                        title="FitFlow mobile preview"
+                    ></iframe>
+                </div>
+            </div>
+
+            <p class="notes">
+                <strong>Tip:</strong> keep this page open at
+                <code>http://localhost:5173/src/mobile-preview.html</code>.
+                When you change files in <code>src/</code>, use <strong>Reload preview</strong> to pull in the latest version.
+            </p>
+        </section>
+    </div>
+
+    <script>
+        (function initMobilePreview() {
+            const root = document.documentElement;
+            const frame = document.getElementById('preview-frame');
+            const deviceLabel = document.getElementById('device-label');
+            const reloadButton = document.getElementById('reload-preview');
+            const deviceButtons = Array.from(document.querySelectorAll('[data-width][data-height]'));
+
+            function applyDevice(button) {
+                const width = button.dataset.width;
+                const height = button.dataset.height;
+                const name = button.dataset.deviceName;
+
+                root.style.setProperty('--device-width', width);
+                root.style.setProperty('--device-height', height);
+                deviceLabel.textContent = `${name} · ${width} × ${height}`;
+
+                deviceButtons.forEach((candidate) => {
+                    candidate.classList.toggle('is-active', candidate === button);
+                });
+            }
+
+            deviceButtons.forEach((button) => {
+                button.addEventListener('click', function handleDeviceClick() {
+                    applyDevice(button);
+                });
+            });
+
+            reloadButton.addEventListener('click', function handleReload() {
+                frame.contentWindow.location.reload();
+            });
+
+            if (deviceButtons[0]) {
+                applyDevice(deviceButtons[0]);
+            }
+        })();
+    </script>
+</body>
+</html>
