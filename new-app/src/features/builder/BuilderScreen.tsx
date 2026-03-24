@@ -12,12 +12,10 @@ import type {
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { generateWorkout } from '@/domain/workouts/workout-generator'
 import { LocalStorageStore } from '@/services/storage/local-storage-store'
-import { STORAGE_KEYS, STORAGE_NAMESPACE } from '@/services/storage/storage-keys'
+import { STORAGE_KEYS } from '@/services/storage/storage-keys'
+import { GeneratedWorkoutStore } from '@/services/storage/generated-workout-store'
 
 const builderDraftStore = new LocalStorageStore<BuilderDraft>(STORAGE_KEYS.builderDraft)
-const generatedWorkoutStore = new LocalStorageStore<{ id: string; workout: ReturnType<typeof generateWorkout> }>(
-  `${STORAGE_NAMESPACE}.generated-workout`,
-)
 
 const goalOptions: Array<{ value: WorkoutGoal; label: string; detail: string }> = [
   { value: 'full_body', label: 'Full body', detail: 'Balanced session across your whole body.' },
@@ -145,7 +143,7 @@ export function BuilderScreen() {
     setIsGenerating(true)
     try {
       const workout = generateWorkout(normalizedRequest, legacyExerciseCatalog)
-      await generatedWorkoutStore.save({ id: workout.id, workout })
+      await GeneratedWorkoutStore.save({ id: workout.id, workout })
       navigate(`/workout/${workout.id}/summary`)
     } finally {
       setIsGenerating(false)

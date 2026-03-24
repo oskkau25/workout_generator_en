@@ -296,6 +296,103 @@ button {
   padding-left: 1.1rem;
 }
 
+.summary-layout,
+.summary-content-stack,
+.summary-sidebar,
+.summary-intent-grid,
+.summary-action-stack,
+.summary-step-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.summary-hero-subtitle,
+.summary-generated-at,
+.summary-format-hint,
+.summary-step-meta {
+  color: #9ed9ef;
+}
+
+.summary-generated-at,
+.summary-step-meta {
+  font-size: 0.92rem;
+}
+
+.summary-sidebar-card,
+.summary-actions-card,
+.summary-block-card,
+.summary-diagnostics-card {
+  gap: 1rem;
+}
+
+.summary-intent-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.summary-intent-item,
+.summary-step-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.9rem;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(125, 211, 252, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.summary-step-card-marker {
+  border-color: rgba(125, 211, 252, 0.28);
+  background: rgba(125, 211, 252, 0.08);
+}
+
+.summary-step-card-transition {
+  border-style: dashed;
+  opacity: 0.82;
+}
+
+.summary-section-heading,
+.summary-step-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.summary-step-badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(52, 211, 153, 0.14);
+  border: 1px solid rgba(52, 211, 153, 0.28);
+  color: #b8f6da;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.secondary-action,
+.ghost-action {
+  padding: 0.95rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.secondary-action {
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  background: rgba(125, 211, 252, 0.1);
+  color: #f3f7f7;
+}
+
+.ghost-action {
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  background: transparent;
+  color: #9ed9ef;
+}
+
+.summary-primary-action {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
 .builder-action-bar {
   position: sticky;
   bottom: 5.6rem;
@@ -351,12 +448,15 @@ button {
   .equipment-grid,
   .summary-stat-grid,
   .toggle-grid,
-  .field-grid {
+  .field-grid,
+  .summary-intent-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .builder-action-bar,
-  .section-heading {
+  .section-heading,
+  .summary-section-heading,
+  .summary-step-topline {
     flex-direction: column;
   }
 
@@ -404,5 +504,22 @@ button {
 
   .summary-screen-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    align-items: start;
+  }
+
+  .summary-hero-card,
+  .summary-content-stack {
+    grid-column: 1;
+  }
+
+  .summary-sidebar {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: 1rem;
   }
 }
