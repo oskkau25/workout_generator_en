@@ -301,7 +301,14 @@ button {
 .summary-sidebar,
 .summary-intent-grid,
 .summary-action-stack,
-.summary-step-stack {
+.summary-step-stack,
+.player-layout,
+.player-session-meta,
+.player-context-row,
+.player-current-metrics,
+.player-complete-stats,
+.player-primary-controls,
+.player-secondary-controls {
   display: grid;
   gap: 1rem;
 }
@@ -386,11 +393,125 @@ button {
   color: #9ed9ef;
 }
 
-.summary-primary-action {
+.summary-primary-action,
+.player-link-button {
   display: inline-flex;
   justify-content: center;
   align-items: center;
   width: 100%;
+}
+
+.player-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.player-session-card,
+.player-phase-card,
+.player-timer-card,
+.player-current-card,
+.player-next-card,
+.player-progress-card,
+.player-controls-card,
+.player-preferences-card,
+.player-complete-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.player-session-topline,
+.player-phase-heading,
+.player-card-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.player-session-meta {
+  grid-template-columns: repeat(3, minmax(0, max-content));
+}
+
+.player-phase-card {
+  border-width: 1px;
+}
+
+.player-phase-ready {
+  border-color: rgba(125, 211, 252, 0.35);
+}
+
+.player-phase-work {
+  border-color: rgba(52, 211, 153, 0.45);
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.12), rgba(7, 19, 26, 0.72));
+}
+
+.player-phase-rest {
+  border-color: rgba(250, 204, 21, 0.35);
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.08), rgba(7, 19, 26, 0.72));
+}
+
+.player-phase-paused {
+  border-color: rgba(244, 114, 182, 0.32);
+  background: linear-gradient(180deg, rgba(244, 114, 182, 0.08), rgba(7, 19, 26, 0.72));
+}
+
+.player-timer-card {
+  text-align: center;
+}
+
+.player-timer-display {
+  font-size: clamp(3rem, 12vw, 5.5rem);
+  line-height: 0.95;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #f3f7f7;
+}
+
+.player-timer-context {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #9ed9ef;
+}
+
+.player-context-row {
+  grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
+}
+
+.player-current-metrics,
+.player-complete-stats,
+.player-secondary-controls {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.player-progress-bar {
+  width: 100%;
+  height: 0.8rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(125, 211, 252, 0.12);
+}
+
+.player-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #7dd3fc, #34d399);
+}
+
+.player-primary-controls {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.player-secondary-controls {
+  align-items: stretch;
+}
+
+.player-secondary-controls button:disabled,
+.player-exit-button:disabled,
+.ghost-action:disabled,
+.secondary-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .builder-action-bar {
@@ -449,14 +570,22 @@ button {
   .summary-stat-grid,
   .toggle-grid,
   .field-grid,
-  .summary-intent-grid {
+  .summary-intent-grid,
+  .player-session-meta,
+  .player-current-metrics,
+  .player-complete-stats,
+  .player-secondary-controls {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .builder-action-bar,
   .section-heading,
   .summary-section-heading,
-  .summary-step-topline {
+  .summary-step-topline,
+  .player-session-topline,
+  .player-phase-heading,
+  .player-card-heading,
+  .player-timer-context {
     flex-direction: column;
   }
 
@@ -521,5 +650,48 @@ button {
     grid-row: 1 / span 2;
     position: sticky;
     top: 1rem;
+  }
+
+  .player-layout {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: start;
+  }
+
+  .player-session-card,
+  .player-phase-card,
+  .player-timer-card,
+  .player-controls-card,
+  .player-complete-card {
+    grid-column: 1;
+  }
+
+  .player-current-card,
+  .player-next-card,
+  .player-progress-card,
+  .player-preferences-card {
+    grid-column: 2;
+  }
+
+  .player-current-card,
+  .player-next-card,
+  .player-progress-card,
+  .player-preferences-card {
+    position: sticky;
+  }
+
+  .player-current-card {
+    top: 1rem;
+  }
+
+  .player-next-card {
+    top: 15rem;
+  }
+
+  .player-progress-card {
+    top: 28rem;
+  }
+
+  .player-preferences-card {
+    top: 39rem;
   }
 }
