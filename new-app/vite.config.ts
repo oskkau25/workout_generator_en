@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react'
 const rootDir = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
+  base: '/workout_generator_en/',
   plugins: [react()],
   resolve: {
     alias: {

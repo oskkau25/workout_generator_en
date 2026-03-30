@@ -137,31 +137,6 @@ export function WorkoutSummaryScreen() {
             ))}
           </div>
         </section>
-
-        <section className="card summary-actions-card" aria-labelledby="summary-actions-title">
-          <p className="card-eyebrow">Actions</p>
-          <h3 id="summary-actions-title">Start now or tweak it</h3>
-          <div className="summary-action-stack">
-            <Link className="primary-action summary-primary-action" to={`/workout/${workout.id}/play`}>
-              {hasResumableSession ? 'Resume workout' : 'Start workout'}
-            </Link>
-            <button type="button" className="secondary-action" onClick={() => void handleEditSettings()}>
-              Edit settings
-            </button>
-            <button
-              type="button"
-              className="ghost-action"
-              onClick={() => void handleRegenerate()}
-              disabled={isRegenerating}
-              aria-describedby="regenerate-note"
-            >
-              {isRegenerating ? 'Regenerating…' : 'Regenerate workout'}
-            </button>
-            <p id="regenerate-note" className="builder-help-text">
-              Regenerate keeps your current request settings and replaces only this generated result.
-            </p>
-          </div>
-        </section>
       </aside>
 
       <div className="summary-content-stack" aria-live="polite">
@@ -203,6 +178,35 @@ export function WorkoutSummaryScreen() {
           </section>
         ) : null}
       </div>
+
+      <section className="summary-actions-footer" aria-labelledby="summary-actions-title">
+        <div className="summary-actions-footer-copy">
+          <h3 id="summary-actions-title">Ready to start?</h3>
+          <p className="builder-help-text">
+            Start this workout now, or go back and adjust the settings first.
+          </p>
+        </div>
+        <div className="summary-action-stack">
+          <Link className="primary-action summary-primary-action" to={`/workout/${workout.id}/play`}>
+            {hasResumableSession ? 'Resume workout' : 'Start workout'}
+          </Link>
+          <button type="button" className="secondary-action" onClick={() => void handleEditSettings()}>
+            Edit settings
+          </button>
+          <button
+            type="button"
+            className="ghost-action"
+            onClick={() => void handleRegenerate()}
+            disabled={isRegenerating}
+            aria-describedby="regenerate-note"
+          >
+            {isRegenerating ? 'Regenerating…' : 'Regenerate workout'}
+          </button>
+          <p id="regenerate-note" className="builder-help-text">
+            Regenerate keeps your current request settings and replaces only this generated result.
+          </p>
+        </div>
+      </section>
     </div>
   )
 }
