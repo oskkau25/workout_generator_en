@@ -618,15 +618,9 @@ export function BuilderScreen() {
         </div>
       </section>
 
-      <section className="builder-action-bar card" aria-labelledby="generate-heading">
+      <section className="builder-action-bar" aria-labelledby="generate-heading">
         <div>
-          <p className="card-eyebrow">Primary action</p>
-          <h3 id="generate-heading">Generate from normalized state</h3>
-          <p>
-            {draft.selectedEquipment.length === 0
-              ? 'No equipment selected right now — generate will safely fall back to bodyweight.'
-              : 'Your selections are ready to hand off into the domain layer.'}
-          </p>
+          <h3 id="generate-heading">Ready to generate your workout?</h3>
         </div>
         <button type="button" className="primary-action" onClick={() => void handleGenerate()} disabled={isGenerating}>
           {isGenerating ? 'Generating workout…' : 'Generate workout'}

@@ -365,6 +365,7 @@ button,
 .summary-sidebar,
 .summary-intent-grid,
 .summary-action-stack,
+.summary-actions-footer,
 .summary-step-stack,
 .player-layout,
 .player-session-meta,
@@ -390,10 +391,25 @@ button,
 }
 
 .summary-sidebar-card,
-.summary-actions-card,
 .summary-block-card,
 .summary-diagnostics-card {
   gap: 1rem;
+}
+
+.summary-actions-footer {
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(125, 211, 252, 0.18);
+}
+
+.summary-actions-footer-copy h3,
+.summary-actions-footer-copy p {
+  margin-block: 0;
+}
+
+.summary-actions-footer-copy {
+  display: grid;
+  gap: 0.4rem;
 }
 
 .summary-intent-grid {
@@ -580,11 +596,22 @@ button,
 }
 
 .builder-action-bar {
-  position: sticky;
-  bottom: 5.6rem;
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
   align-items: center;
-  background: rgba(7, 19, 26, 0.94);
-  backdrop-filter: blur(12px);
+  padding: 1rem 0 0;
+  border-top: 1px solid rgba(125, 211, 252, 0.18);
+  background: transparent;
+  box-shadow: none;
+}
+
+.builder-action-bar h3 {
+  margin: 0;
+  color: #cfe7ee;
+  font-size: 1rem;
+  font-weight: 650;
 }
 
 .primary-action {
@@ -706,7 +733,8 @@ button,
   }
 
   .summary-hero-card,
-  .summary-content-stack {
+  .summary-content-stack,
+  .summary-actions-footer {
     grid-column: 1;
   }
 
