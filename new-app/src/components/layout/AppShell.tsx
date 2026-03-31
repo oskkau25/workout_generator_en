@@ -14,16 +14,6 @@ export function AppShell({ children }: PropsWithChildren) {
         Skip to content
       </a>
 
-      <header className="topbar">
-        <div>
-          <p className="eyebrow">Workout Generator</p>
-          <h1>React redesign foundation</h1>
-        </div>
-        <p className="topbar-copy">
-          Mobile-first app shell for the builder, summary, player, progress, and future profile seams.
-        </p>
-      </header>
-
       <main id="main-content" className="page-shell" tabIndex={-1}>
         {children}
       </main>

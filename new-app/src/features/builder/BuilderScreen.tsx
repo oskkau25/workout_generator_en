@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { SavedWorkoutSession } from '@/services/storage/storage-types'
+import { StepProgress } from '@/components/ui/StepProgress'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
 import { normalizeBuilderDraft } from '@/domain/builder/builder-normalizer'
 import type {
@@ -12,21 +12,22 @@ import type {
 } from '@/domain/builder/builder-types'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { generateWorkout } from '@/domain/workouts/workout-generator'
-import { LocalStorageStore } from '@/services/storage/local-storage-store'
-import { STORAGE_KEYS } from '@/services/storage/storage-keys'
 import { analyticsGateway } from '@/services/analytics/analytics'
 import { GeneratedWorkoutStore } from '@/services/storage/generated-workout-store'
+import { LocalStorageStore } from '@/services/storage/local-storage-store'
+import { STORAGE_KEYS } from '@/services/storage/storage-keys'
+import type { SavedWorkoutSession } from '@/services/storage/storage-types'
 import { workoutSessionStore } from '@/services/storage/workout-session-store'
 
 const builderDraftStore = new LocalStorageStore<BuilderDraft>(STORAGE_KEYS.builderDraft)
 
-const goalOptions: Array<{ value: WorkoutGoal; label: string; detail: string }> = [
-  { value: 'full_body', label: 'Full body', detail: 'Balanced session across your whole body.' },
-  { value: 'upper_body', label: 'Upper body', detail: 'Push, pull, shoulders, and arms emphasis.' },
-  { value: 'lower_body', label: 'Lower body', detail: 'Legs, glutes, and lower-body strength.' },
-  { value: 'core', label: 'Core', detail: 'Trunk stability and focused abdominal work.' },
-  { value: 'conditioning', label: 'Conditioning', detail: 'Sweaty, athletic, heart-rate-driven training.' },
-  { value: 'mobility', label: 'Mobility', detail: 'Loosen up, move better, and recover.' },
+const goalOptions: Array<{ value: WorkoutGoal; label: string; detail: string; icon: string }> = [
+  { value: 'full_body', label: 'Full body', detail: 'Balanced from head to toe.', icon: 'FB' },
+  { value: 'upper_body', label: 'Upper body', detail: 'Push, pull, shoulders, and arms.', icon: 'UB' },
+  { value: 'lower_body', label: 'Lower body', detail: 'Legs, glutes, and lower-body strength.', icon: 'LB' },
+  { value: 'core', label: 'Core', detail: 'Bracing, control, and trunk stability.', icon: 'CO' },
+  { value: 'conditioning', label: 'Conditioning', detail: 'Sweaty, athletic, and fast-moving.', icon: 'CD' },
+  { value: 'mobility', label: 'Mobility', detail: 'Loosen up and move better.', icon: 'MB' },
 ]
 
 const levelOptions: Array<{ value: FitnessLevel; label: string; detail: string }> = [
@@ -37,66 +38,38 @@ const levelOptions: Array<{ value: FitnessLevel; label: string; detail: string }
 
 const durationOptions = [15, 20, 30, 45, 60] as const
 
-const formatOptions: Array<{ value: WorkoutFormat; label: string; detail: string }> = [
-  { value: 'standard', label: 'Standard', detail: 'Straightforward block-based workout.' },
-  { value: 'circuit', label: 'Circuit', detail: 'One round preview here, repeated in the player.' },
-  { value: 'tabata', label: 'Tabata', detail: 'Fixed 20s work / 10s rest intervals.' },
-  { value: 'pyramid', label: 'Pyramid', detail: 'Progressive levels that ramp the session up.' },
+const formatOptions: Array<{ value: WorkoutFormat; label: string; detail: string; icon: string }> = [
+  { value: 'standard', label: 'Standard', detail: 'Steady blocks from warm-up to finish.', icon: 'ST' },
+  { value: 'circuit', label: 'Circuit', detail: 'Move through a round, then repeat.', icon: 'CI' },
+  { value: 'tabata', label: 'Tabata', detail: 'Fixed 20/10 intervals with punch.', icon: 'TB' },
+  { value: 'pyramid', label: 'Pyramid', detail: 'Progressive levels that climb.', icon: 'PY' },
 ]
 
-const equipmentOptions: Array<{ value: EquipmentId; label: string }> = [
-  { value: 'bodyweight', label: 'Bodyweight' },
-  { value: 'dumbbells', label: 'Dumbbells' },
-  { value: 'kettlebell', label: 'Kettlebell' },
-  { value: 'trx_bands', label: 'TRX bands' },
-  { value: 'resistance_band', label: 'Resistance band' },
-  { value: 'pull_up_bar', label: 'Pull-up bar' },
-  { value: 'jump_rope', label: 'Jump rope' },
-  { value: 'rower', label: 'Rower' },
+const equipmentOptions: Array<{ value: EquipmentId; label: string; icon: string }> = [
+  { value: 'bodyweight', label: 'Bodyweight', icon: 'BW' },
+  { value: 'dumbbells', label: 'Dumbbells', icon: 'DB' },
+  { value: 'kettlebell', label: 'Kettlebell', icon: 'KB' },
+  { value: 'trx_bands', label: 'TRX bands', icon: 'TRX' },
+  { value: 'resistance_band', label: 'Resistance band', icon: 'RB' },
+  { value: 'pull_up_bar', label: 'Pull-up bar', icon: 'PB' },
+  { value: 'jump_rope', label: 'Jump rope', icon: 'JR' },
+  { value: 'rower', label: 'Rower', icon: 'RW' },
 ]
 
 function labelize(value: string) {
   return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
 }
 
-function summarizeStructure(draft: BuilderDraft) {
-  if (draft.format === 'circuit') {
-    const config = draft.formatConfig.circuit ?? {}
-    return `${config.rounds ?? 3} rounds × ${config.exercisesPerRound ?? 5} exercises, preview one round now and repeat in the player.`
+function buildFooterRecap(draft: BuilderDraft) {
+  const parts = [`${draft.duration.targetMinutes} min`, labelize(draft.goal), labelize(draft.format)]
+
+  if (draft.selectedEquipment.length > 0) {
+    parts.push(`${draft.selectedEquipment.length} gear`)
+  } else {
+    parts.push('Bodyweight')
   }
 
-  if (draft.format === 'tabata') {
-    const rounds = draft.formatConfig.tabata?.rounds ?? 8
-    return `${rounds} tabata rounds at 20s work / 10s rest.`
-  }
-
-  if (draft.format === 'pyramid') {
-    const levels = draft.formatConfig.pyramid?.levels ?? 5
-    return `${levels} pyramid levels with a progressive main block.`
-  }
-
-  return 'Warm-up + main block + cool-down.'
-}
-
-function buildImpactNotes(draft: BuilderDraft) {
-  const notes: string[] = []
-
-  notes.push(draft.advanced.includeWarmup ? 'Warm-up included' : 'Warm-up skipped')
-  notes.push(draft.advanced.includeCooldown ? 'Cool-down included' : 'Cool-down skipped')
-
-  if (draft.advanced.preferBalancedMuscleSplit) {
-    notes.push('Balanced muscle split preferred')
-  }
-
-  if (draft.advanced.allowExerciseRepeats) {
-    notes.push('Repeats allowed')
-  }
-
-  if (draft.format === 'tabata') {
-    notes.push('Playback timing locks to 20s / 10s')
-  }
-
-  return notes
+  return parts.join(' • ')
 }
 
 export function BuilderScreen() {
@@ -106,9 +79,7 @@ export function BuilderScreen() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [activeSession, setActiveSession] = useState<SavedWorkoutSession | null>(null)
   const advancedPanelId = useId()
-  const equipmentHelpId = useId()
   const timingHelpId = useId()
-  const summaryStatusId = useId()
 
   useEffect(() => {
     let cancelled = false
@@ -132,10 +103,9 @@ export function BuilderScreen() {
   }, [draft])
 
   const normalizedRequest = useMemo(() => normalizeBuilderDraft(draft), [draft])
-  const summaryTitle = `${normalizedRequest.targetMinutes} min ${labelize(normalizedRequest.goal)} ${labelize(normalizedRequest.format)}`
-  const summaryEquipment =
-    draft.selectedEquipment.length > 0 ? draft.selectedEquipment.map(labelize).join(', ') : 'None selected — bodyweight will be used on generate.'
-  const impactNotes = buildImpactNotes(draft)
+  const footerRecap = buildFooterRecap(draft)
+  const selectedGoal = goalOptions.find((option) => option.value === draft.goal) ?? goalOptions[0]
+  const selectedFormat = formatOptions.find((option) => option.value === draft.format) ?? formatOptions[0]
 
   function updateDraft(updater: (current: BuilderDraft) => BuilderDraft) {
     setDraft((current) => updater(current))
@@ -179,13 +149,11 @@ export function BuilderScreen() {
 
   return (
     <div className="builder-screen">
-      <section className="builder-hero card builder-hero-card" aria-labelledby="builder-title">
-        <p className="card-eyebrow">Primary flow</p>
+      <StepProgress currentStep="build" />
+
+      <section className="builder-hero builder-hero-card" aria-labelledby="builder-title">
         <h2 id="builder-title">Build your workout</h2>
-        <p>
-          Quick to start, deep when you want it. Dial in your goal, gear, and structure, then
-          generate a session built from the normalized domain request.
-        </p>
+        <p>Pick your goal, shape the session, and generate when it feels right.</p>
         {activeSession ? (
           <div className="summary-block builder-resume-block" role="status" aria-live="polite">
             <span>Resume available</span>
@@ -201,101 +169,122 @@ export function BuilderScreen() {
         ) : null}
       </section>
 
-      <section className="card builder-section" aria-labelledby="goal-level-heading">
-        <div className="section-heading">
-          <div>
-            <p className="card-eyebrow">1. Goal and level</p>
-            <h3 id="goal-level-heading">What do you want to train?</h3>
-          </div>
-          <span className="mini-pill" aria-label={`Target intensity ${draft.advanced.targetIntensity} out of 5`}>
-            Intensity {draft.advanced.targetIntensity}/5
-          </span>
+      <section className="builder-section-card" aria-labelledby="goal-heading">
+        <div className="builder-section-intro">
+          <p className="builder-step-label">1. Goal</p>
+          <h3 id="goal-heading">What do you want to train?</h3>
         </div>
 
-        <div className="option-grid option-grid-large" role="group" aria-label="Workout goal">
+        <div className="builder-compact-choice-row" role="group" aria-label="Workout goal">
           {goalOptions.map((option) => (
             <button
               key={option.value}
               type="button"
               aria-pressed={draft.goal === option.value}
-              className={draft.goal === option.value ? 'choice-card is-selected' : 'choice-card'}
+              className={draft.goal === option.value ? 'builder-compact-choice is-selected' : 'builder-compact-choice'}
               onClick={() => updateDraft((current) => ({ ...current, goal: option.value }))}
             >
-              <strong>{option.label}</strong>
-              <span>{option.detail}</span>
+              <span className="builder-compact-choice-icon" aria-hidden="true">
+                {option.icon}
+              </span>
+              <span className="builder-compact-choice-label">{option.label}</span>
             </button>
           ))}
         </div>
 
-        <div className="chip-row" role="group" aria-label="Fitness level">
-          {levelOptions.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              aria-pressed={draft.level === option.value}
-              className={draft.level === option.value ? 'choice-chip is-selected' : 'choice-chip'}
-              onClick={() => updateDraft((current) => ({ ...current, level: option.value }))}
-            >
-              <strong>{option.label}</strong>
-              <span>{option.detail}</span>
-            </button>
-          ))}
+        <div className="builder-choice-detail-card" aria-live="polite">
+          <span className="builder-mini-label">Selected goal</span>
+          <strong>{selectedGoal.label}</strong>
+          <p>{selectedGoal.detail}</p>
         </div>
       </section>
 
-      <section className="card builder-section" aria-labelledby="duration-format-heading">
-        <div className="section-heading">
-          <div>
-            <p className="card-eyebrow">2. Duration and format</p>
-            <h3 id="duration-format-heading">Shape the session</h3>
+      <section className="builder-section-card" aria-labelledby="duration-heading">
+        <div className="builder-section-intro">
+          <p className="builder-step-label">2. Duration</p>
+          <h3 id="duration-heading">How long should it be?</h3>
+        </div>
+
+        <label className="builder-duration-slider-card">
+          <div className="builder-duration-slider-topline">
+            <span className="builder-mini-label">Target length</span>
+            <strong>{draft.duration.targetMinutes} min</strong>
           </div>
+          <input
+            type="range"
+            min="0"
+            max={String(durationOptions.length - 1)}
+            step="1"
+            value={durationOptions.indexOf(draft.duration.targetMinutes as (typeof durationOptions)[number])}
+            onChange={(event) =>
+              updateDraft((current) => ({
+                ...current,
+                duration: { targetMinutes: durationOptions[Number(event.target.value)] },
+              }))
+            }
+            aria-label="Workout duration"
+          />
+          <div className="builder-duration-scale" aria-hidden="true">
+            {durationOptions.map((minutes) => (
+              <span
+                key={minutes}
+                className={
+                  draft.duration.targetMinutes === minutes
+                    ? 'builder-duration-scale-mark is-selected'
+                    : 'builder-duration-scale-mark'
+                }
+              >
+                {minutes}
+              </span>
+            ))}
+          </div>
+        </label>
+      </section>
+
+      <section className="builder-section-card" aria-labelledby="format-heading">
+        <div className="builder-section-intro">
+          <p className="builder-step-label">3. Format</p>
+          <h3 id="format-heading">How should the workout flow?</h3>
         </div>
 
-        <div className="chip-inline-group" role="group" aria-label="Duration options">
-          {durationOptions.map((minutes) => (
-            <button
-              key={minutes}
-              type="button"
-              aria-pressed={draft.duration.targetMinutes === minutes}
-              className={draft.duration.targetMinutes === minutes ? 'compact-chip is-selected' : 'compact-chip'}
-              onClick={() =>
-                updateDraft((current) => ({
-                  ...current,
-                  duration: { targetMinutes: minutes },
-                }))
-              }
-            >
-              {minutes} min
-            </button>
-          ))}
-        </div>
-
-        <div className="option-grid" role="group" aria-label="Workout format">
+        <div className="builder-compact-choice-row builder-compact-choice-row-tight" role="group" aria-label="Workout format">
           {formatOptions.map((option) => (
             <button
               key={option.value}
               type="button"
               aria-pressed={draft.format === option.value}
-              className={draft.format === option.value ? 'choice-card is-selected' : 'choice-card'}
+              className={draft.format === option.value ? 'builder-compact-choice is-selected' : 'builder-compact-choice'}
               onClick={() => updateDraft((current) => ({ ...current, format: option.value }))}
             >
-              <strong>{option.label}</strong>
-              <span>{option.detail}</span>
+              <span className="builder-compact-choice-icon" aria-hidden="true">
+                {option.icon}
+              </span>
+              <span className="builder-compact-choice-label">{option.label}</span>
             </button>
           ))}
         </div>
+
+        <div className="builder-choice-detail-card" aria-live="polite">
+          <span className="builder-mini-label">Selected format</span>
+          <strong>{selectedFormat.label}</strong>
+          <p>{selectedFormat.detail}</p>
+        </div>
       </section>
 
-      <section className="card builder-section builder-equipment-section" aria-labelledby="equipment-heading">
-        <div className="section-heading">
-          <div>
-            <p className="card-eyebrow">3. Equipment</p>
-            <h3 id="equipment-heading">Your available gear</h3>
+      <section className="builder-section-card builder-equipment-section" aria-labelledby="equipment-heading">
+        <div className="builder-section-intro">
+          <div className="builder-section-topline">
+            <div>
+              <p className="builder-step-label">4. Equipment</p>
+              <h3 id="equipment-heading">What do you have available?</h3>
+            </div>
+            <span className="mini-pill" aria-live="polite">
+              {draft.selectedEquipment.length > 0 ? `${draft.selectedEquipment.length} selected` : 'Bodyweight ready'}
+            </span>
           </div>
-          <span className="mini-pill" aria-live="polite">{draft.selectedEquipment.length} selected</span>
         </div>
 
-        <div className="equipment-grid" role="group" aria-describedby={equipmentHelpId}>
+        <div className="builder-equipment-grid" role="group" aria-label="Equipment options">
           {equipmentOptions.map((option) => {
             const selected = draft.selectedEquipment.includes(option.value)
             return (
@@ -303,40 +292,55 @@ export function BuilderScreen() {
                 key={option.value}
                 type="button"
                 aria-pressed={selected}
-                className={selected ? 'equipment-card is-selected' : 'equipment-card'}
+                aria-label={option.label}
+                className={selected ? 'builder-equipment-choice is-selected' : 'builder-equipment-choice'}
                 onClick={() => toggleEquipment(option.value)}
               >
-                <span>{option.label}</span>
-                <strong>{selected ? 'Selected' : 'Tap to add'}</strong>
+                <span className="builder-equipment-choice-icon" aria-hidden="true">
+                  {option.icon}
+                </span>
+                <span className="builder-equipment-choice-label">{option.label}</span>
               </button>
             )
           })}
         </div>
-
-        <p id={equipmentHelpId} className="builder-help-text" role="status" aria-live="polite">
-          {draft.selectedEquipment.length === 0
-            ? 'No equipment selected right now. Generate will safely fall back to bodyweight.'
-            : 'Equipment selection changes the exercise pool and is reflected in your live summary.'}
-        </p>
       </section>
 
-      <section className="card builder-section" aria-labelledby="advanced-heading">
+      <section className="builder-section-card builder-options-card" aria-labelledby="advanced-heading">
         <button
           type="button"
-          className="section-toggle"
+          className="builder-options-toggle"
           onClick={() => setAdvancedOpen((current) => !current)}
           aria-expanded={advancedOpen}
           aria-controls={advancedPanelId}
         >
           <span>
-            <span className="card-eyebrow">4. Advanced workout settings</span>
-            <strong id="advanced-heading">Tune timing and structure</strong>
+            <span className="builder-step-label">5. More options</span>
+            <strong id="advanced-heading">Fine-tune timing and difficulty</strong>
           </span>
           <span>{advancedOpen ? 'Hide' : 'Show'}</span>
         </button>
 
         {advancedOpen ? (
-          <div id={advancedPanelId} className="advanced-panel">
+          <div id={advancedPanelId} className="builder-options-panel">
+            <div className="builder-option-group">
+              <p className="builder-mini-label">Level</p>
+              <div className="chip-row" role="group" aria-label="Fitness level">
+                {levelOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={draft.level === option.value}
+                    className={draft.level === option.value ? 'choice-chip is-selected' : 'choice-chip'}
+                    onClick={() => updateDraft((current) => ({ ...current, level: option.value }))}
+                  >
+                    <strong>{option.label}</strong>
+                    <span>{option.detail}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="toggle-grid">
               {[
                 ['includeWarmup', 'Include warm-up'],
@@ -364,8 +368,7 @@ export function BuilderScreen() {
             </div>
 
             <p id={timingHelpId} className="builder-help-text">
-              Out-of-range values will be clamped on generate. Tabata always plays back at 20s work
-              and 10s rest.
+              Out-of-range values are clamped on generate. Tabata still plays back at 20s work and 10s rest.
             </p>
 
             <div className="field-grid">
@@ -529,10 +532,6 @@ export function BuilderScreen() {
                     }
                   />
                 </label>
-                <p className="builder-help-text tabata-note" role="note">
-                  Timing inputs stay visible for consistency, but effective playback always uses
-                  fixed 20s work / 10s rest.
-                </p>
               </div>
             ) : null}
 
@@ -566,61 +565,13 @@ export function BuilderScreen() {
         ) : null}
       </section>
 
-      <section className="card builder-section summary-card" aria-labelledby="live-summary-heading">
-        <div className="section-heading">
-          <div>
-            <p className="card-eyebrow">5. Live summary</p>
-            <h3 id="live-summary-heading">{summaryTitle}</h3>
-          </div>
-          <span className="mini-pill">Ready to generate</span>
-        </div>
-
-        <p id={summaryStatusId} className="summary-confidence-copy" role="status" aria-live="polite">
-          This is a live intent summary from your current builder draft — not fake generated
-          content.
-        </p>
-
-        <div className="summary-stat-grid" aria-describedby={summaryStatusId}>
-          <div className="summary-stat">
-            <span>Duration</span>
-            <strong>{normalizedRequest.targetMinutes} min</strong>
-          </div>
-          <div className="summary-stat">
-            <span>Format</span>
-            <strong>{labelize(normalizedRequest.format)}</strong>
-          </div>
-          <div className="summary-stat">
-            <span>Level</span>
-            <strong>{labelize(normalizedRequest.level)}</strong>
-          </div>
-          <div className="summary-stat">
-            <span>Equipment</span>
-            <strong>{summaryEquipment}</strong>
-          </div>
-          <div className="summary-stat">
-            <span>Intensity</span>
-            <strong>{normalizedRequest.advanced.targetIntensity}/5</strong>
-          </div>
-        </div>
-
-        <div className="summary-block">
-          <span>Structure preview</span>
-          <strong>{summarizeStructure(draft)}</strong>
-        </div>
-
-        <div className="summary-block">
-          <span>Advanced impact</span>
-          <ul className="summary-note-list">
-            {impactNotes.map((note) => (
-              <li key={note}>{note}</li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="builder-action-bar" aria-labelledby="generate-heading">
-        <div>
-          <h3 id="generate-heading">Ready to generate your workout?</h3>
+      <section className="builder-action-bar" aria-labelledby="generate-heading" data-testid="builder-generate-area">
+        <div className="builder-action-copy">
+          <p className="builder-step-label">6. Generate</p>
+          <h3 id="generate-heading">Generate your workout</h3>
+          <p className="builder-help-text" role="status" aria-live="polite">
+            {footerRecap}
+          </p>
         </div>
         <button type="button" className="primary-action" onClick={() => void handleGenerate()} disabled={isGenerating}>
           {isGenerating ? 'Generating workout…' : 'Generate workout'}

@@ -31,19 +31,18 @@ describe('App shell routing', () => {
     renderWithRouter(<App />)
 
     expect(screen.getByRole('link', { name: /skip to content/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /react redesign foundation/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /build your workout/i })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: /workout flow steps/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /generate workout/i })).toBeInTheDocument()
   })
 
-  it('updates the live summary when format changes', async () => {
+  it('updates the builder footer recap when the user changes workout shape', async () => {
     const user = userEvent.setup()
     renderWithRouter(<App />)
 
     await user.click(screen.getByRole('button', { name: /tabata/i }))
 
-    expect(screen.getByRole('heading', { name: /30 min full body tabata/i })).toBeInTheDocument()
-    expect(screen.getByText(/8 tabata rounds at 20s work \/ 10s rest/i)).toBeInTheDocument()
+    expect(screen.getByText(/30 min • full body • tabata/i)).toBeInTheDocument()
   })
 
   it('renders the progress dashboard with a strong empty state', async () => {
@@ -76,8 +75,8 @@ describe('App shell routing', () => {
 
     expect(storedWorkout.id).toBe(storedWorkout.workout.id)
     expect(storedWorkout.workout.sourceRequest.format).toBe('tabata')
-    expect(await screen.findByRole('heading', { name: new RegExp(storedWorkout.workout.metadata.title, 'i') })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /this is what you asked for/i })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(storedWorkout.workout.metadata.title, 'i'))).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /review the flow/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /start workout/i })).toHaveAttribute(
       'href',
       `/workout/${storedWorkout.id}/play`,
@@ -89,13 +88,13 @@ describe('App shell routing', () => {
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/summary` })
 
-    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /this is what you asked for/i })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /review the flow/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /start workout/i })).toHaveAttribute(
       'href',
       `/workout/${workout.id}/play`,
     )
-    expect(screen.getByText(/legacy generation rules were preserved as invariants/i)).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /generation notes/i })).not.toBeInTheDocument()
   })
 
   it('shows a resume affordance on the builder when an active local session exists', async () => {

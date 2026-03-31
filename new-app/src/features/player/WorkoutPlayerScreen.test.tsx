@@ -81,9 +81,9 @@ describe('WorkoutPlayerScreen', () => {
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
 
-    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /start workout/i })).toBeInTheDocument()
-    expect(screen.getByText(/get ready to start/i)).toBeInTheDocument()
+    expect(screen.getByText('00:30')).toBeInTheDocument()
 
     vi.useFakeTimers()
 
@@ -100,11 +100,30 @@ describe('WorkoutPlayerScreen', () => {
     expect(screen.getByRole('link', { name: /view progress/i })).toHaveAttribute('href', '/progress')
   })
 
+  it('keeps the workout player minimal and opens preferences from the settings button', async () => {
+    const workout = seedWorkout()
+    const user = userEvent.setup()
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /go to previous step/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /start workout/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /go to next step/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: /quick preferences/i })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /settings/i }))
+
+    expect(screen.getByRole('dialog', { name: /quick preferences/i })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /sound cues/i })).toBeChecked()
+  })
+
   it('supports pause, resume, next, previous, and skip rest from reducer-backed controls', async () => {
     const workout = seedWorkout()
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
-    await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })
+    await screen.findByText(new RegExp(workout.metadata.title, 'i'))
 
     act(() => {
       screen.getByRole('button', { name: /go to next step/i }).click()
@@ -147,7 +166,6 @@ describe('WorkoutPlayerScreen', () => {
       vi.advanceTimersByTime(workout.playback.steps[restStepIndex].workSeconds * 1000)
     })
 
-    expect(screen.getByText(/recover, breathe, and set up the next move/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /skip rest/i })).toBeEnabled()
 
     act(() => {
@@ -161,7 +179,7 @@ describe('WorkoutPlayerScreen', () => {
     const user = userEvent.setup()
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
-    await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })
+    await screen.findByText(new RegExp(workout.metadata.title, 'i'))
 
     await user.keyboard('{ArrowRight}')
     expect(screen.getByText(new RegExp(`step 2 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
@@ -188,7 +206,8 @@ describe('WorkoutPlayerScreen', () => {
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
 
-    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
+    await userEvent.setup().click(screen.getByRole('button', { name: /exercise/i }))
     expect(screen.getByText('Round 1 of 3')).toBeInTheDocument()
   })
 
@@ -201,7 +220,8 @@ describe('WorkoutPlayerScreen', () => {
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
 
-    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
+    await userEvent.setup().click(screen.getByRole('button', { name: /exercise/i }))
     expect(screen.getByText('Interval 1 of 6')).toBeInTheDocument()
   })
 
@@ -214,7 +234,8 @@ describe('WorkoutPlayerScreen', () => {
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
 
-    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
+    await userEvent.setup().click(screen.getByRole('button', { name: /exercise/i }))
     expect(screen.getByText('Level 1 of 4')).toBeInTheDocument()
   })
 
@@ -223,7 +244,7 @@ describe('WorkoutPlayerScreen', () => {
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
 
-    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /start workout/i })).toBeInTheDocument()
     expect(window.localStorage.getItem('workout-generator-react.v1.active-session')).toBeNull()
   })
@@ -235,7 +256,7 @@ describe('WorkoutPlayerScreen', () => {
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
 
-    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /exit workout and return to summary/i }))
 
@@ -243,7 +264,7 @@ describe('WorkoutPlayerScreen', () => {
     expect(window.localStorage.getItem('workout-generator-react.v1.active-session')).toBeNull()
 
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
-    expect(await screen.findByRole('heading', { name: new RegExp(workout.metadata.title, 'i') })).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /start workout/i }))
     await user.click(screen.getByRole('button', { name: /exit workout and return to summary/i }))
@@ -316,6 +337,8 @@ describe('WorkoutPlayerScreen', () => {
     expect(await screen.findByText(/paused during rest/i)).toBeInTheDocument()
     expect(screen.getByText('00:09')).toBeInTheDocument()
     expect(screen.getByText(new RegExp(`step 3 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /settings/i }))
 
     const soundCheckbox = screen.getByRole('checkbox', { name: /sound cues/i })
     expect(soundCheckbox).not.toBeChecked()

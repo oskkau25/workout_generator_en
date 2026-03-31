@@ -41,7 +41,14 @@ Object.defineProperty(window, 'sessionStorage', {
   configurable: true,
 })
 
+Object.defineProperty(window, 'scrollTo', {
+  value: vi.fn(),
+  configurable: true,
+  writable: true,
+})
+
 beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
+  vi.mocked(window.scrollTo).mockClear()
 })
