@@ -22,10 +22,12 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(circle at top, rgba(59, 130, 246, 0.24), transparent 0 32%),
     linear-gradient(180deg, #07131a 0%, #0b1d27 100%);
+  overscroll-behavior-y: none;
+  overflow-x: clip;
 }
 
 a {
@@ -69,7 +71,7 @@ button,
 }
 
 #root {
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .skip-link {
@@ -89,13 +91,9 @@ button,
 }
 
 .app-shell {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
-}
-
-.topbar {
-  padding: 1.5rem 1rem 1rem;
+  grid-template-rows: auto 1fr;
 }
 
 .eyebrow,
@@ -107,13 +105,11 @@ button,
   color: #7dd3fc;
 }
 
-.topbar h1,
 .card h2,
 .card h3 {
   margin: 0;
 }
 
-.topbar-copy,
 .card p,
 .card li,
 .card span,
@@ -123,7 +119,7 @@ button,
 }
 
 .page-shell {
-  padding: 0 1rem 7rem;
+  padding: 0 1rem 1.25rem;
 }
 
 .screen-grid,
@@ -230,6 +226,65 @@ button,
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
 }
 
+.app-shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0.85rem 1rem 0.25rem;
+  background: linear-gradient(180deg, rgba(7, 19, 26, 0.92), rgba(7, 19, 26, 0.42), transparent);
+  backdrop-filter: blur(12px);
+}
+
+.app-shell-header-spacer {
+  flex: 1;
+}
+
+.app-shell-menu {
+  position: relative;
+}
+
+.app-shell-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f7f7;
+}
+
+.app-shell-menu-trigger-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.app-shell-menu-trigger-label {
+  font-weight: 700;
+  color: #cfe7ee;
+}
+
+.app-shell-menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: 10.5rem;
+  padding: 0.35rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  background: rgba(7, 19, 26, 0.96);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+}
+
+.app-shell-menu-nav {
+  display: grid;
+  gap: 0.2rem;
+}
+
 .builder-section-intro,
 .builder-option-group,
 .builder-options-panel,
@@ -300,6 +355,12 @@ button,
   font-size: 0.82rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+}
+
+.builder-equipment-choice-icon-svg {
+  width: 1.65rem;
+  height: 1.65rem;
+  overflow: visible;
 }
 
 .builder-compact-choice-label,
@@ -1035,6 +1096,30 @@ button,
   color: #fde68a;
 }
 
+.summary-exercise-card.is-just-swapped {
+  animation: summary-swap-pulse 0.7s ease;
+}
+
+@keyframes summary-swap-pulse {
+  0% {
+    transform: scale(0.985);
+    border-color: rgba(250, 204, 21, 0.58);
+    box-shadow: 0 0 0 rgba(250, 204, 21, 0);
+  }
+
+  45% {
+    transform: scale(1.01);
+    border-color: rgba(250, 204, 21, 0.6);
+    box-shadow: 0 10px 28px rgba(250, 204, 21, 0.12);
+  }
+
+  100% {
+    transform: scale(1);
+    border-color: rgba(125, 211, 252, 0.12);
+    box-shadow: none;
+  }
+}
+
 .summary-section-heading,
 .summary-step-topline {
   display: flex;
@@ -1098,7 +1183,6 @@ button,
 .player-current-card,
 .player-next-preview-card,
 .player-next-card,
-.player-progress-card,
 .player-controls-card,
 .player-preferences-card,
 .player-complete-card {
@@ -1109,6 +1193,7 @@ button,
 .player-session-topline,
 .player-phase-heading,
 .player-focus-topline,
+.player-current-topline,
 .player-card-heading {
   display: flex;
   justify-content: space-between;
@@ -1159,31 +1244,11 @@ button,
   font-weight: 700;
 }
 
-.player-timer-block {
-  display: grid;
-  justify-items: center;
-  gap: 0.55rem;
-  text-align: center;
-}
-
-.player-focus-caption {
-  margin: 0;
-  color: #9ed9ef;
-}
-
-.player-phase-pill {
-  justify-self: center;
-}
-
-.player-timer-card {
-  text-align: center;
-}
-
 .player-timer-display {
-  font-size: clamp(3rem, 12vw, 5.5rem);
-  line-height: 0.95;
-  font-weight: 900;
-  letter-spacing: 0.04em;
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.03em;
   color: #f3f7f7;
   font-variant-numeric: tabular-nums;
 }
@@ -1203,15 +1268,6 @@ button,
 .player-complete-stats,
 .player-secondary-controls {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.player-progress-bar {
-  width: 100%;
-  height: 0.8rem;
-  border-radius: 999px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(125, 211, 252, 0.12);
 }
 
 .player-progress-fill {
@@ -1239,7 +1295,7 @@ button,
 .player-layout {
   width: min(860px, 100%);
   margin: 0 auto;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .player-session-meta {
@@ -1259,8 +1315,8 @@ button,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 6.5rem;
+  height: 6.5rem;
   border-radius: 1.4rem;
   background:
     radial-gradient(circle at top, rgba(125, 211, 252, 0.24), transparent 45%),
@@ -1268,13 +1324,13 @@ button,
   border: 1px solid rgba(125, 211, 252, 0.24);
   color: #f3f7f7;
   font-weight: 900;
-  font-size: 1.35rem;
+  font-size: 1.55rem;
   letter-spacing: 0.08em;
 }
 
 .player-exercise-copy {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.7rem;
 }
 
 .player-current-toggle {
@@ -1289,12 +1345,25 @@ button,
 .player-exercise-instruction {
   margin: 0;
   color: #f3f7f7;
-  font-size: 1rem;
+  font-size: 1.06rem;
+  line-height: 1.45;
 }
 
 .player-inline-toggle-copy {
   color: #9ed9ef;
   font-size: 0.92rem;
+}
+
+.player-compact-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.player-timer-pill {
+  font-weight: 800;
+  color: #f3f7f7;
 }
 
 .player-exercise-detail-panel {
@@ -1304,9 +1373,19 @@ button,
   border-top: 1px solid rgba(125, 211, 252, 0.12);
 }
 
+.player-exercise-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .player-exercise-detail-panel p {
   margin: 0;
   color: #c4d4d9;
+}
+
+.player-pin-button,
+.player-audio-test-button {
+  width: fit-content;
 }
 
 .player-context-row {
@@ -1319,19 +1398,11 @@ button,
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.player-next-preview {
-  display: grid;
-  gap: 0.65rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid rgba(125, 211, 252, 0.12);
-}
-
 .player-next-preview-card h4 {
   margin: 0;
 }
 
 .player-next-topline,
-.player-progress-topline,
 .player-settings-topline {
   display: flex;
   justify-content: space-between;
@@ -1343,37 +1414,40 @@ button,
   margin: 0;
 }
 
-.player-progress-summary {
-  display: grid;
-  gap: 0.65rem;
-}
-
-.player-control-dock {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: 0.75rem;
-  align-items: stretch;
-}
-
 .player-transport-row {
   display: grid;
-  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr) minmax(0, 0.75fr);
+  grid-template-columns: auto auto auto;
   gap: 0.6rem;
   align-items: center;
+  justify-content: start;
 }
 
 .player-main-control-slot {
   display: flex;
+  width: fit-content;
 }
 
-.player-main-action {
-  width: 100%;
-  min-width: 0;
-  min-height: 3.7rem;
+.player-main-action.primary-action {
+  width: 3.75rem;
+  min-width: 3.75rem;
+  max-width: 3.75rem;
+  height: 3.75rem;
+  min-height: 3.75rem;
+  padding: 0.45rem;
 }
 
-.player-nav-button {
-  width: 100%;
+.player-main-action-icon,
+.player-transport-button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+}
+
+.player-main-action-icon span,
+.player-transport-button-icon span {
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 .player-transport-button,
@@ -1388,9 +1462,14 @@ button,
   font-size: 0.92rem;
 }
 
+.player-transport-button {
+  min-width: 2.8rem;
+  padding: 0.7rem;
+}
+
 .player-skip-rest-button {
   width: fit-content;
-  justify-self: center;
+  justify-self: start;
 }
 
 .player-tertiary-action {
@@ -1413,6 +1492,10 @@ button,
 
 .player-settings-toggle span {
   color: #c4d4d9;
+}
+
+.player-session-footer {
+  display: grid;
 }
 
 .builder-action-bar {
@@ -1449,22 +1532,10 @@ button,
   cursor: progress;
 }
 
-.bottom-nav {
-  position: sticky;
-  bottom: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
-  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
-  background: rgba(7, 19, 26, 0.95);
-  backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(125, 211, 252, 0.15);
-}
-
 .nav-link {
-  text-align: center;
-  padding: 0.85rem 0.75rem;
-  border-radius: 999px;
+  text-align: left;
+  padding: 0.85rem 0.9rem;
+  border-radius: 0.9rem;
   color: #9eb4bb;
   background: rgba(255, 255, 255, 0.04);
 }
@@ -1493,7 +1564,6 @@ button,
   .player-control-dock,
   .player-transport-row,
   .player-exercise-hero,
-  .builder-duration-row,
   .builder-equipment-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1508,10 +1578,64 @@ button,
   .player-header-actions,
   .player-phase-heading,
   .player-focus-topline,
+  .player-current-topline,
   .player-card-heading,
   .player-timer-context,
   .builder-duration-slider-topline {
     flex-direction: column;
+  }
+
+  .app-shell-header {
+    padding: 0.75rem 1rem 0.2rem;
+  }
+
+  .app-shell-menu-panel {
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    bottom: auto;
+    width: min(10.5rem, calc(100vw - 2rem));
+    padding: 0.35rem;
+    border-radius: 0.9rem;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+  }
+
+  .builder-screen,
+  .summary-layout,
+  .player-layout {
+    gap: 0.75rem;
+  }
+
+  .builder-section-card,
+  .summary-journey-hero,
+  .summary-journey-map,
+  .player-current-card,
+  .player-complete-card {
+    padding: 0.85rem;
+  }
+
+  .builder-section-card {
+    gap: 0.8rem;
+  }
+
+  .builder-hero {
+    gap: 0.65rem;
+  }
+
+  .builder-equipment-choice,
+  .builder-compact-choice {
+    min-height: 4.6rem;
+    padding: 0.7rem;
+  }
+
+  .player-exercise-visual {
+    width: 5.6rem;
+    height: 5.6rem;
+  }
+
+  .player-transport-row {
+    grid-template-columns: repeat(3, auto);
   }
 
   .summary-exercise-actions {
@@ -1530,7 +1654,7 @@ button,
 
 @media (min-width: 768px) {
   .page-shell,
-  .bottom-nav {
+  .app-shell-header {
     width: min(960px, 100%);
     margin: 0 auto;
   }

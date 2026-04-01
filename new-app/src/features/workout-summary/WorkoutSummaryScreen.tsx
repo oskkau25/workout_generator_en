@@ -188,9 +188,22 @@ function WorkoutJourneyReview({
   const workoutStepLookup = useMemo(() => createWorkoutStepLookup(summary), [summary])
   const [expandedSectionIds, setExpandedSectionIds] = useState<string[]>([])
   const [expandedExerciseIds, setExpandedExerciseIds] = useState<string[]>([])
+  const [recentlySwappedExerciseIds, setRecentlySwappedExerciseIds] = useState<string[]>([])
   const [exerciseSelections, setExerciseSelections] = useState<Record<string, string>>(() =>
     createInitialExerciseSelections(summary),
   )
+
+  useEffect(() => {
+    if (recentlySwappedExerciseIds.length === 0) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setRecentlySwappedExerciseIds([])
+    }, 1200)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [recentlySwappedExerciseIds])
 
   function toggleSection(sectionId: string, sectionStepIds: string[]) {
     setExpandedSectionIds((current) =>
@@ -236,6 +249,10 @@ function WorkoutJourneyReview({
       ...current,
       [stepId]: replacement.name,
     }))
+
+    setRecentlySwappedExerciseIds((current) =>
+      current.includes(stepId) ? current : [...current, stepId],
+    )
 
     setExpandedExerciseIds((current) => (current.includes(stepId) ? current : [...current, stepId]))
   }
@@ -327,6 +344,7 @@ function WorkoutJourneyReview({
                           const selectedExercise = exerciseLookup.get(normalizeKey(selectedExerciseName)) ?? null
                           const expandedExercise = expandedExerciseIds.includes(step.id)
                           const isSwapped = selectedExerciseName !== step.title
+                          const wasRecentlySwapped = recentlySwappedExerciseIds.includes(step.id)
                           const title = selectedExercise?.name ?? step.title
                           const detail = selectedExercise?.coaching.shortInstruction ?? step.detail
                           const fullInstruction =
@@ -336,7 +354,16 @@ function WorkoutJourneyReview({
                               : null
 
                           return (
-                            <article key={step.id} className="summary-step-card summary-step-card-journey summary-exercise-card">
+                            <article
+                              key={step.id}
+                              className={
+                                wasRecentlySwapped
+                                  ? 'summary-step-card summary-step-card-journey summary-exercise-card is-just-swapped'
+                                  : 'summary-step-card summary-step-card-journey summary-exercise-card'
+                              }
+                              data-swapped={isSwapped || undefined}
+                              data-just-swapped={wasRecentlySwapped || undefined}
+                            >
                               <button
                                 type="button"
                                 className="summary-exercise-toggle"

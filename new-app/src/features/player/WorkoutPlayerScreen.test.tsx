@@ -1,4 +1,4 @@
-import { act, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { App } from '@/app/App'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
@@ -117,6 +117,47 @@ describe('WorkoutPlayerScreen', () => {
 
     expect(screen.getByRole('dialog', { name: /quick preferences/i })).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: /sound cues/i })).toBeChecked()
+    expect(screen.getByRole('button', { name: /test audio/i })).toBeInTheDocument()
+  })
+
+  it('lets the user pin exercise details and test audio cues from settings', async () => {
+    const workout = seedWorkout()
+
+    renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
+
+    await screen.findByText(new RegExp(workout.metadata.title, 'i'))
+    vi.useFakeTimers()
+
+    fireEvent.click(screen.getByRole('button', { name: /tap for exercise details/i }))
+    const pinButton = screen.getByRole('button', { name: /pin details/i })
+    fireEvent.click(pinButton)
+
+    expect(screen.getByRole('button', { name: /unpin details/i })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /go to next step/i }))
+    expect(screen.getByRole('button', { name: /unpin details/i })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /settings/i }))
+    fireEvent.click(screen.getByRole('button', { name: /test audio/i }))
+
+    expect(window.speechSynthesis.speak).not.toHaveBeenCalled()
+
+    act(() => {
+      vi.advanceTimersByTime(2500)
+    })
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /voice countdown/i }))
+    fireEvent.click(screen.getByRole('button', { name: /test audio/i }))
+
+    act(() => {
+      vi.advanceTimersByTime(2500)
+    })
+
+    expect(window.speechSynthesis.speak).toHaveBeenCalled()
+
+    act(() => {
+      vi.runOnlyPendingTimers()
+    })
   })
 
   it('supports pause, resume, next, previous, and skip rest from reducer-backed controls', async () => {
@@ -128,12 +169,12 @@ describe('WorkoutPlayerScreen', () => {
     act(() => {
       screen.getByRole('button', { name: /go to next step/i }).click()
     })
-    expect(screen.getByText(new RegExp(`step 2 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`exercise 2 of ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
 
     act(() => {
       screen.getByRole('button', { name: /go to previous step/i }).click()
     })
-    expect(screen.getByText(new RegExp(`step 1 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`exercise 1 of ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
 
     const restStepIndex = workout.playback.steps.findIndex((step) => step.restSeconds > 0 && !step.noRestAfter)
     expect(restStepIndex).toBeGreaterThan(-1)
@@ -143,7 +184,7 @@ describe('WorkoutPlayerScreen', () => {
         screen.getByRole('button', { name: /go to next step/i }).click()
       })
     }
-    expect(screen.getByText(new RegExp(`step ${restStepIndex + 1} / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`exercise ${restStepIndex + 1} of ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
 
     vi.useFakeTimers()
 
@@ -171,7 +212,7 @@ describe('WorkoutPlayerScreen', () => {
     act(() => {
       screen.getByRole('button', { name: /skip rest/i }).click()
     })
-    expect(screen.getByText(new RegExp(`step ${restStepIndex + 2} / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`exercise ${restStepIndex + 2} of ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
   })
 
   it('supports player keyboard shortcuts for start pause resume and step navigation', async () => {
@@ -182,10 +223,10 @@ describe('WorkoutPlayerScreen', () => {
     await screen.findByText(new RegExp(workout.metadata.title, 'i'))
 
     await user.keyboard('{ArrowRight}')
-    expect(screen.getByText(new RegExp(`step 2 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`exercise 2 of ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
 
     await user.keyboard('{ArrowLeft}')
-    expect(screen.getByText(new RegExp(`step 1 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`exercise 1 of ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
 
     await user.keyboard(' ')
     expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument()
@@ -336,7 +377,7 @@ describe('WorkoutPlayerScreen', () => {
 
     expect(await screen.findByText(/paused during rest/i)).toBeInTheDocument()
     expect(screen.getByText('00:09')).toBeInTheDocument()
-    expect(screen.getByText(new RegExp(`step 3 / ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`exercise 3 of ${workout.playback.steps.length}`, 'i'))).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /settings/i }))
 

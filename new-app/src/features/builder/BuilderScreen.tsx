@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { StepProgress } from '@/components/ui/StepProgress'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
@@ -45,16 +45,78 @@ const formatOptions: Array<{ value: WorkoutFormat; label: string; detail: string
   { value: 'pyramid', label: 'Pyramid', detail: 'Progressive levels that climb.', icon: 'PY' },
 ]
 
-const equipmentOptions: Array<{ value: EquipmentId; label: string; icon: string }> = [
-  { value: 'bodyweight', label: 'Bodyweight', icon: 'BW' },
-  { value: 'dumbbells', label: 'Dumbbells', icon: 'DB' },
-  { value: 'kettlebell', label: 'Kettlebell', icon: 'KB' },
-  { value: 'trx_bands', label: 'TRX bands', icon: 'TRX' },
-  { value: 'resistance_band', label: 'Resistance band', icon: 'RB' },
-  { value: 'pull_up_bar', label: 'Pull-up bar', icon: 'PB' },
-  { value: 'jump_rope', label: 'Jump rope', icon: 'JR' },
-  { value: 'rower', label: 'Rower', icon: 'RW' },
+const equipmentOptions: Array<{ value: EquipmentId; label: string; icon: ReactNode }> = [
+  { value: 'bodyweight', label: 'Bodyweight', icon: renderEquipmentIcon('bodyweight') },
+  { value: 'dumbbells', label: 'Dumbbells', icon: renderEquipmentIcon('dumbbells') },
+  { value: 'kettlebell', label: 'Kettlebell', icon: renderEquipmentIcon('kettlebell') },
+  { value: 'trx_bands', label: 'TRX bands', icon: renderEquipmentIcon('trx_bands') },
+  { value: 'resistance_band', label: 'Resistance band', icon: renderEquipmentIcon('resistance_band') },
+  { value: 'pull_up_bar', label: 'Pull-up bar', icon: renderEquipmentIcon('pull_up_bar') },
+  { value: 'jump_rope', label: 'Jump rope', icon: renderEquipmentIcon('jump_rope') },
+  { value: 'rower', label: 'Rower', icon: renderEquipmentIcon('rower') },
 ]
+
+function renderEquipmentIcon(type: EquipmentId) {
+  switch (type) {
+    case 'bodyweight':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <circle cx="24" cy="12" r="5" />
+          <path d="M24 19v10m-9 14 5-9 4-5 4 5 5 9m-13-16-6 4m10-4 6 4" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'dumbbells':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M12 19v10m4-14v18m16-18v18m4-14v10M16 24h16" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'kettlebell':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M17 18a7 7 0 0 1 14 0" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M14 22h20v4c0 10-5 16-10 16s-10-6-10-16z" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'trx_bands':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M16 10v10l8 9 8-9V10M16 20l-5 13m26-13 5 13" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="11" cy="35" r="2.5" />
+          <circle cx="37" cy="35" r="2.5" />
+        </svg>
+      )
+    case 'resistance_band':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M13 30c3-11 19-11 22 0" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="12" cy="31" r="3.5" fill="none" stroke="currentColor" strokeWidth="3" />
+          <circle cx="36" cy="31" r="3.5" fill="none" stroke="currentColor" strokeWidth="3" />
+        </svg>
+      )
+    case 'pull_up_bar':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M8 18h32M12 18v-6m24 6v-6M16 18v9m16-9v9" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'jump_rope':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M14 16c-4 4-6 10-6 15m26-15c4 4 6 10 6 15M19 14l-5 4m15-4 5 4" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'rower':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <circle cx="12" cy="34" r="3.5" />
+          <path d="M15 34h17l6-12M23 22l4-6m-12 6 8-2" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
 
 function labelize(value: string) {
   return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
@@ -279,7 +341,7 @@ export function BuilderScreen() {
               <h3 id="equipment-heading">What do you have available?</h3>
             </div>
             <span className="mini-pill" aria-live="polite">
-              {draft.selectedEquipment.length > 0 ? `${draft.selectedEquipment.length} selected` : 'Bodyweight ready'}
+              {draft.selectedEquipment.length > 0 ? `${draft.selectedEquipment.length} selected` : 'Bodyweight'}
             </span>
           </div>
         </div>

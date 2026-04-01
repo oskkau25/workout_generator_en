@@ -8,7 +8,6 @@ import {
   canGoPrevious,
   getCurrentStep,
   getNextStep,
-  getProgressPercent,
   isRestPhase,
 } from '@/domain/player/player-selectors'
 import type { PlayerPhase } from '@/domain/player/player-types'
@@ -145,6 +144,59 @@ function buildExerciseGlyph(name: string | undefined) {
     .toUpperCase()
 }
 
+type WakeLockSentinelLike = {
+  release: () => Promise<void>
+}
+
+type WakeLockNavigator = Navigator & {
+  wakeLock?: {
+    request: (type: 'screen') => Promise<WakeLockSentinelLike>
+  }
+  vibrate?: (pattern: number | number[]) => boolean
+}
+
+function playCue(frequency: number, durationMs: number) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  const AudioContextCtor = window.AudioContext ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+  if (!AudioContextCtor) {
+    return
+  }
+
+  const audioContext = new AudioContextCtor()
+  const oscillator = audioContext.createOscillator()
+  const gainNode = audioContext.createGain()
+
+  oscillator.type = 'sine'
+  oscillator.frequency.value = frequency
+  gainNode.gain.value = 0.0001
+  oscillator.connect(gainNode)
+  gainNode.connect(audioContext.destination)
+
+  const now = audioContext.currentTime
+  gainNode.gain.exponentialRampToValueAtTime(0.08, now + 0.01)
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + durationMs / 1000)
+  oscillator.start(now)
+  oscillator.stop(now + durationMs / 1000)
+  oscillator.onended = () => {
+    void audioContext.close()
+  }
+}
+
+function speakCountdownValue(value: number) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+    return
+  }
+
+  const utterance = new SpeechSynthesisUtterance(String(value))
+  utterance.rate = 1
+  utterance.pitch = 1
+  window.speechSynthesis.cancel()
+  window.speechSynthesis.speak(utterance)
+}
+
 export function WorkoutPlayerScreen() {
   const { workoutId } = useParams()
   const navigate = useNavigate()
@@ -153,7 +205,13 @@ export function WorkoutPlayerScreen() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isExerciseDetailOpen, setIsExerciseDetailOpen] = useState(false)
+  const [isExerciseDetailPinned, setIsExerciseDetailPinned] = useState(false)
+  const [isAudioTestRunning, setIsAudioTestRunning] = useState(false)
   const historySavedRef = useRef(false)
+  const wakeLockRef = useRef<WakeLockSentinelLike | null>(null)
+  const previousPhaseRef = useRef<PlayerPhase>('idle')
+  const lastCountdownRef = useRef<string | null>(null)
+  const audioTestTimeoutsRef = useRef<number[]>([])
 
   useEffect(() => {
     let cancelled = false
@@ -305,21 +363,136 @@ export function WorkoutPlayerScreen() {
     return () => window.removeEventListener('keydown', handleEscape)
   }, [isSettingsOpen])
 
+  useEffect(() => {
+    const wakeLockNavigator = navigator as WakeLockNavigator
+
+    async function acquireWakeLock() {
+      if (!wakeLockNavigator.wakeLock?.request || wakeLockRef.current) {
+        return
+      }
+
+      try {
+        wakeLockRef.current = await wakeLockNavigator.wakeLock.request('screen')
+      } catch {
+        wakeLockRef.current = null
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (!wakeLockRef.current) {
+        return
+      }
+
+      try {
+        await wakeLockRef.current.release()
+      } finally {
+        wakeLockRef.current = null
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        void acquireWakeLock()
+      } else {
+        void releaseWakeLock()
+      }
+    }
+
+    void acquireWakeLock()
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      void releaseWakeLock()
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel()
+      }
+      for (const timeoutId of audioTestTimeoutsRef.current) {
+        window.clearTimeout(timeoutId)
+      }
+    }
+  }, [])
+
   const exerciseMap = useMemo(() => createExerciseMap(legacyExerciseCatalog), [])
   const currentStep = useMemo(() => getCurrentStep(playerState), [playerState])
   const nextStep = useMemo(() => getNextStep(playerState), [playerState])
   const currentExercise = useMemo(() => getExercise(currentStep, exerciseMap), [currentStep, exerciseMap])
   const nextExercise = useMemo(() => getExercise(nextStep, exerciseMap), [nextStep, exerciseMap])
-  const progressPercent = useMemo(() => getProgressPercent(playerState), [playerState])
   const currentStepNumber = Math.min(playerState.progress.currentStepIndex + 1, playerState.progress.totalSteps)
   const phaseKey = playerState.timer.phase === 'idle' ? 'ready' : playerState.timer.phase
   const phaseCopy = PHASE_COPY[phaseKey]
   const pausedDuringRest = isRestPhase(playerState)
+  const exerciseCountLabel = currentStep ? `Exercise ${currentStepNumber} of ${playerState.progress.totalSteps}` : 'Exercise ready'
   const fullInstruction =
     currentExercise?.coaching.fullInstruction &&
     currentExercise.coaching.fullInstruction !== currentExercise.coaching.shortInstruction
       ? currentExercise.coaching.fullInstruction
       : null
+
+  useEffect(() => {
+    if (isExerciseDetailPinned) {
+      setIsExerciseDetailOpen(true)
+    }
+  }, [currentStep?.id, isExerciseDetailPinned])
+
+  useEffect(() => {
+    const previousPhase = previousPhaseRef.current
+    const currentPhase = playerState.timer.phase
+    const wakeLockNavigator = navigator as WakeLockNavigator
+
+    if (previousPhase !== currentPhase) {
+      if (playerState.preferences.soundEnabled) {
+        if (currentPhase === 'work' || currentPhase === 'rest') {
+          playCue(currentPhase === 'work' ? 740 : 520, 140)
+        }
+        if (currentPhase === 'completed') {
+          playCue(880, 240)
+        }
+      }
+
+      if (playerState.preferences.vibrationEnabled && wakeLockNavigator.vibrate) {
+        if (currentPhase === 'work' || currentPhase === 'rest') {
+          wakeLockNavigator.vibrate(70)
+        }
+        if (currentPhase === 'completed') {
+          wakeLockNavigator.vibrate([90, 50, 90])
+        }
+      }
+
+      lastCountdownRef.current = null
+    }
+
+    previousPhaseRef.current = currentPhase
+  }, [playerState.preferences.soundEnabled, playerState.preferences.vibrationEnabled, playerState.timer.phase])
+
+  useEffect(() => {
+    if (playerState.timer.phase !== 'work' && playerState.timer.phase !== 'rest') {
+      lastCountdownRef.current = null
+      return
+    }
+
+    if (!playerState.preferences.voiceCountdownEnabled) {
+      return
+    }
+
+    const remainingSeconds = playerState.timer.remainingSeconds
+    if (remainingSeconds < 1 || remainingSeconds > 3) {
+      return
+    }
+
+    const countdownKey = `${playerState.timer.phase}-${currentStepNumber}-${remainingSeconds}`
+    if (lastCountdownRef.current === countdownKey) {
+      return
+    }
+
+    lastCountdownRef.current = countdownKey
+    speakCountdownValue(remainingSeconds)
+  }, [
+    currentStepNumber,
+    playerState.preferences.voiceCountdownEnabled,
+    playerState.timer.phase,
+    playerState.timer.remainingSeconds,
+  ])
 
   async function handleExit() {
     const phase = playerState.timer.phase
@@ -342,27 +515,95 @@ export function WorkoutPlayerScreen() {
     navigate(`/workout/${workoutId}/summary`)
   }
 
+  function toggleExerciseDetail() {
+    if (isExerciseDetailPinned) {
+      setIsExerciseDetailPinned(false)
+    }
+
+    setIsExerciseDetailOpen((current) => !current)
+  }
+
+  function handleAudioTest() {
+    if (isAudioTestRunning) {
+      return
+    }
+
+    for (const timeoutId of audioTestTimeoutsRef.current) {
+      window.clearTimeout(timeoutId)
+    }
+    audioTestTimeoutsRef.current = []
+
+    setIsAudioTestRunning(true)
+
+    const finishTimeout = window.setTimeout(() => {
+      setIsAudioTestRunning(false)
+      audioTestTimeoutsRef.current = []
+    }, 2300)
+
+    audioTestTimeoutsRef.current.push(finishTimeout)
+
+    if (playerState.preferences.soundEnabled) {
+      playCue(660, 120)
+    }
+
+    const wakeLockNavigator = navigator as WakeLockNavigator
+    if (playerState.preferences.vibrationEnabled && wakeLockNavigator.vibrate) {
+      wakeLockNavigator.vibrate([60, 40, 60])
+    }
+
+    if (playerState.preferences.voiceCountdownEnabled) {
+      const countdownValues = [3, 2, 1]
+      countdownValues.forEach((value, index) => {
+        const timeoutId = window.setTimeout(() => {
+          speakCountdownValue(value)
+          if (playerState.preferences.soundEnabled) {
+            playCue(520 + index * 50, 90)
+          }
+        }, index * 550)
+        audioTestTimeoutsRef.current.push(timeoutId)
+      })
+    }
+  }
+
   function renderPrimaryControl() {
     if (playerState.timer.phase === 'ready') {
       return (
-        <button type="button" className="primary-action player-main-action" onClick={() => dispatch({ type: 'START', now: new Date().toISOString() })}>
-          Start workout
+        <button
+          type="button"
+          className="primary-action player-main-action player-main-action-icon"
+          onClick={() => dispatch({ type: 'START', now: new Date().toISOString() })}
+          aria-label="Start workout"
+          title="Start"
+        >
+          <span aria-hidden="true">▶</span>
         </button>
       )
     }
 
     if (playerState.timer.phase === 'work' || playerState.timer.phase === 'rest') {
       return (
-        <button type="button" className="primary-action player-main-action" onClick={() => dispatch({ type: 'PAUSE' })}>
-          Pause
+        <button
+          type="button"
+          className="primary-action player-main-action player-main-action-icon"
+          onClick={() => dispatch({ type: 'PAUSE' })}
+          aria-label="Pause"
+          title="Pause"
+        >
+          <span aria-hidden="true">❚❚</span>
         </button>
       )
     }
 
     if (playerState.timer.phase === 'paused') {
       return (
-        <button type="button" className="primary-action player-main-action" onClick={() => dispatch({ type: 'RESUME' })}>
-          Resume
+        <button
+          type="button"
+          className="primary-action player-main-action player-main-action-icon"
+          onClick={() => dispatch({ type: 'RESUME' })}
+          aria-label="Resume"
+          title="Resume"
+        >
+          <span aria-hidden="true">▶</span>
         </button>
       )
     }
@@ -440,98 +681,23 @@ export function WorkoutPlayerScreen() {
 
   return (
     <div className="player-layout player-layout-compact">
-      <section className={`card player-focus-card player-phase-${phaseKey}`} aria-labelledby="player-timer-title">
-        <div className="player-focus-topline">
+      <section className="card player-current-card" aria-labelledby="current-exercise-title">
+        <div className="player-current-topline">
           <div className="player-focus-session">
             <p className="player-session-name">{playerState.workout.metadata.title}</p>
             <div className="player-session-meta">
               <span className="mini-pill">{titleCase(playerState.workout.metadata.format)}</span>
-              <span className="mini-pill">
-                Step {currentStepNumber} / {playerState.progress.totalSteps}
-              </span>
-              {playerState.timer.phase === 'paused' ? <span className="mini-pill">Resume available</span> : null}
+              <span className="mini-pill player-exercise-count">{exerciseCountLabel}</span>
             </div>
           </div>
-          <div className="player-header-actions">
-            <button
-              type="button"
-              className="ghost-action player-utility-button"
-              onClick={() => setIsSettingsOpen(true)}
-              aria-haspopup="dialog"
-              aria-expanded={isSettingsOpen}
-            >
-              Settings
-            </button>
-            <button
-              type="button"
-              className="ghost-action player-utility-button"
-              onClick={() => void handleExit()}
-              aria-label="Exit workout and return to summary"
-            >
-              Exit
-            </button>
-          </div>
         </div>
 
-        <div className="player-timer-block" role="status" aria-live="polite">
-          <p id="player-timer-title" className="card-eyebrow">
-            {phaseCopy.label}
-          </p>
-          {playerState.timer.phase === 'paused' ? (
-            <span className="mini-pill player-phase-pill">Paused during {pausedDuringRest ? 'rest' : 'work'}</span>
-          ) : null}
-          <div className="player-timer-display" aria-live="polite" aria-atomic="true">
-            {formatSeconds(playerState.timer.remainingSeconds)}
-          </div>
-          <p className="player-focus-caption">
-            {playerState.timer.phase === 'ready'
-              ? `Upcoming work ${formatDurationLabel(playerState.timer.phaseTotalSeconds)}`
-              : `Phase total ${formatDurationLabel(playerState.timer.phaseTotalSeconds)}`}
-          </p>
-        </div>
-
-        <div className="player-transport-row">
-          <button
-            type="button"
-            className="secondary-action player-transport-button"
-            onClick={() => dispatch({ type: 'PREVIOUS_STEP' })}
-            disabled={!canGoPrevious(playerState)}
-            aria-label="Go to previous step"
-          >
-            Prev
-          </button>
-          <div className="player-main-control-slot">{renderPrimaryControl()}</div>
-          <button
-            type="button"
-            className="secondary-action player-transport-button"
-            onClick={() => dispatch({ type: 'NEXT_STEP' })}
-            disabled={!canGoNext(playerState)}
-            aria-label="Go to next step"
-          >
-            Next
-          </button>
-        </div>
-
-        {playerState.timer.phase === 'rest' ? (
-          <button
-            type="button"
-            className="ghost-action player-skip-rest-button"
-            onClick={() => dispatch({ type: 'SKIP_REST' })}
-            disabled={playerState.timer.phase !== 'rest'}
-            aria-label="Skip rest"
-          >
-            Skip rest
-          </button>
-        ) : null}
-      </section>
-
-      <section className="card player-current-card" aria-labelledby="current-exercise-title">
         <button
           type="button"
           className="player-current-toggle"
           aria-expanded={isExerciseDetailOpen}
           aria-controls="player-exercise-detail"
-          onClick={() => setIsExerciseDetailOpen((current) => !current)}
+          onClick={toggleExerciseDetail}
         >
           <div className="player-card-heading">
             <div>
@@ -546,18 +712,66 @@ export function WorkoutPlayerScreen() {
               <span>{buildExerciseGlyph(currentExercise?.name)}</span>
             </div>
             <div className="player-exercise-copy">
+              <div className="player-compact-status-row" role="status" aria-live="polite">
+                <span className="mini-pill">{phaseCopy.label}</span>
+                <span className="mini-pill player-timer-pill">{formatSeconds(playerState.timer.remainingSeconds)}</span>
+                {playerState.timer.phase === 'paused' ? (
+                  <span className="mini-pill">{pausedDuringRest ? 'Paused during rest' : 'Paused during work'}</span>
+                ) : null}
+              </div>
               <p className="player-exercise-instruction">
                 {currentExercise?.coaching.shortInstruction ?? 'Load a generated workout to begin coaching.'}
               </p>
               <span className="player-inline-toggle-copy">
-                {isExerciseDetailOpen ? 'Hide exercise details' : 'Tap for exercise details'}
+                {isExerciseDetailPinned
+                  ? 'Details pinned'
+                  : isExerciseDetailOpen
+                    ? 'Hide exercise details'
+                    : 'Tap for exercise details'}
               </span>
             </div>
           </div>
         </button>
 
+        <div className="player-transport-row">
+          <button
+            type="button"
+            className="secondary-action player-transport-button player-transport-button-icon"
+            onClick={() => dispatch({ type: 'PREVIOUS_STEP' })}
+            disabled={!canGoPrevious(playerState)}
+            aria-label="Go to previous step"
+            title="Previous"
+          >
+            <span aria-hidden="true">←</span>
+          </button>
+          <div className="player-main-control-slot">{renderPrimaryControl()}</div>
+          <button
+            type="button"
+            className="secondary-action player-transport-button player-transport-button-icon"
+            onClick={() => dispatch({ type: 'NEXT_STEP' })}
+            disabled={!canGoNext(playerState)}
+            aria-label="Go to next step"
+            title="Next"
+          >
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+
         {isExerciseDetailOpen ? (
           <div id="player-exercise-detail" className="player-exercise-detail-panel">
+            <div className="player-exercise-detail-actions">
+              <button
+                type="button"
+                className="ghost-action player-pin-button"
+                onClick={() => {
+                  setIsExerciseDetailPinned((current) => !current)
+                  setIsExerciseDetailOpen(true)
+                }}
+                aria-pressed={isExerciseDetailPinned}
+              >
+                {isExerciseDetailPinned ? 'Unpin details' : 'Pin details'}
+              </button>
+            </div>
             {fullInstruction ? <p>{fullInstruction}</p> : null}
             <div className="player-context-row">
               {getStepContext(currentStep).map((label) => (
@@ -580,45 +794,56 @@ export function WorkoutPlayerScreen() {
             ) : null}
           </div>
         ) : null}
-      </section>
 
-      <section className="card player-next-preview-card" aria-labelledby="next-up-title">
-        <p className="card-eyebrow">Next exercise</p>
-        <h4 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h4>
-        <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
-      </section>
-
-      <section className="card player-progress-card" aria-labelledby="player-progress-title">
-        <div className="player-progress-topline">
-          <p id="player-progress-title" className="card-eyebrow">
-            Workout progress
-          </p>
-          <span className="mini-pill">{titleCase(playerState.workout.metadata.format)}</span>
-          <span className="mini-pill">Elapsed {formatDurationLabel(playerState.timer.elapsedSeconds)}</span>
+        <div className="player-next-preview-card" aria-labelledby="next-up-title">
+          <p className="card-eyebrow">Next exercise</p>
+          <h4 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h4>
+          <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
         </div>
-        <div className="player-progress-summary">
-          <div className="player-progress-topline">
-            <span>{playerState.progress.completedStepIds.length} of {playerState.progress.totalSteps} steps done</span>
-            <span className="summary-step-badge">{progressPercent}%</span>
-          </div>
-          <div
-            className="player-progress-bar"
-            role="progressbar"
-            aria-label="Workout progress"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={progressPercent}
-            aria-valuetext={`${progressPercent}% complete`}
+
+        <div className="player-header-actions">
+          <button
+            type="button"
+            className="ghost-action player-utility-button"
+            onClick={() => setIsSettingsOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={isSettingsOpen}
           >
-            <div className="player-progress-fill" style={{ width: `${progressPercent}%` }} />
-          </div>
+            Settings
+          </button>
+          <button
+            type="button"
+            className="ghost-action player-utility-button"
+            onClick={() => void handleExit()}
+            aria-label="Exit workout and return to summary"
+          >
+            Exit
+          </button>
+        </div>
+
+        {playerState.timer.phase === 'rest' ? (
+          <button
+            type="button"
+            className="ghost-action player-skip-rest-button"
+            onClick={() => dispatch({ type: 'SKIP_REST' })}
+            disabled={playerState.timer.phase !== 'rest'}
+            aria-label="Skip rest"
+          >
+            Skip rest
+          </button>
+        ) : null}
+      </section>
+
+      <section className="player-session-footer" aria-label="Workout meta">
+        <div className="player-session-meta">
+          <span className="mini-pill">Elapsed {formatDurationLabel(playerState.timer.elapsedSeconds)}</span>
         </div>
       </section>
 
       <BottomSheet
         isOpen={isSettingsOpen}
         title="Quick preferences"
-        subtitle="These preferences are saved locally and can be adjusted without leaving the workout."
+        subtitle="Sound, countdown, and haptics are saved locally."
         onDismiss={() => setIsSettingsOpen(false)}
       >
         <div className="player-settings-grid">
@@ -641,6 +866,14 @@ export function WorkoutPlayerScreen() {
               </span>
             </label>
           ))}
+          <button
+            type="button"
+            className="secondary-action player-audio-test-button"
+            onClick={handleAudioTest}
+            disabled={isAudioTestRunning}
+          >
+            {isAudioTestRunning ? 'Testing audio…' : 'Test audio'}
+          </button>
         </div>
       </BottomSheet>
     </div>
