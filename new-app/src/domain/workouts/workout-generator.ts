@@ -1,5 +1,6 @@
 import type { WorkoutGenerationRequest } from '@/domain/builder/builder-types'
 import type { ExerciseDefinition, ExercisePhaseTag, MuscleGroup } from '@/domain/exercises/exercise-types'
+import { getBalanceBucket, getGoalBiasScore } from '@/domain/exercises/exercise-taxonomy'
 import type {
   GeneratedWorkout,
   WorkoutBlock,
@@ -10,7 +11,7 @@ import type {
   WorkoutStep,
 } from '@/domain/workouts/workout-types'
 
-const GENERATOR_VERSION = '2.3.0'
+const GENERATOR_VERSION = '2.4.0'
 const DEFAULT_WARMUP_COUNT = 8
 const DEFAULT_COOLDOWN_COUNT = 8
 const PYRAMID_EXERCISES_PER_LEVEL = 2
@@ -62,7 +63,8 @@ function selectExercises(
   }
 
   if (allowRepeats) {
-    return Array.from({ length: count }, (_, index) => pool[index % pool.length])
+    const shuffled = shuffleInPlace([...pool], random)
+    return Array.from({ length: count }, (_, index) => shuffled[index % shuffled.length])
   }
 
   return shuffleInPlace([...pool], random).slice(0, Math.min(count, pool.length))
@@ -103,31 +105,39 @@ function filterExercises(
   })
 }
 
+function sortPoolForGoal(exercises: ExerciseDefinition[], request: WorkoutGenerationRequest, random: () => number) {
+  return shuffleInPlace([...exercises], random).sort(
+    (left, right) => getGoalBiasScore(right, request.goal) - getGoalBiasScore(left, request.goal),
+  )
+}
+
 function applyBalance(
   exercises: ExerciseDefinition[],
   preferredCount: number,
+  request: WorkoutGenerationRequest,
   random: () => number,
 ): ExerciseDefinition[] {
   if (exercises.length <= 1) {
     return exercises.slice(0, preferredCount)
   }
 
-  const buckets = new Map<MuscleGroup, ExerciseDefinition[]>()
-  for (const exercise of shuffleInPlace([...exercises], random)) {
-    const current = buckets.get(exercise.primaryMuscle) ?? []
+  const buckets = new Map<string, ExerciseDefinition[]>()
+  for (const exercise of sortPoolForGoal(exercises, request, random)) {
+    const key = getBalanceBucket(exercise, request.goal)
+    const current = buckets.get(key) ?? []
     current.push(exercise)
-    buckets.set(exercise.primaryMuscle, current)
+    buckets.set(key, current)
   }
 
   const result: ExerciseDefinition[] = []
   while (result.length < preferredCount && buckets.size > 0) {
-    for (const [muscle, bucket] of buckets) {
+    for (const [bucketKey, bucket] of buckets) {
       const candidate = bucket.shift()
       if (candidate) {
         result.push(candidate)
       }
       if (bucket.length === 0) {
-        buckets.delete(muscle)
+        buckets.delete(bucketKey)
       }
       if (result.length >= preferredCount) {
         break
@@ -236,14 +246,14 @@ function buildCooldownSeeds(context: BuildContext): ExerciseSeed[] {
 function buildMainPool(context: BuildContext): ExerciseDefinition[] {
   const exactPool = filterExercises(context.catalog, 'main', context.request)
   const fallbackPool = context.catalog.filter((exercise) => exercise.phaseTags.includes('main'))
-  return fallbackIfEmpty(exactPool, fallbackPool, context.warnings, 'main')
+  return sortPoolForGoal(fallbackIfEmpty(exactPool, fallbackPool, context.warnings, 'main'), context.request, context.random)
 }
 
 function buildStandardMainSeeds(context: BuildContext): ExerciseSeed[] {
   const mainPool = buildMainPool(context)
   const mainCount = estimateMainExerciseCount(context.request)
   const baseSelection = context.request.advanced.preferBalancedMuscleSplit
-    ? applyBalance(mainPool, mainCount, context.random)
+    ? applyBalance(mainPool, mainCount, context.request, context.random)
     : selectExercises(mainPool, mainCount, context.random, context.request.advanced.allowExerciseRepeats)
 
   const selection =
@@ -264,12 +274,9 @@ function buildStandardMainSeeds(context: BuildContext): ExerciseSeed[] {
 function buildCircuitMain(context: BuildContext): { summary: WorkoutStep[]; playback: ExerciseSeed[] } {
   const config = context.request.formatConfig as Extract<WorkoutGenerationRequest['formatConfig'], { format: 'circuit' }>
   const mainPool = buildMainPool(context)
-  const baseExercises = selectExercises(
-    mainPool,
-    config.exercisesPerRound,
-    context.random,
-    context.request.advanced.allowExerciseRepeats,
-  )
+  const baseExercises = context.request.advanced.preferBalancedMuscleSplit
+    ? applyBalance(mainPool, config.exercisesPerRound, context.request, context.random)
+    : selectExercises(mainPool, config.exercisesPerRound, context.random, context.request.advanced.allowExerciseRepeats)
 
   const summary: WorkoutStep[] = [
     createMarkerStep('main', 1, 'circuit_start', 'Circuit Training', {
@@ -326,18 +333,15 @@ function buildCircuitMain(context: BuildContext): { summary: WorkoutStep[]; play
 function buildTabataMain(context: BuildContext): { summary: WorkoutStep[]; playback: ExerciseSeed[] } {
   const config = context.request.formatConfig as Extract<WorkoutGenerationRequest['formatConfig'], { format: 'tabata' }>
   const mainPool = buildMainPool(context)
-  const exercisePool = selectExercises(
-    mainPool,
-    Math.min(4, mainPool.length),
-    context.random,
-    context.request.advanced.allowExerciseRepeats,
-  )
+  const tabataBase = context.request.advanced.preferBalancedMuscleSplit
+    ? applyBalance(mainPool, Math.min(4, mainPool.length), context.request, context.random)
+    : selectExercises(mainPool, Math.min(4, mainPool.length), context.random, context.request.advanced.allowExerciseRepeats)
 
   const summary: WorkoutStep[] = []
   const playback: ExerciseSeed[] = []
 
   for (let setIndex = 1; setIndex <= config.rounds; setIndex += 1) {
-    const exercise = exercisePool[(setIndex - 1) % exercisePool.length]
+    const exercise = tabataBase[(setIndex - 1) % tabataBase.length]
     if (!exercise) {
       continue
     }
@@ -385,12 +389,9 @@ function buildPyramidMain(context: BuildContext): { summary: WorkoutStep[]; play
   const config = context.request.formatConfig as Extract<WorkoutGenerationRequest['formatConfig'], { format: 'pyramid' }>
   const mainPool = buildMainPool(context)
   const needed = config.levels * PYRAMID_EXERCISES_PER_LEVEL
-  const baseExercises = selectExercises(
-    mainPool,
-    needed,
-    context.random,
-    context.request.advanced.allowExerciseRepeats,
-  )
+  const baseExercises = context.request.advanced.preferBalancedMuscleSplit
+    ? applyBalance(mainPool, needed, context.request, context.random)
+    : selectExercises(mainPool, needed, context.random, context.request.advanced.allowExerciseRepeats)
 
   const summary: WorkoutStep[] = []
   const playback: ExerciseSeed[] = []
@@ -524,7 +525,7 @@ export function generateWorkout(
       mainBlock = createBlock(
         'main',
         'Main',
-        `${playbackMainSeeds.length} main exercises based on your target duration.`,
+        `${playbackMainSeeds.length} main exercises tuned for ${request.goal.replace(/_/g, ' ')} balance.`,
         playbackMainSeeds.map((seed, index) => createExerciseStep(seed, 'main', index + 1)),
       )
       break
@@ -556,7 +557,10 @@ export function generateWorkout(
     diagnostics: {
       generatorVersion: GENERATOR_VERSION,
       warnings,
-      notes: ['Legacy generation rules were preserved as invariants, not copied as UI-era state.'],
+      notes: [
+        'Goal-aware balancing now uses movement pattern + body region coverage instead of only primary muscle.',
+        'Body-map metadata is inferred for every exercise and supplemented where the legacy dataset was thin.',
+      ],
     },
   }
 }

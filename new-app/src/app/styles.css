@@ -2003,6 +2003,73 @@ main.page-shell {
   }
 }
 
+.body-map {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.body-map-compact {
+  gap: 0.5rem;
+}
+
+.body-map-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.6rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(125, 211, 252, 0.14);
+}
+
+.body-map-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7dd3fc;
+}
+
+.body-map-svg {
+  width: 100%;
+  height: auto;
+}
+
+.body-map-base {
+  fill: rgba(255, 255, 255, 0.06);
+  stroke: rgba(125, 211, 252, 0.14);
+  stroke-width: 1.5;
+}
+
+.body-map-region {
+  fill: rgba(255, 255, 255, 0.1);
+  stroke: rgba(255, 255, 255, 0.04);
+  stroke-width: 1;
+}
+
+.body-map-region.is-primary {
+  fill: rgba(52, 211, 153, 0.9);
+}
+
+.body-map-region.is-secondary {
+  fill: rgba(125, 211, 252, 0.72);
+}
+
+.summary-body-map-block,
+.player-body-map-block {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding: 0.85rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(125, 211, 252, 0.12);
+}
+
+.summary-body-map-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
 @media (min-width: 768px) {
   .page-shell,
   .app-shell-header {
