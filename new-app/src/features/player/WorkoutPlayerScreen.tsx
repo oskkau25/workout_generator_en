@@ -454,11 +454,6 @@ export function WorkoutPlayerScreen() {
   const exerciseCountLabel = currentStep ? `Exercise ${currentStepNumber} of ${playerState.progress.totalSteps}` : 'Exercise ready'
   const currentExercisePrimaryMuscle = currentExercise?.primaryMuscle ? titleCase(currentExercise.primaryMuscle) : null
   const nextExercisePrimaryMuscle = nextExercise?.primaryMuscle ? titleCase(nextExercise.primaryMuscle) : null
-  const fullInstruction =
-    currentExercise?.coaching.fullInstruction &&
-    currentExercise.coaching.fullInstruction !== currentExercise.coaching.shortInstruction
-      ? currentExercise.coaching.fullInstruction
-      : null
   const movementCategory = currentExercise?.movementPattern
     ? getMovementCategoryFromPattern(currentExercise.movementPattern)
     : 'general'
@@ -785,7 +780,6 @@ export function WorkoutPlayerScreen() {
                 {isExerciseDetailPinned ? 'Unpin details' : 'Pin details'}
               </button>
             </div>
-            {fullInstruction ? <p>{fullInstruction}</p> : null}
             <div className="player-context-row">
               {currentExercise?.movementPattern ? (
                 <span className="compact-chip">{getMovementPatternLabel(currentExercise.movementPattern)}</span>

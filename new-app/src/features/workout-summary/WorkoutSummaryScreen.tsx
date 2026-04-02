@@ -422,12 +422,6 @@ function WorkoutJourneyReview({
                           const movementCategory = selectedExercise?.movementPattern
                             ? getMovementCategoryFromPattern(selectedExercise.movementPattern)
                             : 'general'
-                          const fullInstruction =
-                            selectedExercise?.coaching.fullInstruction &&
-                            selectedExercise.coaching.fullInstruction !== detail
-                              ? selectedExercise.coaching.fullInstruction
-                              : null
-
                           return (
                             <article
                               key={step.id}
@@ -466,8 +460,6 @@ function WorkoutJourneyReview({
 
                               {expandedExercise ? (
                                 <div id={`exercise-panel-${step.id}`} className="summary-exercise-panel">
-                                  <p>{detail}</p>
-                                  {fullInstruction ? <p className="summary-format-hint">{fullInstruction}</p> : null}
                                   <div className="summary-chip-row">
                                     {selectedExercise?.movementPattern ? (
                                       <span className="summary-step-meta">{getMovementPatternLabel(selectedExercise.movementPattern)}</span>
