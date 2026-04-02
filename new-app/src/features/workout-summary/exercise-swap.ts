@@ -1,5 +1,6 @@
 import type { WorkoutGenerationRequest } from '@/domain/builder/builder-types'
 import type { ExerciseDefinition } from '@/domain/exercises/exercise-types'
+import { getGoalBiasScore } from '@/domain/exercises/exercise-taxonomy'
 import type { WorkoutBlockType } from '@/domain/workouts/workout-types'
 
 function normalizeKey(value: string) {
@@ -45,12 +46,21 @@ function scoreCandidate(
   }
 
   score += getEquipmentScore(candidate, request)
+  score += getGoalBiasScore(candidate, request.goal)
 
   if (candidate.supportedLevels.includes(request.level)) {
     score += 4
   }
 
   if (current && candidate.primaryMuscle === current.primaryMuscle) {
+    score += 3
+  }
+
+  if (current && candidate.movementPattern === current.movementPattern) {
+    score += 4
+  }
+
+  if (current && candidate.bodyMap.primary.some((region) => current.bodyMap.primary.includes(region))) {
     score += 3
   }
 

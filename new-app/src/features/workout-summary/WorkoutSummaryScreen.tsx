@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { StepProgress } from '@/components/ui/StepProgress'
+import { BodyMapFigure } from '@/components/body-map/BodyMapFigure'
 import type { BuilderDraft } from '@/domain/builder/builder-types'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
+import { formatBodyRegionList, getMovementCategoryFromPattern, getMovementPatternLabel, titleCase, type MovementIconCategory } from '@/domain/exercises/exercise-taxonomy'
 import { mapGeneratedWorkoutToSummaryViewModel } from '@/domain/workouts/workout-summary-mapper'
 import type {
   GeneratedWorkout,
@@ -90,43 +92,8 @@ function createWorkoutStepLookup(summary: NonNullable<ReturnType<typeof mapGener
   return lookup
 }
 
-function titleCase(value: string) {
-  return value.replace(/_/g, ' ').replace(/\b\w/g, (match) => match.toUpperCase())
-}
 
-type MovementCategory =
-  | 'squat'
-  | 'hinge'
-  | 'push'
-  | 'pull'
-  | 'plank'
-  | 'lunge'
-  | 'rotation'
-  | 'jump'
-  | 'carry'
-  | 'mobility_stretch'
-  | 'floor_core'
-  | 'general'
-
-function getMovementCategory(name: string) {
-  const value = normalizeKey(name)
-
-  if (/squat|thruster|wall sit/.test(value)) return 'squat'
-  if (/deadlift|hinge|good morning|swing/.test(value)) return 'hinge'
-  if (/push-up|push up|press|dip/.test(value)) return 'push'
-  if (/row|pull|chin-up|chin up|pull-up|pull up/.test(value)) return 'pull'
-  if (/plank|bear hold|hollow hold/.test(value)) return 'plank'
-  if (/lunge|split squat|step-up|step up|skater/.test(value)) return 'lunge'
-  if (/rotation|twist|woodchop|russian twist/.test(value)) return 'rotation'
-  if (/jump|hop|burpee/.test(value)) return 'jump'
-  if (/carry|march/.test(value)) return 'carry'
-  if (/stretch|mobility|flow|cat-cow|cat cow|cobra|child/.test(value)) return 'mobility_stretch'
-  if (/crunch|sit-up|sit up|leg raise|v-up|v up|toe tap|dead bug|hollow/.test(value)) return 'floor_core'
-
-  return 'general'
-}
-
-function renderMovementIcon(category: MovementCategory) {
+function renderMovementIcon(category: MovementIconCategory) {
   switch (category) {
     case 'squat':
       return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="11" r="4" /><path d="M24 16v8l-6 5m6-5 6 5m-10 1v8m8-8v8m-14 0h20" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -452,7 +419,9 @@ function WorkoutJourneyReview({
                           const wasRecentlySwapped = recentlySwappedExerciseIds.includes(step.id)
                           const title = selectedExercise?.name ?? step.title
                           const detail = selectedExercise?.coaching.shortInstruction ?? step.detail
-                          const movementCategory = getMovementCategory(title)
+                          const movementCategory = selectedExercise?.movementPattern
+                            ? getMovementCategoryFromPattern(selectedExercise.movementPattern)
+                            : 'general'
                           const fullInstruction =
                             selectedExercise?.coaching.fullInstruction &&
                             selectedExercise.coaching.fullInstruction !== detail
@@ -484,7 +453,7 @@ function WorkoutJourneyReview({
                                   <strong>{title}</strong>
                                   <span>{detail}</span>
                                   <span className="summary-chip-row">
-                                    <span className="compact-chip">{titleCase(movementCategory)}</span>
+                                    {selectedExercise?.movementPattern ? <span className="compact-chip">{getMovementPatternLabel(selectedExercise.movementPattern)}</span> : null}
                                     {selectedExercise?.primaryMuscle ? <span className="compact-chip">{titleCase(selectedExercise.primaryMuscle)}</span> : null}
                                     {step.badge ? <span className="compact-chip">{step.badge}</span> : null}
                                   </span>
@@ -500,11 +469,32 @@ function WorkoutJourneyReview({
                                   <p>{detail}</p>
                                   {fullInstruction ? <p className="summary-format-hint">{fullInstruction}</p> : null}
                                   <div className="summary-chip-row">
-                                    <span className="summary-step-meta">{titleCase(movementCategory)}</span>
+                                    {selectedExercise?.movementPattern ? (
+                                      <span className="summary-step-meta">{getMovementPatternLabel(selectedExercise.movementPattern)}</span>
+                                    ) : null}
                                     {selectedExercise?.primaryMuscle ? (
                                       <span className="summary-step-meta">{titleCase(selectedExercise.primaryMuscle)}</span>
                                     ) : null}
+                                    {selectedExercise?.bodyMap ? (
+                                      <span className="summary-step-meta">{formatBodyRegionList(selectedExercise.bodyMap.primary)}</span>
+                                    ) : null}
                                   </div>
+                                  {selectedExercise?.bodyMap ? (
+                                    <div className="summary-body-map-block">
+                                      <BodyMapFigure
+                                        compact
+                                        primary={selectedExercise.bodyMap.primary}
+                                        secondary={selectedExercise.bodyMap.secondary}
+                                      />
+                                      <div className="summary-body-map-copy">
+                                        <strong>Body map</strong>
+                                        <span>Primary: {formatBodyRegionList(selectedExercise.bodyMap.primary)}</span>
+                                        {selectedExercise.bodyMap.secondary.length > 0 ? (
+                                          <span>Secondary: {formatBodyRegionList(selectedExercise.bodyMap.secondary)}</span>
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                  ) : null}
                                   <div className="summary-exercise-actions">
                                     <button
                                       type="button"

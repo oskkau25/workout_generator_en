@@ -1,4 +1,5 @@
-import type { ExerciseDefinition } from '@/domain/exercises/exercise-types'
+import type { BodyRegionId, ExerciseDefinition, MovementPattern } from '@/domain/exercises/exercise-types'
+import { formatBodyRegionList, getMovementPatternLabel, titleCase } from '@/domain/exercises/exercise-taxonomy'
 import type { GeneratedWorkout, WorkoutBlock, WorkoutStep } from '@/domain/workouts/workout-types'
 
 export interface WorkoutSummaryStat {
@@ -18,6 +19,12 @@ export interface WorkoutSummaryStepViewModel {
   detail: string
   meta?: string
   badge?: string
+  bodyMap?: {
+    primary: BodyRegionId[]
+    secondary: BodyRegionId[]
+  }
+  movementPattern?: MovementPattern
+  primaryMuscle?: string
 }
 
 export interface WorkoutSummarySectionViewModel {
@@ -39,10 +46,6 @@ export interface WorkoutSummaryViewModel {
   intent: WorkoutSummaryIntentItem[]
   sections: WorkoutSummarySectionViewModel[]
   diagnostics: string[]
-}
-
-function titleCase(value: string) {
-  return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
 }
 
 function formatDuration(minutes: number) {
@@ -173,7 +176,10 @@ function mapExerciseStep(step: Extract<WorkoutStep, { kind: 'exercise' }>, looku
   const exercise = lookup.get(step.exerciseId)
   const detailParts = [formatWorkRest(step.workSeconds, step.restSeconds)]
   const instruction = exercise?.coaching.shortInstruction ?? 'Follow the guided coaching cues in the player.'
-  const metaParts = [exercise?.primaryMuscle ? titleCase(exercise.primaryMuscle) : null].filter(Boolean)
+  const metaParts = [
+    exercise?.movementPattern ? getMovementPatternLabel(exercise.movementPattern) : null,
+    exercise?.bodyMap ? formatBodyRegionList(exercise.bodyMap.primary) : null,
+  ].filter(Boolean)
 
   return {
     id: step.id,
@@ -182,6 +188,9 @@ function mapExerciseStep(step: Extract<WorkoutStep, { kind: 'exercise' }>, looku
     detail: `${instruction} · ${detailParts.join(' · ')}`,
     meta: metaParts.join(' · ') || undefined,
     badge: getStepBadge(step),
+    bodyMap: exercise?.bodyMap,
+    movementPattern: exercise?.movementPattern,
+    primaryMuscle: exercise?.primaryMuscle ? titleCase(exercise.primaryMuscle) : undefined,
   }
 }
 

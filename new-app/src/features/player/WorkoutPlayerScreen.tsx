@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BottomSheet } from '@/components/ui/BottomSheet'
+import { BodyMapFigure } from '@/components/body-map/BodyMapFigure'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
+import { formatBodyRegionList, getMovementCategoryFromPattern, getMovementPatternLabel, titleCase, type MovementIconCategory } from '@/domain/exercises/exercise-taxonomy'
 import { playerReducer, createInitialPlayerState } from '@/domain/player/player-reducer'
 import {
   canGoNext,
@@ -67,10 +69,6 @@ function formatDurationLabel(totalSeconds: number) {
   return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`
 }
 
-function titleCase(value: string) {
-  return value.replace(/_/g, ' ').replace(/\b\w/g, (match) => match.toUpperCase())
-}
-
 function createExerciseMap(catalog: ExerciseDefinition[]) {
   return new Map(catalog.map((exercise) => [exercise.id, exercise]))
 }
@@ -130,39 +128,8 @@ function isInteractiveElement(target: EventTarget | null) {
   return target.isContentEditable || ['input', 'textarea', 'select', 'button', 'a'].includes(tagName)
 }
 
-type MovementCategory =
-  | 'squat'
-  | 'hinge'
-  | 'push'
-  | 'pull'
-  | 'plank'
-  | 'lunge'
-  | 'rotation'
-  | 'jump'
-  | 'carry'
-  | 'mobility_stretch'
-  | 'floor_core'
-  | 'general'
 
-function getMovementCategory(name: string | undefined): MovementCategory {
-  const value = String(name ?? '').trim().toLowerCase()
-
-  if (/squat|thruster|wall sit/.test(value)) return 'squat'
-  if (/deadlift|hinge|good morning|swing/.test(value)) return 'hinge'
-  if (/push-up|push up|press|dip/.test(value)) return 'push'
-  if (/row|pull|chin-up|chin up|pull-up|pull up/.test(value)) return 'pull'
-  if (/plank|bear hold|hollow hold/.test(value)) return 'plank'
-  if (/lunge|split squat|step-up|step up|skater/.test(value)) return 'lunge'
-  if (/rotation|twist|woodchop|russian twist/.test(value)) return 'rotation'
-  if (/jump|hop|burpee/.test(value)) return 'jump'
-  if (/carry|march/.test(value)) return 'carry'
-  if (/stretch|mobility|flow|cat-cow|cat cow|cobra|child/.test(value)) return 'mobility_stretch'
-  if (/crunch|sit-up|sit up|leg raise|v-up|v up|toe tap|dead bug|hollow/.test(value)) return 'floor_core'
-
-  return 'general'
-}
-
-function renderMovementIcon(category: MovementCategory) {
+function renderMovementIcon(category: MovementIconCategory) {
   switch (category) {
     case 'squat':
       return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="11" r="4" /><path d="M24 16v8l-6 5m6-5 6 5m-10 1v8m8-8v8m-14 0h20" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -492,7 +459,9 @@ export function WorkoutPlayerScreen() {
     currentExercise.coaching.fullInstruction !== currentExercise.coaching.shortInstruction
       ? currentExercise.coaching.fullInstruction
       : null
-  const movementCategory = getMovementCategory(currentExercise?.name)
+  const movementCategory = currentExercise?.movementPattern
+    ? getMovementCategoryFromPattern(currentExercise.movementPattern)
+    : 'general'
 
   useEffect(() => {
     if (isExerciseDetailPinned) {
@@ -818,7 +787,9 @@ export function WorkoutPlayerScreen() {
             </div>
             {fullInstruction ? <p>{fullInstruction}</p> : null}
             <div className="player-context-row">
-              <span className="compact-chip">{titleCase(movementCategory)}</span>
+              {currentExercise?.movementPattern ? (
+                <span className="compact-chip">{getMovementPatternLabel(currentExercise.movementPattern)}</span>
+              ) : null}
               {getStepContext(currentStep).map((label) => (
                 <span key={label} className="compact-chip">
                   {label}
@@ -826,6 +797,17 @@ export function WorkoutPlayerScreen() {
               ))}
               {currentExercisePrimaryMuscle ? <span className="compact-chip">{currentExercisePrimaryMuscle}</span> : null}
             </div>
+            {currentExercise?.bodyMap ? (
+              <div className="player-body-map-block">
+                <BodyMapFigure compact primary={currentExercise.bodyMap.primary} secondary={currentExercise.bodyMap.secondary} />
+                <div className="summary-chip-row">
+                  <span className="summary-step-meta">Primary: {formatBodyRegionList(currentExercise.bodyMap.primary)}</span>
+                  {currentExercise.bodyMap.secondary.length > 0 ? (
+                    <span className="summary-step-meta">Secondary: {formatBodyRegionList(currentExercise.bodyMap.secondary)}</span>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
             {currentStep ? (
               <div className="player-current-metrics">
                 <div className="summary-stat">
