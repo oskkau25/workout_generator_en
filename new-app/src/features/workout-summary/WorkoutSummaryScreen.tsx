@@ -487,10 +487,11 @@ function WorkoutJourneyReview({
                                         secondary={selectedExercise.bodyMap.secondary}
                                       />
                                       <div className="summary-body-map-copy">
+                                        <span className="card-eyebrow">Targeted areas</span>
                                         <strong>Body map</strong>
-                                        <span>Primary: {formatBodyRegionList(selectedExercise.bodyMap.primary)}</span>
+                                        <span className="summary-body-map-copy-line">Primary: {formatBodyRegionList(selectedExercise.bodyMap.primary)}</span>
                                         {selectedExercise.bodyMap.secondary.length > 0 ? (
-                                          <span>Secondary: {formatBodyRegionList(selectedExercise.bodyMap.secondary)}</span>
+                                          <span className="summary-body-map-copy-line">Secondary: {formatBodyRegionList(selectedExercise.bodyMap.secondary)}</span>
                                         ) : null}
                                       </div>
                                     </div>

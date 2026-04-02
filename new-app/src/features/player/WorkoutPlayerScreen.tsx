@@ -800,11 +800,15 @@ export function WorkoutPlayerScreen() {
             {currentExercise?.bodyMap ? (
               <div className="player-body-map-block">
                 <BodyMapFigure compact primary={currentExercise.bodyMap.primary} secondary={currentExercise.bodyMap.secondary} />
-                <div className="summary-chip-row">
-                  <span className="summary-step-meta">Primary: {formatBodyRegionList(currentExercise.bodyMap.primary)}</span>
-                  {currentExercise.bodyMap.secondary.length > 0 ? (
-                    <span className="summary-step-meta">Secondary: {formatBodyRegionList(currentExercise.bodyMap.secondary)}</span>
-                  ) : null}
+                <div className="summary-body-map-copy player-body-map-copy">
+                  <span className="card-eyebrow">Targeted areas</span>
+                  <strong>Body map</strong>
+                  <div className="summary-chip-row">
+                    <span className="summary-step-meta">Primary: {formatBodyRegionList(currentExercise.bodyMap.primary)}</span>
+                    {currentExercise.bodyMap.secondary.length > 0 ? (
+                      <span className="summary-step-meta">Secondary: {formatBodyRegionList(currentExercise.bodyMap.secondary)}</span>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             ) : null}
