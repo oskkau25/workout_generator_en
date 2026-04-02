@@ -92,6 +92,29 @@ function createWorkoutStepLookup(summary: NonNullable<ReturnType<typeof mapGener
   return lookup
 }
 
+function getExpandedInstruction(fullInstruction: string | undefined, shortInstruction: string | undefined) {
+  if (!fullInstruction) {
+    return null
+  }
+
+  const trimmedFull = fullInstruction.trim()
+  if (!trimmedFull) {
+    return null
+  }
+
+  if (!shortInstruction) {
+    return trimmedFull
+  }
+
+  const trimmedShort = shortInstruction.trim().replace(/[.!\s]+$/, '')
+  if (!trimmedShort || !trimmedFull.startsWith(trimmedShort)) {
+    return trimmedFull
+  }
+
+  const remainder = trimmedFull.slice(trimmedShort.length).replace(/^[.!:\-\s]+/, '').trim()
+  return remainder || null
+}
+
 
 function renderMovementIcon(category: MovementIconCategory) {
   switch (category) {
@@ -419,6 +442,10 @@ function WorkoutJourneyReview({
                           const wasRecentlySwapped = recentlySwappedExerciseIds.includes(step.id)
                           const title = selectedExercise?.name ?? step.title
                           const detail = selectedExercise?.coaching.shortInstruction ?? step.detail
+                          const expandedInstruction = getExpandedInstruction(
+                            selectedExercise?.coaching.fullInstruction,
+                            selectedExercise?.coaching.shortInstruction,
+                          )
                           const movementCategory = selectedExercise?.movementPattern
                             ? getMovementCategoryFromPattern(selectedExercise.movementPattern)
                             : 'general'
@@ -460,6 +487,7 @@ function WorkoutJourneyReview({
 
                               {expandedExercise ? (
                                 <div id={`exercise-panel-${step.id}`} className="summary-exercise-panel">
+                                  {expandedInstruction ? <p className="summary-format-hint">{expandedInstruction}</p> : null}
                                   <div className="summary-chip-row">
                                     {selectedExercise?.movementPattern ? (
                                       <span className="summary-step-meta">{getMovementPatternLabel(selectedExercise.movementPattern)}</span>

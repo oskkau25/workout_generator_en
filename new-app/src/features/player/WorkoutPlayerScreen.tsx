@@ -119,6 +119,29 @@ function getNextUpLabel(step: WorkoutExerciseStep | null) {
   return labels.join(' • ')
 }
 
+function getExpandedInstruction(fullInstruction: string | undefined, shortInstruction: string | undefined) {
+  if (!fullInstruction) {
+    return null
+  }
+
+  const trimmedFull = fullInstruction.trim()
+  if (!trimmedFull) {
+    return null
+  }
+
+  if (!shortInstruction) {
+    return trimmedFull
+  }
+
+  const trimmedShort = shortInstruction.trim().replace(/[.!\s]+$/, '')
+  if (!trimmedShort || !trimmedFull.startsWith(trimmedShort)) {
+    return trimmedFull
+  }
+
+  const remainder = trimmedFull.slice(trimmedShort.length).replace(/^[.!:\-\s]+/, '').trim()
+  return remainder || null
+}
+
 function isInteractiveElement(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
@@ -457,6 +480,10 @@ export function WorkoutPlayerScreen() {
   const movementCategory = currentExercise?.movementPattern
     ? getMovementCategoryFromPattern(currentExercise.movementPattern)
     : 'general'
+  const expandedInstruction = getExpandedInstruction(
+    currentExercise?.coaching.fullInstruction,
+    currentExercise?.coaching.shortInstruction,
+  )
 
   useEffect(() => {
     if (isExerciseDetailPinned) {
@@ -780,6 +807,7 @@ export function WorkoutPlayerScreen() {
                 {isExerciseDetailPinned ? 'Unpin details' : 'Pin details'}
               </button>
             </div>
+            {expandedInstruction ? <p>{expandedInstruction}</p> : null}
             <div className="player-context-row">
               {currentExercise?.movementPattern ? (
                 <span className="compact-chip">{getMovementPatternLabel(currentExercise.movementPattern)}</span>
