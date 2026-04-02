@@ -91,9 +91,22 @@ describe('WorkoutSummaryScreen', () => {
     await user.click(exerciseToggle)
     await user.click(screen.getByRole('button', { name: /switch exercise/i }))
 
+    expect(await screen.findByRole('status')).toHaveTextContent(/exercise updated/i)
+    expect(screen.getByRole('status')).toHaveTextContent(/swapped .* for .* in main block/i)
     expect(exerciseToggle).toHaveTextContent(/swapped/i)
     expect(exerciseToggle).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getAllByText(/swapped/i)).toHaveLength(2)
+    expect(screen.getByText(/updated from/i)).toBeInTheDocument()
+  })
+
+  it('explains that the workout journey stays collapsed until opened', async () => {
+    const workout = seedWorkout()
+
+    renderWithRouter(<WorkoutSummaryScreen />, {
+      route: `/workout/${workout.id}/summary`,
+      path: '/workout/:workoutId/summary',
+    })
+
+    expect(await screen.findByText(/sections stay collapsed until you open them/i)).toBeInTheDocument()
   })
 
   it('keeps the summary footer focused on start and edit actions', async () => {

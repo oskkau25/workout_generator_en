@@ -130,18 +130,80 @@ function isInteractiveElement(target: EventTarget | null) {
   return target.isContentEditable || ['input', 'textarea', 'select', 'button', 'a'].includes(tagName)
 }
 
-function buildExerciseGlyph(name: string | undefined) {
-  if (!name) {
-    return 'WF'
-  }
+type MovementCategory =
+  | 'squat'
+  | 'hinge'
+  | 'push'
+  | 'pull'
+  | 'plank'
+  | 'lunge'
+  | 'rotation'
+  | 'jump'
+  | 'carry'
+  | 'mobility_stretch'
+  | 'floor_core'
+  | 'general'
 
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase()
+function getMovementCategory(name: string | undefined): MovementCategory {
+  const value = String(name ?? '').trim().toLowerCase()
+
+  if (/squat|thruster|wall sit/.test(value)) return 'squat'
+  if (/deadlift|hinge|good morning|swing/.test(value)) return 'hinge'
+  if (/push-up|push up|press|dip/.test(value)) return 'push'
+  if (/row|pull|chin-up|chin up|pull-up|pull up/.test(value)) return 'pull'
+  if (/plank|bear hold|hollow hold/.test(value)) return 'plank'
+  if (/lunge|split squat|step-up|step up|skater/.test(value)) return 'lunge'
+  if (/rotation|twist|woodchop|russian twist/.test(value)) return 'rotation'
+  if (/jump|hop|burpee/.test(value)) return 'jump'
+  if (/carry|march/.test(value)) return 'carry'
+  if (/stretch|mobility|flow|cat-cow|cat cow|cobra|child/.test(value)) return 'mobility_stretch'
+  if (/crunch|sit-up|sit up|leg raise|v-up|v up|toe tap|dead bug|hollow/.test(value)) return 'floor_core'
+
+  return 'general'
+}
+
+function renderMovementIcon(category: MovementCategory) {
+  switch (category) {
+    case 'squat':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="11" r="4" /><path d="M24 16v8l-6 5m6-5 6 5m-10 1v8m8-8v8m-14 0h20" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'hinge':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="28" cy="10" r="4" /><path d="M28 15v9l-8 5m8-5 7 3M20 29l-4 9m11-8 5 8M10 32h10" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'push':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 28h24M18 22l6-4 6 4M18 34l6-4 6 4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'pull':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 16h28m0 0-5-5m5 5-5 5M38 32H20m0 0 5-5m-5 5 5 5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'plank':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="14" cy="18" r="3" /><path d="M17 20h13l8 8M30 20l-8 12M14 31h6m14 0h4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'lunge':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="10" r="4" /><path d="M24 15v8l-6 6m6-6 7 4m-13 2h9m-9 0-3 9m12-9 7 9" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'rotation':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 10a14 14 0 0 1 12 7m0 0v-5m0 5h-5M24 38a14 14 0 0 1-12-7m0 0v5m0-5h5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M24 16v16" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" /></svg>
+    case 'jump':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 11v18m0 0-7-7m7 7 7-7M14 37h20" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'carry':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 18h7v6h-7zm17 0h7v6h-7zM19 21h10M24 12v9m0 3v12" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'mobility_stretch':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 30c2-7 7-12 11-12 6 0 11 6 11 12M24 18V8m-8 25 8 7 8-7" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'floor_core':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 30h14l8-8 6 6M16 30l6 8m12-10 4 10" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    default:
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" strokeWidth="3.2" /><path d="M24 18v6l4 4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  }
+}
+
+function renderWorkoutStateIcon(phase: PlayerPhase | 'idle') {
+  switch (phase) {
+    case 'work':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 10 14 27h8l-2 11 14-19h-8l2-9Z" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'rest':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 24c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Zm9-15v4m0 22v4m15-15h-4M13 24H9" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    case 'paused':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 14v20M30 14v20" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></svg>
+    case 'completed':
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 24l7 7 13-14" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="24" r="14" fill="none" stroke="currentColor" strokeWidth="3.2" /></svg>
+    default:
+      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 15v18l14-9Z" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  }
 }
 
 type WakeLockSentinelLike = {
@@ -423,11 +485,14 @@ export function WorkoutPlayerScreen() {
   const phaseCopy = PHASE_COPY[phaseKey]
   const pausedDuringRest = isRestPhase(playerState)
   const exerciseCountLabel = currentStep ? `Exercise ${currentStepNumber} of ${playerState.progress.totalSteps}` : 'Exercise ready'
+  const currentExercisePrimaryMuscle = currentExercise?.primaryMuscle ? titleCase(currentExercise.primaryMuscle) : null
+  const nextExercisePrimaryMuscle = nextExercise?.primaryMuscle ? titleCase(nextExercise.primaryMuscle) : null
   const fullInstruction =
     currentExercise?.coaching.fullInstruction &&
     currentExercise.coaching.fullInstruction !== currentExercise.coaching.shortInstruction
       ? currentExercise.coaching.fullInstruction
       : null
+  const movementCategory = getMovementCategory(currentExercise?.name)
 
   useEffect(() => {
     if (isExerciseDetailPinned) {
@@ -709,11 +774,14 @@ export function WorkoutPlayerScreen() {
 
           <div className="player-exercise-hero">
             <div className="player-exercise-visual" aria-hidden="true">
-              <span>{buildExerciseGlyph(currentExercise?.name)}</span>
+              {renderMovementIcon(movementCategory)}
             </div>
             <div className="player-exercise-copy">
               <div className="player-compact-status-row" role="status" aria-live="polite">
-                <span className="mini-pill">{phaseCopy.label}</span>
+                <span className="mini-pill player-state-pill">
+                  <span className="player-state-pill-icon" aria-hidden="true">{renderWorkoutStateIcon(playerState.timer.phase)}</span>
+                  <span>{phaseCopy.label}</span>
+                </span>
                 <span className="mini-pill player-timer-pill">{formatSeconds(playerState.timer.remainingSeconds)}</span>
                 {playerState.timer.phase === 'paused' ? (
                   <span className="mini-pill">{pausedDuringRest ? 'Paused during rest' : 'Paused during work'}</span>
@@ -733,30 +801,6 @@ export function WorkoutPlayerScreen() {
           </div>
         </button>
 
-        <div className="player-transport-row">
-          <button
-            type="button"
-            className="secondary-action player-transport-button player-transport-button-icon"
-            onClick={() => dispatch({ type: 'PREVIOUS_STEP' })}
-            disabled={!canGoPrevious(playerState)}
-            aria-label="Go to previous step"
-            title="Previous"
-          >
-            <span aria-hidden="true">←</span>
-          </button>
-          <div className="player-main-control-slot">{renderPrimaryControl()}</div>
-          <button
-            type="button"
-            className="secondary-action player-transport-button player-transport-button-icon"
-            onClick={() => dispatch({ type: 'NEXT_STEP' })}
-            disabled={!canGoNext(playerState)}
-            aria-label="Go to next step"
-            title="Next"
-          >
-            <span aria-hidden="true">→</span>
-          </button>
-        </div>
-
         {isExerciseDetailOpen ? (
           <div id="player-exercise-detail" className="player-exercise-detail-panel">
             <div className="player-exercise-detail-actions">
@@ -774,11 +818,13 @@ export function WorkoutPlayerScreen() {
             </div>
             {fullInstruction ? <p>{fullInstruction}</p> : null}
             <div className="player-context-row">
+              <span className="compact-chip">{titleCase(movementCategory)}</span>
               {getStepContext(currentStep).map((label) => (
                 <span key={label} className="compact-chip">
                   {label}
                 </span>
               ))}
+              {currentExercisePrimaryMuscle ? <span className="compact-chip">{currentExercisePrimaryMuscle}</span> : null}
             </div>
             {currentStep ? (
               <div className="player-current-metrics">
@@ -795,10 +841,37 @@ export function WorkoutPlayerScreen() {
           </div>
         ) : null}
 
-        <div className="player-next-preview-card" aria-labelledby="next-up-title">
-          <p className="card-eyebrow">Next exercise</p>
-          <h4 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h4>
-          <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
+        <div className="player-next-preview-card player-next-preview-card-inline" aria-labelledby="next-up-title">
+          <div className="player-next-preview-copy">
+            <p className="card-eyebrow">Next exercise</p>
+            <h4 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h4>
+            <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
+          </div>
+          {nextExercisePrimaryMuscle ? <span className="compact-chip player-next-chip">{nextExercisePrimaryMuscle}</span> : null}
+        </div>
+
+        <div className="player-transport-row">
+          <button
+            type="button"
+            className="secondary-action player-transport-button player-transport-button-icon"
+            onClick={() => dispatch({ type: 'PREVIOUS_STEP' })}
+            disabled={!canGoPrevious(playerState)}
+            aria-label="Go to previous step"
+            title="Previous"
+          >
+            <span className="player-transport-label" aria-hidden="true">←</span>
+          </button>
+          <div className="player-main-control-slot">{renderPrimaryControl()}</div>
+          <button
+            type="button"
+            className="secondary-action player-transport-button player-transport-button-icon"
+            onClick={() => dispatch({ type: 'NEXT_STEP' })}
+            disabled={!canGoNext(playerState)}
+            aria-label="Go to next step"
+            title="Next"
+          >
+            <span className="player-transport-label" aria-hidden="true">→</span>
+          </button>
         </div>
 
         <div className="player-header-actions">

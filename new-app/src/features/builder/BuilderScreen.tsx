@@ -21,13 +21,13 @@ import { workoutSessionStore } from '@/services/storage/workout-session-store'
 
 const builderDraftStore = new LocalStorageStore<BuilderDraft>(STORAGE_KEYS.builderDraft)
 
-const goalOptions: Array<{ value: WorkoutGoal; label: string; detail: string; icon: string }> = [
-  { value: 'full_body', label: 'Full body', detail: 'Balanced from head to toe.', icon: 'FB' },
-  { value: 'upper_body', label: 'Upper body', detail: 'Push, pull, shoulders, and arms.', icon: 'UB' },
-  { value: 'lower_body', label: 'Lower body', detail: 'Legs, glutes, and lower-body strength.', icon: 'LB' },
-  { value: 'core', label: 'Core', detail: 'Bracing, control, and trunk stability.', icon: 'CO' },
-  { value: 'conditioning', label: 'Conditioning', detail: 'Sweaty, athletic, and fast-moving.', icon: 'CD' },
-  { value: 'mobility', label: 'Mobility', detail: 'Loosen up and move better.', icon: 'MB' },
+const goalOptions: Array<{ value: WorkoutGoal; label: string; detail: string; icon: ReactNode }> = [
+  { value: 'full_body', label: 'Full body', detail: 'Balanced from head to toe.', icon: renderGoalIcon('full_body') },
+  { value: 'upper_body', label: 'Upper body', detail: 'Push, pull, shoulders, and arms.', icon: renderGoalIcon('upper_body') },
+  { value: 'lower_body', label: 'Lower body', detail: 'Legs, glutes, and lower-body strength.', icon: renderGoalIcon('lower_body') },
+  { value: 'core', label: 'Core', detail: 'Bracing, control, and trunk stability.', icon: renderGoalIcon('core') },
+  { value: 'conditioning', label: 'Conditioning', detail: 'Sweaty, athletic, and fast-moving.', icon: renderGoalIcon('conditioning') },
+  { value: 'mobility', label: 'Mobility', detail: 'Loosen up and move better.', icon: renderGoalIcon('mobility') },
 ]
 
 const levelOptions: Array<{ value: FitnessLevel; label: string; detail: string }> = [
@@ -38,11 +38,11 @@ const levelOptions: Array<{ value: FitnessLevel; label: string; detail: string }
 
 const durationOptions = [15, 20, 30, 45, 60] as const
 
-const formatOptions: Array<{ value: WorkoutFormat; label: string; detail: string; icon: string }> = [
-  { value: 'standard', label: 'Standard', detail: 'Steady blocks from warm-up to finish.', icon: 'ST' },
-  { value: 'circuit', label: 'Circuit', detail: 'Move through a round, then repeat.', icon: 'CI' },
-  { value: 'tabata', label: 'Tabata', detail: 'Fixed 20/10 intervals with punch.', icon: 'TB' },
-  { value: 'pyramid', label: 'Pyramid', detail: 'Progressive levels that climb.', icon: 'PY' },
+const formatOptions: Array<{ value: WorkoutFormat; label: string; detail: string; icon: ReactNode }> = [
+  { value: 'standard', label: 'Standard', detail: 'Steady blocks from warm-up to finish.', icon: renderFormatIcon('standard') },
+  { value: 'circuit', label: 'Circuit', detail: 'Move through a round, then repeat.', icon: renderFormatIcon('circuit') },
+  { value: 'tabata', label: 'Tabata', detail: 'Fixed 20/10 intervals with punch.', icon: renderFormatIcon('tabata') },
+  { value: 'pyramid', label: 'Pyramid', detail: 'Progressive levels that climb.', icon: renderFormatIcon('pyramid') },
 ]
 
 const equipmentOptions: Array<{ value: EquipmentId; label: string; icon: ReactNode }> = [
@@ -55,6 +55,108 @@ const equipmentOptions: Array<{ value: EquipmentId; label: string; icon: ReactNo
   { value: 'jump_rope', label: 'Jump rope', icon: renderEquipmentIcon('jump_rope') },
   { value: 'rower', label: 'Rower', icon: renderEquipmentIcon('rower') },
 ]
+
+function renderGoalIcon(type: WorkoutGoal) {
+  switch (type) {
+    case 'full_body':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <circle cx="24" cy="10.5" r="4" />
+          <path d="M24 15v10m-7 16 4-8 3-4 3 4 4 8m-10-15-6 4m12-4 6 4" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'upper_body':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M14 31c2-7 7-11 10-11s8 4 10 11M18 19l6-5 6 5m-11 15v7m10-7v7" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'lower_body':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M19 11v10l-3 8m13-18v10l3 8M16 41l4-12h8l4 12" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'core':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <rect x="16" y="11" width="16" height="26" rx="8" fill="none" stroke="currentColor" strokeWidth="3.25" />
+          <path d="M24 15v18M18 21h12M18 27h12" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      )
+    case 'conditioning':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M24 10 14 27h8l-2 11 14-19h-8l2-9Z" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'mobility':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M13 30c2-7 7-12 11-12 6 0 11 6 11 12M24 18V8m-8 25 8 7 8-7" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
+
+function renderFormatIcon(type: WorkoutFormat) {
+  switch (type) {
+    case 'standard':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M10 14h28M10 24h20M10 34h12" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" />
+        </svg>
+      )
+    case 'circuit':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M14 17h15m0 0-4-4m4 4-4 4M34 31H19m0 0 4-4m-4 4 4 4" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'tabata':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" strokeWidth="3.25" />
+          <path d="M24 17v8l6 3" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'pyramid':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M13 34h22M17 26h14M21 18h6" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
+
+function renderSectionIcon(type: 'warmup' | 'main' | 'cooldown') {
+  switch (type) {
+    case 'warmup':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M15 31c2-7 7-12 9-12s7 5 9 12M24 18V9m-5 23 5 6 5-6" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'main':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M24 10 14 27h8l-2 11 14-19h-8l2-9Z" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'cooldown':
+      return (
+        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
+          <path d="M15 24c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Zm9-15v4m0 22v4m15-15h-4M13 24H9" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
 
 function renderEquipmentIcon(type: EquipmentId) {
   switch (type) {
@@ -235,6 +337,7 @@ export function BuilderScreen() {
         <div className="builder-section-intro">
           <p className="builder-step-label">1. Goal</p>
           <h3 id="goal-heading">What do you want to train?</h3>
+          <p className="builder-section-hint">Start with the main focus so the generator can shape the whole session around it.</p>
         </div>
 
         <div className="builder-compact-choice-row" role="group" aria-label="Workout goal">
@@ -265,6 +368,7 @@ export function BuilderScreen() {
         <div className="builder-section-intro">
           <p className="builder-step-label">2. Duration</p>
           <h3 id="duration-heading">How long should it be?</h3>
+          <p className="builder-section-hint">Quick picks keep this tight, while the slider still gives you an exact target.</p>
         </div>
 
         <label className="builder-duration-slider-card">
@@ -303,10 +407,11 @@ export function BuilderScreen() {
         </label>
       </section>
 
-      <section className="builder-section-card" aria-labelledby="format-heading">
+      <section className="builder-section-card builder-flow-card" aria-labelledby="format-heading">
         <div className="builder-section-intro">
           <p className="builder-step-label">3. Format</p>
           <h3 id="format-heading">How should the workout flow?</h3>
+          <p className="builder-section-hint">Pick the pace first, then fine-tune the details below if you want more control.</p>
         </div>
 
         <div className="builder-compact-choice-row builder-compact-choice-row-tight" role="group" aria-label="Workout format">
@@ -331,6 +436,21 @@ export function BuilderScreen() {
           <strong>{selectedFormat.label}</strong>
           <p>{selectedFormat.detail}</p>
         </div>
+
+        <div className="builder-flow-strip" aria-label="Workout flow blocks">
+          <div className="builder-flow-pill">
+            <span className="builder-flow-pill-icon" aria-hidden="true">{renderSectionIcon('warmup')}</span>
+            <span>Warm-up</span>
+          </div>
+          <div className="builder-flow-pill">
+            <span className="builder-flow-pill-icon" aria-hidden="true">{renderSectionIcon('main')}</span>
+            <span>Main block</span>
+          </div>
+          <div className="builder-flow-pill">
+            <span className="builder-flow-pill-icon" aria-hidden="true">{renderSectionIcon('cooldown')}</span>
+            <span>Cool-down</span>
+          </div>
+        </div>
       </section>
 
       <section className="builder-section-card builder-equipment-section" aria-labelledby="equipment-heading">
@@ -339,6 +459,7 @@ export function BuilderScreen() {
             <div>
               <p className="builder-step-label">4. Equipment</p>
               <h3 id="equipment-heading">What do you have available?</h3>
+              <p className="builder-section-hint">Leave everything off for bodyweight-only, or tap in the gear you actually want to use.</p>
             </div>
             <span className="mini-pill" aria-live="polite">
               {draft.selectedEquipment.length > 0 ? `${draft.selectedEquipment.length} selected` : 'Bodyweight'}
@@ -379,6 +500,7 @@ export function BuilderScreen() {
           <span>
             <span className="builder-step-label">5. More options</span>
             <strong id="advanced-heading">Fine-tune timing and difficulty</strong>
+            <span className="builder-options-toggle-hint">Open this only if you want to push the session harder or dial it back.</span>
           </span>
           <span>{advancedOpen ? 'Hide' : 'Show'}</span>
         </button>
@@ -631,6 +753,7 @@ export function BuilderScreen() {
         <div className="builder-action-copy">
           <p className="builder-step-label">6. Generate</p>
           <h3 id="generate-heading">Generate your workout</h3>
+          <p className="builder-action-summary">Quick recap before you go.</p>
           <p className="builder-help-text" role="status" aria-live="polite">
             {footerRecap}
           </p>
