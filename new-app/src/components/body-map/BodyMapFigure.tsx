@@ -27,66 +27,60 @@ const MIRROR_TRANSFORM = `translate(${FIGURE_WIDTH} 0) scale(-1 1)`
 const FRONT_VIEW: FigureView = {
   title: 'Front',
   halfSilhouette:
-    'M46 29c-6 0-11 2-15 7-5 5-8 13-9 24l-2 18c0 6 2 11 7 14l4 3 2 16-4 40c-1 8 3 14 10 14h3l4-48',
+    'M46 31c-6 0-11 2-15 6-5 5-8 13-9 23l-2 18c0 7 2 12 7 15l4 3 2 15-4 40c-1 9 3 14 10 14h3l4-48',
   centerLine: 'M46 40v94',
   mirroredDetailLines: [
     'M46 39c-5 2-9 4-13 8',
-    'M46 46c-4 5-8 10-10 17',
-    'M46 62c-3 1-6 2-9 2',
-    'M46 90c-3 4-7 7-11 10',
+    'M46 48c-4 5-8 10-10 16',
     'M46 114c-2 4-5 8-7 14',
-    'M46 145c-2 4-4 9-5 18',
   ],
   centerDetailLines: [
-    'M39 62c2 3 4 4 7 4s5-1 7-4',
     'M39 94c2 4 4 6 7 6s5-2 7-6',
   ],
   sideRegions: [
-    { id: 'shoulders', d: 'M24 40c4-6 11-10 22-10v13c-6 0-12 2-17 6Z' },
-    { id: 'chest', d: 'M32 46c4-2 8-4 14-4v20H35Z' },
-    { id: 'biceps', d: 'M20 56c4 1 8 5 9 11l1 16h-8c-3-7-4-16-2-27Z' },
-    { id: 'forearms', d: 'M22 84h8l-2 22h-8c-1-6 0-14 2-22Z' },
-    { id: 'obliques', d: 'M33 63h8l-2 31h-8c-2-8-1-20 2-31Z' },
-    { id: 'hip_flexors', d: 'M38 95h8v12h-9c0-4 0-8 1-12Z' },
-    { id: 'quadriceps', d: 'M33 108h13l-3 39H31c0-11 1-25 2-39Z' },
-    { id: 'calves', d: 'M31 147h11l-3 24h-9c0-7 0-15 1-24Z' },
+    { id: 'shoulders', d: 'M24 40c4-6 11-9 22-9v12c-7 0-12 2-17 6Z' },
+    { id: 'chest', d: 'M31 47c4-3 9-4 15-4v18H35Z' },
+    { id: 'biceps', d: 'M21 57c4 2 7 6 8 11l1 15h-8c-2-7-3-15-1-26Z' },
+    { id: 'forearms', d: 'M22 84h8l-2 20h-8c-1-6 0-13 2-20Z' },
+    { id: 'obliques', d: 'M33 64h8l-2 29h-8c-1-8 0-18 2-29Z' },
+    { id: 'hip_flexors', d: 'M39 95h7v11h-8c0-3 0-7 1-11Z' },
+    { id: 'quadriceps', d: 'M33 109h13l-3 36H31c0-11 1-23 2-36Z' },
+    { id: 'calves', d: 'M31 145h11l-3 23h-9c0-6 0-14 1-23Z' },
   ],
   centerRegions: [
-    { id: 'core', d: 'M40 64h12l2 29H38Z' },
-    { id: 'adductors', d: 'M43 108h6v39h-6Z' },
+    { id: 'core', d: 'M40 65h12l2 28H38Z' },
+    { id: 'adductors', d: 'M43 109h6v36h-6Z' },
   ],
 }
 
 const BACK_VIEW: FigureView = {
   title: 'Back',
   halfSilhouette:
-    'M46 29c-6 0-11 2-15 7-5 5-8 13-9 24l-2 18c0 6 2 11 7 14l4 3 2 16-4 40c-1 8 3 14 10 14h3l4-48',
+    'M46 31c-6 0-11 2-15 6-5 5-8 13-9 23l-2 18c0 7 2 12 7 15l4 3 2 15-4 40c-1 9 3 14 10 14h3l4-48',
   centerLine: 'M46 40v94',
   mirroredDetailLines: [
     'M46 39c-5 2-9 4-13 8',
-    'M46 48c-4 4-7 9-9 15',
-    'M46 59c-4 3-7 8-10 15',
-    'M46 88c-3 4-6 7-10 10',
+    'M46 49c-4 4-7 9-9 14',
+    'M46 59c-4 3-7 8-9 14',
     'M46 114c-2 4-5 8-7 14',
-    'M46 145c-2 4-4 9-5 18',
   ],
   centerDetailLines: [
-    'M38 50c2 6 5 10 8 12s6 2 8 0',
-    'M39 93c2 4 4 6 7 6s5-2 7-6',
+    'M38 52c2 5 5 9 8 10s6 2 8 0',
+    'M39 92c2 4 4 6 7 6s5-2 7-6',
   ],
   sideRegions: [
-    { id: 'shoulders', d: 'M24 40c4-6 11-10 22-10v13c-6 0-12 2-17 6Z' },
-    { id: 'upper_back', d: 'M32 45c4-3 8-4 14-4v20H35Z' },
-    { id: 'lats', d: 'M28 49h8l-2 31h-8c-1-10 0-21 2-31Z' },
-    { id: 'triceps', d: 'M20 53c4 2 7 6 8 12l-1 19h-7c-2-7-2-18 0-31Z' },
-    { id: 'forearms', d: 'M22 84h8l-2 22h-8c-1-6 0-14 2-22Z' },
-    { id: 'hamstrings', d: 'M33 108h13l-3 39H31c0-11 1-25 2-39Z' },
-    { id: 'calves', d: 'M31 147h11l-3 24h-9c0-7 0-15 1-24Z' },
+    { id: 'shoulders', d: 'M24 40c4-6 11-9 22-9v12c-7 0-12 2-17 6Z' },
+    { id: 'upper_back', d: 'M31 46c4-3 9-4 15-4v18H35Z' },
+    { id: 'lats', d: 'M28 50h8l-2 29h-8c-1-9 0-19 2-29Z' },
+    { id: 'triceps', d: 'M21 54c3 2 6 6 7 11l-1 18h-7c-1-6-1-17 1-29Z' },
+    { id: 'forearms', d: 'M22 84h8l-2 20h-8c-1-6 0-13 2-20Z' },
+    { id: 'hamstrings', d: 'M33 109h13l-3 36H31c0-11 1-23 2-36Z' },
+    { id: 'calves', d: 'M31 145h11l-3 23h-9c0-6 0-14 1-23Z' },
   ],
   centerRegions: [
-    { id: 'lower_back', d: 'M39 67h14l3 20H36Z' },
-    { id: 'glutes', d: 'M36 88c3-3 7-5 10-5s7 2 10 5l-3 18H39Z' },
-    { id: 'adductors', d: 'M43 108h6v39h-6Z' },
+    { id: 'lower_back', d: 'M39 67h14l3 19H36Z' },
+    { id: 'glutes', d: 'M36 88c3-3 7-4 10-4s7 1 10 4l-3 17H39Z' },
+    { id: 'adductors', d: 'M43 109h6v36h-6Z' },
   ],
 }
 
@@ -116,14 +110,14 @@ export function BodyMapFigure({ primary, secondary = [], compact = false }: Body
                 <circle cx="46" cy="14" r="11" />
                 <path d={view.halfSilhouette} />
                 <path d={view.halfSilhouette} transform={MIRROR_TRANSFORM} />
-                <path d="M43 117h6v48h-6Z" />
+                <path d="M43 118h6v47h-6Z" />
               </clipPath>
             </defs>
 
             <circle cx="46" cy="14" r="11" className="body-map-silhouette" />
             <path d={view.halfSilhouette} className="body-map-silhouette" />
             <path d={view.halfSilhouette} transform={MIRROR_TRANSFORM} className="body-map-silhouette" />
-            <path d="M43 117h6v48h-6Z" className="body-map-silhouette" />
+            <path d="M43 118h6v47h-6Z" className="body-map-silhouette" />
 
             {view.centerLine ? <path d={view.centerLine} className="body-map-detail-line body-map-detail-line-center" /> : null}
 
