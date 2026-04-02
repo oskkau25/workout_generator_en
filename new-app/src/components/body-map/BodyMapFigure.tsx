@@ -1,68 +1,92 @@
 import type { BodyRegionId } from '@/domain/exercises/exercise-types'
 import { BODY_REGION_LABELS } from '@/domain/exercises/exercise-taxonomy'
 
-type RegionDefinition = {
+type SideRegionDefinition = {
   id: BodyRegionId
   d: string
-  mirrored?: boolean
+}
+
+type CenterRegionDefinition = {
+  id: BodyRegionId
+  d: string
 }
 
 type FigureView = {
   title: 'Front' | 'Back'
-  silhouette: string
+  halfSilhouette: string
   centerLine?: string
-  detailLines?: Array<{ d: string; mirrored?: boolean }>
-  regions: RegionDefinition[]
+  mirroredDetailLines?: string[]
+  centerDetailLines?: string[]
+  sideRegions: SideRegionDefinition[]
+  centerRegions: CenterRegionDefinition[]
 }
 
-const MIRROR_TRANSFORM = 'translate(92 0) scale(-1 1)'
+const FIGURE_WIDTH = 92
+const MIRROR_TRANSFORM = `translate(${FIGURE_WIDTH} 0) scale(-1 1)`
 
 const FRONT_VIEW: FigureView = {
   title: 'Front',
-  silhouette:
-    'M46 26c-7 0-13 3-18 8-6 6-9 15-10 26l-2 20c0 7 3 12 9 15l5 3 2 16-5 37c-1 8 4 14 12 14h4l4-46h6l4 46h4c8 0 13-6 12-14l-5-37 2-16 5-3c6-3 9-8 9-15l-2-20c-1-11-4-20-10-26-5-5-11-8-18-8Z',
-  centerLine: 'M46 39v94',
-  detailLines: [
-    { d: 'M31 39c4 4 9 6 15 6' },
-    { d: 'M35 56c3 2 7 3 11 3' },
-    { d: 'M34 94c4 5 8 8 12 8' },
+  halfSilhouette:
+    'M46 29c-6 0-11 2-15 7-5 5-8 13-9 24l-2 18c0 6 2 11 7 14l4 3 2 16-4 40c-1 8 3 14 10 14h3l4-48',
+  centerLine: 'M46 40v94',
+  mirroredDetailLines: [
+    'M46 39c-5 2-9 4-13 8',
+    'M46 46c-4 5-8 10-10 17',
+    'M46 62c-3 1-6 2-9 2',
+    'M46 90c-3 4-7 7-11 10',
+    'M46 114c-2 4-5 8-7 14',
+    'M46 145c-2 4-4 9-5 18',
   ],
-  regions: [
-    { id: 'shoulders', d: 'M25 38c4-6 11-10 21-10s17 4 21 10l-5 9c-4-3-9-4-16-4s-12 1-16 4Z' },
-    { id: 'chest', d: 'M32 45c4-3 9-5 14-5s10 2 14 5l-4 18H36Z' },
-    { id: 'biceps', d: 'M18 54c5 1 9 5 10 12l1 17h-8c-4-7-5-18-3-29Z', mirrored: true },
-    { id: 'forearms', d: 'M21 83h8l-1 21h-9c-2-6-1-14 2-21Z', mirrored: true },
-    { id: 'core', d: 'M39 63h14l2 30H37Z' },
-    { id: 'obliques', d: 'M31 61h8l-2 31h-8c-2-9-1-20 2-31Z', mirrored: true },
-    { id: 'hip_flexors', d: 'M38 94h8l-1 11h-9c0-4 1-8 2-11Z', mirrored: true },
-    { id: 'quadriceps', d: 'M33 106h11l-3 38H29c0-12 1-24 4-38Z', mirrored: true },
-    { id: 'adductors', d: 'M43 106h6v38h-6Z' },
-    { id: 'calves', d: 'M31 145h10l-3 26H29c-1-7 0-16 2-26Z', mirrored: true },
+  centerDetailLines: [
+    'M39 62c2 3 4 4 7 4s5-1 7-4',
+    'M39 94c2 4 4 6 7 6s5-2 7-6',
+  ],
+  sideRegions: [
+    { id: 'shoulders', d: 'M24 40c4-6 11-10 22-10v13c-6 0-12 2-17 6Z' },
+    { id: 'chest', d: 'M32 46c4-2 8-4 14-4v20H35Z' },
+    { id: 'biceps', d: 'M20 56c4 1 8 5 9 11l1 16h-8c-3-7-4-16-2-27Z' },
+    { id: 'forearms', d: 'M22 84h8l-2 22h-8c-1-6 0-14 2-22Z' },
+    { id: 'obliques', d: 'M33 63h8l-2 31h-8c-2-8-1-20 2-31Z' },
+    { id: 'hip_flexors', d: 'M38 95h8v12h-9c0-4 0-8 1-12Z' },
+    { id: 'quadriceps', d: 'M33 108h13l-3 39H31c0-11 1-25 2-39Z' },
+    { id: 'calves', d: 'M31 147h11l-3 24h-9c0-7 0-15 1-24Z' },
+  ],
+  centerRegions: [
+    { id: 'core', d: 'M40 64h12l2 29H38Z' },
+    { id: 'adductors', d: 'M43 108h6v39h-6Z' },
   ],
 }
 
 const BACK_VIEW: FigureView = {
   title: 'Back',
-  silhouette:
-    'M46 26c-7 0-13 3-18 8-6 6-9 15-10 26l-2 20c0 7 3 12 9 15l5 3 2 16-5 37c-1 8 4 14 12 14h4l4-46h6l4 46h4c8 0 13-6 12-14l-5-37 2-16 5-3c6-3 9-8 9-15l-2-20c-1-11-4-20-10-26-5-5-11-8-18-8Z',
-  centerLine: 'M46 39v94',
-  detailLines: [
-    { d: 'M31 40c4 4 9 6 15 6' },
-    { d: 'M35 51c2 6 6 10 11 10' },
-    { d: 'M27 58c3 5 5 9 7 15', mirrored: true },
-    { d: 'M35 94c3 4 7 7 11 7' },
+  halfSilhouette:
+    'M46 29c-6 0-11 2-15 7-5 5-8 13-9 24l-2 18c0 6 2 11 7 14l4 3 2 16-4 40c-1 8 3 14 10 14h3l4-48',
+  centerLine: 'M46 40v94',
+  mirroredDetailLines: [
+    'M46 39c-5 2-9 4-13 8',
+    'M46 48c-4 4-7 9-9 15',
+    'M46 59c-4 3-7 8-10 15',
+    'M46 88c-3 4-6 7-10 10',
+    'M46 114c-2 4-5 8-7 14',
+    'M46 145c-2 4-4 9-5 18',
   ],
-  regions: [
-    { id: 'shoulders', d: 'M25 38c4-6 11-10 21-10s17 4 21 10l-5 9c-4-3-9-4-16-4s-12 1-16 4Z' },
-    { id: 'upper_back', d: 'M31 44c4-4 9-6 15-6s11 2 15 6l-4 17H35Z' },
-    { id: 'lats', d: 'M27 48h8l-1 31h-8c-2-11-2-21 1-31Z', mirrored: true },
-    { id: 'triceps', d: 'M18 52c5 2 8 7 9 13l-1 20h-6c-3-7-4-19-2-33Z', mirrored: true },
-    { id: 'forearms', d: 'M21 83h8l-1 21h-9c-2-6-1-14 2-21Z', mirrored: true },
-    { id: 'lower_back', d: 'M38 66h16l3 22H35Z' },
-    { id: 'glutes', d: 'M35 89c4-3 8-5 11-5s7 2 11 5l-3 17H38Z' },
-    { id: 'hamstrings', d: 'M33 106h11l-3 38H29c0-12 1-24 4-38Z', mirrored: true },
-    { id: 'adductors', d: 'M43 106h6v38h-6Z' },
-    { id: 'calves', d: 'M31 145h10l-3 26H29c-1-7 0-16 2-26Z', mirrored: true },
+  centerDetailLines: [
+    'M38 50c2 6 5 10 8 12s6 2 8 0',
+    'M39 93c2 4 4 6 7 6s5-2 7-6',
+  ],
+  sideRegions: [
+    { id: 'shoulders', d: 'M24 40c4-6 11-10 22-10v13c-6 0-12 2-17 6Z' },
+    { id: 'upper_back', d: 'M32 45c4-3 8-4 14-4v20H35Z' },
+    { id: 'lats', d: 'M28 49h8l-2 31h-8c-1-10 0-21 2-31Z' },
+    { id: 'triceps', d: 'M20 53c4 2 7 6 8 12l-1 19h-7c-2-7-2-18 0-31Z' },
+    { id: 'forearms', d: 'M22 84h8l-2 22h-8c-1-6 0-14 2-22Z' },
+    { id: 'hamstrings', d: 'M33 108h13l-3 39H31c0-11 1-25 2-39Z' },
+    { id: 'calves', d: 'M31 147h11l-3 24h-9c0-7 0-15 1-24Z' },
+  ],
+  centerRegions: [
+    { id: 'lower_back', d: 'M39 67h14l3 20H36Z' },
+    { id: 'glutes', d: 'M36 88c3-3 7-5 10-5s7 2 10 5l-3 18H39Z' },
+    { id: 'adductors', d: 'M43 108h6v39h-6Z' },
   ],
 }
 
@@ -90,21 +114,42 @@ export function BodyMapFigure({ primary, secondary = [], compact = false }: Body
             <defs>
               <clipPath id={`body-map-clip-${view.title.toLowerCase()}`}>
                 <circle cx="46" cy="14" r="11" />
-                <path d={view.silhouette} />
+                <path d={view.halfSilhouette} />
+                <path d={view.halfSilhouette} transform={MIRROR_TRANSFORM} />
+                <path d="M43 117h6v48h-6Z" />
               </clipPath>
             </defs>
+
             <circle cx="46" cy="14" r="11" className="body-map-silhouette" />
-            <path d={view.silhouette} className="body-map-silhouette" />
+            <path d={view.halfSilhouette} className="body-map-silhouette" />
+            <path d={view.halfSilhouette} transform={MIRROR_TRANSFORM} className="body-map-silhouette" />
+            <path d="M43 117h6v48h-6Z" className="body-map-silhouette" />
+
             {view.centerLine ? <path d={view.centerLine} className="body-map-detail-line body-map-detail-line-center" /> : null}
-            {view.detailLines?.map((detailLine, index) => (
-              <g key={`${view.title}-detail-${index}`}>
-                <path d={detailLine.d} className="body-map-detail-line" />
-                {detailLine.mirrored ? (
-                  <path d={detailLine.d} transform={MIRROR_TRANSFORM} className="body-map-detail-line" />
-                ) : null}
+
+            {view.centerDetailLines?.map((detailLine) => (
+              <path key={detailLine} d={detailLine} className="body-map-detail-line" />
+            ))}
+
+            {view.mirroredDetailLines?.map((detailLine) => (
+              <g key={detailLine}>
+                <path d={detailLine} className="body-map-detail-line" />
+                <path d={detailLine} transform={MIRROR_TRANSFORM} className="body-map-detail-line" />
               </g>
             ))}
-            {view.regions.map((region) => (
+
+            {view.centerRegions.map((region) => (
+              <path
+                key={region.id}
+                d={region.d}
+                clipPath={`url(#body-map-clip-${view.title.toLowerCase()})`}
+                className={`body-map-region ${getIntensity(region.id, primary, secondary)}`.trim()}
+              >
+                <title>{BODY_REGION_LABELS[region.id]}</title>
+              </path>
+            ))}
+
+            {view.sideRegions.map((region) => (
               <g key={region.id}>
                 <path
                   d={region.d}
@@ -113,14 +158,12 @@ export function BodyMapFigure({ primary, secondary = [], compact = false }: Body
                 >
                   <title>{BODY_REGION_LABELS[region.id]}</title>
                 </path>
-                {region.mirrored ? (
-                  <path
-                    d={region.d}
-                    transform={MIRROR_TRANSFORM}
-                    clipPath={`url(#body-map-clip-${view.title.toLowerCase()})`}
-                    className={`body-map-region ${getIntensity(region.id, primary, secondary)}`.trim()}
-                  />
-                ) : null}
+                <path
+                  d={region.d}
+                  transform={MIRROR_TRANSFORM}
+                  clipPath={`url(#body-map-clip-${view.title.toLowerCase()})`}
+                  className={`body-map-region ${getIntensity(region.id, primary, secondary)}`.trim()}
+                />
               </g>
             ))}
           </svg>
