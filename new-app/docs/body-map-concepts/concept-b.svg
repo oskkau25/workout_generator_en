@@ -1,0 +1,51 @@
+<svg width="760" height="420" viewBox="0 0 760 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="420" rx="36" fill="#091118"/>
+  <text x="48" y="64" fill="#F3F7F7" font-family="Arial, sans-serif" font-size="28" font-weight="700">Concept B</text>
+  <text x="48" y="92" fill="#9ED9EF" font-family="Arial, sans-serif" font-size="16">Soft premium rounded body sketch</text>
+
+  <g transform="translate(162 48)">
+    <text x="72" y="22" fill="#7DD3FC" font-family="Arial, sans-serif" font-size="12" letter-spacing="2">FRONT</text>
+    <circle cx="92" cy="40" r="21" fill="#E5EEF0" fill-opacity="0.12" stroke="#E5EEF0" stroke-opacity="0.2" stroke-width="1.8"/>
+    <path d="M92 63C78 63 66 68 57 77C47 87 41 101 39 119L36 154C35 166 39 176 48 183L56 189L60 208L53 302C52 317 59 328 72 328H79L88 224H96L105 328H112C125 328 132 317 131 302L124 208L128 189L136 183C145 176 149 166 148 154L145 119C143 101 137 87 127 77C118 68 106 63 92 63Z" fill="#E5EEF0" fill-opacity="0.11" stroke="#E5EEF0" stroke-opacity="0.18" stroke-width="1.8"/>
+    <path d="M92 78V220" stroke="#D4E7EC" stroke-opacity="0.08" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M58 86C66 79 78 75 92 75C106 75 118 79 126 86L120 103C113 98 104 96 92 96C80 96 71 98 64 103L58 86Z" fill="#34D399"/>
+    <path d="M71 100C77 96 84 94 92 94V132H67L71 100Z" fill="#34D399"/>
+    <path d="M113 100C107 96 100 94 92 94V132H117L113 100Z" fill="#34D399"/>
+    <path d="M48 114C55 117 60 125 61 137L62 161H49C45 151 44 133 48 114Z" fill="#7DD3FC"/>
+    <path d="M136 114C129 117 124 125 123 137L122 161H135C139 151 140 133 136 114Z" fill="#7DD3FC"/>
+    <path d="M50 163H62L59 204H47C46 194 46 180 50 163Z" fill="#7DD3FC" fill-opacity="0.72"/>
+    <path d="M134 163H122L125 204H137C138 194 138 180 134 163Z" fill="#7DD3FC" fill-opacity="0.72"/>
+    <path d="M76 133H92V205H73C72 180 72 155 76 133Z" fill="#34D399" fill-opacity="0.94"/>
+    <path d="M108 133H92V205H111C112 180 112 155 108 133Z" fill="#34D399" fill-opacity="0.94"/>
+    <path d="M81 206H92V232H78C78 223 79 214 81 206Z" fill="#7DD3FC" fill-opacity="0.82"/>
+    <path d="M103 206H92V232H106C106 223 105 214 103 206Z" fill="#7DD3FC" fill-opacity="0.82"/>
+    <path d="M74 234H92L89 301H68C68 279 70 257 74 234Z" fill="#34D399"/>
+    <path d="M110 234H92L95 301H116C116 279 114 257 110 234Z" fill="#34D399"/>
+    <path d="M88 234H96V301H88Z" fill="#7DD3FC" fill-opacity="0.68"/>
+    <path d="M73 302H88L85 327H69C69 319 70 311 73 302Z" fill="#7DD3FC"/>
+    <path d="M111 302H96L99 327H115C115 319 114 311 111 302Z" fill="#7DD3FC"/>
+  </g>
+
+  <g transform="translate(396 48)">
+    <text x="76" y="22" fill="#7DD3FC" font-family="Arial, sans-serif" font-size="12" letter-spacing="2">BACK</text>
+    <circle cx="92" cy="40" r="21" fill="#E5EEF0" fill-opacity="0.12" stroke="#E5EEF0" stroke-opacity="0.2" stroke-width="1.8"/>
+    <path d="M92 63C78 63 66 68 57 77C47 87 41 101 39 119L36 154C35 166 39 176 48 183L56 189L60 208L53 302C52 317 59 328 72 328H79L88 224H96L105 328H112C125 328 132 317 131 302L124 208L128 189L136 183C145 176 149 166 148 154L145 119C143 101 137 87 127 77C118 68 106 63 92 63Z" fill="#E5EEF0" fill-opacity="0.11" stroke="#E5EEF0" stroke-opacity="0.18" stroke-width="1.8"/>
+    <path d="M92 78V220" stroke="#D4E7EC" stroke-opacity="0.08" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M58 86C66 79 78 75 92 75C106 75 118 79 126 86L120 103C113 98 104 96 92 96C80 96 71 98 64 103L58 86Z" fill="#34D399"/>
+    <path d="M71 99C77 95 84 93 92 93V131H68L71 99Z" fill="#34D399"/>
+    <path d="M113 99C107 95 100 93 92 93V131H116L113 99Z" fill="#34D399"/>
+    <path d="M62 104H70L67 162H56C56 139 58 120 62 104Z" fill="#34D399" fill-opacity="0.78"/>
+    <path d="M122 104H114L117 162H128C128 139 126 120 122 104Z" fill="#34D399" fill-opacity="0.78"/>
+    <path d="M49 112C55 116 59 123 60 135L59 160H48C45 150 45 132 49 112Z" fill="#7DD3FC"/>
+    <path d="M135 112C129 116 125 123 124 135L125 160H136C139 150 139 132 135 112Z" fill="#7DD3FC"/>
+    <path d="M50 163H60L58 203H48C46 194 46 181 50 163Z" fill="#7DD3FC" fill-opacity="0.72"/>
+    <path d="M134 163H124L126 203H136C138 194 138 181 134 163Z" fill="#7DD3FC" fill-opacity="0.72"/>
+    <path d="M78 141H106L110 189H74L78 141Z" fill="#34D399" fill-opacity="0.86"/>
+    <path d="M75 191C80 186 86 183 92 183C98 183 104 186 109 191L106 223H78L75 191Z" fill="#34D399"/>
+    <path d="M74 234H92L89 301H68C68 279 70 257 74 234Z" fill="#34D399"/>
+    <path d="M110 234H92L95 301H116C116 279 114 257 110 234Z" fill="#34D399"/>
+    <path d="M88 234H96V301H88Z" fill="#7DD3FC" fill-opacity="0.68"/>
+    <path d="M73 302H88L85 327H69C69 319 70 311 73 302Z" fill="#7DD3FC"/>
+    <path d="M111 302H96L99 327H115C115 319 114 311 111 302Z" fill="#7DD3FC"/>
+  </g>
+</svg>

@@ -61,6 +61,14 @@ focusTags: string[]
 - Summary screen: each exercise detail can show a front/back body map and primary/secondary regions.
 - Player screen: current exercise detail can show the same body map live during coaching.
 
+## Design references
+
+- Early body-map visual explorations are stored in `new-app/docs/body-map-concepts/`.
+- `concept-a.svg` explores a minimal athletic silhouette.
+- `concept-b.svg` explores a softer premium rounded sketch.
+- `concept-c.svg` explores a more technical sport-diagram direction.
+- These files are reference material for product/design review only. The current app body map is rendered from inline SVG path definitions in `src/components/body-map/BodyMapFigure.tsx`.
+
 ## Next sensible extensions
 
 - Add real illustration assets or per-exercise media stills.
