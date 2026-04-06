@@ -20,6 +20,14 @@ function createExercise(
     secondaryMuscles: [],
     supportedEquipment: [equipment],
     supportedLevels: ['beginner', 'intermediate', 'advanced'],
+    movementPattern: phase === 'cooldown' ? 'mobility' : phase === 'warmup' ? 'locomotion' : 'squat',
+    bodyMap:
+      primaryMuscle === 'mobility'
+        ? { primary: ['core', 'glutes'], secondary: ['hamstrings', 'shoulders'] }
+        : primaryMuscle === 'legs'
+          ? { primary: ['quadriceps', 'glutes'], secondary: ['hamstrings', 'calves'] }
+          : { primary: ['core', 'quadriceps'], secondary: ['glutes', 'shoulders'] },
+    focusTags: [phase, primaryMuscle],
     coaching: {
       shortInstruction: `${name} short`,
       fullInstruction: `${name} full`,

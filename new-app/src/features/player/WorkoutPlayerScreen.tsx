@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { BottomSheet } from '@/components/ui/BottomSheet'
+import { BodyMapFigure } from '@/components/body-map/BodyMapFigure'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
+import { formatBodyRegionList, getExpandedInstruction, getMovementCategoryFromPattern, getMovementPatternLabel, titleCase } from '@/domain/exercises/exercise-taxonomy'
+import { MovementIcon, PlayerStateIcon } from '@/components/icons/workout-icons'
 import { playerReducer, createInitialPlayerState } from '@/domain/player/player-reducer'
 import {
   canGoNext,
   canGoPrevious,
   getCurrentStep,
   getNextStep,
-  getProgressPercent,
   isRestPhase,
 } from '@/domain/player/player-selectors'
 import type { PlayerPhase } from '@/domain/player/player-types'
@@ -33,6 +36,24 @@ const BLOCK_LABELS: Record<WorkoutBlockType, string> = {
   cooldown: 'Cool-down',
 }
 
+const PREFERENCE_OPTIONS = [
+  {
+    key: 'soundEnabled',
+    label: 'Sound cues',
+    detail: 'Keep audible transition prompts on.',
+  },
+  {
+    key: 'vibrationEnabled',
+    label: 'Vibration',
+    detail: 'Enable haptic-ready cues for later device support.',
+  },
+  {
+    key: 'voiceCountdownEnabled',
+    label: 'Voice countdown',
+    detail: 'Stored locally so your player picks up where you left it.',
+  },
+] as const
+
 function formatSeconds(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60)
   const seconds = totalSeconds % 60
@@ -47,10 +68,6 @@ function formatDurationLabel(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60)
   const seconds = totalSeconds % 60
   return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`
-}
-
-function titleCase(value: string) {
-  return value.replace(/_/g, ' ').replace(/\b\w/g, (match) => match.toUpperCase())
 }
 
 function createExerciseMap(catalog: ExerciseDefinition[]) {
@@ -89,7 +106,7 @@ function getStepContext(step: WorkoutExerciseStep | null) {
 
 function getNextUpLabel(step: WorkoutExerciseStep | null) {
   if (!step) {
-    return 'Final step — completion is next'
+    return 'Final step - completion is next'
   }
 
   const labels = []
@@ -103,6 +120,7 @@ function getNextUpLabel(step: WorkoutExerciseStep | null) {
   return labels.join(' • ')
 }
 
+
 function isInteractiveElement(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
@@ -112,13 +130,79 @@ function isInteractiveElement(target: EventTarget | null) {
   return target.isContentEditable || ['input', 'textarea', 'select', 'button', 'a'].includes(tagName)
 }
 
+
+
+type WakeLockSentinelLike = {
+  release: () => Promise<void>
+}
+
+type WakeLockNavigator = Navigator & {
+  wakeLock?: {
+    request: (type: 'screen') => Promise<WakeLockSentinelLike>
+  }
+  vibrate?: (pattern: number | number[]) => boolean
+}
+
+function playCue(frequency: number, durationMs: number) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  const AudioContextCtor = window.AudioContext ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+  if (!AudioContextCtor) {
+    return
+  }
+
+  const audioContext = new AudioContextCtor()
+  const oscillator = audioContext.createOscillator()
+  const gainNode = audioContext.createGain()
+
+  oscillator.type = 'sine'
+  oscillator.frequency.value = frequency
+  gainNode.gain.value = 0.0001
+  oscillator.connect(gainNode)
+  gainNode.connect(audioContext.destination)
+
+  const now = audioContext.currentTime
+  gainNode.gain.exponentialRampToValueAtTime(0.08, now + 0.01)
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + durationMs / 1000)
+  oscillator.start(now)
+  oscillator.stop(now + durationMs / 1000)
+  oscillator.onended = () => {
+    void audioContext.close()
+  }
+}
+
+function speakCountdownValue(value: number) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+    return
+  }
+
+  const utterance = new SpeechSynthesisUtterance(String(value))
+  utterance.rate = 1
+  utterance.pitch = 1
+  window.speechSynthesis.cancel()
+  window.speechSynthesis.speak(utterance)
+}
+
 export function WorkoutPlayerScreen() {
   const { workoutId } = useParams()
   const navigate = useNavigate()
   const [playerState, dispatch] = useReducer(playerReducer, undefined, () => createInitialPlayerState())
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isExerciseDetailOpen, setIsExerciseDetailOpen] = useState(false)
+  const [isExerciseDetailPinned, setIsExerciseDetailPinned] = useState(false)
+  const [isAudioTestRunning, setIsAudioTestRunning] = useState(false)
   const historySavedRef = useRef(false)
+  const wakeLockRef = useRef<WakeLockSentinelLike | null>(null)
+  const previousPhaseRef = useRef<PlayerPhase>('idle')
+  const lastCountdownRef = useRef<string | null>(null)
+  const audioTestTimeoutsRef = useRef<number[]>([])
+  const hiddenAtRef = useRef<number | null>(null)
+  const timerPhaseRef = useRef(playerState.timer.phase)
+  timerPhaseRef.current = playerState.timer.phase
 
   useEffect(() => {
     let cancelled = false
@@ -173,8 +257,18 @@ export function WorkoutPlayerScreen() {
       return
     }
 
+    // Use wall-clock timestamps to avoid drift when the browser throttles
+    // setInterval (e.g. when the tab is backgrounded).
+    let lastTickAt = Date.now()
+
     const intervalId = window.setInterval(() => {
-      dispatch({ type: 'TICK' })
+      const now = Date.now()
+      const delta = Math.round((now - lastTickAt) / 1000)
+      lastTickAt = now
+
+      if (delta > 0) {
+        dispatch({ type: 'TICK', seconds: delta })
+      }
     }, 1000)
 
     return () => {
@@ -214,38 +308,6 @@ export function WorkoutPlayerScreen() {
     void workoutHistoryStore.append(createHistoryEntryFromPlayerState(playerState, playerState.workout, completedAt))
     void workoutSessionStore.clearActiveSession()
   }, [playerState])
-
-  const exerciseMap = useMemo(() => createExerciseMap(legacyExerciseCatalog), [])
-  const currentStep = useMemo(() => getCurrentStep(playerState), [playerState])
-  const nextStep = useMemo(() => getNextStep(playerState), [playerState])
-  const currentExercise = useMemo(() => getExercise(currentStep, exerciseMap), [currentStep, exerciseMap])
-  const nextExercise = useMemo(() => getExercise(nextStep, exerciseMap), [nextStep, exerciseMap])
-  const progressPercent = useMemo(() => getProgressPercent(playerState), [playerState])
-  const currentStepNumber = Math.min(playerState.progress.currentStepIndex + 1, playerState.progress.totalSteps)
-  const phaseKey = playerState.timer.phase === 'idle' ? 'ready' : playerState.timer.phase
-  const phaseCopy = PHASE_COPY[phaseKey]
-  const pausedDuringRest = isRestPhase(playerState)
-
-  async function handleExit() {
-    const phase = playerState.timer.phase
-    const active = phase === 'work' || phase === 'rest' || phase === 'paused'
-    if (active && !window.confirm('Exit this workout? Your current session will be marked as abandoned.')) {
-      return
-    }
-
-    if (playerState.workout && playerState.session?.startedAt && !historySavedRef.current) {
-      historySavedRef.current = true
-      const now = new Date().toISOString()
-      const exitedState = playerReducer(playerState, { type: 'EXIT', now })
-      await workoutHistoryStore.append(createHistoryEntryFromPlayerState(exitedState, playerState.workout, now))
-      await workoutSessionStore.clearActiveSession()
-      dispatch({ type: 'EXIT', now })
-    } else {
-      dispatch({ type: 'EXIT', now: new Date().toISOString() })
-    }
-
-    navigate(`/workout/${workoutId}/summary`)
-  }
 
   useEffect(() => {
     function handleKeydown(event: KeyboardEvent) {
@@ -287,12 +349,288 @@ export function WorkoutPlayerScreen() {
     return () => window.removeEventListener('keydown', handleKeydown)
   }, [playerState])
 
+  useEffect(() => {
+    if (!isSettingsOpen) {
+      return
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsSettingsOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [isSettingsOpen])
+
+  useEffect(() => {
+    const wakeLockNavigator = navigator as WakeLockNavigator
+
+    async function acquireWakeLock() {
+      if (!wakeLockNavigator.wakeLock?.request || wakeLockRef.current) {
+        return
+      }
+
+      try {
+        wakeLockRef.current = await wakeLockNavigator.wakeLock.request('screen')
+      } catch {
+        wakeLockRef.current = null
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (!wakeLockRef.current) {
+        return
+      }
+
+      try {
+        await wakeLockRef.current.release()
+      } finally {
+        wakeLockRef.current = null
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        void acquireWakeLock()
+        if (hiddenAtRef.current !== null) {
+          const gapSeconds = Math.round((Date.now() - hiddenAtRef.current) / 1000)
+          hiddenAtRef.current = null
+          const phase = timerPhaseRef.current
+          if (gapSeconds > 0 && (phase === 'work' || phase === 'rest')) {
+            dispatch({ type: 'TICK', seconds: gapSeconds })
+          }
+        }
+      } else {
+        void releaseWakeLock()
+        hiddenAtRef.current = Date.now()
+      }
+    }
+
+    void acquireWakeLock()
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      void releaseWakeLock()
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel()
+      }
+      for (const timeoutId of audioTestTimeoutsRef.current) {
+        window.clearTimeout(timeoutId)
+      }
+    }
+  }, [])
+
+  const exerciseMap = useMemo(() => createExerciseMap(legacyExerciseCatalog), [])
+  const currentStep = useMemo(() => getCurrentStep(playerState), [playerState])
+  const nextStep = useMemo(() => getNextStep(playerState), [playerState])
+  const currentExercise = useMemo(() => getExercise(currentStep, exerciseMap), [currentStep, exerciseMap])
+  const nextExercise = useMemo(() => getExercise(nextStep, exerciseMap), [nextStep, exerciseMap])
+  const currentStepNumber = Math.min(playerState.progress.currentStepIndex + 1, playerState.progress.totalSteps)
+  const phaseKey = playerState.timer.phase === 'idle' ? 'ready' : playerState.timer.phase
+  const phaseCopy = PHASE_COPY[phaseKey]
+  const pausedDuringRest = isRestPhase(playerState)
+  const exerciseCountLabel = currentStep ? `Exercise ${currentStepNumber} of ${playerState.progress.totalSteps}` : 'Exercise ready'
+  const currentExercisePrimaryMuscle = currentExercise?.primaryMuscle ? titleCase(currentExercise.primaryMuscle) : null
+  const nextExercisePrimaryMuscle = nextExercise?.primaryMuscle ? titleCase(nextExercise.primaryMuscle) : null
+  const movementCategory = currentExercise?.movementPattern
+    ? getMovementCategoryFromPattern(currentExercise.movementPattern)
+    : 'general'
+  const expandedInstruction = getExpandedInstruction(
+    currentExercise?.coaching.fullInstruction,
+    currentExercise?.coaching.shortInstruction,
+  )
+
+  useEffect(() => {
+    if (isExerciseDetailPinned) {
+      setIsExerciseDetailOpen(true)
+    }
+  }, [currentStep?.id, isExerciseDetailPinned])
+
+  useEffect(() => {
+    const previousPhase = previousPhaseRef.current
+    const currentPhase = playerState.timer.phase
+    const wakeLockNavigator = navigator as WakeLockNavigator
+
+    if (previousPhase !== currentPhase) {
+      if (playerState.preferences.soundEnabled) {
+        if (currentPhase === 'work' || currentPhase === 'rest') {
+          playCue(currentPhase === 'work' ? 740 : 520, 140)
+        }
+        if (currentPhase === 'completed') {
+          playCue(880, 240)
+        }
+      }
+
+      if (playerState.preferences.vibrationEnabled && wakeLockNavigator.vibrate) {
+        if (currentPhase === 'work' || currentPhase === 'rest') {
+          wakeLockNavigator.vibrate(70)
+        }
+        if (currentPhase === 'completed') {
+          wakeLockNavigator.vibrate([90, 50, 90])
+        }
+      }
+
+      lastCountdownRef.current = null
+    }
+
+    previousPhaseRef.current = currentPhase
+  }, [playerState.preferences.soundEnabled, playerState.preferences.vibrationEnabled, playerState.timer.phase])
+
+  useEffect(() => {
+    if (playerState.timer.phase !== 'work' && playerState.timer.phase !== 'rest') {
+      lastCountdownRef.current = null
+      return
+    }
+
+    if (!playerState.preferences.voiceCountdownEnabled) {
+      return
+    }
+
+    const remainingSeconds = playerState.timer.remainingSeconds
+    if (remainingSeconds < 1 || remainingSeconds > 3) {
+      return
+    }
+
+    const countdownKey = `${playerState.timer.phase}-${currentStepNumber}-${remainingSeconds}`
+    if (lastCountdownRef.current === countdownKey) {
+      return
+    }
+
+    lastCountdownRef.current = countdownKey
+    speakCountdownValue(remainingSeconds)
+  }, [
+    currentStepNumber,
+    playerState.preferences.voiceCountdownEnabled,
+    playerState.timer.phase,
+    playerState.timer.remainingSeconds,
+  ])
+
+  async function handleExit() {
+    const phase = playerState.timer.phase
+    const active = phase === 'work' || phase === 'rest' || phase === 'paused'
+    if (active && !window.confirm('Exit this workout? Your current session will be marked as abandoned.')) {
+      return
+    }
+
+    if (playerState.workout && playerState.session?.startedAt && !historySavedRef.current) {
+      historySavedRef.current = true
+      const now = new Date().toISOString()
+      const exitedState = playerReducer(playerState, { type: 'EXIT', now })
+      await workoutHistoryStore.append(createHistoryEntryFromPlayerState(exitedState, playerState.workout, now))
+      await workoutSessionStore.clearActiveSession()
+      dispatch({ type: 'EXIT', now })
+    } else {
+      dispatch({ type: 'EXIT', now: new Date().toISOString() })
+    }
+
+    navigate(`/workout/${workoutId}/summary`)
+  }
+
+  function toggleExerciseDetail() {
+    if (isExerciseDetailPinned) {
+      setIsExerciseDetailPinned(false)
+    }
+
+    setIsExerciseDetailOpen((current) => !current)
+  }
+
+  function handleAudioTest() {
+    if (isAudioTestRunning) {
+      return
+    }
+
+    for (const timeoutId of audioTestTimeoutsRef.current) {
+      window.clearTimeout(timeoutId)
+    }
+    audioTestTimeoutsRef.current = []
+
+    setIsAudioTestRunning(true)
+
+    const finishTimeout = window.setTimeout(() => {
+      setIsAudioTestRunning(false)
+      audioTestTimeoutsRef.current = []
+    }, 2300)
+
+    audioTestTimeoutsRef.current.push(finishTimeout)
+
+    if (playerState.preferences.soundEnabled) {
+      playCue(660, 120)
+    }
+
+    const wakeLockNavigator = navigator as WakeLockNavigator
+    if (playerState.preferences.vibrationEnabled && wakeLockNavigator.vibrate) {
+      wakeLockNavigator.vibrate([60, 40, 60])
+    }
+
+    if (playerState.preferences.voiceCountdownEnabled) {
+      const countdownValues = [3, 2, 1]
+      countdownValues.forEach((value, index) => {
+        const timeoutId = window.setTimeout(() => {
+          speakCountdownValue(value)
+          if (playerState.preferences.soundEnabled) {
+            playCue(520 + index * 50, 90)
+          }
+        }, index * 550)
+        audioTestTimeoutsRef.current.push(timeoutId)
+      })
+    }
+  }
+
+  function renderPrimaryControl() {
+    if (playerState.timer.phase === 'ready') {
+      return (
+        <button
+          type="button"
+          className="primary-action player-main-action player-main-action-icon"
+          onClick={() => dispatch({ type: 'START', now: new Date().toISOString() })}
+          aria-label="Start workout"
+          title="Start"
+        >
+          <span aria-hidden="true">▶</span>
+        </button>
+      )
+    }
+
+    if (playerState.timer.phase === 'work' || playerState.timer.phase === 'rest') {
+      return (
+        <button
+          type="button"
+          className="primary-action player-main-action player-main-action-icon"
+          onClick={() => dispatch({ type: 'PAUSE' })}
+          aria-label="Pause"
+          title="Pause"
+        >
+          <span aria-hidden="true">❚❚</span>
+        </button>
+      )
+    }
+
+    if (playerState.timer.phase === 'paused') {
+      return (
+        <button
+          type="button"
+          className="primary-action player-main-action player-main-action-icon"
+          onClick={() => dispatch({ type: 'RESUME' })}
+          aria-label="Resume"
+          title="Resume"
+        >
+          <span aria-hidden="true">▶</span>
+        </button>
+      )
+    }
+
+    return null
+  }
+
   if (isLoading) {
     return (
       <div className="screen-grid">
         <section className="card" role="status" aria-live="polite">
           <p className="card-eyebrow">Coach flow</p>
-          <h2>Loading your workout…</h2>
+          <h2>Loading your workout...</h2>
           <p>Booting the guided player from the generated workout handoff.</p>
         </section>
       </div>
@@ -318,7 +656,7 @@ export function WorkoutPlayerScreen() {
 
   if (playerState.timer.phase === 'completed') {
     return (
-      <div className="player-layout">
+      <div className="player-layout player-layout-compact">
         <section className="card player-complete-card" role="status" aria-live="polite">
           <p className="card-eyebrow">Completed</p>
           <h2>You finished {playerState.workout.metadata.title}</h2>
@@ -356,224 +694,227 @@ export function WorkoutPlayerScreen() {
   }
 
   return (
-    <div className="player-layout">
-      <section className="card player-session-card" aria-labelledby="player-session-title">
-        <div className="player-session-topline">
-          <div>
-            <p className="card-eyebrow">Coach flow</p>
-            <h2 id="player-session-title">{playerState.workout.metadata.title}</h2>
+    <div className="player-layout player-layout-compact">
+      <section className="card player-current-card" aria-labelledby="current-exercise-title">
+        <div className="player-current-topline">
+          <div className="player-focus-session">
+            <p className="player-session-name">{playerState.workout.metadata.title}</p>
+            <div className="player-session-meta">
+              <span className="mini-pill">{titleCase(playerState.workout.metadata.format)}</span>
+              <span className="mini-pill player-exercise-count">{exerciseCountLabel}</span>
+            </div>
           </div>
+        </div>
+
+        <button
+          type="button"
+          className="player-current-toggle"
+          aria-expanded={isExerciseDetailOpen}
+          aria-controls="player-exercise-detail"
+          onClick={toggleExerciseDetail}
+        >
+          <div className="player-card-heading">
+            <div>
+              <p className="card-eyebrow">Exercise</p>
+              <h3 id="current-exercise-title">{currentExercise?.name ?? 'Workout ready'}</h3>
+            </div>
+            {currentStep ? <span className="summary-step-badge">{BLOCK_LABELS[currentStep.block]}</span> : null}
+          </div>
+
+          <div className="player-exercise-hero">
+            <div className="player-exercise-visual" aria-hidden="true">
+              <MovementIcon category={movementCategory} />
+            </div>
+            <div className="player-exercise-copy">
+              <div className="player-compact-status-row" role="status" aria-live="polite">
+                <span className="mini-pill player-state-pill">
+                  <span className="player-state-pill-icon" aria-hidden="true"><PlayerStateIcon phase={playerState.timer.phase} /></span>
+                  <span>{phaseCopy.label}</span>
+                </span>
+                <span className="mini-pill player-timer-pill">{formatSeconds(playerState.timer.remainingSeconds)}</span>
+                {playerState.timer.phase === 'paused' ? (
+                  <span className="mini-pill">{pausedDuringRest ? 'Paused during rest' : 'Paused during work'}</span>
+                ) : null}
+              </div>
+              <p className="player-exercise-instruction">
+                {currentExercise?.coaching.shortInstruction ?? 'Load a generated workout to begin coaching.'}
+              </p>
+              <span className="player-inline-toggle-copy">
+                {isExerciseDetailPinned
+                  ? 'Details pinned'
+                  : isExerciseDetailOpen
+                    ? 'Hide exercise details'
+                    : 'Tap for exercise details'}
+              </span>
+            </div>
+          </div>
+        </button>
+
+        {isExerciseDetailOpen ? (
+          <div id="player-exercise-detail" className="player-exercise-detail-panel">
+            <div className="player-exercise-detail-actions">
+              <button
+                type="button"
+                className="ghost-action player-pin-button"
+                onClick={() => {
+                  setIsExerciseDetailPinned((current) => !current)
+                  setIsExerciseDetailOpen(true)
+                }}
+                aria-pressed={isExerciseDetailPinned}
+              >
+                {isExerciseDetailPinned ? 'Unpin details' : 'Pin details'}
+              </button>
+            </div>
+            {expandedInstruction ? <p>{expandedInstruction}</p> : null}
+            <div className="player-context-row">
+              {currentExercise?.movementPattern ? (
+                <span className="compact-chip">{getMovementPatternLabel(currentExercise.movementPattern)}</span>
+              ) : null}
+              {getStepContext(currentStep).map((label) => (
+                <span key={label} className="compact-chip">
+                  {label}
+                </span>
+              ))}
+              {currentExercisePrimaryMuscle ? <span className="compact-chip">{currentExercisePrimaryMuscle}</span> : null}
+            </div>
+            {currentExercise?.bodyMap ? (
+              <div className="player-body-map-block">
+                <BodyMapFigure compact primary={currentExercise.bodyMap.primary} secondary={currentExercise.bodyMap.secondary} />
+                <div className="summary-body-map-copy player-body-map-copy">
+                  <span className="card-eyebrow">Targeted areas</span>
+                  <strong>Body map</strong>
+                  <div className="summary-chip-row">
+                    <span className="summary-step-meta">Primary: {formatBodyRegionList(currentExercise.bodyMap.primary)}</span>
+                    {currentExercise.bodyMap.secondary.length > 0 ? (
+                      <span className="summary-step-meta">Secondary: {formatBodyRegionList(currentExercise.bodyMap.secondary)}</span>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+            {currentStep ? (
+              <div className="player-current-metrics">
+                <div className="summary-stat">
+                  <span>Work</span>
+                  <strong>{formatDurationLabel(currentStep.workSeconds)}</strong>
+                </div>
+                <div className="summary-stat">
+                  <span>Rest</span>
+                  <strong>{currentStep.noRestAfter ? 'No rest after' : formatDurationLabel(currentStep.restSeconds)}</strong>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div className="player-next-preview-card player-next-preview-card-inline" aria-labelledby="next-up-title">
+          <div className="player-next-preview-copy">
+            <p className="card-eyebrow">Next exercise</p>
+            <h4 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h4>
+            <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
+          </div>
+          {nextExercisePrimaryMuscle ? <span className="compact-chip player-next-chip">{nextExercisePrimaryMuscle}</span> : null}
+        </div>
+
+        <div className="player-transport-row">
           <button
             type="button"
-            className="ghost-action player-exit-button"
+            className="secondary-action player-transport-button player-transport-button-icon"
+            onClick={() => dispatch({ type: 'PREVIOUS_STEP' })}
+            disabled={!canGoPrevious(playerState)}
+            aria-label="Go to previous step"
+            title="Previous"
+          >
+            <span className="player-transport-label" aria-hidden="true">←</span>
+          </button>
+          <div className="player-main-control-slot">{renderPrimaryControl()}</div>
+          <button
+            type="button"
+            className="secondary-action player-transport-button player-transport-button-icon"
+            onClick={() => dispatch({ type: 'NEXT_STEP' })}
+            disabled={!canGoNext(playerState)}
+            aria-label="Go to next step"
+            title="Next"
+          >
+            <span className="player-transport-label" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <div className="player-header-actions">
+          <button
+            type="button"
+            className="ghost-action player-utility-button"
+            onClick={() => setIsSettingsOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={isSettingsOpen}
+          >
+            Settings
+          </button>
+          <button
+            type="button"
+            className="ghost-action player-utility-button"
             onClick={() => void handleExit()}
             aria-label="Exit workout and return to summary"
           >
             Exit
           </button>
         </div>
-        <div className="player-session-meta">
-          <span className="mini-pill">{titleCase(playerState.workout.metadata.format)}</span>
-          <span className="mini-pill">
-            Step {currentStepNumber} / {playerState.progress.totalSteps}
-          </span>
-          <span className="mini-pill">Elapsed {formatDurationLabel(playerState.timer.elapsedSeconds)}</span>
-          {playerState.timer.phase === 'paused' ? <span className="mini-pill">Resume available</span> : null}
-        </div>
-      </section>
 
-      <section className={`card player-phase-card player-phase-${phaseKey}`} role="status" aria-live="polite">
-        <p className="card-eyebrow">Current phase</p>
-        <div className="player-phase-heading">
-          <h3>{phaseCopy.label}</h3>
-          {playerState.timer.phase === 'paused' ? (
-            <span className="mini-pill">Paused during {pausedDuringRest ? 'rest' : 'work'}</span>
-          ) : null}
-        </div>
-        <p>{phaseCopy.message}</p>
-      </section>
-
-      <section className="card player-timer-card" aria-labelledby="timer-title">
-        <p id="timer-title" className="card-eyebrow">Timer</p>
-        <div className="player-timer-display" aria-live="polite" aria-atomic="true">
-          {formatSeconds(playerState.timer.remainingSeconds)}
-        </div>
-        <div className="player-timer-context">
-          <span>{phaseCopy.label}</span>
-          <span>
-            {playerState.timer.phase === 'ready'
-              ? `Upcoming work ${formatDurationLabel(playerState.timer.phaseTotalSeconds)}`
-              : `Phase total ${formatDurationLabel(playerState.timer.phaseTotalSeconds)}`}
-          </span>
-        </div>
-      </section>
-
-      <section className="card player-current-card" aria-labelledby="current-exercise-title">
-        <div className="player-card-heading">
-          <div>
-            <p className="card-eyebrow">Current exercise</p>
-            <h3 id="current-exercise-title">{currentExercise?.name ?? 'Workout ready'}</h3>
-          </div>
-          {currentStep ? <span className="summary-step-badge">{BLOCK_LABELS[currentStep.block]}</span> : null}
-        </div>
-        <div className="player-context-row">
-          {getStepContext(currentStep).map((label) => (
-            <span key={label} className="compact-chip">
-              {label}
-            </span>
-          ))}
-        </div>
-        <p>{currentExercise?.coaching.shortInstruction ?? 'Load a generated workout to begin coaching.'}</p>
-        {currentStep ? (
-          <div className="player-current-metrics">
-            <div className="summary-stat">
-              <span>Work</span>
-              <strong>{formatDurationLabel(currentStep.workSeconds)}</strong>
-            </div>
-            <div className="summary-stat">
-              <span>Rest</span>
-              <strong>{currentStep.noRestAfter ? 'No rest after' : formatDurationLabel(currentStep.restSeconds)}</strong>
-            </div>
-          </div>
-        ) : null}
-      </section>
-
-      <section className="card player-next-card" aria-labelledby="next-up-title">
-        <div className="player-card-heading">
-          <div>
-            <p className="card-eyebrow">Next up</p>
-            <h3 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h3>
-          </div>
-          <span className="mini-pill">Stay ready</span>
-        </div>
-        <p>{nextExercise?.coaching.shortInstruction ?? 'Final step — completion is next.'}</p>
-        <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
-      </section>
-
-      <section className="card player-progress-card" aria-labelledby="progress-title">
-        <div className="player-card-heading">
-          <div>
-            <p className="card-eyebrow">Progress</p>
-            <h3 id="progress-title">
-              {playerState.progress.completedStepIds.length} of {playerState.progress.totalSteps} steps done
-            </h3>
-          </div>
-          <span className="summary-step-badge">{progressPercent}%</span>
-        </div>
-        <div
-          className="player-progress-bar"
-          role="progressbar"
-          aria-label="Workout progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={progressPercent}
-          aria-valuetext={`${progressPercent}% complete`}
-        >
-          <div className="player-progress-fill" style={{ width: `${progressPercent}%` }} />
-        </div>
-      </section>
-
-      <section className="card player-controls-card" aria-labelledby="controls-title">
-        <p id="controls-title" className="card-eyebrow">Controls</p>
-        <div className="player-shortcut-hint" role="note">
-          Keyboard: Space to start/pause/resume, ← previous step, → next step or skip rest.
-        </div>
-        <div className="player-primary-controls">
-          {playerState.timer.phase === 'ready' ? (
-            <button type="button" className="primary-action" onClick={() => dispatch({ type: 'START', now: new Date().toISOString() })}>
-              Start workout
-            </button>
-          ) : null}
-
-          {playerState.timer.phase === 'work' || playerState.timer.phase === 'rest' ? (
-            <button type="button" className="primary-action" onClick={() => dispatch({ type: 'PAUSE' })}>
-              Pause
-            </button>
-          ) : null}
-
-          {playerState.timer.phase === 'paused' ? (
-            <button type="button" className="primary-action" onClick={() => dispatch({ type: 'RESUME' })}>
-              Resume
-            </button>
-          ) : null}
-        </div>
-
-        <div className="player-secondary-controls">
+        {playerState.timer.phase === 'rest' ? (
           <button
             type="button"
-            className="secondary-action"
-            onClick={() => dispatch({ type: 'PREVIOUS_STEP' })}
-            disabled={!canGoPrevious(playerState)}
-            aria-label="Go to previous step"
-          >
-            Previous
-          </button>
-          <button
-            type="button"
-            className="secondary-action"
-            onClick={() => dispatch({ type: 'NEXT_STEP' })}
-            disabled={!canGoNext(playerState)}
-            aria-label="Go to next step"
-          >
-            Next
-          </button>
-          <button
-            type="button"
-            className="ghost-action"
+            className="ghost-action player-skip-rest-button"
             onClick={() => dispatch({ type: 'SKIP_REST' })}
             disabled={playerState.timer.phase !== 'rest'}
             aria-label="Skip rest"
           >
             Skip rest
           </button>
+        ) : null}
+      </section>
+
+      <section className="player-session-footer" aria-label="Workout meta">
+        <div className="player-session-meta">
+          <span className="mini-pill">Elapsed {formatDurationLabel(playerState.timer.elapsedSeconds)}</span>
         </div>
       </section>
 
-      <section className="card player-preferences-card" aria-labelledby="preferences-title">
-        <p id="preferences-title" className="card-eyebrow">Preferences</p>
-        <div className="toggle-grid">
-          <label className="toggle-card">
-            <input
-              type="checkbox"
-              checked={playerState.preferences.soundEnabled}
-              onChange={(event) => dispatch({ type: 'UPDATE_PREFERENCES', preferences: { soundEnabled: event.target.checked } })}
-            />
-            <span>
-              <strong>Sound cues</strong>
-              <br />
-              <span>Keep audible transition prompts on.</span>
-            </span>
-          </label>
-          <label className="toggle-card">
-            <input
-              type="checkbox"
-              checked={playerState.preferences.vibrationEnabled}
-              onChange={(event) =>
-                dispatch({ type: 'UPDATE_PREFERENCES', preferences: { vibrationEnabled: event.target.checked } })
-              }
-            />
-            <span>
-              <strong>Vibration</strong>
-              <br />
-              <span>Enable haptic-ready cues for later device support.</span>
-            </span>
-          </label>
-          <label className="toggle-card">
-            <input
-              type="checkbox"
-              checked={playerState.preferences.voiceCountdownEnabled}
-              onChange={(event) =>
-                dispatch({ type: 'UPDATE_PREFERENCES', preferences: { voiceCountdownEnabled: event.target.checked } })
-              }
-            />
-            <span>
-              <strong>Voice countdown</strong>
-              <br />
-              <span>Stored locally so your player picks up where you left it.</span>
-            </span>
-          </label>
+      <BottomSheet
+        isOpen={isSettingsOpen}
+        title="Quick preferences"
+        subtitle="Sound, countdown, and haptics are saved locally."
+        onDismiss={() => setIsSettingsOpen(false)}
+      >
+        <div className="player-settings-grid">
+          {PREFERENCE_OPTIONS.map((option) => (
+            <label key={option.key} className="toggle-card player-settings-toggle">
+              <input
+                type="checkbox"
+                checked={playerState.preferences[option.key]}
+                onChange={(event) =>
+                  dispatch({
+                    type: 'UPDATE_PREFERENCES',
+                    preferences: { [option.key]: event.target.checked },
+                  })
+                }
+              />
+              <span>
+                <strong>{option.label}</strong>
+                <br />
+                <span>{option.detail}</span>
+              </span>
+            </label>
+          ))}
+          <button
+            type="button"
+            className="secondary-action player-audio-test-button"
+            onClick={handleAudioTest}
+            disabled={isAudioTestRunning}
+          >
+            {isAudioTestRunning ? 'Testing audio…' : 'Test audio'}
+          </button>
         </div>
-      </section>
+      </BottomSheet>
     </div>
   )
 }
