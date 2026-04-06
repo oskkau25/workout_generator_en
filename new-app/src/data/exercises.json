@@ -1056,13 +1056,19 @@
     "coaching": {
       "shortInstruction": "Stand with feet shoulder-width apart, toes slightly out",
       "fullInstruction": "Stand with feet shoulder-width apart, toes slightly out. Push hips back and lower as if sitting in chair. Keep chest up, knees over toes. Push through heels to stand. ⚠️ DO: Keep chest up, push knees out, go to parallel or higher. DON'T: Let knees cave inward, round back, or go too deep if you have knee issues.",
+      "steps": [
+        "Stand tall with feet about shoulder-width apart.",
+        "Push hips back and bend knees to sit down.",
+        "Lower until your thighs are about parallel or higher.",
+        "Drive through your heels to stand tall again."
+      ],
       "safetyNotes": [
-        "Keep chest up, push knees out, go to parallel or higher.",
-        "Let knees cave inward, round back, or go too deep if you have knee issues."
+        "Keep your chest lifted and knees tracking over your toes.",
+        "Stop higher if your knees or hips feel pinchy."
       ]
     },
     "media": {
-      "videoSearchQuery": "squats correct form tutorial beginner"
+      "videoSearchQuery": "bodyweight squat proper form beginner"
     },
     "substitutionTags": [
       "wall sits",
@@ -1109,13 +1115,19 @@
     "coaching": {
       "shortInstruction": "Start in plank position, hands slightly wider than shoulders",
       "fullInstruction": "Start in plank position, hands slightly wider than shoulders. Lower chest toward floor, keeping body straight. Push back up to start. Beginners: keep knees on ground. ⚠️ DO: Keep body straight, lower chest not head, breathe rhythmically. DON'T: Let hips sag, touch floor with face, or hold breath.",
+      "steps": [
+        "Set up in a plank with hands just wider than shoulders.",
+        "Brace your core and keep your body in one line.",
+        "Lower your chest between your hands.",
+        "Press the floor away to return to the top."
+      ],
       "safetyNotes": [
-        "Keep body straight, lower chest not head, breathe rhythmically.",
-        "Let hips sag, touch floor with face, or hold breath."
+        "Drop to your knees if you cannot keep a straight body line.",
+        "Do not let your hips sag or your head lead the rep."
       ]
     },
     "media": {
-      "videoSearchQuery": "push ups correct form tutorial beginner"
+      "videoSearchQuery": "push up proper form beginner"
     },
     "substitutionTags": [
       "wall push-ups",
@@ -1166,13 +1178,19 @@
     "coaching": {
       "shortInstruction": "Step forward with one leg, lowering until both knees are bent at 90 degrees",
       "fullInstruction": "Step forward with one leg, lowering until both knees are bent at 90 degrees. Front knee should be over toes, back knee near ground. Push back to start and switch legs. ⚠️ DO: Keep chest up, front knee over toes, back knee near ground. DON'T: Let front knee go past toes, round back, or lose balance.",
+      "steps": [
+        "Stand tall and step one foot forward.",
+        "Lower until both knees are bent under control.",
+        "Keep your chest tall and hips square as you lower.",
+        "Push back to standing and switch sides."
+      ],
       "safetyNotes": [
-        "Keep chest up, front knee over toes, back knee near ground.",
-        "Let front knee go past toes, round back, or lose balance."
+        "Keep your torso tall and move straight up and down.",
+        "Shorten the step if you feel wobbly or knee pressure."
       ]
     },
     "media": {
-      "videoSearchQuery": "lunges correct form tutorial beginner"
+      "videoSearchQuery": "forward lunge proper form beginner"
     },
     "substitutionTags": [
       "lunge",
@@ -1218,13 +1236,19 @@
     "coaching": {
       "shortInstruction": "Start in push-up position, then lower to forearms",
       "fullInstruction": "Start in push-up position, then lower to forearms. Keep body in straight line from head to heels. Engage core and hold position. ⚠️ DO: Keep body straight, engage core, breathe normally. DON'T: Let hips sag or lift, hold breath, or let head drop.",
+      "steps": [
+        "Place forearms on the floor with elbows under shoulders.",
+        "Step your feet back and squeeze your legs and glutes.",
+        "Keep your ribs down and body in one straight line.",
+        "Hold steady while breathing slowly."
+      ],
       "safetyNotes": [
-        "Keep body straight, engage core, breathe normally.",
-        "Let hips sag or lift, hold breath, or let head drop."
+        "Think long through your head, hips, and heels.",
+        "If your low back sags, shorten the hold or elevate your hands."
       ]
     },
     "media": {
-      "videoSearchQuery": "plank correct form tutorial beginner"
+      "videoSearchQuery": "forearm plank proper form beginner"
     },
     "substitutionTags": [
       "horizontal_push",
@@ -1271,13 +1295,19 @@
     "coaching": {
       "shortInstruction": "Lie on back with knees bent, feet flat on floor",
       "fullInstruction": "Lie on back with knees bent, feet flat on floor. Lift hips toward ceiling, squeezing glutes. Hold briefly at top, then lower with control. ⚠️ DO: Squeeze glutes, keep core engaged, lift hips high enough. DON'T: Arch back excessively, let knees cave inward, or lift hips too high.",
+      "steps": [
+        "Lie on your back with knees bent and feet flat.",
+        "Press through your heels and squeeze your glutes.",
+        "Lift your hips until your shoulders, hips, and knees form a straight line.",
+        "Pause briefly, then lower with control."
+      ],
       "safetyNotes": [
-        "Squeeze glutes, keep core engaged, lift hips high enough.",
-        "Arch back excessively, let knees cave inward, or lift hips too high."
+        "Lift from your hips, not by arching your low back.",
+        "Keep your knees from caving inward as you rise."
       ]
     },
     "media": {
-      "videoSearchQuery": "glute bridge main exercise tutorial"
+      "videoSearchQuery": "glute bridge proper form beginner"
     },
     "substitutionTags": [
       "locomotion",
@@ -1538,13 +1568,19 @@
     "coaching": {
       "shortInstruction": "Lie on back with arms extended toward ceiling, knees bent at 90 degrees",
       "fullInstruction": "Lie on back with arms extended toward ceiling, knees bent at 90 degrees. Lower opposite arm and leg toward floor, keeping back flat. Return and switch sides. ⚠️ DO: Keep back flat on floor, move slowly, engage core. DON'T: Let back arch, move too fast, or let legs drop too low.",
+      "steps": [
+        "Lie on your back with arms up and knees over hips.",
+        "Press your low back gently into the floor.",
+        "Reach one arm overhead and lower the opposite leg toward the floor.",
+        "Return to center and switch sides."
+      ],
       "safetyNotes": [
-        "Keep back flat on floor, move slowly, engage core.",
-        "Let back arch, move too fast, or let legs drop too low."
+        "Only lower as far as you can keep your back flat.",
+        "Move slowly and reset if your ribs pop up."
       ]
     },
     "media": {
-      "videoSearchQuery": "dead bug main exercise tutorial"
+      "videoSearchQuery": "dead bug exercise proper form beginner"
     },
     "substitutionTags": [
       "core_stability",
@@ -1592,13 +1628,19 @@
     "coaching": {
       "shortInstruction": "Start standing, drop into squat, place hands on floor, jump feet back to plank, do push-up, jump feet forward, then jump up with arms overhead",
       "fullInstruction": "Start standing, drop into squat, place hands on floor, jump feet back to plank, do push-up, jump feet forward, then jump up with arms overhead. ⚠️ DO: Land softly, maintain good form throughout, breathe rhythmically. DON'T: Rush the movement, sacrifice form for speed, or land hard on feet.",
+      "steps": [
+        "Squat down and place your hands on the floor.",
+        "Jump or step your feet back into a plank.",
+        "Jump or step your feet back under your hips.",
+        "Stand tall or add a small jump at the top."
+      ],
       "safetyNotes": [
-        "Land softly, maintain good form throughout, breathe rhythmically.",
-        "Rush the movement, sacrifice form for speed, or land hard on feet."
+        "Step the feet back instead of jumping if you lose plank shape.",
+        "Land softly and slow down before your form breaks."
       ]
     },
     "media": {
-      "videoSearchQuery": "burpees correct form tutorial beginner"
+      "videoSearchQuery": "burpee proper form beginner"
     },
     "substitutionTags": [
       "plyometric",
@@ -1902,13 +1944,19 @@
     "coaching": {
       "shortInstruction": "Start in plank position",
       "fullInstruction": "Start in plank position. Alternate bringing knees toward chest as if climbing. Keep hips level and core engaged throughout. ⚠️ DO: Keep hips level, move knees toward chest, maintain plank form. DON'T: Let hips lift, move too fast, or sacrifice form for speed.",
+      "steps": [
+        "Set up in a strong plank with hands under shoulders.",
+        "Drive one knee toward your chest.",
+        "Switch legs quickly while keeping your hands planted.",
+        "Keep your hips as level as you can."
+      ],
       "safetyNotes": [
-        "Keep hips level, move knees toward chest, maintain plank form.",
-        "Let hips lift, move too fast, or sacrifice form for speed."
+        "Slow the pace if your hips start bouncing or lifting.",
+        "Keep pressure through the floor so your shoulders stay stable."
       ]
     },
     "media": {
-      "videoSearchQuery": "mountain climbers correct form tutorial beginner"
+      "videoSearchQuery": "mountain climber proper form beginner"
     },
     "substitutionTags": [
       "plyometric",
@@ -4070,13 +4118,19 @@
     "coaching": {
       "shortInstruction": "Hinge at hips, hike bell back and snap hips forward to chest height, arms relaxed",
       "fullInstruction": "Hinge at hips, hike bell back and snap hips forward to chest height, arms relaxed. ⚠️ DO: Hinge, don't squat; snap hips. DON'T: Lift with arms or round back.",
+      "steps": [
+        "Stand a foot behind the bell and hinge to grab it.",
+        "Hike the bell back between your legs.",
+        "Snap your hips forward to float the bell to chest height.",
+        "Let it fall back and hinge again for the next rep."
+      ],
       "safetyNotes": [
-        "Hinge, don't squat; snap hips.",
-        "Lift with arms or round back."
+        "Drive the bell with your hips, not your shoulders.",
+        "Keep your back flat and stop if the bell pulls you forward."
       ]
     },
     "media": {
-      "videoSearchQuery": "kettlebell swings main exercise tutorial"
+      "videoSearchQuery": "kettlebell swing proper form hardstyle beginner"
     },
     "substitutionTags": [
       "hinge",
@@ -9946,10 +10000,20 @@
     ],
     "coaching": {
       "shortInstruction": "Hold dumbbells by your sides, soften the knees, and hinge at the hips while keeping the spine long",
-      "fullInstruction": "Hold dumbbells by your sides, soften the knees, and hinge at the hips while keeping the spine long. Drive hips forward to stand tall and squeeze glutes."
+      "fullInstruction": "Hold dumbbells by your sides, soften the knees, and hinge at the hips while keeping the spine long. Drive hips forward to stand tall and squeeze glutes.",
+      "steps": [
+        "Stand tall with dumbbells at your sides and knees softly bent.",
+        "Push your hips back while the dumbbells track down your thighs.",
+        "Stop when you feel a hamstring stretch and your back stays flat.",
+        "Drive your hips forward to stand tall again."
+      ],
+      "safetyNotes": [
+        "Keep the dumbbells close to your legs the whole time.",
+        "Do not chase extra depth by rounding your back."
+      ]
     },
     "media": {
-      "videoSearchQuery": "dumbbell romanian deadlift tutorial form"
+      "videoSearchQuery": "dumbbell romanian deadlift proper form beginner"
     },
     "substitutionTags": [
       "dumbbell deadlift",
