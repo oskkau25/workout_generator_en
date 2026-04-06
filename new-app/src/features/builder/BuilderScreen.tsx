@@ -7,9 +7,6 @@ import { normalizeBuilderDraft } from '@/domain/builder/builder-normalizer'
 import type {
   BuilderDraft,
   EquipmentId,
-  FitnessLevel,
-  WorkoutFormat,
-  WorkoutGoal,
 } from '@/domain/builder/builder-types'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { generateWorkout } from '@/domain/workouts/workout-generator'

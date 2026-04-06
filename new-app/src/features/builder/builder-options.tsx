@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { ReactNode } from 'react'
 import type { EquipmentId, FitnessLevel, WorkoutFormat, WorkoutGoal } from '@/domain/builder/builder-types'
 
