@@ -64,9 +64,11 @@ export interface ExerciseDefinition {
   coaching: {
     shortInstruction: string
     fullInstruction: string
+    steps?: string[]
     safetyNotes?: string[]
   }
   media?: {
+    animationUrl?: string
     imageUrl?: string
     videoId?: string
     videoSearchQuery?: string

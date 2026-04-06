@@ -130,8 +130,6 @@ function isInteractiveElement(target: EventTarget | null) {
   return target.isContentEditable || ['input', 'textarea', 'select', 'button', 'a'].includes(tagName)
 }
 
-
-
 type WakeLockSentinelLike = {
   release: () => Promise<void>
 }
@@ -770,7 +768,35 @@ export function WorkoutPlayerScreen() {
                 {isExerciseDetailPinned ? 'Unpin details' : 'Pin details'}
               </button>
             </div>
-            {expandedInstruction ? <p>{expandedInstruction}</p> : null}
+            {detailMediaUrl ? (
+              <img
+                className="exercise-guidance-media"
+                src={detailMediaUrl}
+                alt={currentExercise ? `${currentExercise.name} demo` : 'Exercise demo'}
+              />
+            ) : null}
+            {currentExercise?.coaching.steps?.length ? (
+              <section className="exercise-guidance-section" aria-label="Exercise steps">
+                <span className="card-eyebrow">How to do it</span>
+                <ol className="exercise-guidance-list">
+                  {currentExercise.coaching.steps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+              </section>
+            ) : expandedInstruction ? (
+              <p>{expandedInstruction}</p>
+            ) : null}
+            {currentExercise?.coaching.safetyNotes?.length ? (
+              <section className="exercise-guidance-section" aria-label="Safety notes">
+                <span className="card-eyebrow">Watch out</span>
+                <ul className="exercise-guidance-list">
+                  {currentExercise.coaching.safetyNotes.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
             <div className="player-context-row">
               {currentExercise?.movementPattern ? (
                 <span className="compact-chip">{getMovementPatternLabel(currentExercise.movementPattern)}</span>

@@ -4,7 +4,7 @@ import { StepProgress } from '@/components/ui/StepProgress'
 import { BodyMapFigure } from '@/components/body-map/BodyMapFigure'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import type { ExerciseDefinition } from '@/domain/exercises/exercise-types'
-import { formatBodyRegionList, getExpandedInstruction, getMovementCategoryFromPattern, getMovementPatternLabel, titleCase } from '@/domain/exercises/exercise-taxonomy'
+import { formatBodyRegionList, getExpandedInstruction, getMovementCategoryFromPattern, getMovementPatternLabel, getYouTubeSearchUrl, titleCase } from '@/domain/exercises/exercise-taxonomy'
 import { MovementIcon, SectionIcon, type WorkoutSectionType } from '@/components/icons/workout-icons'
 import { mapGeneratedWorkoutToSummaryViewModel } from '@/domain/workouts/workout-summary-mapper'
 import type {
@@ -410,6 +410,8 @@ function WorkoutJourneyReview({
                             selectedExercise?.coaching.fullInstruction,
                             selectedExercise?.coaching.shortInstruction,
                           )
+                          const youtubeSearchUrl = getYouTubeSearchUrl(selectedExercise?.media?.videoSearchQuery)
+                          const detailMediaUrl = selectedExercise?.media?.animationUrl ?? selectedExercise?.media?.imageUrl ?? null
                           const movementCategory = selectedExercise?.movementPattern
                             ? getMovementCategoryFromPattern(selectedExercise.movementPattern)
                             : 'general'
@@ -451,7 +453,46 @@ function WorkoutJourneyReview({
 
                               {expandedExercise ? (
                                 <div id={`exercise-panel-${step.id}`} className="summary-exercise-panel">
-                                  {expandedInstruction ? <p className="summary-format-hint">{expandedInstruction}</p> : null}
+                                  {detailMediaUrl ? (
+                                    <img
+                                      className="exercise-guidance-media"
+                                      src={detailMediaUrl}
+                                      alt={`${title} demo`}
+                                      loading="lazy"
+                                    />
+                                  ) : null}
+                                  {selectedExercise?.coaching.steps?.length ? (
+                                    <section className="exercise-guidance-section" aria-label="Exercise steps">
+                                      <span className="card-eyebrow">How to do it</span>
+                                      <ol className="exercise-guidance-list">
+                                        {selectedExercise.coaching.steps.map((instructionStep) => (
+                                          <li key={instructionStep}>{instructionStep}</li>
+                                        ))}
+                                      </ol>
+                                    </section>
+                                  ) : expandedInstruction ? (
+                                    <p className="summary-format-hint">{expandedInstruction}</p>
+                                  ) : null}
+                                  {selectedExercise?.coaching.safetyNotes?.length ? (
+                                    <section className="exercise-guidance-section" aria-label="Safety notes">
+                                      <span className="card-eyebrow">Watch out</span>
+                                      <ul className="exercise-guidance-list">
+                                        {selectedExercise.coaching.safetyNotes.map((note) => (
+                                          <li key={note}>{note}</li>
+                                        ))}
+                                      </ul>
+                                    </section>
+                                  ) : null}
+                                  {youtubeSearchUrl ? (
+                                    <a
+                                      className="exercise-guidance-link"
+                                      href={youtubeSearchUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      Watch on YouTube
+                                    </a>
+                                  ) : null}
                                   <div className="summary-chip-row">
                                     {selectedExercise?.movementPattern ? (
                                       <span className="summary-step-meta">{getMovementPatternLabel(selectedExercise.movementPattern)}</span>
