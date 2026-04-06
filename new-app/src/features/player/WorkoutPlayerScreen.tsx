@@ -442,6 +442,7 @@ export function WorkoutPlayerScreen() {
     currentExercise?.coaching.fullInstruction,
     currentExercise?.coaching.shortInstruction,
   )
+  const detailMediaUrl = currentExercise?.media?.animationUrl ?? currentExercise?.media?.imageUrl ?? null
 
   useEffect(() => {
     if (isExerciseDetailPinned) {
@@ -723,7 +724,11 @@ export function WorkoutPlayerScreen() {
 
           <div className="player-exercise-hero">
             <div className="player-exercise-visual" aria-hidden="true">
-              <MovementIcon category={movementCategory} />
+              {detailMediaUrl ? (
+                <img className="player-exercise-visual-image" src={detailMediaUrl} alt="" />
+              ) : (
+                <MovementIcon category={movementCategory} />
+              )}
             </div>
             <div className="player-exercise-copy">
               <div className="player-compact-status-row" role="status" aria-live="polite">

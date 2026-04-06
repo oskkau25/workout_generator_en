@@ -79,6 +79,13 @@
   align-items: start;
 }
 
+.player-exercise-visual-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
 .player-exercise-visual svg {
   width: 3rem;
   height: 3rem;
