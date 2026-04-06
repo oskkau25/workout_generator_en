@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BottomSheet } from '@/components/ui/BottomSheet'
 import { BodyMapFigure } from '@/components/body-map/BodyMapFigure'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
-import { formatBodyRegionList, getMovementCategoryFromPattern, getMovementPatternLabel, titleCase, type MovementIconCategory } from '@/domain/exercises/exercise-taxonomy'
+import { formatBodyRegionList, getExpandedInstruction, getMovementCategoryFromPattern, getMovementPatternLabel, titleCase } from '@/domain/exercises/exercise-taxonomy'
+import { MovementIcon, PlayerStateIcon } from '@/components/icons/workout-icons'
 import { playerReducer, createInitialPlayerState } from '@/domain/player/player-reducer'
 import {
   canGoNext,
@@ -119,28 +120,6 @@ function getNextUpLabel(step: WorkoutExerciseStep | null) {
   return labels.join(' • ')
 }
 
-function getExpandedInstruction(fullInstruction: string | undefined, shortInstruction: string | undefined) {
-  if (!fullInstruction) {
-    return null
-  }
-
-  const trimmedFull = fullInstruction.trim()
-  if (!trimmedFull) {
-    return null
-  }
-
-  if (!shortInstruction) {
-    return trimmedFull
-  }
-
-  const trimmedShort = shortInstruction.trim().replace(/[.!\s]+$/, '')
-  if (!trimmedShort || !trimmedFull.startsWith(trimmedShort)) {
-    return trimmedFull
-  }
-
-  const remainder = trimmedFull.slice(trimmedShort.length).replace(/^[.!:\-\s]+/, '').trim()
-  return remainder || null
-}
 
 function isInteractiveElement(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
@@ -152,49 +131,6 @@ function isInteractiveElement(target: EventTarget | null) {
 }
 
 
-function renderMovementIcon(category: MovementIconCategory) {
-  switch (category) {
-    case 'squat':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="11" r="4" /><path d="M24 16v8l-6 5m6-5 6 5m-10 1v8m8-8v8m-14 0h20" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'hinge':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="28" cy="10" r="4" /><path d="M28 15v9l-8 5m8-5 7 3M20 29l-4 9m11-8 5 8M10 32h10" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'push':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 28h24M18 22l6-4 6 4M18 34l6-4 6 4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'pull':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 16h28m0 0-5-5m5 5-5 5M38 32H20m0 0 5-5m-5 5 5 5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'plank':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="14" cy="18" r="3" /><path d="M17 20h13l8 8M30 20l-8 12M14 31h6m14 0h4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'lunge':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="10" r="4" /><path d="M24 15v8l-6 6m6-6 7 4m-13 2h9m-9 0-3 9m12-9 7 9" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'rotation':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 10a14 14 0 0 1 12 7m0 0v-5m0 5h-5M24 38a14 14 0 0 1-12-7m0 0v5m0-5h5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M24 16v16" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" /></svg>
-    case 'jump':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 11v18m0 0-7-7m7 7 7-7M14 37h20" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'carry':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 18h7v6h-7zm17 0h7v6h-7zM19 21h10M24 12v9m0 3v12" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'mobility_stretch':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 30c2-7 7-12 11-12 6 0 11 6 11 12M24 18V8m-8 25 8 7 8-7" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'floor_core':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 30h14l8-8 6 6M16 30l6 8m12-10 4 10" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    default:
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" strokeWidth="3.2" /><path d="M24 18v6l4 4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-  }
-}
-
-function renderWorkoutStateIcon(phase: PlayerPhase | 'idle') {
-  switch (phase) {
-    case 'work':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 10 14 27h8l-2 11 14-19h-8l2-9Z" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'rest':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 24c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Zm9-15v4m0 22v4m15-15h-4M13 24H9" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'paused':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 14v20M30 14v20" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></svg>
-    case 'completed':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 24l7 7 13-14" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="24" r="14" fill="none" stroke="currentColor" strokeWidth="3.2" /></svg>
-    default:
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 15v18l14-9Z" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-  }
-}
 
 type WakeLockSentinelLike = {
   release: () => Promise<void>
@@ -264,6 +200,9 @@ export function WorkoutPlayerScreen() {
   const previousPhaseRef = useRef<PlayerPhase>('idle')
   const lastCountdownRef = useRef<string | null>(null)
   const audioTestTimeoutsRef = useRef<number[]>([])
+  const hiddenAtRef = useRef<number | null>(null)
+  const timerPhaseRef = useRef(playerState.timer.phase)
+  timerPhaseRef.current = playerState.timer.phase
 
   useEffect(() => {
     let cancelled = false
@@ -318,8 +257,18 @@ export function WorkoutPlayerScreen() {
       return
     }
 
+    // Use wall-clock timestamps to avoid drift when the browser throttles
+    // setInterval (e.g. when the tab is backgrounded).
+    let lastTickAt = Date.now()
+
     const intervalId = window.setInterval(() => {
-      dispatch({ type: 'TICK' })
+      const now = Date.now()
+      const delta = Math.round((now - lastTickAt) / 1000)
+      lastTickAt = now
+
+      if (delta > 0) {
+        dispatch({ type: 'TICK', seconds: delta })
+      }
     }, 1000)
 
     return () => {
@@ -445,8 +394,17 @@ export function WorkoutPlayerScreen() {
     function handleVisibilityChange() {
       if (document.visibilityState === 'visible') {
         void acquireWakeLock()
+        if (hiddenAtRef.current !== null) {
+          const gapSeconds = Math.round((Date.now() - hiddenAtRef.current) / 1000)
+          hiddenAtRef.current = null
+          const phase = timerPhaseRef.current
+          if (gapSeconds > 0 && (phase === 'work' || phase === 'rest')) {
+            dispatch({ type: 'TICK', seconds: gapSeconds })
+          }
+        }
       } else {
         void releaseWakeLock()
+        hiddenAtRef.current = Date.now()
       }
     }
 
@@ -765,12 +723,12 @@ export function WorkoutPlayerScreen() {
 
           <div className="player-exercise-hero">
             <div className="player-exercise-visual" aria-hidden="true">
-              {renderMovementIcon(movementCategory)}
+              <MovementIcon category={movementCategory} />
             </div>
             <div className="player-exercise-copy">
               <div className="player-compact-status-row" role="status" aria-live="polite">
                 <span className="mini-pill player-state-pill">
-                  <span className="player-state-pill-icon" aria-hidden="true">{renderWorkoutStateIcon(playerState.timer.phase)}</span>
+                  <span className="player-state-pill-icon" aria-hidden="true"><PlayerStateIcon phase={playerState.timer.phase} /></span>
                   <span>{phaseCopy.label}</span>
                 </span>
                 <span className="mini-pill player-timer-pill">{formatSeconds(playerState.timer.remainingSeconds)}</span>

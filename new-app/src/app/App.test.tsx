@@ -77,10 +77,7 @@ describe('App shell routing', () => {
     expect(storedWorkout.workout.sourceRequest.format).toBe('tabata')
     expect(await screen.findByText(new RegExp(storedWorkout.workout.metadata.title, 'i'))).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /review the flow/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /start workout/i })).toHaveAttribute(
-      'href',
-      `/workout/${storedWorkout.id}/play`,
-    )
+    expect(screen.getByRole('button', { name: /start workout/i })).toBeInTheDocument()
   })
 
   it('renders the workout summary review screen from stored generated workout data', async () => {
@@ -90,10 +87,7 @@ describe('App shell routing', () => {
 
     expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /review the flow/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /start workout/i })).toHaveAttribute(
-      'href',
-      `/workout/${workout.id}/play`,
-    )
+    expect(screen.getByRole('button', { name: /start workout/i })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: /generation notes/i })).not.toBeInTheDocument()
   })
 

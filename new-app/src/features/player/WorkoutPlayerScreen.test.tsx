@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { App } from '@/app/App'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
@@ -304,6 +304,7 @@ describe('WorkoutPlayerScreen', () => {
     expect(window.localStorage.getItem('workout-generator-react.v1.history')).toBeNull()
     expect(window.localStorage.getItem('workout-generator-react.v1.active-session')).toBeNull()
 
+    cleanup()
     renderWithRouter(<App />, { route: `/workout/${workout.id}/play` })
     expect(await screen.findByText(new RegExp(workout.metadata.title, 'i'))).toBeInTheDocument()
 

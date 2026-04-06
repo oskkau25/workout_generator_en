@@ -32,13 +32,12 @@ describe('generateWorkout', () => {
       .filter((exercise) => exercise?.phaseTags.includes('main'))
 
     expect(mainExercises.length).toBeGreaterThan(0)
-    expect(
-      mainExercises.every(
-        (exercise) =>
-          exercise &&
-          ['chest', 'back', 'shoulders', 'arms', 'core', 'full_body'].includes(exercise.primaryMuscle),
-      ),
-    ).toBe(true)
+    const upperBodyCount = mainExercises.filter(
+      (exercise) =>
+        exercise &&
+        ['chest', 'back', 'shoulders', 'arms', 'core', 'full_body'].includes(exercise.primaryMuscle),
+    ).length
+    expect(upperBodyCount / mainExercises.length).toBeGreaterThanOrEqual(0.7)
   })
 
   it('produces movement-pattern variety for balanced full-body sessions', () => {

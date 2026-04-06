@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import type { BodyRegionId } from '@/domain/exercises/exercise-types'
 import { BODY_REGION_LABELS } from '@/domain/exercises/exercise-taxonomy'
 
@@ -99,70 +100,78 @@ export type BodyMapFigureProps = {
 }
 
 export function BodyMapFigure({ primary, secondary = [], compact = false }: BodyMapFigureProps) {
+  const instanceId = useId()
+
   return (
     <div className={compact ? 'body-map body-map-compact' : 'body-map'}>
-      {BODY_MAP_VIEWS.map((view) => (
-        <div key={view.title} className="body-map-card" aria-label={`${view.title} body map`}>
-          <span className="body-map-label">{view.title}</span>
-          <svg viewBox="0 0 92 176" className="body-map-svg" role="img" aria-hidden="true">
-            <defs>
-              <clipPath id={`body-map-clip-${view.title.toLowerCase()}`}>
-                <circle cx="46" cy="14" r="11" />
-                <path d={view.halfSilhouette} />
-                <path d={view.halfSilhouette} transform={MIRROR_TRANSFORM} />
-                <path d="M43 118h6v47h-6Z" />
-              </clipPath>
-            </defs>
+      {BODY_MAP_VIEWS.map((view) => {
+        const clipId = `body-map-clip-${instanceId}-${view.title.toLowerCase()}`
 
-            <circle cx="46" cy="14" r="11" className="body-map-silhouette" />
-            <path d={view.halfSilhouette} className="body-map-silhouette" />
-            <path d={view.halfSilhouette} transform={MIRROR_TRANSFORM} className="body-map-silhouette" />
-            <path d="M43 118h6v47h-6Z" className="body-map-silhouette" />
+        return (
+          <div key={view.title} className="body-map-card" aria-label={`${view.title} body map`}>
+            <span className="body-map-label">{view.title}</span>
+            <svg viewBox="0 0 92 176" className="body-map-svg" role="img" aria-hidden="true">
+              <defs>
+                <clipPath id={clipId}>
+                  <circle cx="46" cy="14" r="11" />
+                  <path d={view.halfSilhouette} />
+                  <path d={view.halfSilhouette} transform={MIRROR_TRANSFORM} />
+                  <path d="M43 118h6v47h-6Z" />
+                </clipPath>
+              </defs>
 
-            {view.centerLine ? <path d={view.centerLine} className="body-map-detail-line body-map-detail-line-center" /> : null}
+              <circle cx="46" cy="14" r="11" className="body-map-silhouette" />
+              <path d={view.halfSilhouette} className="body-map-silhouette" />
+              <path d={view.halfSilhouette} transform={MIRROR_TRANSFORM} className="body-map-silhouette" />
+              <path d="M43 118h6v47h-6Z" className="body-map-silhouette" />
 
-            {view.centerDetailLines?.map((detailLine) => (
-              <path key={detailLine} d={detailLine} className="body-map-detail-line" />
-            ))}
+              {view.centerLine ? <path d={view.centerLine} className="body-map-detail-line body-map-detail-line-center" /> : null}
 
-            {view.mirroredDetailLines?.map((detailLine) => (
-              <g key={detailLine}>
-                <path d={detailLine} className="body-map-detail-line" />
-                <path d={detailLine} transform={MIRROR_TRANSFORM} className="body-map-detail-line" />
-              </g>
-            ))}
+              {view.centerDetailLines?.map((detailLine) => (
+                <path key={detailLine} d={detailLine} className="body-map-detail-line" />
+              ))}
 
-            {view.centerRegions.map((region) => (
-              <path
-                key={region.id}
-                d={region.d}
-                clipPath={`url(#body-map-clip-${view.title.toLowerCase()})`}
-                className={`body-map-region ${getIntensity(region.id, primary, secondary)}`.trim()}
-              >
-                <title>{BODY_REGION_LABELS[region.id]}</title>
-              </path>
-            ))}
+              {view.mirroredDetailLines?.map((detailLine) => (
+                <g key={detailLine}>
+                  <path d={detailLine} className="body-map-detail-line" />
+                  <path d={detailLine} transform={MIRROR_TRANSFORM} className="body-map-detail-line" />
+                </g>
+              ))}
 
-            {view.sideRegions.map((region) => (
-              <g key={region.id}>
+              {view.centerRegions.map((region) => (
                 <path
+                  key={region.id}
                   d={region.d}
-                  clipPath={`url(#body-map-clip-${view.title.toLowerCase()})`}
+                  clipPath={`url(#${clipId})`}
                   className={`body-map-region ${getIntensity(region.id, primary, secondary)}`.trim()}
                 >
                   <title>{BODY_REGION_LABELS[region.id]}</title>
                 </path>
-                <path
-                  d={region.d}
-                  transform={MIRROR_TRANSFORM}
-                  clipPath={`url(#body-map-clip-${view.title.toLowerCase()})`}
-                  className={`body-map-region ${getIntensity(region.id, primary, secondary)}`.trim()}
-                />
-              </g>
-            ))}
-          </svg>
-        </div>
-      ))}
+              ))}
+
+              {view.sideRegions.map((region) => (
+                <g key={region.id}>
+                  <path
+                    d={region.d}
+                    clipPath={`url(#${clipId})`}
+                    className={`body-map-region ${getIntensity(region.id, primary, secondary)}`.trim()}
+                  >
+                    <title>{BODY_REGION_LABELS[region.id]}</title>
+                  </path>
+                  <path
+                    d={region.d}
+                    transform={MIRROR_TRANSFORM}
+                    clipPath={`url(#${clipId})`}
+                    className={`body-map-region ${getIntensity(region.id, primary, secondary)}`.trim()}
+                  >
+                    <title>{BODY_REGION_LABELS[region.id]} (right)</title>
+                  </path>
+                </g>
+              ))}
+            </svg>
+          </div>
+        )
+      })}
     </div>
   )
 }

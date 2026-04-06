@@ -2,21 +2,19 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { StepProgress } from '@/components/ui/StepProgress'
 import { BodyMapFigure } from '@/components/body-map/BodyMapFigure'
-import type { BuilderDraft } from '@/domain/builder/builder-types'
 import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
-import { formatBodyRegionList, getMovementCategoryFromPattern, getMovementPatternLabel, titleCase, type MovementIconCategory } from '@/domain/exercises/exercise-taxonomy'
+import type { ExerciseDefinition } from '@/domain/exercises/exercise-types'
+import { formatBodyRegionList, getExpandedInstruction, getMovementCategoryFromPattern, getMovementPatternLabel, titleCase } from '@/domain/exercises/exercise-taxonomy'
+import { MovementIcon, SectionIcon, type WorkoutSectionType } from '@/components/icons/workout-icons'
 import { mapGeneratedWorkoutToSummaryViewModel } from '@/domain/workouts/workout-summary-mapper'
 import type {
   GeneratedWorkout,
 } from '@/domain/workouts/workout-types'
 import type { WorkoutSummaryStepViewModel } from '@/domain/workouts/workout-summary-mapper'
 import { GeneratedWorkoutStore, rehydrateBuilderDraftFromRequest } from '@/services/storage/generated-workout-store'
-import { LocalStorageStore } from '@/services/storage/local-storage-store'
-import { STORAGE_KEYS } from '@/services/storage/storage-keys'
+import { builderDraftStore } from '@/services/storage/builder-draft-store'
 import { workoutSessionStore } from '@/services/storage/workout-session-store'
 import { pickReplacementExercise } from './exercise-swap'
-
-const builderDraftStore = new LocalStorageStore<BuilderDraft>(STORAGE_KEYS.builderDraft)
 
 function normalizeKey(value: string) {
   return value.trim().toLowerCase()
@@ -51,18 +49,34 @@ function buildRecapItems(summary: NonNullable<ReturnType<typeof mapGeneratedWork
   return recap
 }
 
-function createInitialExerciseSelections(summary: NonNullable<ReturnType<typeof mapGeneratedWorkoutToSummaryViewModel>>) {
-  const selections: Record<string, string> = {}
-
-  for (const section of summary.sections) {
-    for (const step of section.steps) {
-      if (step.kind === 'exercise') {
-        selections[step.id] = step.title
-      }
-    }
+function applySwapsToWorkout(
+  source: GeneratedWorkout,
+  swaps: Record<string, ExerciseDefinition>,
+): GeneratedWorkout {
+  if (Object.keys(swaps).length === 0) {
+    return source
   }
 
-  return selections
+  return {
+    ...source,
+    playback: {
+      ...source.playback,
+      steps: source.playback.steps.map((step) => {
+        const swap = swaps[step.id]
+        return swap ? { ...step, exerciseId: swap.id } : step
+      }),
+    },
+    blocks: source.blocks.map((block) => ({
+      ...block,
+      steps: block.steps.map((step) => {
+        if (step.kind !== 'exercise') {
+          return step
+        }
+        const swap = swaps[step.id]
+        return swap ? { ...step, exerciseId: swap.id } : step
+      }),
+    })),
+  }
 }
 
 function createWorkoutStepLookup(summary: NonNullable<ReturnType<typeof mapGeneratedWorkoutToSummaryViewModel>>) {
@@ -92,74 +106,10 @@ function createWorkoutStepLookup(summary: NonNullable<ReturnType<typeof mapGener
   return lookup
 }
 
-function getExpandedInstruction(fullInstruction: string | undefined, shortInstruction: string | undefined) {
-  if (!fullInstruction) {
-    return null
-  }
-
-  const trimmedFull = fullInstruction.trim()
-  if (!trimmedFull) {
-    return null
-  }
-
-  if (!shortInstruction) {
-    return trimmedFull
-  }
-
-  const trimmedShort = shortInstruction.trim().replace(/[.!\s]+$/, '')
-  if (!trimmedShort || !trimmedFull.startsWith(trimmedShort)) {
-    return trimmedFull
-  }
-
-  const remainder = trimmedFull.slice(trimmedShort.length).replace(/^[.!:\-\s]+/, '').trim()
-  return remainder || null
-}
-
-
-function renderMovementIcon(category: MovementIconCategory) {
-  switch (category) {
-    case 'squat':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="11" r="4" /><path d="M24 16v8l-6 5m6-5 6 5m-10 1v8m8-8v8m-14 0h20" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'hinge':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="28" cy="10" r="4" /><path d="M28 15v9l-8 5m8-5 7 3M20 29l-4 9m11-8 5 8M10 32h10" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'push':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 28h24M18 22l6-4 6 4M18 34l6-4 6 4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'pull':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 16h28m0 0-5-5m5 5-5 5M38 32H20m0 0 5-5m-5 5 5 5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'plank':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="14" cy="18" r="3" /><path d="M17 20h13l8 8M30 20l-8 12M14 31h6m14 0h4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'lunge':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="10" r="4" /><path d="M24 15v8l-6 6m6-6 7 4m-13 2h9m-9 0-3 9m12-9 7 9" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'rotation':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 10a14 14 0 0 1 12 7m0 0v-5m0 5h-5M24 38a14 14 0 0 1-12-7m0 0v5m0-5h5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M24 16v16" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" /></svg>
-    case 'jump':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 11v18m0 0-7-7m7 7 7-7M14 37h20" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'carry':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 18h7v6h-7zm17 0h7v6h-7zM19 21h10M24 12v9m0 3v12" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'mobility_stretch':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 30c2-7 7-12 11-12 6 0 11 6 11 12M24 18V8m-8 25 8 7 8-7" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'floor_core':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 30h14l8-8 6 6M16 30l6 8m12-10 4 10" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    default:
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" strokeWidth="3.2" /><path d="M24 18v6l4 4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-  }
-}
-
-function getSectionIcon(sectionLabel: string) {
+function getSectionIcon(sectionLabel: string): WorkoutSectionType {
   if (sectionLabel === 'Warm-up') return 'warmup'
   if (sectionLabel === 'Cool-down') return 'cooldown'
   return 'main'
-}
-
-function renderSectionIcon(type: 'warmup' | 'main' | 'cooldown') {
-  switch (type) {
-    case 'warmup':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 31c2-7 7-12 9-12s7 5 9 12M24 18V9m-5 23 5 6 5-6" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    case 'cooldown':
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 24c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Zm9-15v4m0 22v4m15-15h-4M13 24H9" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    default:
-      return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 10 14 27h8l-2 11 14-19h-8l2-9Z" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-  }
 }
 
 export function WorkoutSummaryScreen() {
@@ -167,6 +117,7 @@ export function WorkoutSummaryScreen() {
   const navigate = useNavigate()
   const [workout, setWorkout] = useState<GeneratedWorkout | null>(null)
   const [hasResumableSession, setHasResumableSession] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
@@ -178,6 +129,7 @@ export function WorkoutSummaryScreen() {
             setWorkout(stored.workout)
           }
           setHasResumableSession(Boolean(savedSession && savedSession.workout.id === workoutId))
+          setIsLoading(false)
         }
       },
     )
@@ -201,6 +153,17 @@ export function WorkoutSummaryScreen() {
 
     await builderDraftStore.save(rehydrateBuilderDraftFromRequest(workout.sourceRequest))
     navigate('/build')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="screen-grid">
+        <section className="card" role="status" aria-live="polite">
+          <p className="card-eyebrow">Check</p>
+          <h2>Loading your workout...</h2>
+        </section>
+      </div>
+    )
   }
 
   if (!workout || !summary) {
@@ -247,6 +210,7 @@ function WorkoutJourneyReview({
   hasResumableSession,
   onEditSettings,
 }: WorkoutJourneyReviewProps) {
+  const navigate = useNavigate()
   const exerciseLookup = useMemo(
     () => new Map(legacyExerciseCatalog.map((exercise) => [normalizeKey(exercise.name), exercise])),
     [],
@@ -256,9 +220,7 @@ function WorkoutJourneyReview({
   const [expandedExerciseIds, setExpandedExerciseIds] = useState<string[]>([])
   const [recentlySwappedExerciseIds, setRecentlySwappedExerciseIds] = useState<string[]>([])
   const [lastSwapMessage, setLastSwapMessage] = useState<string | null>(null)
-  const [exerciseSelections, setExerciseSelections] = useState<Record<string, string>>(() =>
-    createInitialExerciseSelections(summary),
-  )
+  const [exerciseSwaps, setExerciseSwaps] = useState<Record<string, ExerciseDefinition>>({})
 
   useEffect(() => {
     if (recentlySwappedExerciseIds.length === 0) {
@@ -300,17 +262,13 @@ function WorkoutJourneyReview({
     )
   }
 
-  function getSelectedExerciseName(step: WorkoutSummaryStepViewModel) {
-    return exerciseSelections[step.id] ?? step.title
-  }
-
   function handleSwapExercise(stepId: string) {
     const stepContext = workoutStepLookup.get(stepId)
     if (!stepContext || stepContext.step.kind !== 'exercise') {
       return
     }
 
-    const currentExerciseName = exerciseSelections[stepId] ?? stepContext.step.title
+    const currentExerciseName = exerciseSwaps[stepId]?.name ?? stepContext.step.title
     const replacement = pickReplacementExercise(
       currentExerciseName,
       stepContext.sectionId,
@@ -324,18 +282,24 @@ function WorkoutJourneyReview({
       return
     }
 
-    setExerciseSelections((current) => ({
-      ...current,
-      [stepId]: replacement.name,
-    }))
-
+    setExerciseSwaps((current) => ({ ...current, [stepId]: replacement }))
     setLastSwapMessage(`Swapped ${currentExerciseName} for ${replacement.name} in ${stepContext.sectionTitle}.`)
-
     setRecentlySwappedExerciseIds((current) =>
       current.includes(stepId) ? current : [...current, stepId],
     )
-
     setExpandedExerciseIds((current) => (current.includes(stepId) ? current : [...current, stepId]))
+  }
+
+  async function handleStartWorkout() {
+    const hasSwaps = Object.keys(exerciseSwaps).length > 0
+
+    if (hasSwaps) {
+      const patched = applySwapsToWorkout(workout, exerciseSwaps)
+      await GeneratedWorkoutStore.save({ id: patched.id, workout: patched })
+      await workoutSessionStore.clearActiveSession()
+    }
+
+    navigate(`/workout/${workout.id}/play`)
   }
 
   return (
@@ -402,7 +366,7 @@ function WorkoutJourneyReview({
                     <div className="summary-timeline-toggle-copy">
                       <p className="card-eyebrow">{section.eyebrow}</p>
                       <div className="summary-timeline-heading-row">
-                        <span className="summary-section-icon" aria-hidden="true">{renderSectionIcon(getSectionIcon(sectionLabel))}</span>
+                        <span className="summary-section-icon" aria-hidden="true"><SectionIcon type={getSectionIcon(sectionLabel)} /></span>
                         <h3 id={`section-${section.id}`}>{sectionLabel}</h3>
                         <span className="summary-section-count">{section.steps.length} items</span>
                       </div>
@@ -435,10 +399,10 @@ function WorkoutJourneyReview({
                             )
                           }
 
-                          const selectedExerciseName = getSelectedExerciseName(step)
-                          const selectedExercise = exerciseLookup.get(normalizeKey(selectedExerciseName)) ?? null
+                          const swappedExercise = exerciseSwaps[step.id] ?? null
+                          const selectedExercise = swappedExercise ?? (exerciseLookup.get(normalizeKey(step.title)) ?? null)
                           const expandedExercise = expandedExerciseIds.includes(step.id)
-                          const isSwapped = selectedExerciseName !== step.title
+                          const isSwapped = swappedExercise !== null
                           const wasRecentlySwapped = recentlySwappedExerciseIds.includes(step.id)
                           const title = selectedExercise?.name ?? step.title
                           const detail = selectedExercise?.coaching.shortInstruction ?? step.detail
@@ -468,7 +432,7 @@ function WorkoutJourneyReview({
                                 onClick={() => toggleExercise(step.id)}
                               >
                                 <span className="summary-exercise-silhouette" aria-hidden="true">
-                                  {renderMovementIcon(movementCategory)}
+                                  <MovementIcon category={movementCategory} />
                                 </span>
                                 <span className="summary-exercise-toggle-copy">
                                   <strong>{title}</strong>
@@ -556,9 +520,13 @@ function WorkoutJourneyReview({
           </p>
         </div>
         <div className="summary-action-stack">
-          <Link className="primary-action summary-primary-action" to={`/workout/${workout.id}/play`}>
-            {hasResumableSession ? 'Resume workout' : 'Start workout'}
-          </Link>
+          <button
+            type="button"
+            className="primary-action summary-primary-action"
+            onClick={() => void handleStartWorkout()}
+          >
+            {hasResumableSession && Object.keys(exerciseSwaps).length === 0 ? 'Resume workout' : 'Start workout'}
+          </button>
           <button type="button" className="secondary-action" onClick={() => void onEditSettings()}>
             Edit settings
           </button>

@@ -47,7 +47,7 @@ describe('BuilderScreen', () => {
     const user = userEvent.setup()
     renderWithRouter(<BuilderScreen />)
 
-    expect(screen.queryByRole('group', { name: /fitness level/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('spinbutton', { name: /work seconds/i })).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /fine-tune timing and difficulty/i }))
 

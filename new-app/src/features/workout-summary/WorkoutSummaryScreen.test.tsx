@@ -117,10 +117,7 @@ describe('WorkoutSummaryScreen', () => {
       path: '/workout/:workoutId/summary',
     })
 
-    expect(await screen.findByRole('link', { name: /start workout/i })).toHaveAttribute(
-      'href',
-      `/workout/${workout.id}/play`,
-    )
+    expect(await screen.findByRole('button', { name: /start workout/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /edit settings/i })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /regenerate workout/i })).not.toBeInTheDocument()
   })

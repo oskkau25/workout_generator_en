@@ -157,3 +157,33 @@ export function collectMuscleCoverage(exercises: ExerciseDefinition[]) {
     mobility: 0,
   })
 }
+
+/**
+ * Returns the additional content from fullInstruction beyond what shortInstruction already covers.
+ * Used to show coaching detail without repeating the already-visible short cue.
+ */
+export function getExpandedInstruction(
+  fullInstruction: string | undefined,
+  shortInstruction: string | undefined,
+): string | null {
+  if (!fullInstruction) {
+    return null
+  }
+
+  const trimmedFull = fullInstruction.trim()
+  if (!trimmedFull) {
+    return null
+  }
+
+  if (!shortInstruction) {
+    return trimmedFull
+  }
+
+  const trimmedShort = shortInstruction.trim().replace(/[.!\s]+$/, '')
+  if (!trimmedShort || !trimmedFull.startsWith(trimmedShort)) {
+    return trimmedFull
+  }
+
+  const remainder = trimmedFull.slice(trimmedShort.length).replace(/^[.!:\-\s]+/, '').trim()
+  return remainder || null
+}

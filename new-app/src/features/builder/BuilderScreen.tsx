@@ -1,6 +1,7 @@
-import { useEffect, useId, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { StepProgress } from '@/components/ui/StepProgress'
+import { SectionIcon } from '@/components/icons/workout-icons'
 import { createDefaultBuilderDraft } from '@/domain/builder/builder-defaults'
 import { normalizeBuilderDraft } from '@/domain/builder/builder-normalizer'
 import type {
@@ -14,211 +15,17 @@ import { legacyExerciseCatalog } from '@/domain/exercises/exercise-catalog'
 import { generateWorkout } from '@/domain/workouts/workout-generator'
 import { analyticsGateway } from '@/services/analytics/analytics'
 import { GeneratedWorkoutStore } from '@/services/storage/generated-workout-store'
-import { LocalStorageStore } from '@/services/storage/local-storage-store'
-import { STORAGE_KEYS } from '@/services/storage/storage-keys'
+import { builderDraftStore } from '@/services/storage/builder-draft-store'
 import type { SavedWorkoutSession } from '@/services/storage/storage-types'
 import { workoutSessionStore } from '@/services/storage/workout-session-store'
+import {
+  DURATION_OPTIONS,
+  EQUIPMENT_OPTIONS,
+  FORMAT_OPTIONS,
+  GOAL_OPTIONS,
+  LEVEL_OPTIONS,
+} from './builder-options'
 
-const builderDraftStore = new LocalStorageStore<BuilderDraft>(STORAGE_KEYS.builderDraft)
-
-const goalOptions: Array<{ value: WorkoutGoal; label: string; detail: string; icon: ReactNode }> = [
-  { value: 'full_body', label: 'Full body', detail: 'Balanced from head to toe.', icon: renderGoalIcon('full_body') },
-  { value: 'upper_body', label: 'Upper body', detail: 'Push, pull, shoulders, and arms.', icon: renderGoalIcon('upper_body') },
-  { value: 'lower_body', label: 'Lower body', detail: 'Legs, glutes, and lower-body strength.', icon: renderGoalIcon('lower_body') },
-  { value: 'core', label: 'Core', detail: 'Bracing, control, and trunk stability.', icon: renderGoalIcon('core') },
-  { value: 'conditioning', label: 'Conditioning', detail: 'Sweaty, athletic, and fast-moving.', icon: renderGoalIcon('conditioning') },
-  { value: 'mobility', label: 'Mobility', detail: 'Loosen up and move better.', icon: renderGoalIcon('mobility') },
-]
-
-const levelOptions: Array<{ value: FitnessLevel; label: string; detail: string }> = [
-  { value: 'beginner', label: 'Beginner', detail: 'More approachable pace and exercise mix.' },
-  { value: 'intermediate', label: 'Intermediate', detail: 'Solid challenge with balanced volume.' },
-  { value: 'advanced', label: 'Advanced', detail: 'Higher output and tougher structure.' },
-]
-
-const durationOptions = [15, 20, 30, 45, 60] as const
-
-const formatOptions: Array<{ value: WorkoutFormat; label: string; detail: string; icon: ReactNode }> = [
-  { value: 'standard', label: 'Standard', detail: 'Steady blocks from warm-up to finish.', icon: renderFormatIcon('standard') },
-  { value: 'circuit', label: 'Circuit', detail: 'Move through a round, then repeat.', icon: renderFormatIcon('circuit') },
-  { value: 'tabata', label: 'Tabata', detail: 'Fixed 20/10 intervals with punch.', icon: renderFormatIcon('tabata') },
-  { value: 'pyramid', label: 'Pyramid', detail: 'Progressive levels that climb.', icon: renderFormatIcon('pyramid') },
-]
-
-const equipmentOptions: Array<{ value: EquipmentId; label: string; icon: ReactNode }> = [
-  { value: 'bodyweight', label: 'Bodyweight', icon: renderEquipmentIcon('bodyweight') },
-  { value: 'dumbbells', label: 'Dumbbells', icon: renderEquipmentIcon('dumbbells') },
-  { value: 'kettlebell', label: 'Kettlebell', icon: renderEquipmentIcon('kettlebell') },
-  { value: 'trx_bands', label: 'TRX bands', icon: renderEquipmentIcon('trx_bands') },
-  { value: 'resistance_band', label: 'Resistance band', icon: renderEquipmentIcon('resistance_band') },
-  { value: 'pull_up_bar', label: 'Pull-up bar', icon: renderEquipmentIcon('pull_up_bar') },
-  { value: 'jump_rope', label: 'Jump rope', icon: renderEquipmentIcon('jump_rope') },
-  { value: 'rower', label: 'Rower', icon: renderEquipmentIcon('rower') },
-]
-
-function renderGoalIcon(type: WorkoutGoal) {
-  switch (type) {
-    case 'full_body':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <circle cx="24" cy="10.5" r="4" />
-          <path d="M24 15v10m-7 16 4-8 3-4 3 4 4 8m-10-15-6 4m12-4 6 4" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'upper_body':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M14 31c2-7 7-11 10-11s8 4 10 11M18 19l6-5 6 5m-11 15v7m10-7v7" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'lower_body':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M19 11v10l-3 8m13-18v10l3 8M16 41l4-12h8l4 12" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'core':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <rect x="16" y="11" width="16" height="26" rx="8" fill="none" stroke="currentColor" strokeWidth="3.25" />
-          <path d="M24 15v18M18 21h12M18 27h12" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-        </svg>
-      )
-    case 'conditioning':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M24 10 14 27h8l-2 11 14-19h-8l2-9Z" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'mobility':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M13 30c2-7 7-12 11-12 6 0 11 6 11 12M24 18V8m-8 25 8 7 8-7" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    default:
-      return null
-  }
-}
-
-function renderFormatIcon(type: WorkoutFormat) {
-  switch (type) {
-    case 'standard':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M10 14h28M10 24h20M10 34h12" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" />
-        </svg>
-      )
-    case 'circuit':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M14 17h15m0 0-4-4m4 4-4 4M34 31H19m0 0 4-4m-4 4 4 4" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'tabata':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" strokeWidth="3.25" />
-          <path d="M24 17v8l6 3" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'pyramid':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M13 34h22M17 26h14M21 18h6" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    default:
-      return null
-  }
-}
-
-function renderSectionIcon(type: 'warmup' | 'main' | 'cooldown') {
-  switch (type) {
-    case 'warmup':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M15 31c2-7 7-12 9-12s7 5 9 12M24 18V9m-5 23 5 6 5-6" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'main':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M24 10 14 27h8l-2 11 14-19h-8l2-9Z" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'cooldown':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M15 24c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Zm9-15v4m0 22v4m15-15h-4M13 24H9" fill="none" stroke="currentColor" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    default:
-      return null
-  }
-}
-
-function renderEquipmentIcon(type: EquipmentId) {
-  switch (type) {
-    case 'bodyweight':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <circle cx="24" cy="12" r="5" />
-          <path d="M24 19v10m-9 14 5-9 4-5 4 5 5 9m-13-16-6 4m10-4 6 4" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'dumbbells':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M12 19v10m4-14v18m16-18v18m4-14v10M16 24h16" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'kettlebell':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M17 18a7 7 0 0 1 14 0" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
-          <path d="M14 22h20v4c0 10-5 16-10 16s-10-6-10-16z" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'trx_bands':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M16 10v10l8 9 8-9V10M16 20l-5 13m26-13 5 13" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx="11" cy="35" r="2.5" />
-          <circle cx="37" cy="35" r="2.5" />
-        </svg>
-      )
-    case 'resistance_band':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M13 30c3-11 19-11 22 0" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
-          <circle cx="12" cy="31" r="3.5" fill="none" stroke="currentColor" strokeWidth="3" />
-          <circle cx="36" cy="31" r="3.5" fill="none" stroke="currentColor" strokeWidth="3" />
-        </svg>
-      )
-    case 'pull_up_bar':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M8 18h32M12 18v-6m24 6v-6M16 18v9m16-9v9" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'jump_rope':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <path d="M14 16c-4 4-6 10-6 15m26-15c4 4 6 10 6 15M19 14l-5 4m15-4 5 4" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    case 'rower':
-      return (
-        <svg viewBox="0 0 48 48" className="builder-equipment-choice-icon-svg" aria-hidden="true">
-          <circle cx="12" cy="34" r="3.5" />
-          <path d="M15 34h17l6-12M23 22l4-6m-12 6 8-2" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )
-    default:
-      return null
-  }
-}
 
 function labelize(value: string) {
   return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
@@ -268,8 +75,8 @@ export function BuilderScreen() {
 
   const normalizedRequest = useMemo(() => normalizeBuilderDraft(draft), [draft])
   const footerRecap = buildFooterRecap(draft)
-  const selectedGoal = goalOptions.find((option) => option.value === draft.goal) ?? goalOptions[0]
-  const selectedFormat = formatOptions.find((option) => option.value === draft.format) ?? formatOptions[0]
+  const selectedGoal = GOAL_OPTIONS.find((option) => option.value === draft.goal) ?? GOAL_OPTIONS[0]
+  const selectedFormat = FORMAT_OPTIONS.find((option) => option.value === draft.format) ?? FORMAT_OPTIONS[0]
 
   function updateDraft(updater: (current: BuilderDraft) => BuilderDraft) {
     setDraft((current) => updater(current))
@@ -341,7 +148,7 @@ export function BuilderScreen() {
         </div>
 
         <div className="builder-compact-choice-row" role="group" aria-label="Workout goal">
-          {goalOptions.map((option) => (
+          {GOAL_OPTIONS.map((option) => (
             <button
               key={option.value}
               type="button"
@@ -364,9 +171,32 @@ export function BuilderScreen() {
         </div>
       </section>
 
+      <section className="builder-section-card" aria-labelledby="level-heading">
+        <div className="builder-section-intro">
+          <p className="builder-step-label">2. Level</p>
+          <h3 id="level-heading">What is your fitness level?</h3>
+          <p className="builder-section-hint">This shapes the exercise selection and overall demand. Most people start at Intermediate.</p>
+        </div>
+
+        <div className="chip-row" role="group" aria-label="Fitness level">
+          {LEVEL_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={draft.level === option.value}
+              className={draft.level === option.value ? 'choice-chip is-selected' : 'choice-chip'}
+              onClick={() => updateDraft((current) => ({ ...current, level: option.value }))}
+            >
+              <strong>{option.label}</strong>
+              <span>{option.detail}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className="builder-section-card" aria-labelledby="duration-heading">
         <div className="builder-section-intro">
-          <p className="builder-step-label">2. Duration</p>
+          <p className="builder-step-label">3. Duration</p>
           <h3 id="duration-heading">How long should it be?</h3>
           <p className="builder-section-hint">Quick picks keep this tight, while the slider still gives you an exact target.</p>
         </div>
@@ -379,19 +209,19 @@ export function BuilderScreen() {
           <input
             type="range"
             min="0"
-            max={String(durationOptions.length - 1)}
+            max={String(DURATION_OPTIONS.length - 1)}
             step="1"
-            value={durationOptions.indexOf(draft.duration.targetMinutes as (typeof durationOptions)[number])}
+            value={DURATION_OPTIONS.indexOf(draft.duration.targetMinutes as (typeof DURATION_OPTIONS)[number])}
             onChange={(event) =>
               updateDraft((current) => ({
                 ...current,
-                duration: { targetMinutes: durationOptions[Number(event.target.value)] },
+                duration: { targetMinutes: DURATION_OPTIONS[Number(event.target.value)] },
               }))
             }
             aria-label="Workout duration"
           />
           <div className="builder-duration-scale" aria-hidden="true">
-            {durationOptions.map((minutes) => (
+            {DURATION_OPTIONS.map((minutes) => (
               <span
                 key={minutes}
                 className={
@@ -409,13 +239,13 @@ export function BuilderScreen() {
 
       <section className="builder-section-card builder-flow-card" aria-labelledby="format-heading">
         <div className="builder-section-intro">
-          <p className="builder-step-label">3. Format</p>
+          <p className="builder-step-label">4. Format</p>
           <h3 id="format-heading">How should the workout flow?</h3>
           <p className="builder-section-hint">Pick the pace first, then fine-tune the details below if you want more control.</p>
         </div>
 
         <div className="builder-compact-choice-row builder-compact-choice-row-tight" role="group" aria-label="Workout format">
-          {formatOptions.map((option) => (
+          {FORMAT_OPTIONS.map((option) => (
             <button
               key={option.value}
               type="button"
@@ -439,15 +269,15 @@ export function BuilderScreen() {
 
         <div className="builder-flow-strip" aria-label="Workout flow blocks">
           <div className="builder-flow-pill">
-            <span className="builder-flow-pill-icon" aria-hidden="true">{renderSectionIcon('warmup')}</span>
+            <span className="builder-flow-pill-icon" aria-hidden="true"><SectionIcon type="warmup" /></span>
             <span>Warm-up</span>
           </div>
           <div className="builder-flow-pill">
-            <span className="builder-flow-pill-icon" aria-hidden="true">{renderSectionIcon('main')}</span>
+            <span className="builder-flow-pill-icon" aria-hidden="true"><SectionIcon type="main" /></span>
             <span>Main block</span>
           </div>
           <div className="builder-flow-pill">
-            <span className="builder-flow-pill-icon" aria-hidden="true">{renderSectionIcon('cooldown')}</span>
+            <span className="builder-flow-pill-icon" aria-hidden="true"><SectionIcon type="cooldown" /></span>
             <span>Cool-down</span>
           </div>
         </div>
@@ -457,7 +287,7 @@ export function BuilderScreen() {
         <div className="builder-section-intro">
           <div className="builder-section-topline">
             <div>
-              <p className="builder-step-label">4. Equipment</p>
+              <p className="builder-step-label">5. Equipment</p>
               <h3 id="equipment-heading">What do you have available?</h3>
               <p className="builder-section-hint">Leave everything off for bodyweight-only, or tap in the gear you actually want to use.</p>
             </div>
@@ -468,7 +298,7 @@ export function BuilderScreen() {
         </div>
 
         <div className="builder-equipment-grid" role="group" aria-label="Equipment options">
-          {equipmentOptions.map((option) => {
+          {EQUIPMENT_OPTIONS.map((option) => {
             const selected = draft.selectedEquipment.includes(option.value)
             return (
               <button
@@ -498,7 +328,7 @@ export function BuilderScreen() {
           aria-controls={advancedPanelId}
         >
           <span>
-            <span className="builder-step-label">5. More options</span>
+            <span className="builder-step-label">6. More options</span>
             <strong id="advanced-heading">Fine-tune timing and difficulty</strong>
             <span className="builder-options-toggle-hint">Open this only if you want to push the session harder or dial it back.</span>
           </span>
@@ -507,24 +337,6 @@ export function BuilderScreen() {
 
         {advancedOpen ? (
           <div id={advancedPanelId} className="builder-options-panel">
-            <div className="builder-option-group">
-              <p className="builder-mini-label">Level</p>
-              <div className="chip-row" role="group" aria-label="Fitness level">
-                {levelOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    aria-pressed={draft.level === option.value}
-                    className={draft.level === option.value ? 'choice-chip is-selected' : 'choice-chip'}
-                    onClick={() => updateDraft((current) => ({ ...current, level: option.value }))}
-                  >
-                    <strong>{option.label}</strong>
-                    <span>{option.detail}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div className="toggle-grid">
               {[
                 ['includeWarmup', 'Include warm-up'],
@@ -751,7 +563,7 @@ export function BuilderScreen() {
 
       <section className="builder-action-bar" aria-labelledby="generate-heading" data-testid="builder-generate-area">
         <div className="builder-action-copy">
-          <p className="builder-step-label">6. Generate</p>
+          <p className="builder-step-label">7. Generate</p>
           <h3 id="generate-heading">Generate your workout</h3>
           <p className="builder-action-summary">Quick recap before you go.</p>
           <p className="builder-help-text" role="status" aria-live="polite">
