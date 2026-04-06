@@ -1217,20 +1217,18 @@
     "movementPattern": "horizontal_push",
     "bodyMap": {
       "primary": [
-        "chest",
-        "triceps"
+        "core"
       ],
       "secondary": [
-        "shoulders",
-        "core"
+        "lower_back",
+        "shoulders"
       ]
     },
     "focusTags": [
       "main",
       "core",
       "horizontal_push",
-      "chest",
-      "triceps",
+      "lower_back",
       "shoulders"
     ],
     "coaching": {
