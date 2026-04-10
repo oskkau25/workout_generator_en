@@ -193,6 +193,7 @@ export function WorkoutPlayerScreen() {
   const [isExerciseDetailOpen, setIsExerciseDetailOpen] = useState(false)
   const [isExerciseDetailPinned, setIsExerciseDetailPinned] = useState(false)
   const [isAudioTestRunning, setIsAudioTestRunning] = useState(false)
+  const [heroImageFailed, setHeroImageFailed] = useState(false)
   const historySavedRef = useRef(false)
   const wakeLockRef = useRef<WakeLockSentinelLike | null>(null)
   const previousPhaseRef = useRef<PlayerPhase>('idle')
@@ -441,6 +442,11 @@ export function WorkoutPlayerScreen() {
     currentExercise?.coaching.shortInstruction,
   )
   const detailMediaUrl = currentExercise?.media?.animationUrl ?? currentExercise?.media?.imageUrl ?? null
+  const heroMediaUrl = heroImageFailed ? null : detailMediaUrl
+
+  useEffect(() => {
+    setHeroImageFailed(false)
+  }, [currentStep?.id])
 
   useEffect(() => {
     if (isExerciseDetailPinned) {
@@ -720,14 +726,14 @@ export function WorkoutPlayerScreen() {
             {currentStep ? <span className="summary-step-badge">{BLOCK_LABELS[currentStep.block]}</span> : null}
           </div>
 
-          <div className="player-exercise-hero">
-            <div className="player-exercise-visual" aria-hidden="true">
-              {detailMediaUrl ? (
-                <img className="player-exercise-visual-image" src={detailMediaUrl} alt="" />
-              ) : (
+          <div className={`player-exercise-hero${heroMediaUrl ? ' player-exercise-hero--with-media' : ''}`}>
+            {heroMediaUrl ? (
+              <img className="player-exercise-hero-image" src={heroMediaUrl} alt="" onError={() => setHeroImageFailed(true)} />
+            ) : (
+              <div className="player-exercise-visual" aria-hidden="true">
                 <MovementIcon category={movementCategory} />
-              )}
-            </div>
+              </div>
+            )}
             <div className="player-exercise-copy">
               <div className="player-compact-status-row" role="status" aria-live="polite">
                 <span className="mini-pill player-state-pill">
@@ -768,13 +774,6 @@ export function WorkoutPlayerScreen() {
                 {isExerciseDetailPinned ? 'Unpin details' : 'Pin details'}
               </button>
             </div>
-            {detailMediaUrl ? (
-              <img
-                className="exercise-guidance-media"
-                src={detailMediaUrl}
-                alt={currentExercise ? `${currentExercise.name} demo` : 'Exercise demo'}
-              />
-            ) : null}
             {currentExercise?.coaching.steps?.length ? (
               <section className="exercise-guidance-section" aria-label="Exercise steps">
                 <span className="card-eyebrow">How to do it</span>
