@@ -78,9 +78,10 @@ class NotificationSystem:
     
     def _generate_notification_content(self, test_results: Dict, pipeline_report: Dict) -> Dict:
         """Generate rich notification content"""
-        total_tests = len(test_results.get('test_results', []))
-        passed_tests = len([r for r in test_results.get('test_results', []) if r.get('status') == 'passed'])
-        failed_tests = len([r for r in test_results.get('test_results', []) if r.get('status') == 'failed'])
+        normalized_results = self._normalize_test_results(test_results)
+        total_tests = len(normalized_results)
+        passed_tests = len([r for r in normalized_results if r.get('status') == 'passed'])
+        failed_tests = len([r for r in normalized_results if r.get('status') == 'failed'])
         
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
         release_ready = test_results.get('release_ready', False)
@@ -107,7 +108,7 @@ class NotificationSystem:
         
         # Generate test details
         test_details = []
-        for result in test_results.get('test_results', []):
+        for result in normalized_results:
             status_icon = "✅" if result.get('status') == 'passed' else "❌"
             test_details.append(
                 f"{status_icon} {result.get('name', 'Unknown')} "
@@ -121,10 +122,43 @@ class NotificationSystem:
             'status_text': status_text,
             'summary': summary,
             'test_details': test_details,
-            'failed_tests': [r for r in test_results.get('test_results', []) if r.get('status') == 'failed'],
+            'failed_tests': [r for r in normalized_results if r.get('status') == 'failed'],
             'execution_time': test_results.get('execution_time', 'N/A'),
             'timestamp': test_results.get('timestamp', datetime.now().isoformat())
         }
+
+    def _normalize_test_results(self, test_results: Dict) -> List[Dict[str, Any]]:
+        """Normalize legacy list-based and current dict-based test results."""
+        if isinstance(test_results.get('test_results'), list):
+            return [self._normalize_result_item(item) for item in test_results['test_results']]
+
+        normalized_results: List[Dict[str, Any]] = []
+        tests = test_results.get('tests', {})
+        if isinstance(tests, dict):
+            for name, result in tests.items():
+                if not isinstance(result, dict):
+                    continue
+
+                normalized_results.append(
+                    self._normalize_result_item(
+                        {
+                            'name': result.get('name', name.replace('_', ' ').title()),
+                            'category': result.get('category', name),
+                            'status': result.get('status', 'UNKNOWN'),
+                            'duration': result.get('duration', 0) or 0,
+                            'error': result.get('error') or result.get('details', ''),
+                        }
+                    )
+                )
+
+        return normalized_results
+
+    def _normalize_result_item(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert result statuses to the lowercase format used by notifications."""
+        normalized = dict(result)
+        normalized['status'] = str(result.get('status', 'unknown')).lower()
+        normalized['duration'] = float(result.get('duration', 0) or 0)
+        return normalized
     
     def _send_slack_notification(self, content: Dict):
         """Send notification to Slack"""
