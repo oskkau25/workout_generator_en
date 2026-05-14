@@ -60,6 +60,10 @@ function formatSeconds(totalSeconds: number) {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
 
+function getGoogleSearchUrl(exerciseName: string) {
+  return `https://www.google.com/search?q=${encodeURIComponent(exerciseName)}`
+}
+
 function formatDurationLabel(totalSeconds: number) {
   if (totalSeconds < 60) {
     return `${totalSeconds}s`
@@ -721,7 +725,20 @@ export function WorkoutPlayerScreen() {
           <div className="player-card-heading">
             <div>
               <p className="card-eyebrow">Exercise</p>
-              <h3 id="current-exercise-title">{currentExercise?.name ?? 'Workout ready'}</h3>
+              <h3 id="current-exercise-title">
+                {currentExercise?.name ? (
+                  <a
+                    href={getGoogleSearchUrl(currentExercise.name)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="exercise-search-link"
+                  >
+                    {currentExercise.name}
+                  </a>
+                ) : (
+                  'Workout ready'
+                )}
+              </h3>
             </div>
             {currentStep ? <span className="summary-step-badge">{BLOCK_LABELS[currentStep.block]}</span> : null}
           </div>
@@ -840,7 +857,20 @@ export function WorkoutPlayerScreen() {
         <div className="player-next-preview-card player-next-preview-card-inline" aria-labelledby="next-up-title">
           <div className="player-next-preview-copy">
             <p className="card-eyebrow">Next exercise</p>
-            <h4 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h4>
+            <h4 id="next-up-title">
+              {nextExercise?.name ? (
+                <a
+                  href={getGoogleSearchUrl(nextExercise.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="exercise-search-link"
+                >
+                  {nextExercise.name}
+                </a>
+              ) : (
+                'Completion transition next'
+              )}
+            </h4>
             <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
           </div>
           {nextExercisePrimaryMuscle ? <span className="compact-chip player-next-chip">{nextExercisePrimaryMuscle}</span> : null}
