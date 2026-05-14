@@ -1,0 +1,102 @@
+.summary-hero-subtitle,
+.summary-generated-at,
+.summary-format-hint,
+.summary-step-meta {
+  color: #9ed9ef;
+}
+
+.summary-sidebar-card,
+.summary-block-card,
+.summary-diagnostics-card {
+  gap: 1rem;
+}
+
+.summary-journey-hero,
+.summary-journey-map,
+.summary-journey-heading {
+  display: grid;
+  gap: 1rem;
+}
+
+.summary-timeline {
+  display: grid;
+  gap: 1rem;
+}
+
+.summary-timeline-section:last-child .summary-timeline-content::before {
+  display: none;
+}
+
+.summary-timeline-heading-row h3,
+.summary-timeline-toggle-copy p:last-child {
+  margin: 0;
+}
+
+.summary-swap-feedback strong {
+  color: #fde68a;
+}
+
+.summary-actions-footer-copy h3,
+.summary-actions-footer-copy p {
+  margin-block: 0;
+}
+
+.summary-intent-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.summary-exercise-toggle-copy strong {
+  color: #f3f7f7;
+}
+
+.summary-exercise-toggle-copy span {
+  color: #9ed9ef;
+}
+
+.summary-exercise-toggle-meta {
+  justify-items: end;
+}
+
+.summary-exercise-silhouette svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.summary-exercise-panel p {
+  margin: 0;
+}
+
+.summary-exercise-actions {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.summary-swap-inline-copy {
+  text-align: right;
+}
+
+@media (max-width: 767px) {
+  .summary-exercise-actions {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+  }
+
+  .summary-exercise-toggle-meta {
+    justify-items: start;
+  }
+}
+
+.summary-body-map-copy-line {
+  color: #c4d4d9;
+}
+
+@media (min-width: 768px) {
+  .summary-screen-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-layout {
+    width: min(860px, 100%);
+    margin: 0 auto;
+  }
+}

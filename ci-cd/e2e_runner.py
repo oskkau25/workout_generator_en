@@ -195,7 +195,10 @@ def run_dynamic_smoke() -> Dict[str, Any]:
 
     try:
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(headless=True)
+            browser = playwright.chromium.launch(
+                headless=True,
+                args=["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+            )
             page = browser.new_page()
             page.set_default_timeout(15000)
 

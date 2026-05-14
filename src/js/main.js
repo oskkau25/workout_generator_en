@@ -8,11 +8,7 @@
 
 const DEBUG = (() => {
   try {
-    return (
-      window.__DEBUG__ === true ||
-      window.localStorage.getItem('fitflow_debug') === '1' ||
-      window.localStorage.getItem('fitflow_de bug') === '1'
-    );
+    return window.__DEBUG__ === true || window.localStorage.getItem('fitflow_de bug') === '1';
   } catch {
     return window.__DEBUG__ === true;
   }
@@ -24,7 +20,7 @@ function debugLog(...args) {
   }
 }
 
-debugLog('🔧 MAIN.JS LOADED - v24 - CACHE BUSTED');
+debugLog('🔧 MAIN.JS LOADED - v25 - CACHE BUSTED');
 
 // Import core modules
 import { exercises, exerciseDatabase } from './core/exercise-database.js';
@@ -37,9 +33,12 @@ import {
 import { CONSTANTS } from './utils/constants.js';
 import { initializeEnhancedForm, getValidatedFormData } from './features/enhanced-form.js';
 import { initializeEnhancedTimer } from './features/enhanced-timer.js';
-import { initializeAccessibility } from './features/accessibility.js';
-import { initializeVisualEnhancements } from './features/visual-enhancements.js';
-import { initializeAnalyticsTracker, trackModeSelected } from './features/analytics-tracker.js';
+import { initializeVisualEnhancements } from './features/visual-enhancements.js?v=4';
+import {
+  initializeAnalyticsTracker,
+  trackModeSelected,
+  trackEvent,
+} from './features/analytics-tracker.js';
 
 // Import feature modules
 import {
@@ -50,7 +49,7 @@ import {
 } from './features/smart-substitution.js';
 
 import { UserAccount, userAccount } from './features/user-accounts.js';
-import { setupWorkoutPlayerListeners } from './features/workout-player.js?v=32';
+import { setupWorkoutPlayerListeners } from './features/workout-player.js?v=34';
 
 // Import UI modules (to be created)
 // import { WorkoutUI } from './ui/workout-ui.js';
@@ -62,6 +61,13 @@ import { setupWorkoutPlayerListeners } from './features/workout-player.js?v=32';
  */
 class FitFlowApp {
   constructor() {
+    this.storageKeys = {
+      whatsNewSeen: 'fitflow_whats_new_seen_v2_2_0',
+      whatsNewDismissed: 'fitflow_whats_new_dismissed_v2_2_0',
+    };
+    this.mobileViewportQuery = null;
+    this.handleViewportChange = null;
+
     this.modules = {
       exerciseDatabase,
       workoutGenerator: {
@@ -79,6 +85,9 @@ class FitFlowApp {
       userAccount,
       constants: CONSTANTS,
     };
+    this.appOpenTracked = false;
+    this.workoutCompletionTracked = false;
+    this.startWorkoutWrapped = false;
 
     this.init();
   }
@@ -92,6 +101,7 @@ class FitFlowApp {
 
     // Initialize analytics session tracking
     initializeAnalyticsTracker();
+    this.trackAppOpen();
 
     // Initialize user account system
     this.initializeUserAccount();
@@ -99,11 +109,11 @@ class FitFlowApp {
     // Initialize enhanced form features
     initializeEnhancedForm();
 
-    // Initialize accessibility features
-    initializeAccessibility();
-
     // Initialize visual enhancements
     initializeVisualEnhancements();
+
+    // Optimize the mobile-first home funnel
+    this.setupHomeScreenFunnel();
 
     // Setup event listeners
     this.setupEventListeners();
@@ -130,9 +140,6 @@ class FitFlowApp {
 
     // Enhanced form features
     window.getValidatedFormData = getValidatedFormData;
-
-    // Accessibility features
-    window.initializeAccessibility = initializeAccessibility;
 
     // Visual enhancements
     window.initializeVisualEnhancements = initializeVisualEnhancements;
@@ -247,6 +254,9 @@ class FitFlowApp {
       this.setupUserAccountListeners();
       // setupWorkoutPlayerListeners() is called when workout player is rendered
       this.setupDashboardListeners();
+      this.setupFunnelEventListeners();
+      this.instrumentWorkoutStart();
+      this.observeWorkoutCompletion();
     };
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       attachAll();
@@ -261,14 +271,294 @@ class FitFlowApp {
   setupFormListeners() {
     const workoutForm = document.getElementById('workout-form');
     if (workoutForm) {
-      workoutForm.addEventListener('submit', handleFormSubmission);
+      workoutForm.addEventListener('submit', (event) => this.handleInstrumentedWorkoutSubmit(event));
       debugLog('📝 Workout form listener attached');
     } else {
-      console.warn('⚠️ Workout form not found');
+      debugLog('⚠️ Workout form not found');
     }
 
     // Setup training pattern listeners
     this.setupTrainingPatternListeners();
+  }
+
+  trackAppOpen() {
+    if (this.appOpenTracked) return;
+    this.appOpenTracked = true;
+    trackEvent('app_open', {
+      path: window.location.pathname,
+      referrer: document.referrer || null,
+    });
+  }
+
+  handleInstrumentedWorkoutSubmit(event) {
+    const previousWorkout = window.currentWorkoutData;
+    handleFormSubmission(event);
+    const nextWorkout = window.currentWorkoutData;
+    if (nextWorkout && nextWorkout !== previousWorkout) {
+      trackEvent('workout_generated', {
+        pattern: nextWorkout.trainingPattern || 'standard',
+        duration: nextWorkout.duration || nextWorkout.metadata?.estimatedTime || null,
+        level: nextWorkout.metadata?.level || null,
+        equipment: nextWorkout.metadata?.equipment || null,
+        exerciseCount: Array.isArray(nextWorkout.sequence) ? nextWorkout.sequence.length : 0,
+      });
+    }
+  }
+
+  instrumentWorkoutStart(retryCount = 0) {
+    if (this.startWorkoutWrapped) return;
+    if (typeof window.startWorkout === 'function') {
+      const original = window.startWorkout;
+      if (!original.__fitflowWrapped) {
+        window.startWorkout = (...args) => {
+          this.workoutCompletionTracked = false;
+          trackEvent('workout_started', {
+            pattern: window.currentWorkoutData?.trainingPattern || 'standard',
+            duration: window.currentWorkoutData?.duration || null,
+            exerciseCount: Array.isArray(window.currentWorkoutData?.sequence)
+              ? window.currentWorkoutData.sequence.length
+              : Array.isArray(window.currentWorkout)
+                ? window.currentWorkout.length
+                : 0,
+          });
+          return original.apply(window, args);
+        };
+        window.startWorkout.__fitflowWrapped = true;
+      }
+      this.startWorkoutWrapped = true;
+      return;
+    }
+
+    if (retryCount < 10) {
+      setTimeout(() => this.instrumentWorkoutStart(retryCount + 1), 250);
+    }
+  }
+
+  observeWorkoutCompletion() {
+    const player = document.getElementById('workout-player');
+    if (!player || player.__fitflowObserverAttached) return;
+    const checkCompletion = () => {
+      if (this.workoutCompletionTracked) return;
+      const heading = player.querySelector('h2');
+      if (heading && heading.textContent?.toLowerCase().includes('workout complete')) {
+        this.workoutCompletionTracked = true;
+        trackEvent('workout_completed', {
+          pattern: window.currentWorkoutData?.trainingPattern || 'standard',
+          exerciseCount: Array.isArray(window.workoutState?.sequence)
+            ? window.workoutState.sequence.length
+            : Array.isArray(window.currentWorkoutData?.sequence)
+              ? window.currentWorkoutData.sequence.length
+              : 0,
+        });
+      }
+    };
+    const observer = new MutationObserver(checkCompletion);
+    observer.observe(player, { childList: true, subtree: true });
+    player.__fitflowObserverAttached = true;
+  }
+
+  setupHomeScreenFunnel() {
+    const initialize = () => {
+      this.applyMobileFormDefaults();
+      this.initializeWhatsNewBanner();
+      this.syncMobileGenerateCta();
+    };
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initialize();
+    } else {
+      document.addEventListener('DOMContentLoaded', initialize, { once: true });
+    }
+  }
+
+  setupFunnelEventListeners() {
+    this.setupQuickStartJumpLink();
+    this.setupBasicSettingsJumpLink();
+    this.setupWhatsNewControls();
+    this.setupResponsiveFunnelRefresh();
+  }
+
+  isMobileViewport() {
+    return window.matchMedia('(max-width: 767px)').matches;
+  }
+
+  setCollapsibleState(panelId, isExpanded) {
+    const trigger = document.querySelector(`[data-collapsible-trigger][aria-controls="${panelId}"]`);
+    const panel = document.getElementById(panelId);
+
+    if (!trigger || !panel) return;
+
+    trigger.setAttribute('aria-expanded', String(isExpanded));
+    panel.hidden = !isExpanded;
+
+    const icon = trigger.querySelector('[data-collapsible-icon]');
+    if (icon) {
+      icon.classList.toggle('rotate-180', !isExpanded);
+    }
+  }
+
+  applyMobileFormDefaults() {
+    if (this.isMobileViewport()) {
+      this.setCollapsibleState('basic-settings-panel', true);
+      this.setCollapsibleState('equipment-settings-panel', false);
+      this.setCollapsibleState('advanced-settings-panel', false);
+      return;
+    }
+
+    this.setCollapsibleState('basic-settings-panel', true);
+    this.setCollapsibleState('equipment-settings-panel', true);
+    this.setCollapsibleState('advanced-settings-panel', false);
+  }
+
+  initializeWhatsNewBanner() {
+    const banner = document.getElementById('whats-new-banner');
+    if (!banner) return;
+
+    if (!this.isMobileViewport()) {
+      banner.classList.remove('hidden');
+      this.toggleWhatsNewContent(true);
+      return;
+    }
+
+    const isDismissed = this.readStorageFlag(this.storageKeys.whatsNewDismissed);
+    const hasSeenBanner = this.readStorageFlag(this.storageKeys.whatsNewSeen);
+
+    if (isDismissed) {
+      banner.classList.add('hidden');
+      return;
+    }
+
+    banner.classList.remove('hidden');
+    this.toggleWhatsNewContent(!hasSeenBanner);
+    this.writeStorageFlag(this.storageKeys.whatsNewSeen, true);
+  }
+
+  setupWhatsNewControls() {
+    const dismissButton = document.getElementById('whats-new-dismiss');
+    if (dismissButton && dismissButton.dataset.bound !== 'true') {
+      dismissButton.addEventListener('click', () => {
+        const banner = document.getElementById('whats-new-banner');
+        if (banner) {
+          banner.classList.add('hidden');
+        }
+        this.writeStorageFlag(this.storageKeys.whatsNewSeen, true);
+        this.writeStorageFlag(this.storageKeys.whatsNewDismissed, true);
+      });
+      dismissButton.dataset.bound = 'true';
+    }
+
+    const toggleButton = document.getElementById('whats-new-toggle');
+    if (toggleButton && toggleButton.dataset.bound !== 'true') {
+      toggleButton.addEventListener('click', () => {
+        const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+        this.toggleWhatsNewContent(!isExpanded);
+      });
+      toggleButton.dataset.bound = 'true';
+    }
+  }
+
+  toggleWhatsNewContent(isExpanded) {
+    const content = document.getElementById('whats-new-content');
+    const footer = document.getElementById('whats-new-footer');
+    const toggleButton = document.getElementById('whats-new-toggle');
+    const toggleIcon = toggleButton?.querySelector('[data-whats-new-toggle-icon]');
+    const toggleLabel = toggleButton?.querySelector('span');
+
+    if (content) {
+      content.classList.toggle('hidden', !isExpanded);
+    }
+    if (footer) {
+      footer.classList.toggle('hidden', !isExpanded);
+    }
+    if (toggleButton) {
+      toggleButton.setAttribute('aria-expanded', String(isExpanded));
+    }
+    if (toggleLabel) {
+      toggleLabel.textContent = isExpanded ? 'Hide updates' : 'Show updates';
+    }
+    if (toggleIcon) {
+      toggleIcon.classList.toggle('rotate-180', isExpanded);
+    }
+  }
+
+  setupQuickStartJumpLink() {
+    const jumpLink = document.querySelector('a[href="#generate-btn"]');
+    if (!jumpLink || jumpLink.dataset.bound === 'true') return;
+
+    jumpLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      const generateButton = document.getElementById('generate-btn');
+      if (!(generateButton instanceof HTMLElement)) return;
+
+      generateButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.setTimeout(() => generateButton.focus({ preventScroll: true }), 250);
+    });
+
+    jumpLink.dataset.bound = 'true';
+  }
+
+  setupBasicSettingsJumpLink() {
+    const basicsLink = document.querySelector('a[href="#basic-settings-panel"]');
+    if (!basicsLink || basicsLink.dataset.bound === 'true') return;
+
+    basicsLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.setCollapsibleState('basic-settings-panel', true);
+      const basicPanel = document.getElementById('basic-settings-panel');
+      if (!(basicPanel instanceof HTMLElement)) return;
+
+      basicPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.setTimeout(() => basicPanel.focus({ preventScroll: true }), 250);
+    });
+
+    basicsLink.dataset.bound = 'true';
+  }
+
+  syncMobileGenerateCta() {
+    const mobileCtaLabel = document.querySelector('[data-mobile-generate-label]');
+    if (!mobileCtaLabel) return;
+
+    if (this.isMobileViewport()) {
+      mobileCtaLabel.textContent = 'Generate With Current Settings';
+    } else {
+      mobileCtaLabel.textContent = 'Generate Workout';
+    }
+  }
+
+  setupResponsiveFunnelRefresh() {
+    if (this.mobileViewportQuery) return;
+
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const onViewportChange = () => {
+      this.applyMobileFormDefaults();
+      this.initializeWhatsNewBanner();
+      this.syncMobileGenerateCta();
+    };
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', onViewportChange);
+    } else if (typeof mediaQuery.addListener === 'function') {
+      mediaQuery.addListener(onViewportChange);
+    }
+
+    this.mobileViewportQuery = mediaQuery;
+    this.handleViewportChange = onViewportChange;
+  }
+
+  readStorageFlag(key) {
+    try {
+      return window.localStorage.getItem(key) === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  writeStorageFlag(key, value) {
+    try {
+      window.localStorage.setItem(key, String(value));
+    } catch {
+      // Ignore storage failures in restricted environments.
+    }
   }
 
   /**
@@ -366,7 +656,7 @@ class FitFlowApp {
       debugLog('✅ Attaching close button listener to login modal');
       closeLoginModal.addEventListener('click', () => this.hideModal('login-modal'));
     } else {
-      console.warn('⚠️ Login modal close button not found');
+      debugLog('⚠️ Login modal close button not found');
     }
 
     // Register modal close button
@@ -390,7 +680,7 @@ class FitFlowApp {
         this.showRegisterModal();
       });
     } else {
-      console.warn('⚠️ Switch to register button not found');
+      debugLog('⚠️ Switch to register button not found');
     }
 
     // Switch to login button (in register modal)
@@ -784,7 +1074,7 @@ class FitFlowApp {
       // Update workouts table
       this.updatePersonalWorkoutsTable(workouts);
     } catch (error) {
-      console.warn('Failed to load personal analytics:', error);
+      debugLog('Failed to load personal analytics:', error);
     }
   }
 

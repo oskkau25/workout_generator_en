@@ -1,0 +1,16 @@
+.body-map-svg {
+  width: min(100%, 108px);
+  height: auto;
+}
+
+.body-map-region {
+  fill: transparent;
+  stroke: none;
+}
+
+@media (max-width: 479px) {
+
+  .body-map-svg {
+    width: min(100%, 94px);
+  }
+}

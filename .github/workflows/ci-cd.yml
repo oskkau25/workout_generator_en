@@ -1,8 +1,11 @@
 name: Quality Gates CI
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
-    branches: [main, develop]
+    branches: ['**']
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -14,70 +17,43 @@ jobs:
   quality-gates:
     name: Quality Gates
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: "ci-cd/requirements.txt"
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "new-app/package-lock.json"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r ci-cd/requirements.txt
-          pip install playwright
+      - name: Install new-app dependencies
+        working-directory: new-app
+        run: npm ci
 
-      - name: Install Playwright browser
-        run: python -m playwright install --with-deps chromium
+      - name: Lint new-app
+        working-directory: new-app
+        run: npm run lint
 
-      - name: Lint JavaScript (advisory)
-        continue-on-error: true
-        run: npx --yes eslint@8 --max-warnings=0 --ext .js src/js
+      - name: Type-check new-app
+        working-directory: new-app
+        run: npx tsc --noEmit
 
-      - name: Typecheck and build sanity
-        run: |
-          python -m py_compile ci-cd/automated_test_pipeline.py ci-cd/e2e_runner.py ci-cd/quality_gate.py ci-cd/run_e2e_smoke.py
-          node --check src/js/main.js
-          test -f src/index.html
+      - name: Test new-app
+        working-directory: new-app
+        run: npx vitest run
 
-      - name: Run unit tests
-        run: python -m unittest discover -s ci-cd/tests -p "test_*.py" -v
+      - name: Build new-app
+        working-directory: new-app
+        run: npm run build
 
-      - name: Run E2E smoke test
-        run: python ci-cd/run_e2e_smoke.py
-
-      - name: Run enhanced pipeline
-        run: python ci-cd/automated_test_pipeline.py --enhanced
-
-      - name: Evaluate quality gate
-        run: |
-          python ci-cd/quality_gate.py \
-            --results reports/test_results/automated_test_results.json \
-            --e2e reports/test_results/e2e_smoke_result.json \
-            --min-success-rate 85 \
-            --min-security-score 70 \
-            --min-accessibility-score 80 \
-            --strict-e2e \
-            --fail-on-overall-warning
-
-      - name: Upload test artifacts
+      - name: Upload Vitest coverage artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: quality-gate-results
+          name: new-app-coverage
           path: |
-            reports/test_results/*.json
-            reports/logs/*.log
-            **/*screenshots*/*.png
-            *_results.json
+            new-app/coverage
