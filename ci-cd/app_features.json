@@ -1,4 +1,3 @@
-
 {
   "app_features": {
     "workout_flow": {
@@ -6,7 +5,7 @@
       "description": "Complete workout experience from overview to individual exercise execution",
       "detection_patterns": {
         "html": ["workout-overview", "workout-player"],
-        "js": ["renderOverview", "renderExercisePlayer"]
+        "js": ["renderOverview", "renderWorkoutPlayer", "initializeWorkoutPlayer"]
       },
       "test_function": "test_overview_and_player_ui",
       "category": "core_workout"
@@ -16,7 +15,7 @@
       "description": "Work/rest phase timers with countdown and auto-advance",
       "detection_patterns": {
         "html": ["timer", "countdown"],
-        "js": ["setInterval", "setTimeout", "remainingSeconds"]
+        "js": ["setInterval", "remainingSeconds", "startPhase("]
       },
       "test_function": "test_timer_and_pause_resume_presence",
       "category": "core_workout"
@@ -25,28 +24,28 @@
       "name": "Audio and Vibration Cues",
       "description": "Sound and vibration notifications for phase changes",
       "detection_patterns": {
-        "html": ["audio", "vibration"],
-        "js": ["AudioContext", "navigator.vibrate", "playSound"]
+        "html": ["sound-toggle", "vibration-toggle"],
+        "js": ["AudioContext", "navigator.vibrate", "cuePhase("]
       },
       "test_function": "test_cues_and_preferences_presence",
       "category": "user_experience"
     },
     "rest_overlay": {
       "name": "Rest Overlay",
-      "description": "Dark overlay during rest periods showing remaining time and next exercise",
+      "description": "Overlay during rest periods showing remaining time and next exercise",
       "detection_patterns": {
         "html": ["rest-overlay"],
-        "js": ["rest-overlay", "showRestOverlay"]
+        "js": ["rest-overlay", "restOverlayTimer", "setTimerDisplays"]
       },
       "test_function": "test_rest_overlay_presence",
       "category": "user_experience"
     },
     "navigation": {
       "name": "Navigation Features",
-      "description": "Keyboard shortcuts and swipe gestures for workout control",
+      "description": "Keyboard workout controls",
       "detection_patterns": {
-        "html": ["keyboard", "swipe"],
-        "js": ["keydown", "addEventListener", "swipe"]
+        "html": ["pause-resume-btn", "next-exercise-btn"],
+        "js": ["keydown", "ArrowLeft", "ArrowRight", "Escape"]
       },
       "test_function": "test_keyboard_and_swipe_presence",
       "category": "user_experience"
@@ -56,16 +55,16 @@
       "description": "Visual indicators for warm-up, main, and cool-down sections",
       "detection_patterns": {
         "html": ["section-badge"],
-        "js": ["section-badge", "renderSectionBadge"]
+        "js": ["sectionBadge", "_section"]
       },
       "test_function": "test_section_badge_presence",
       "category": "ui_components"
     },
     "speech": {
       "name": "Speech Functionality",
-      "description": "Spoken countdown and exercise instructions",
+      "description": "Spoken countdown and completion cues",
       "detection_patterns": {
-        "html": ["speech", "tts"],
+        "html": ["sound-toggle"],
         "js": ["speechSynthesis", "speak("]
       },
       "test_function": "test_spoken_countdown_presence",
@@ -73,10 +72,10 @@
     },
     "exercise_swapping": {
       "name": "Exercise Swapping",
-      "description": "Ability to replace exercises with similar alternatives",
+      "description": "In-place substitution chooser for exercises",
       "detection_patterns": {
-        "html": ["swap", "alternative"],
-        "js": ["swapExercise", "findSimilarExercise"]
+        "html": ["Swap"],
+        "js": ["showSubstitutionChooser", "findExerciseAlternatives"]
       },
       "test_function": "test_exercise_swapping_functionality",
       "category": "workout_customization"
@@ -85,58 +84,38 @@
       "name": "Form Interactions",
       "description": "Workout generation form with validation and submission",
       "detection_patterns": {
-        "html": ["generate-btn", "form"],
-        "js": ["addEventListener", "generateWorkout"]
+        "html": ["generate-btn", "workout-form"],
+        "js": ["getFormData", "handleFormSubmission", "validateForm"]
       },
       "test_function": "test_form_interactions",
       "category": "core_workout"
-    },
-    "user_accounts": {
-      "name": "User Account System",
-      "description": "User registration, login, progress tracking, and achievement badges",
-      "detection_patterns": {
-        "html": ["login-modal", "register-modal", "profile-modal"],
-        "js": ["UserAccount", "register", "login", "achievements"]
-      },
-      "test_function": "test_user_account_system",
-      "category": "user_experience"
-    },
-    "security_features": {
-      "name": "Security & Privacy Features",
-      "description": "PBKDF2 password encryption, privacy policy, security notices, and data protection",
-      "detection_patterns": {
-        "html": ["privacy-policy-modal", "security notice", "PBKDF2", "🔒 Privacy-First"],
-        "js": ["hashPassword", "verifyPassword", "showPrivacyPolicy", "PBKDF2"]
-      },
-      "test_function": "test_security_and_privacy_features",
-      "category": "security"
     },
     "responsive_design": {
       "name": "Responsive Design",
       "description": "Mobile-friendly layout with responsive breakpoints",
       "detection_patterns": {
         "html": ["md:", "lg:", "sm:"],
-        "js": ["responsive", "mobile"]
+        "js": ["mobile"]
       },
       "test_function": "test_responsive_design",
       "category": "ui_components"
     },
     "analytics_dashboard": {
       "name": "Analytics Dashboard",
-      "description": "Comprehensive user behavior tracking and insights dashboard",
+      "description": "Local event tracking plus analytics dashboard",
       "detection_patterns": {
         "html": ["dashboard.html", "Analytics", "Chart.js"],
-        "js": ["AnalyticsTracker", "trackEvent", "Chart.js"]
+        "js": ["trackEvent", "initializeAnalyticsTracker", "fitflowAnalytics"]
       },
       "test_function": "test_analytics_dashboard",
       "category": "analytics"
     },
     "accessibility": {
       "name": "Accessibility Features",
-      "description": "ARIA labels, keyboard navigation, and screen reader support",
+      "description": "ARIA labels, keyboard navigation, and readable structure",
       "detection_patterns": {
         "html": ["aria-", "role="],
-        "js": ["accessibility", "aria"]
+        "js": ["keydown", "focus"]
       },
       "test_function": "test_accessibility_features",
       "category": "accessibility"
@@ -145,28 +124,18 @@
       "name": "Error Handling",
       "description": "Graceful error handling and user feedback",
       "detection_patterns": {
-        "html": ["error", "warning"],
+        "html": ["loading", "warning"],
         "js": ["showError", "try {", "} catch"]
       },
       "test_function": "test_error_handling",
       "category": "robustness"
     },
-    "performance": {
-      "name": "Performance Features",
-      "description": "Local storage, caching, and performance optimizations",
-      "detection_patterns": {
-        "html": ["performance", "cache"],
-        "js": ["localStorage", "performance", "optimize"]
-      },
-      "test_function": "test_ui_performance",
-      "category": "performance"
-    },
     "timing": {
       "name": "Timing Functionality",
-      "description": "Work/rest time sliders and validation",
+      "description": "Work/rest controls and timing propagation into workouts",
       "detection_patterns": {
         "html": ["work-time", "rest-time"],
-        "js": ["workTime", "restTime", "workTimeSlider"]
+        "js": ["workTime", "restTime", "getElementById('work-time')"]
       },
       "test_function": "test_timing_functionality",
       "category": "core_workout"
@@ -175,27 +144,27 @@
       "name": "Training Pattern Selection",
       "description": "Standard, Circuit, Tabata, and Pyramid training options",
       "detection_patterns": {
-        "html": ["training-pattern"],
-        "js": ["generatePatternBasedWorkout"]
+        "html": ["training-pattern", "pattern-circuit", "pattern-tabata", "pattern-pyramid"],
+        "js": ["switch (trainingPattern.toLowerCase())", "patternSettings"]
       },
       "test_function": "test_training_pattern_functionality",
       "category": "workout_customization"
     },
     "circuit_training": {
       "name": "Circuit Training",
-      "description": "Multiple rounds of exercises with circuit rest periods",
+      "description": "Multiple rounds of exercises with circuit metadata preserved",
       "detection_patterns": {
         "html": ["circuit", "rounds"],
-        "js": ["generateCircuitWorkout", "circuit_round"]
+        "js": ["generateCircuitWorkout", "circuit_round", "_circuitData"]
       },
       "test_function": "test_circuit_training_functionality",
       "category": "workout_customization"
     },
     "tabata_intervals": {
       "name": "Tabata Intervals",
-      "description": "High-intensity interval training with work/rest cycles",
+      "description": "Interval training with tabata set generation",
       "detection_patterns": {
-        "html": ["tabata", "intervals"],
+        "html": ["tabata"],
         "js": ["generateTabataWorkout", "tabata_set"]
       },
       "test_function": "test_tabata_functionality",
@@ -203,39 +172,19 @@
     },
     "pyramid_training": {
       "name": "Pyramid Training",
-      "description": "Increasing then decreasing intensity levels",
+      "description": "Pyramid-based workout progression",
       "detection_patterns": {
-        "html": ["pyramid", "levels"],
+        "html": ["pyramid"],
         "js": ["generatePyramidWorkout", "pyramid_set"]
       },
       "test_function": "test_pyramid_training_functionality",
       "category": "workout_customization"
     },
-    "smart_calculation": {
-      "name": "Smart Calculation",
-      "description": "Automatic adjustment of training pattern settings based on workout duration",
-      "detection_patterns": {
-        "html": ["Smart Calculation", "15min:", "30min:"],
-        "js": ["workoutDurationMinutes", "updatePatternSettingsForDuration"]
-      },
-      "test_function": "test_smart_calculation_functionality",
-      "category": "workout_customization"
-    },
-    "smart_exercise_substitution": {
-      "name": "Smart Exercise Substitution",
-      "description": "AI-powered exercise alternatives based on fitness level, equipment, and workout goals",
-      "detection_patterns": {
-        "html": ["Smart Exercise Substitution", "🧠 Smart Alternative", "AI-POWERED"],
-        "js": ["findExerciseAlternatives", "suggestExerciseSubstitution", "enhanceWorkoutWithSubstitutions"]
-      },
-      "test_function": "test_smart_exercise_substitution",
-      "category": "workout_customization"
-    },
     "modular_structure": {
       "name": "Modular JavaScript Structure",
-      "description": "Modern ES6 module-based architecture for better maintainability and scalability",
+      "description": "ES module-based architecture with feature separation",
       "detection_patterns": {
-        "html": ["type=\"module\"", "js/main.js", "nomodule"],
+        "html": ["type=\"module\"", "js/main.js"],
         "js": ["import", "export", "FitFlowApp"]
       },
       "test_function": "test_modular_structure",
@@ -243,10 +192,10 @@
     },
     "dynamic_e2e_smoke": {
       "name": "Dynamic E2E Smoke Tests",
-      "description": "End-to-end smoke tests using Playwright for critical user flows",
+      "description": "Critical end-to-end smoke test for core user flow",
       "detection_patterns": {
-        "html": ["workout-form", "generate-btn", "workout-section"],
-        "js": ["handleFormSubmission", "generateWorkout", "showSubstitutionChooser"]
+        "html": ["workout-form", "generate-btn"],
+        "js": ["handleFormSubmission", "generateWorkout"]
       },
       "test_function": "test_dynamic_e2e_smoke",
       "category": "testing",
@@ -254,10 +203,10 @@
     },
     "dynamic_form_detection": {
       "name": "Dynamic Form Detection & Testing",
-      "description": "Automatically detects form options and generates comprehensive test scenarios",
+      "description": "Detects form options and validates workout generation inputs",
       "detection_patterns": {
         "html": ["input[name=\"duration\"]", "input[name=\"equipment\"]", "input[name=\"training-pattern\"]", "select[name=\"fitness-level\"]"],
-        "js": ["querySelectorAll", "available_durations", "available_equipment", "available_patterns"]
+        "js": ["getFormData", "FormData", "querySelectorAll"]
       },
       "test_function": "test_comprehensive_form_combinations",
       "category": "testing",
@@ -265,9 +214,9 @@
     },
     "workout_timing_validation": {
       "name": "Workout Timing Validation",
-      "description": "Ensures workout timing values from form are correctly used in workout player",
+      "description": "Ensures timing values flow from form to workout player",
       "detection_patterns": {
-        "html": ["id=\"work-time\"", "id=\"rest-time\"", "name=\"workTime\"", "name=\"restTime\""],
+        "html": ["id=\"work-time\"", "id=\"rest-time\""],
         "js": ["window.currentWorkoutData", "getElementById('work-time')", "getElementById('rest-time')", "workTime:", "restTime:"]
       },
       "test_function": "test_workout_timing_data_flow",
@@ -276,22 +225,19 @@
     }
   },
   "metadata": {
-    "version": "2.1",
-    "last_updated": "2025-09-04T09:30:00Z",
-    "total_features": 28,
+    "version": "2.2",
+    "last_updated": "2026-03-24T09:40:00Z",
+    "total_features": 21,
     "categories": {
       "core_workout": 4,
-      "user_experience": 4,
+      "user_experience": 3,
       "ui_components": 2,
       "accessibility": 2,
-      "workout_customization": 7,
+      "workout_customization": 5,
       "robustness": 1,
-      "performance": 1,
       "analytics": 1,
-      "security": 1,
       "architecture": 1,
-      "testing": 3,
-      "other": 1
+      "testing": 3
     },
     "pipeline_integration": {
       "auto_detection": true,

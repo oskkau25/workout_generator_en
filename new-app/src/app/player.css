@@ -79,6 +79,21 @@
   align-items: start;
 }
 
+.player-exercise-hero--with-media {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.player-exercise-hero-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  display: block;
+}
+
 .player-exercise-visual svg {
   width: 3rem;
   height: 3rem;
@@ -131,6 +146,24 @@
 .player-next-preview-card h4 {
   margin: 0;
 }
+
+.exercise-search-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(125, 211, 252, 0.4);
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.exercise-search-link:hover {
+  border-bottom-color: rgba(125, 211, 252, 0.8);
+  opacity: 0.9;
+}
+
+.exercise-search-link:active {
+  opacity: 0.8;
+}
+
 
 .player-next-preview-card-inline {
   grid-template-columns: minmax(0, 1fr) auto;

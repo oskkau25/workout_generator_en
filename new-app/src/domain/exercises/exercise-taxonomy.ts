@@ -187,3 +187,12 @@ export function getExpandedInstruction(
   const remainder = trimmedFull.slice(trimmedShort.length).replace(/^[.!:\-\s]+/, '').trim()
   return remainder || null
 }
+
+export function getYouTubeSearchUrl(query: string | undefined): string | null {
+  if (!query) {
+    return null
+  }
+
+  const trimmed = query.trim()
+  return trimmed ? `https://www.youtube.com/results?search_query=${encodeURIComponent(trimmed)}` : null
+}

@@ -60,6 +60,10 @@ function formatSeconds(totalSeconds: number) {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
 
+function getGoogleSearchUrl(exerciseName: string) {
+  return `https://www.google.com/search?q=${encodeURIComponent(exerciseName)}`
+}
+
 function formatDurationLabel(totalSeconds: number) {
   if (totalSeconds < 60) {
     return `${totalSeconds}s`
@@ -130,8 +134,6 @@ function isInteractiveElement(target: EventTarget | null) {
   return target.isContentEditable || ['input', 'textarea', 'select', 'button', 'a'].includes(tagName)
 }
 
-
-
 type WakeLockSentinelLike = {
   release: () => Promise<void>
 }
@@ -195,6 +197,7 @@ export function WorkoutPlayerScreen() {
   const [isExerciseDetailOpen, setIsExerciseDetailOpen] = useState(false)
   const [isExerciseDetailPinned, setIsExerciseDetailPinned] = useState(false)
   const [isAudioTestRunning, setIsAudioTestRunning] = useState(false)
+  const [heroImageFailed, setHeroImageFailed] = useState(false)
   const historySavedRef = useRef(false)
   const wakeLockRef = useRef<WakeLockSentinelLike | null>(null)
   const previousPhaseRef = useRef<PlayerPhase>('idle')
@@ -442,6 +445,12 @@ export function WorkoutPlayerScreen() {
     currentExercise?.coaching.fullInstruction,
     currentExercise?.coaching.shortInstruction,
   )
+  const detailMediaUrl = currentExercise?.media?.animationUrl ?? currentExercise?.media?.imageUrl ?? null
+  const heroMediaUrl = heroImageFailed ? null : detailMediaUrl
+
+  useEffect(() => {
+    setHeroImageFailed(false)
+  }, [currentStep?.id])
 
   useEffect(() => {
     if (isExerciseDetailPinned) {
@@ -716,15 +725,32 @@ export function WorkoutPlayerScreen() {
           <div className="player-card-heading">
             <div>
               <p className="card-eyebrow">Exercise</p>
-              <h3 id="current-exercise-title">{currentExercise?.name ?? 'Workout ready'}</h3>
+              <h3 id="current-exercise-title">
+                {currentExercise?.name ? (
+                  <a
+                    href={getGoogleSearchUrl(currentExercise.name)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="exercise-search-link"
+                  >
+                    {currentExercise.name}
+                  </a>
+                ) : (
+                  'Workout ready'
+                )}
+              </h3>
             </div>
             {currentStep ? <span className="summary-step-badge">{BLOCK_LABELS[currentStep.block]}</span> : null}
           </div>
 
-          <div className="player-exercise-hero">
-            <div className="player-exercise-visual" aria-hidden="true">
-              <MovementIcon category={movementCategory} />
-            </div>
+          <div className={`player-exercise-hero${heroMediaUrl ? ' player-exercise-hero--with-media' : ''}`}>
+            {heroMediaUrl ? (
+              <img className="player-exercise-hero-image" src={heroMediaUrl} alt="" onError={() => setHeroImageFailed(true)} />
+            ) : (
+              <div className="player-exercise-visual" aria-hidden="true">
+                <MovementIcon category={movementCategory} />
+              </div>
+            )}
             <div className="player-exercise-copy">
               <div className="player-compact-status-row" role="status" aria-live="polite">
                 <span className="mini-pill player-state-pill">
@@ -765,7 +791,28 @@ export function WorkoutPlayerScreen() {
                 {isExerciseDetailPinned ? 'Unpin details' : 'Pin details'}
               </button>
             </div>
-            {expandedInstruction ? <p>{expandedInstruction}</p> : null}
+            {currentExercise?.coaching.steps?.length ? (
+              <section className="exercise-guidance-section" aria-label="Exercise steps">
+                <span className="card-eyebrow">How to do it</span>
+                <ol className="exercise-guidance-list">
+                  {currentExercise.coaching.steps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+              </section>
+            ) : expandedInstruction ? (
+              <p>{expandedInstruction}</p>
+            ) : null}
+            {currentExercise?.coaching.safetyNotes?.length ? (
+              <section className="exercise-guidance-section" aria-label="Safety notes">
+                <span className="card-eyebrow">Watch out</span>
+                <ul className="exercise-guidance-list">
+                  {currentExercise.coaching.safetyNotes.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
             <div className="player-context-row">
               {currentExercise?.movementPattern ? (
                 <span className="compact-chip">{getMovementPatternLabel(currentExercise.movementPattern)}</span>
@@ -810,7 +857,20 @@ export function WorkoutPlayerScreen() {
         <div className="player-next-preview-card player-next-preview-card-inline" aria-labelledby="next-up-title">
           <div className="player-next-preview-copy">
             <p className="card-eyebrow">Next exercise</p>
-            <h4 id="next-up-title">{nextExercise?.name ?? 'Completion transition next'}</h4>
+            <h4 id="next-up-title">
+              {nextExercise?.name ? (
+                <a
+                  href={getGoogleSearchUrl(nextExercise.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="exercise-search-link"
+                >
+                  {nextExercise.name}
+                </a>
+              ) : (
+                'Completion transition next'
+              )}
+            </h4>
             <span className="summary-step-meta">{getNextUpLabel(nextStep)}</span>
           </div>
           {nextExercisePrimaryMuscle ? <span className="compact-chip player-next-chip">{nextExercisePrimaryMuscle}</span> : null}

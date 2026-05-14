@@ -12,6 +12,27 @@ describe('legacyExerciseCatalog', () => {
     }
   })
 
+  it('has imageUrl seeded for the first priority batch', () => {
+    const seedIds = [
+      'legacy-19-squats',
+      'legacy-20-push-ups',
+      'legacy-21-lunges',
+      'legacy-22-plank',
+      'legacy-23-glute-bridge',
+      'legacy-28-dead-bug',
+      'legacy-35-mountain-climbers',
+      'legacy-40-dumbbell-shoulder-press',
+      'legacy-41-bent-over-dumbbell-rows',
+      'legacy-76-kettlebell-swings',
+    ]
+    const exerciseMap = new Map(legacyExerciseCatalog.map((e) => [e.id, e]))
+    for (const id of seedIds) {
+      const exercise = exerciseMap.get(id)
+      expect(exercise, `exercise ${id} not found`).toBeDefined()
+      expect(exercise?.media?.imageUrl, `${id} missing imageUrl`).toBeTruthy()
+    }
+  })
+
   it('keeps broad enough main exercise coverage for balanced generation', () => {
     const patterns = new Set(mainExercises.map((exercise) => exercise.movementPattern))
     const muscles = new Set(mainExercises.map((exercise) => exercise.primaryMuscle))
